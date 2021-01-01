@@ -29,7 +29,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec {
 
     protected static <F extends MatchField> MatchEntrySerializerKey<ExperimenterClass, F> createSerializerKey(
-            short version, Uint32 expId, Class<F> oxmField) {
+            final short version, final Uint32 expId, final Class<F> oxmField) {
         MatchEntrySerializerKey<ExperimenterClass, F> key = new MatchEntrySerializerKey<>(
                 version, ExperimenterClass.class, oxmField);
         key.setExperimenterId(expId);
@@ -37,7 +37,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     }
 
     protected static MatchEntryDeserializerKey createDeserializerKey(
-            short version, Uint32 expId, int fieldCode) {
+            final short version, final Uint32 expId, final int fieldCode) {
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
                 version, OxmMatchConstants.EXPERIMENTER_CLASS, fieldCode);
         key.setExperimenterId(expId);
@@ -45,7 +45,7 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     }
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         // serializes standard header + experimenterId
         serializeHeader(input, outBuffer);
 
@@ -53,13 +53,13 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
         NxExpMatchEntryValue nxExpMatchEntryValue = ofjAugNxExpMatch.getNxExpMatchEntryValue();
 
-        serializeValue(nxExpMatchEntryValue, input.isHasMask(), outBuffer);
+        serializeValue(nxExpMatchEntryValue, input.getHasMask(), outBuffer);
     }
 
     protected abstract void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer);
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         final MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
 
         // skip experimenter Id
@@ -70,16 +70,16 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
         expBuilder.setExperimenter(new ExperimenterId(getExperimenterId()));
         expCaseBuilder.setExperimenter(expBuilder.build());
 
-        final NxExpMatchEntryValue value = deserializeValue(message, matchEntryBuilder.isHasMask());
+        final NxExpMatchEntryValue value = deserializeValue(message, matchEntryBuilder.getHasMask());
 
         return buildMatchEntry(matchEntryBuilder, expCaseBuilder, value);
     }
 
     protected abstract NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask);
 
-    private static MatchEntry buildMatchEntry(MatchEntryBuilder matchEntryBuilder,
-                                                ExperimenterIdCaseBuilder experimenterIdCaseBuilder,
-                                                NxExpMatchEntryValue nxExpMatchEntryValue) {
+    private static MatchEntry buildMatchEntry(final MatchEntryBuilder matchEntryBuilder,
+                                              final ExperimenterIdCaseBuilder experimenterIdCaseBuilder,
+                                              final NxExpMatchEntryValue nxExpMatchEntryValue) {
         return matchEntryBuilder
                 .setMatchEntryValue(experimenterIdCaseBuilder.addAugmentation(new OfjAugNxExpMatchBuilder()
                     .setNxExpMatchEntryValue(nxExpMatchEntryValue)
@@ -89,12 +89,12 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     }
 
     @Override
-    public void serializeHeader(NxmHeader input, ByteBuf outBuffer) {
+    public void serializeHeader(final NxmHeader input, final ByteBuf outBuffer) {
         outBuffer.writeLong(input.toLong());
     }
 
     @Override
-    protected NxmHeader buildHeader(boolean hasMask) {
+    protected NxmHeader buildHeader(final boolean hasMask) {
         return new NxmHeader(
                 getNxmFieldCode(),
                 hasMask,
@@ -113,5 +113,4 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     }
 
     protected abstract @NonNull Uint32 getExperimenterId();
-
 }

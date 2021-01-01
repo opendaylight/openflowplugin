@@ -62,7 +62,7 @@ public class ArpOpCodecTest {
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfArpOp.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(false, input.getHasMask());
         assertEquals(2, result.getArpOpValues().getValue().shortValue());
     }
 
@@ -82,7 +82,7 @@ public class ArpOpCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

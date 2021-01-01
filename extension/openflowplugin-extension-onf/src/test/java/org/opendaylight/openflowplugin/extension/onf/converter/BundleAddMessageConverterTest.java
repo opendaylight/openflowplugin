@@ -169,7 +169,7 @@ public class BundleAddMessageConverterTest {
         testConvert(message, BundleFlowModCase.class, withProperty);
     }
 
-    private void testConvert(final BundleInnerMessage message, Class<? extends DataObject> clazz,
+    private void testConvert(final BundleInnerMessage message, final Class<? extends DataObject> clazz,
             final boolean withProperty) throws ConversionException {
         final BundleAddMessageSal original = createMessage(withProperty, message);
         final ExtensionConvertorData data = new ExtensionConvertorData(OFConstants.OFP_VERSION_1_3);
@@ -178,8 +178,8 @@ public class BundleAddMessageConverterTest {
         Assert.assertEquals("Wrong BundleId", new BundleId(original.getSalAddMessageData().getBundleId().getValue()),
                 converted.getOnfAddMessageGroupingData().getBundleId());
         Assert.assertEquals("Wrong flags",
-                new BundleFlags(original.getSalAddMessageData().getFlags().isAtomic(),
-                        original.getSalAddMessageData().getFlags().isOrdered()),
+                new BundleFlags(original.getSalAddMessageData().getFlags().getAtomic(),
+                        original.getSalAddMessageData().getFlags().getOrdered()),
                 converted.getOnfAddMessageGroupingData().getFlags());
         Assert.assertEquals("Wrong inner message conversion", clazz,
                 converted.getOnfAddMessageGroupingData().getBundleInnerMessage().implementedInterface());
