@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.md.util;
 
 import com.google.common.collect.ImmutableMap;
@@ -15,12 +14,13 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * List of Openflow versions supported by the plugin.
- * Note: If you add a version here,
- * make sure to update org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
- * @deprecated enum in api is not something what we would like to see in case it is evolving.
+ *
+ * <p>
+ * Note: If you add a version here, make sure to update
+ *       org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
  */
+// FIXME: enum in api is not something what we would like to see in case it is evolving.
 public enum OpenflowVersion {
-
     OF10((short)0x01),
     OF13((short)0x04),
     UNSUPPORTED((short)0x00);
@@ -50,10 +50,10 @@ public enum OpenflowVersion {
 
     /**
      * Getter.
+     *
      * @return the version
      */
     public short getVersion() {
         return version;
     }
-
 }
