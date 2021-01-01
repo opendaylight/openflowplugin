@@ -23,12 +23,12 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 4;
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         final MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
         final RegValuesBuilder regValuesBuilder = new RegValuesBuilder();
         regValuesBuilder.setValue(readUint32(message));
 
-        if (matchEntriesBuilder.isHasMask()) {
+        if (matchEntriesBuilder.getHasMask()) {
             regValuesBuilder.setMask(readUint32(message));
         }
 
@@ -40,12 +40,12 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         final RegCaseValue regCase = (RegCaseValue) input.getMatchEntryValue();
         outBuffer.writeInt(regCase.getRegValues().getValue().intValue());
 
-        if (input.isHasMask()) {
+        if (input.getHasMask()) {
             outBuffer.writeInt(regCase.getRegValues().getMask().intValue());
         }
     }

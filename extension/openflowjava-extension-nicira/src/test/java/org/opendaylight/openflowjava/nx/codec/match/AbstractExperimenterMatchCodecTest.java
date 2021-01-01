@@ -48,12 +48,12 @@ public class AbstractExperimenterMatchCodecTest {
     private class TestCodec extends AbstractExperimenterMatchCodec {
 
         @Override
-        protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
+        protected void serializeValue(final NxExpMatchEntryValue value, final boolean hasMask, final ByteBuf outBuffer) {
             // noop
         }
 
         @Override
-        protected NxExpMatchEntryValue deserializeValue(ByteBuf outBuffer, boolean hasMask) {
+        protected NxExpMatchEntryValue deserializeValue(final ByteBuf outBuffer, final boolean hasMask) {
             return null;
         }
 
@@ -120,7 +120,7 @@ public class AbstractExperimenterMatchCodecTest {
 
         assertEquals(ExperimenterClass.class, matchEntry.getOxmClass());
         assertEquals(TestNxmField.class, matchEntry.getOxmMatchField());
-        assertEquals(false, matchEntry.isHasMask());
+        assertEquals(false, matchEntry.getHasMask());
         Experimenter experimenter = ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter();
         assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue());
         assertFalse(buffer.isReadable());
@@ -135,14 +135,14 @@ public class AbstractExperimenterMatchCodecTest {
 
         assertEquals(ExperimenterClass.class, matchEntry.getOxmClass());
         assertEquals(TestNxmField.class, matchEntry.getOxmMatchField());
-        assertEquals(true, matchEntry.isHasMask());
+        assertEquals(true, matchEntry.getHasMask());
         Experimenter experimenter = ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter();
         assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue());
         assertFalse(buffer.isReadable());
         verify(testCodec).deserializeValue(buffer, true);
     }
 
-    static MatchEntry createMatchEntry(NxExpMatchEntryValue value, boolean hasMask) {
+    static MatchEntry createMatchEntry(final NxExpMatchEntryValue value, final boolean hasMask) {
         return new MatchEntryBuilder()
                 .setOxmClass(ExperimenterClass.class)
                 .setOxmMatchField(TestNxmField.class)
@@ -156,7 +156,7 @@ public class AbstractExperimenterMatchCodecTest {
                 .build();
     }
 
-    static void writeBuffer(ByteBuf message, boolean hasMask) {
+    static void writeBuffer(final ByteBuf message, final boolean hasMask) {
         int fieldMask = FIELD_CODE << 1;
         int length = Integer.BYTES + VALUE_LENGTH;
         if (hasMask) {

@@ -192,7 +192,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class))
             .thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
-        Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(false);
+        Mockito.when(snapshotGatheringStatusEnd.getSucceeded()).thenReturn(false);
 
         nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
@@ -260,7 +260,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class))
              .thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
-        Mockito.when(snapshotGatheringStatusEnd.isSucceeded()).thenReturn(true);
+        Mockito.when(snapshotGatheringStatusEnd.getSucceeded()).thenReturn(true);
         Mockito.when(snapshotGatheringStatusEnd.getEnd()).thenReturn(Mockito.mock(DateAndTime.class));
         final String timestampBefore = "0000-12-12T01:01:01.000-07:00";
         final String timestampAfter = "9999-12-12T01:01:01.000-07:00";

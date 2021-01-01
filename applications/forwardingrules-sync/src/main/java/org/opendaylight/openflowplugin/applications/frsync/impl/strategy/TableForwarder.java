@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Collections;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesUpdateCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -24,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +35,7 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
     private final SalTableService salTableService;
 
-    public TableForwarder(SalTableService salTableService) {
+    public TableForwarder(final SalTableService salTableService) {
         this.salTableService = salTableService;
     }
 
@@ -44,25 +43,17 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
     public ListenableFuture<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
                                                        final TableFeatures original, final TableFeatures update,
                                                        final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.debug("Forwarding Table Update request [Tbl id, node Id {} {}",
-                identifier, nodeIdent);
-
-        final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-
+        LOG.debug("Forwarding Table Update request [Tbl id, node Id {} {}", identifier, nodeIdent);
         final InstanceIdentifier<Table> iiToTable = nodeIdent.child(Table.class,
                 new TableKey(identifier.firstKeyOf(TableFeatures.class).getTableId()));
-        builder.setTableRef(new TableRef(iiToTable));
 
-        builder.setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(
-                Collections.singletonList(update)).build());
-
-        builder.setOriginalTable(new OriginalTableBuilder().setTableFeatures(
-                Collections.singletonList(original)).build());
-        LOG.debug("Invoking SalTableService {} ", nodeIdent);
-
-        return salTableService.updateTable(builder.build());
+        LOG.debug("Invoking SalTableService {}", nodeIdent);
+        return salTableService.updateTable(new UpdateTableInputBuilder()
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setTableRef(new TableRef(iiToTable))
+            .setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(BindingMap.of(update)).build())
+            .setOriginalTable(new OriginalTableBuilder().setTableFeatures(BindingMap.of(original)).build())
+            .build());
     }
 
 }

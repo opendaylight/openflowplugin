@@ -115,8 +115,8 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private final String originalGroupName = "Foo";
     private final NotificationService notificationService;
 
-    public OpenflowPluginBulkGroupTransactionProvider(DataBroker dataBroker, NotificationService notificationService,
-            BundleContext ctx) {
+    public OpenflowPluginBulkGroupTransactionProvider(final DataBroker dataBroker, final NotificationService notificationService,
+            final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.ctx = ctx;
@@ -432,7 +432,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return isb;
     }
 
-    private FlowBuilder createTestFlow(NodeBuilder nodeBuilder, String flowTypeArg, String tableId) {
+    private FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg, final String tableId) {
 
         FlowBuilder flow = new FlowBuilder();
         long id = 123;
@@ -514,7 +514,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
 
         final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
-        if (null == flow.isBarrier()) {
+        if (null == flow.getBarrier()) {
             flow.setBarrier(Boolean.FALSE);
         }
         // flow.setBufferId(12L);
@@ -539,7 +539,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         return flow;
     }
 
-    private static Uint8 getTableId(String tableId) {
+    private static Uint8 getTableId(final String tableId) {
         Uint8 table = Uint8.TWO;
         if (tableId == null) {
             return table;
@@ -555,7 +555,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
     }
 
-    public void _addGroups(CommandInterpreter ci) {
+    public void _addGroups(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -593,14 +593,14 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private void createUserNode(String nodeRef) {
+    private void createUserNode(final String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.withKey(new NodeKey(builder.getId()));
         testNode12 = builder.build();
     }
 
-    public void _modifyGroups(CommandInterpreter ci) {
+    public void _modifyGroups(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -638,11 +638,11 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
-    public void _removeGroups(CommandInterpreter ci) {
+    public void _removeGroups(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -701,7 +701,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }
     }
 
-    private void writeGroup(final CommandInterpreter ci, Group group, Group group1) {
+    private void writeGroup(final CommandInterpreter ci, final Group group, final Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
@@ -719,18 +719,18 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, group1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    private void deleteGroup(final CommandInterpreter ci, Group group, Group group1) {
+    private void deleteGroup(final CommandInterpreter ci, final Group group, final Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
@@ -744,18 +744,18 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    private GroupBuilder createTestGroup(String actionType, String groupType, String groupmod, String strId) {
+    private GroupBuilder createTestGroup(String actionType, String groupType, final String groupmod, final String strId) {
         // Sample data , committing to DataStore
 
         GroupBuilder group = new GroupBuilder();

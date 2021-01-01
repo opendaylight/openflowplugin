@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
-import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
@@ -24,19 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class EthTypeCodecTest {
+    private final ByteBuf buffer = ByteBufAllocator.DEFAULT.buffer();
+    private final EthTypeCodec ethTypeCodec = new EthTypeCodec();
 
-    EthTypeCodec ethTypeCodec;
-    ByteBuf buffer;
-    MatchEntry input;
+    private MatchEntry input;
 
     private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 3;
-
-    @Before
-    public void setUp() {
-        ethTypeCodec = new EthTypeCodec();
-        buffer = ByteBufAllocator.DEFAULT.buffer();
-    }
 
     @Test
     public void serializeTest() {
@@ -61,7 +54,7 @@ public class EthTypeCodecTest {
 
         assertEquals(Nxm0Class.class, input.getOxmClass());
         assertEquals(NxmOfEthType.class, input.getOxmMatchField());
-        assertEquals(false, input.isHasMask());
+        assertEquals(false, input.getHasMask());
         assertEquals(2, result.getEthTypeValues().getValue().shortValue());
     }
 
@@ -81,7 +74,7 @@ public class EthTypeCodecTest {
         return matchEntryBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(OxmMatchConstants.NXM_0_CLASS);
 
         int fieldMask = NXM_FIELD_CODE << 1;

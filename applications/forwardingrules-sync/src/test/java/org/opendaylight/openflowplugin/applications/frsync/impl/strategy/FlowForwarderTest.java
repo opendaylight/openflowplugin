@@ -117,7 +117,7 @@ public class FlowForwarderTest {
         Assert.assertEquals(null, flowInput.getInstructions());
         Assert.assertEquals(nodePath, flowInput.getNode().getValue());
         Assert.assertEquals(flowPath, flowInput.getFlowRef().getValue());
-        Assert.assertEquals(null, flowInput.isStrict());
+        Assert.assertEquals(null, flowInput.getStrict());
 
 
         final RpcResult<AddFlowOutput> addFlowOutputRpcResult = addResult.get(2, TimeUnit.SECONDS);
@@ -168,12 +168,12 @@ public class FlowForwarderTest {
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());
         Assert.assertEquals(originalInstructions, flowInput.getInstructions());
-        Assert.assertEquals(true, flowInput.isStrict());
+        Assert.assertEquals(true, flowInput.getStrict());
 
         Assert.assertEquals(2, flowOrigInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowOrigInput.getMatch());
         Assert.assertEquals(null, flowOrigInput.getInstructions());
-        Assert.assertEquals(true, flowOrigInput.isStrict());
+        Assert.assertEquals(true, flowOrigInput.getStrict());
 
 
         final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult = updateResult.get(2, TimeUnit.SECONDS);
@@ -199,7 +199,7 @@ public class FlowForwarderTest {
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());
         Assert.assertEquals(null, flowInput.getInstructions());
-        Assert.assertEquals(true, flowInput.isStrict());
+        Assert.assertEquals(true, flowInput.getStrict());
 
 
         final RpcResult<RemoveFlowOutput> removeFlowOutputRpcResult = removeResult.get(2, TimeUnit.SECONDS);
