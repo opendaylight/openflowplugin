@@ -821,7 +821,7 @@ public class MultipartReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 7, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyGroupDescCase messageCase = (MultipartReplyGroupDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyGroupDesc message = messageCase.getMultipartReplyGroupDesc();
         Assert.assertEquals("Wrong type", 1, message.getGroupDesc().get(0).getType().getIntValue());
@@ -887,7 +887,7 @@ public class MultipartReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV13(builtByFactory);
         Assert.assertEquals("Wrong type", 7, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().isOFPMPFREQMORE());
+        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyGroupDescCase messageCase = (MultipartReplyGroupDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyGroupDesc message = messageCase.getMultipartReplyGroupDesc();
         Assert.assertEquals("Wrong type", 1,

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.util.ArrayList;
@@ -545,7 +544,7 @@ public class ActionConvertorV13Test {
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid.class, false);
         Assert.assertEquals("Wrong vlan vid", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getVlanVid()
                 .intValue());
-        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().isCfiBit());
+        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getCfiBit());
 
         action = actions.get(2);
         Assert.assertEquals("Wrong action type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
@@ -643,7 +642,7 @@ public class ActionConvertorV13Test {
         Assert.assertEquals("Wrong vlan id", 22, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .getVlanVid().intValue());
         Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
-                .isCfiBit());
+                .getCfiBit());
 
         action = actions.get(10);
         setFieldCase = (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping
@@ -674,6 +673,6 @@ public class ActionConvertorV13Test {
             final boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
+        Assert.assertEquals("Wrong hasMask", hasMask, entry.getHasMask());
     }
 }

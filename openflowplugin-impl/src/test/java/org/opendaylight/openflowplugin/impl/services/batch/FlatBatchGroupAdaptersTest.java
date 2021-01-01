@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -68,7 +69,7 @@ public class FlatBatchGroupAdaptersTest {
                 FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, NODE_REF);
         Iterator<BatchAddGroups> iterator = addGroupsBatchInput.nonnullBatchAddGroups().values().iterator();
 
-        Assert.assertTrue(addGroupsBatchInput.isBarrierAfter());
+        Assert.assertTrue(addGroupsBatchInput.getBarrierAfter());
         Assert.assertEquals(2, addGroupsBatchInput.getBatchAddGroups().size());
         Assert.assertEquals(1L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
@@ -112,7 +113,7 @@ public class FlatBatchGroupAdaptersTest {
                 FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, NODE_REF);
         Iterator<BatchRemoveGroups> iterator = removeGroupsBatchInput.nonnullBatchRemoveGroups().values().iterator();
 
-        Assert.assertTrue(removeGroupsBatchInput.isBarrierAfter());
+        Assert.assertTrue(removeGroupsBatchInput.getBarrierAfter());
         Assert.assertEquals(2, removeGroupsBatchInput.getBatchRemoveGroups().size());
         Assert.assertEquals(1L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
@@ -129,7 +130,7 @@ public class FlatBatchGroupAdaptersTest {
         final UpdateGroupsBatchInput updateGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, NODE_REF);
 
-        Assert.assertTrue(updateGroupsBatchInput.isBarrierAfter());
+        Assert.assertTrue(updateGroupsBatchInput.getBarrierAfter());
         Assert.assertEquals(2, updateGroupsBatchInput.getBatchUpdateGroups().size());
         Assert.assertEquals(1L, updateGroupsBatchInput.getBatchUpdateGroups().get(0)
                 .getUpdatedBatchedGroup().getGroupId().getValue().longValue());
@@ -142,7 +143,7 @@ public class FlatBatchGroupAdaptersTest {
         final RpcResult<BatchGroupOutputListGrouping> input = RpcResultBuilder.<BatchGroupOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-groupError")
                 .withResult(new AddGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(Lists.newArrayList(
+                        .setBatchFailedGroupsOutput(BindingMap.ordered(
                                 createBatchFailedGroupsOutput(Uint16.ZERO, Uint32.ONE),
                                 createBatchFailedGroupsOutput(Uint16.ONE, Uint32.TWO)
                         ))

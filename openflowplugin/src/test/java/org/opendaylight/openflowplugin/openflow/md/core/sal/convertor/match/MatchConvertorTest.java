@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -229,113 +231,113 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 24, entries.size());
+        assertEquals("Wrong entries size", 24, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, InPort.class, false);
-        Assert.assertEquals("Wrong in port", 1, ((InPortCase) entry.getMatchEntryValue()).getInPort()
+        assertEquals("Wrong in port", 1, ((InPortCase) entry.getMatchEntryValue()).getInPort()
                 .getPortNumber().getValue().intValue());
 
         entry = entries.get(1);
         checkEntryHeader(entry, InPhyPort.class, false);
-        Assert.assertEquals("Wrong in phy port", 2, ((InPhyPortCase) entry.getMatchEntryValue())
+        assertEquals("Wrong in phy port", 2, ((InPhyPortCase) entry.getMatchEntryValue())
                 .getInPhyPort().getPortNumber().getValue().intValue());
 
         entry = entries.get(2);
         checkEntryHeader(entry, Metadata.class, false);
-        Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
+        assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
                 ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMetadata());
         entry = entries.get(3);
         checkEntryHeader(entry, EthDst.class, false);
-        Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:06"),
+        assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:06"),
                 ((EthDstCase) entry.getMatchEntryValue()).getEthDst().getMacAddress());
         entry = entries.get(4);
         checkEntryHeader(entry, EthSrc.class, false);
-        Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:05"),
+        assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:05"),
                 ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc().getMacAddress());
         entry = entries.get(5);
         checkEntryHeader(entry, EthType.class, false);
-        Assert.assertEquals("Wrong eth type", 4, ((EthTypeCase) entry.getMatchEntryValue())
+        assertEquals("Wrong eth type", 4, ((EthTypeCase) entry.getMatchEntryValue())
                 .getEthType().getEthType().getValue().intValue());
         entry = entries.get(6);
         checkEntryHeader(entry, VlanVid.class, false);
-        Assert.assertEquals("Wrong vlan id", 7, ((VlanVidCase) entry.getMatchEntryValue())
+        assertEquals("Wrong vlan id", 7, ((VlanVidCase) entry.getMatchEntryValue())
                 .getVlanVid().getVlanVid().intValue());
-        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue())
-                .getVlanVid().isCfiBit());
+        assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getCfiBit());
         entry = entries.get(7);
         checkEntryHeader(entry,
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp.class, false);
-        Assert.assertEquals("Wrong vlan pcp", 7, ((VlanPcpCase) entry.getMatchEntryValue())
+        assertEquals("Wrong vlan pcp", 7, ((VlanPcpCase) entry.getMatchEntryValue())
                 .getVlanPcp().getVlanPcp().intValue());
         entry = entries.get(8);
         checkEntryHeader(entry, IpDscp.class, false);
-        Assert.assertEquals("Wrong ip dscp", 8, ((IpDscpCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ip dscp", 8, ((IpDscpCase) entry.getMatchEntryValue())
                 .getIpDscp().getDscp().getValue().intValue());
         entry = entries.get(9);
         checkEntryHeader(entry, IpEcn.class, false);
-        Assert.assertEquals("Wrong ip ecn", 9, ((IpEcnCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ip ecn", 9, ((IpEcnCase) entry.getMatchEntryValue())
                 .getIpEcn().getEcn().intValue());
         entry = entries.get(10);
         checkEntryHeader(entry, IpProto.class, false);
-        Assert.assertEquals("Wrong ip proto", 10, ((IpProtoCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ip proto", 10, ((IpProtoCase) entry.getMatchEntryValue())
                 .getIpProto().getProtocolNumber().intValue());
         entry = entries.get(11);
         checkEntryHeader(entry, TcpSrc.class, false);
-        Assert.assertEquals("Wrong tcp src", 11, ((TcpSrcCase) entry.getMatchEntryValue())
+        assertEquals("Wrong tcp src", 11, ((TcpSrcCase) entry.getMatchEntryValue())
                 .getTcpSrc().getPort().getValue().intValue());
         entry = entries.get(12);
         checkEntryHeader(entry, TcpDst.class, false);
-        Assert.assertEquals("Wrong tcp dst", 12, ((TcpDstCase) entry.getMatchEntryValue())
+        assertEquals("Wrong tcp dst", 12, ((TcpDstCase) entry.getMatchEntryValue())
                 .getTcpDst().getPort().getValue().intValue());
         entry = entries.get(13);
         checkEntryHeader(entry, Icmpv4Type.class, false);
-        Assert.assertEquals("Wrong icmpv4 type", 13, ((Icmpv4TypeCase) entry.getMatchEntryValue())
+        assertEquals("Wrong icmpv4 type", 13, ((Icmpv4TypeCase) entry.getMatchEntryValue())
                 .getIcmpv4Type().getIcmpv4Type().intValue());
         entry = entries.get(14);
         checkEntryHeader(entry, Icmpv4Code.class, false);
-        Assert.assertEquals("Wrong icmpv4 code", 14, ((Icmpv4CodeCase) entry.getMatchEntryValue())
+        assertEquals("Wrong icmpv4 code", 14, ((Icmpv4CodeCase) entry.getMatchEntryValue())
                 .getIcmpv4Code().getIcmpv4Code().intValue());
         entry = entries.get(15);
         checkEntryHeader(entry, Icmpv6Type.class, false);
-        Assert.assertEquals("Wrong icmpv6 type", 15, ((Icmpv6TypeCase) entry.getMatchEntryValue())
+        assertEquals("Wrong icmpv6 type", 15, ((Icmpv6TypeCase) entry.getMatchEntryValue())
                 .getIcmpv6Type().getIcmpv6Type().intValue());
         entry = entries.get(16);
         checkEntryHeader(entry, Icmpv6Code.class, false);
-        Assert.assertEquals("Wrong icmpv6 code", 16, ((Icmpv6CodeCase) entry.getMatchEntryValue())
+        assertEquals("Wrong icmpv6 code", 16, ((Icmpv6CodeCase) entry.getMatchEntryValue())
                 .getIcmpv6Code().getIcmpv6Code().intValue());
         entry = entries.get(17);
         checkEntryHeader(entry, Ipv4Src.class, false);
-        Assert.assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ipv4 src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue())
                 .getIpv4Src().getIpv4Address().getValue());
         entry = entries.get(18);
         checkEntryHeader(entry, Ipv4Dst.class, false);
-        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue())
                 .getIpv4Dst().getIpv4Address().getValue());
         entry = entries.get(19);
         checkEntryHeader(entry, MplsLabel.class, false);
-        Assert.assertEquals("Wrong mpls label", 17, ((MplsLabelCase) entry.getMatchEntryValue())
+        assertEquals("Wrong mpls label", 17, ((MplsLabelCase) entry.getMatchEntryValue())
                 .getMplsLabel().getMplsLabel().intValue());
         entry = entries.get(20);
         checkEntryHeader(entry, MplsBos.class, false);
-        Assert.assertEquals("Wrong mpls bos", true, ((MplsBosCase) entry.getMatchEntryValue()).getMplsBos().isBos());
+        assertEquals("Wrong mpls bos", true, ((MplsBosCase) entry.getMatchEntryValue()).getMplsBos().getBos());
         entry = entries.get(21);
         checkEntryHeader(entry, MplsTc.class, false);
-        Assert.assertEquals("Wrong mpls tc", 18, ((MplsTcCase) entry.getMatchEntryValue())
+        assertEquals("Wrong mpls tc", 18, ((MplsTcCase) entry.getMatchEntryValue())
                 .getMplsTc().getTc().intValue());
         entry = entries.get(22);
         checkEntryHeader(entry, PbbIsid.class, false);
-        Assert.assertEquals("Wrong pbb isid", 20, ((PbbIsidCase) entry.getMatchEntryValue())
+        assertEquals("Wrong pbb isid", 20, ((PbbIsidCase) entry.getMatchEntryValue())
                 .getPbbIsid().getIsid().intValue());
         entry = entries.get(23);
         checkEntryHeader(entry, TunnelId.class, false);
-        Assert.assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},
+        assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
     }
 
-    private static void checkEntryHeader(MatchEntry entry, Class<? extends MatchField> field, boolean hasMask) {
-        Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong hasMask", hasMask, entry.isHasMask());
+    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field,
+            final boolean hasMask) {
+        assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
+        assertEquals("Wrong oxm field", field, entry.getOxmMatchField());
+        assertEquals("Wrong hasMask", hasMask, entry.getHasMask());
     }
 
     @Test
@@ -350,15 +352,15 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv4Src.class, false);
-        Assert.assertEquals("wrong Ipv4Address source", "10.2.2.2",
+        assertEquals("wrong Ipv4Address source", "10.2.2.2",
                 ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getIpv4Address().getValue());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv4Dst.class, false);
-        Assert.assertEquals("wrong Ipv4Address destination", "10.1.1.1",
+        assertEquals("wrong Ipv4Address destination", "10.1.1.1",
                 ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
     }
 
@@ -377,15 +379,15 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv4Src.class, true);
-        Assert.assertEquals("wrong Ipv4Address source", "10.2.2.2",
+        assertEquals("wrong Ipv4Address source", "10.2.2.2",
                 ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getIpv4Address().getValue());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv4Dst.class, true);
-        Assert.assertEquals("wrong Ipv4Adress destination", "10.1.1.1",
+        assertEquals("wrong Ipv4Adress destination", "10.1.1.1",
                 ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getIpv4Address().getValue());
     }
 
@@ -401,14 +403,14 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, UdpSrc.class, false);
-        Assert.assertEquals("Wrong udp src", 11, ((UdpSrcCase) entry.getMatchEntryValue()).getUdpSrc()
+        assertEquals("Wrong udp src", 11, ((UdpSrcCase) entry.getMatchEntryValue()).getUdpSrc()
                 .getPort().getValue().intValue());
         entry = entries.get(1);
         checkEntryHeader(entry, UdpDst.class, false);
-        Assert.assertEquals("Wrong udp dst", 12, ((UdpDstCase) entry.getMatchEntryValue())
+        assertEquals("Wrong udp dst", 12, ((UdpDstCase) entry.getMatchEntryValue())
                 .getUdpDst().getPort().getValue().intValue());
     }
 
@@ -424,14 +426,14 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv4Src.class, false);
-        Assert.assertEquals("Wrong ipv4 tunnel src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
+        assertEquals("Wrong ipv4 tunnel src", "10.0.0.1", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
                 .getIpv4Address().getValue());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv4Dst.class, false);
-        Assert.assertEquals("Wrong ipv4 tunnel dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst()
+        assertEquals("Wrong ipv4 tunnel dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst()
                 .getIpv4Address().getValue());
     }
 
@@ -447,14 +449,14 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, SctpSrc.class, false);
-        Assert.assertEquals("Wrong sctp src", 11, ((SctpSrcCase) entry.getMatchEntryValue()).getSctpSrc()
+        assertEquals("Wrong sctp src", 11, ((SctpSrcCase) entry.getMatchEntryValue()).getSctpSrc()
                 .getPort().getValue().intValue());
         entry = entries.get(1);
         checkEntryHeader(entry, SctpDst.class, false);
-        Assert.assertEquals("Wrong sctp dst", 12, ((SctpDstCase) entry.getMatchEntryValue())
+        assertEquals("Wrong sctp dst", 12, ((SctpDstCase) entry.getMatchEntryValue())
                 .getSctpDst().getPort().getValue().intValue());
     }
 
@@ -478,26 +480,26 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 5, entries.size());
+        assertEquals("Wrong entries size", 5, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, ArpOp.class, false);
-        Assert.assertEquals("Wrong arp op", 5, ((ArpOpCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp op", 5, ((ArpOpCase) entry.getMatchEntryValue())
                 .getArpOp().getOpCode().intValue());
         entry = entries.get(1);
         checkEntryHeader(entry, ArpSpa.class, false);
-        Assert.assertEquals("Wrong arp spa", "10.0.0.3", ((ArpSpaCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp spa", "10.0.0.3", ((ArpSpaCase) entry.getMatchEntryValue())
                 .getArpSpa().getIpv4Address().getValue());
         entry = entries.get(2);
         checkEntryHeader(entry, ArpTpa.class, false);
-        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", ((ArpTpaCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp tpa", "10.0.0.4", ((ArpTpaCase) entry.getMatchEntryValue())
                 .getArpTpa().getIpv4Address().getValue());
         entry = entries.get(3);
         checkEntryHeader(entry, ArpSha.class, false);
-        Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:05", ((ArpShaCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp sha", "00:00:00:00:00:05", ((ArpShaCase) entry.getMatchEntryValue())
                 .getArpSha().getMacAddress().getValue());
         entry = entries.get(4);
         checkEntryHeader(entry, ArpTha.class, false);
-        Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:06", ((ArpThaCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp tha", "00:00:00:00:00:06", ((ArpThaCase) entry.getMatchEntryValue())
                 .getArpTha().getMacAddress().getValue());
     }
 
@@ -523,31 +525,31 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 4, entries.size());
+        assertEquals("Wrong entries size", 4, entries.size());
         MatchEntry entry = entries.get(0);
         entry = entries.get(0);
         checkEntryHeader(entry, ArpSpa.class, true);
-        Assert.assertEquals("Wrong arp spa", "10.0.0.0", ((ArpSpaCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp spa", "10.0.0.0", ((ArpSpaCase) entry.getMatchEntryValue())
                 .getArpSpa().getIpv4Address().getValue());
-        Assert.assertArrayEquals("Wrong arp spa mask", new byte[]{(byte) 255, 0, 0, 0},
+        assertArrayEquals("Wrong arp spa mask", new byte[]{(byte) 255, 0, 0, 0},
                 ((ArpSpaCase) entry.getMatchEntryValue()).getArpSpa().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, ArpTpa.class, true);
-        Assert.assertEquals("Wrong arp tpa", "10.0.0.4", ((ArpTpaCase) entry.getMatchEntryValue()).getArpTpa()
+        assertEquals("Wrong arp tpa", "10.0.0.4", ((ArpTpaCase) entry.getMatchEntryValue()).getArpTpa()
                 .getIpv4Address().getValue());
-        Assert.assertArrayEquals("Wrong arp tpa mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 254},
+        assertArrayEquals("Wrong arp tpa mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 254},
                 ((ArpTpaCase) entry.getMatchEntryValue()).getArpTpa().getMask());
         entry = entries.get(2);
         checkEntryHeader(entry, ArpSha.class, true);
-        Assert.assertEquals("Wrong arp sha", "00:00:00:00:00:05", ((ArpShaCase) entry.getMatchEntryValue())
+        assertEquals("Wrong arp sha", "00:00:00:00:00:05", ((ArpShaCase) entry.getMatchEntryValue())
                 .getArpSha().getMacAddress().getValue());
-        Assert.assertArrayEquals("Wrong arp sha mask", new byte[]{0, 0, 0, 0, 0, 8},
+        assertArrayEquals("Wrong arp sha mask", new byte[]{0, 0, 0, 0, 0, 8},
                 ((ArpShaCase) entry.getMatchEntryValue()).getArpSha().getMask());
         entry = entries.get(3);
         checkEntryHeader(entry, ArpTha.class, true);
-        Assert.assertEquals("Wrong arp tha", "00:00:00:00:00:06", ((ArpThaCase) entry.getMatchEntryValue()).getArpTha()
+        assertEquals("Wrong arp tha", "00:00:00:00:00:06", ((ArpThaCase) entry.getMatchEntryValue()).getArpTha()
                 .getMacAddress().getValue());
-        Assert.assertArrayEquals("Wrong arp tha mask", new byte[]{0, 0, 0, 0, 0, 9},
+        assertArrayEquals("Wrong arp tha mask", new byte[]{0, 0, 0, 0, 0, 9},
                 ((ArpThaCase) entry.getMatchEntryValue()).getArpTha().getMask());
     }
 
@@ -573,37 +575,37 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 7, entries.size());
+        assertEquals("Wrong entries size", 7, entries.size());
         MatchEntry entry = entries.get(0);
         /* Due to conversion ambiguities, we always get "has mask" because
          * an ip with no mask and prefix with /128 (or 32 in v4) cannot
          * be distinguished */
         checkEntryHeader(entry, Ipv6Src.class, false);
-        Assert.assertEquals("Wrong ipv6 src", "::1",
+        assertEquals("Wrong ipv6 src", "::1",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv6Dst.class, false);
-        Assert.assertEquals("Wrong ipv6 dst", "::2",
+        assertEquals("Wrong ipv6 dst", "::2",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
         entry = entries.get(2);
         checkEntryHeader(entry, Ipv6Flabel.class, false);
-        Assert.assertEquals("Wrong ipv6 flabel", 3,
+        assertEquals("Wrong ipv6 flabel", 3,
                 ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel().getIpv6Flabel().getValue().intValue());
         entry = entries.get(3);
         checkEntryHeader(entry, Ipv6NdTarget.class, false);
-        Assert.assertEquals("Wrong ipv6 nd target", "::4",
+        assertEquals("Wrong ipv6 nd target", "::4",
                 ((Ipv6NdTargetCase) entry.getMatchEntryValue()).getIpv6NdTarget().getIpv6Address().getValue());
         entry = entries.get(4);
         checkEntryHeader(entry, Ipv6NdSll.class, false);
-        Assert.assertEquals("Wrong ipv6 nd sll", "00:00:00:00:00:05",
+        assertEquals("Wrong ipv6 nd sll", "00:00:00:00:00:05",
                 ((Ipv6NdSllCase) entry.getMatchEntryValue()).getIpv6NdSll().getMacAddress().getValue());
         entry = entries.get(5);
         checkEntryHeader(entry, Ipv6NdTll.class, false);
-        Assert.assertEquals("Wrong ipv6 nd tll", "00:00:00:00:00:06",
+        assertEquals("Wrong ipv6 nd tll", "00:00:00:00:00:06",
                 ((Ipv6NdTllCase) entry.getMatchEntryValue()).getIpv6NdTll().getMacAddress().getValue());
         entry = entries.get(6);
         checkEntryHeader(entry, Ipv6Exthdr.class, false);
-        Assert.assertEquals("Wrong ipv6 ext hdr", new Ipv6ExthdrFlags(false, true, false, true, false,
+        assertEquals("Wrong ipv6 ext hdr", new Ipv6ExthdrFlags(false, true, false, true, false,
             true, false, true, false), ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());
     }
 
@@ -619,18 +621,18 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, true);
-        Assert.assertEquals("Wrong ipv6 src", "::",
+        assertEquals("Wrong ipv6 src", "::",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
-        Assert.assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0,
+        assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0}, ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv6Dst.class, true);
-        Assert.assertEquals("Wrong ipv6 dst", "::",
+        assertEquals("Wrong ipv6 dst", "::",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
-        Assert.assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 255,
+        assertArrayEquals("Wrong ipv6 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, (byte) 255,
             (byte) 255, (byte) 255, (byte) 255, (byte) 255, 0, 0, 0, 0, 0, 0, 0, 0},
             ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getMask());
     }
@@ -650,12 +652,12 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 1, entries.size());
+        assertEquals("Wrong entries size", 1, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Exthdr.class, true);
-        Assert.assertEquals("Wrong ipv6 ext hdr", new Ipv6ExthdrFlags(true, false, true, false, true, false,
+        assertEquals("Wrong ipv6 ext hdr", new Ipv6ExthdrFlags(true, false, true, false, true, false,
                 true, false, true), ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getPseudoField());
-        Assert.assertArrayEquals("Wrong ipv6 ext hdr mask", new byte[]{1, 2},
+        assertArrayEquals("Wrong ipv6 ext hdr mask", new byte[]{1, 2},
                 ((Ipv6ExthdrCase) entry.getMatchEntryValue()).getIpv6Exthdr().getMask());
     }
 
@@ -701,56 +703,55 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 8, entries.size());
+        assertEquals("Wrong entries size", 8, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Metadata.class, true);
-        Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
+        assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
                 ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMetadata());
-        Assert.assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 15},
+        assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 15},
                 ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMask());
         entry = entries.get(1);
         checkEntryHeader(entry, EthDst.class, true);
-        Assert.assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:06"),
+        assertEquals("Wrong eth dst", new MacAddress("00:00:00:00:00:06"),
                 ((EthDstCase) entry.getMatchEntryValue()).getEthDst().getMacAddress());
-        Assert.assertArrayEquals("Wrong eth dst mask", new byte[]{0, 0, 0, 0, 0, 9},
+        assertArrayEquals("Wrong eth dst mask", new byte[]{0, 0, 0, 0, 0, 9},
                 ((EthDstCase) entry.getMatchEntryValue()).getEthDst().getMask());
         entry = entries.get(2);
         checkEntryHeader(entry, EthSrc.class, true);
-        Assert.assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:05"),
+        assertEquals("Wrong eth src", new MacAddress("00:00:00:00:00:05"),
                 ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc().getMacAddress());
-        Assert.assertArrayEquals("Wrong eth src mask", new byte[]{0, 0, 0, 0, 0, 8},
+        assertArrayEquals("Wrong eth src mask", new byte[]{0, 0, 0, 0, 0, 8},
                 ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc().getMask());
         entry = entries.get(3);
         checkEntryHeader(entry, VlanVid.class, true);
-        Assert.assertEquals("Wrong vlan id", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
+        assertEquals("Wrong vlan id", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .getVlanVid().intValue());
-        Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
-                .isCfiBit());
-        Assert.assertArrayEquals("Wrong vlanId mask", new byte[]{16, 0},
+        assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getCfiBit());
+        assertArrayEquals("Wrong vlanId mask", new byte[]{16, 0},
                 ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getMask());
         entry = entries.get(4);
         checkEntryHeader(entry, Ipv4Src.class, true);
-        Assert.assertEquals("Wrong ipv4 src", "10.0.0.0", ((Ipv4SrcCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ipv4 src", "10.0.0.0", ((Ipv4SrcCase) entry.getMatchEntryValue())
                 .getIpv4Src().getIpv4Address().getValue());
-        Assert.assertArrayEquals("Wrong ipv4 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0},
+        assertArrayEquals("Wrong ipv4 src mask", new byte[]{(byte) 255, (byte) 255, (byte) 255, 0},
                 ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src().getMask());
         entry = entries.get(5);
         checkEntryHeader(entry, Ipv4Dst.class, true);
-        Assert.assertEquals("Wrong ipv4 dst", "10.0.0.0", ((Ipv4DstCase) entry.getMatchEntryValue())
+        assertEquals("Wrong ipv4 dst", "10.0.0.0", ((Ipv4DstCase) entry.getMatchEntryValue())
                 .getIpv4Dst().getIpv4Address().getValue());
-        Assert.assertArrayEquals("Wrong ipv4 dst mask", new byte[]{(byte) 255, 0, 0, 0},
+        assertArrayEquals("Wrong ipv4 dst mask", new byte[]{(byte) 255, 0, 0, 0},
                 ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst().getMask());
         entry = entries.get(6);
         checkEntryHeader(entry, PbbIsid.class, true);
-        Assert.assertEquals("Wrong pbb isid", 20, ((PbbIsidCase) entry.getMatchEntryValue())
+        assertEquals("Wrong pbb isid", 20, ((PbbIsidCase) entry.getMatchEntryValue())
                 .getPbbIsid().getIsid().intValue());
-        Assert.assertArrayEquals("Wrong pbb isid mask", new byte[]{0, 0, 8},
+        assertArrayEquals("Wrong pbb isid mask", new byte[]{0, 0, 8},
                 ((PbbIsidCase) entry.getMatchEntryValue()).getPbbIsid().getMask());
         entry = entries.get(7);
         checkEntryHeader(entry, TunnelId.class, true);
-        Assert.assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},
+        assertArrayEquals("Wrong tunnel id", new byte[]{0, 0, 0, 0, 0, 0, 0, 21},
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
-        Assert.assertArrayEquals("Wrong tunnel id mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 14},
+        assertArrayEquals("Wrong tunnel id mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 14},
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getMask());
     }
 
@@ -773,15 +774,15 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 2, entries.size());
+        assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.class, true);
-        Assert.assertEquals("wrong Ipv6Adress source", "fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0",
+        assertEquals("wrong Ipv6Adress source", "fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
         entry = entries.get(1);
         checkEntryHeader(entry, Ipv6Dst.class, true);
-        Assert.assertEquals("wrong Ipv6Adress destination", "fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0",
+        assertEquals("wrong Ipv6Adress destination", "fbA0:FFB6:FFF0:FFF0:FFF0:FFF0:FFF0:AFF0",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
     }
 
@@ -794,10 +795,10 @@ public class MatchConvertorTest {
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         List<MatchEntry> entries = entriesOptional.get();
-        Assert.assertEquals("Wrong entries size", 1, entries.size());
+        assertEquals("Wrong entries size", 1, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, PacketType.class, false);
-        Assert.assertEquals("Wrong in port", 0x1894f,
+        assertEquals("Wrong in port", 0x1894f,
                 ((PacketTypeCase) entry.getMatchEntryValue()).getPacketType().getPacketType().longValue());
     }
 }

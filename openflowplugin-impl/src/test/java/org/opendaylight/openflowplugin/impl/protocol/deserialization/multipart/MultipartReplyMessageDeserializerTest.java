@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -61,6 +60,7 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
 
     @Override
     protected void init() {
+        // No-op
     }
 
     @Test
@@ -82,11 +82,11 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
         buffer.writeShort(IDLE_TIMEOUT);
         buffer.writeShort(HARD_TIMEOUT);
         buffer.writeShort(ByteBufUtils.fillBitMask(0,
-                FLAGS.isSENDFLOWREM(),
-                FLAGS.isCHECKOVERLAP(),
-                FLAGS.isRESETCOUNTS(),
-                FLAGS.isNOPKTCOUNTS(),
-                FLAGS.isNOBYTCOUNTS()));
+                FLAGS.getSENDFLOWREM(),
+                FLAGS.getCHECKOVERLAP(),
+                FLAGS.getRESETCOUNTS(),
+                FLAGS.getNOPKTCOUNTS(),
+                FLAGS.getNOBYTCOUNTS()));
         buffer.writeZero(PADDING_IN_FLOW_STATS_HEADER_02);
         buffer.writeLong(COOKIE);
         buffer.writeLong(PACKET_COUNT);

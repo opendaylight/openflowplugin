@@ -554,7 +554,7 @@ public class MatchResponseConvertor2Test {
                 builtMatch.getEthernetMatch().getEthernetType().getType().getValue().intValue());
         Assert.assertEquals("Wrong vlan id", 4,
                 builtMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
-        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
+        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().getVlanIdPresent());
         Assert.assertEquals("Wrong vlan pcp", 5, builtMatch.getVlanMatch().getVlanPcp().getValue().intValue());
         Assert.assertEquals("Wrong ip dscp", 6, builtMatch.getIpMatch().getIpDscp().getValue().intValue());
         Assert.assertEquals("Wrong ip ecn", 7, builtMatch.getIpMatch().getIpEcn().intValue());
@@ -717,7 +717,7 @@ public class MatchResponseConvertor2Test {
                 builtMatch.getEthernetMatch().getEthernetSource().getMask());
         Assert.assertEquals("Wrong vlan id", 4,
                 builtMatch.getVlanMatch().getVlanId().getVlanId().getValue().intValue());
-        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().isVlanIdPresent());
+        Assert.assertEquals("Wrong vlan id entries", true, builtMatch.getVlanMatch().getVlanId().getVlanIdPresent());
         final Ipv4Match ipv4Match = (Ipv4Match) builtMatch.getLayer3Match();
         Assert.assertEquals("Wrong ipv4 src address", "10.0.0.0/24", ipv4Match.getIpv4Source().getValue());
         Assert.assertEquals("Wrong ipv4 dst address", "10.0.0.0/20", ipv4Match.getIpv4Destination().getValue());

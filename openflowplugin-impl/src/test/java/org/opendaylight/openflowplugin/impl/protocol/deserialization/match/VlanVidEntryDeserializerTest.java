@@ -25,11 +25,11 @@ public class VlanVidEntryDeserializerTest extends AbstractMatchEntryDeserializer
         final byte[] vlanMask = new byte[]{16, 0};
 
         writeHeader(in, false);
-        in.writeShort(vlanVid | (1 << 12));
+        in.writeShort(vlanVid | 1 << 12);
 
         VlanMatch vlanMatch = deserialize(in).getVlanMatch();
         assertEquals(vlanVid, vlanMatch.getVlanId().getVlanId().getValue().intValue());
-        assertTrue(vlanMatch.getVlanId().isVlanIdPresent());
+        assertTrue(vlanMatch.getVlanId().getVlanIdPresent());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
@@ -38,7 +38,7 @@ public class VlanVidEntryDeserializerTest extends AbstractMatchEntryDeserializer
 
         vlanMatch = deserialize(in).getVlanMatch();
         assertEquals(0, vlanMatch.getVlanId().getVlanId().getValue().intValue());
-        assertTrue(vlanMatch.getVlanId().isVlanIdPresent());
+        assertTrue(vlanMatch.getVlanId().getVlanIdPresent());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, false);
@@ -46,7 +46,7 @@ public class VlanVidEntryDeserializerTest extends AbstractMatchEntryDeserializer
 
         vlanMatch = deserialize(in).getVlanMatch();
         assertEquals(vlanVid, vlanMatch.getVlanId().getVlanId().getValue().intValue());
-        assertFalse(vlanMatch.getVlanId().isVlanIdPresent());
+        assertFalse(vlanMatch.getVlanId().getVlanIdPresent());
 
     }
 

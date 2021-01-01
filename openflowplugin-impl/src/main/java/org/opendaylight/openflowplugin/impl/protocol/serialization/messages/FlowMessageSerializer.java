@@ -211,14 +211,12 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private static Optional<Instruction> updateInstruction(final Instruction instruction, final Uint8 protocol) {
         if (instruction instanceof ApplyActionsCase) {
-            return Optional
-                    .ofNullable(((ApplyActionsCase) instruction).getApplyActions())
+            // FIXME: get rid of this atrocity and just use null checks
+            return Optional.ofNullable(((ApplyActionsCase) instruction).getApplyActions())
                     .flatMap(aa -> Optional.ofNullable(aa.nonnullAction()))
                     .map(as -> new ApplyActionsCaseBuilder()
                             .setApplyActions(new ApplyActionsBuilder()
-                                    .setAction(as
-                                            .values()
-                                            .stream()
+                                    .setAction(as.values().stream()
                                             .filter(Objects::nonNull)
                                             .map(a -> updateSetTpActions(a, protocol))
                                             .collect(Collectors.toList()))
@@ -282,8 +280,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                     final int[] offset = {0};
 
                     return i.getInstruction() instanceof ApplyActionsCase
-                            ? Optional
-                            .ofNullable(((ApplyActionsCase) i.getInstruction()).getApplyActions())
+                            // FIXME: get rid of this atrocity and just use null checks
+                            ? Optional.ofNullable(((ApplyActionsCase) i.getInstruction()).getApplyActions())
                             .flatMap(as -> Optional.ofNullable(as.nonnullAction()))
                             .map(a -> a.values().stream()
                                     .sorted(OrderComparator.build())
@@ -342,11 +340,11 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private static int createFlowModFlagsBitmask(final FlowModFlags flags) {
         return ByteBufUtils.fillBitMask(0,
-                flags.isSENDFLOWREM(),
-                flags.isCHECKOVERLAP(),
-                flags.isRESETCOUNTS(),
-                flags.isNOPKTCOUNTS(),
-                flags.isNOBYTCOUNTS());
+                flags.getSENDFLOWREM(),
+                flags.getCHECKOVERLAP(),
+                flags.getRESETCOUNTS(),
+                flags.getNOPKTCOUNTS(),
+                flags.getNOBYTCOUNTS());
     }
 
     /**
@@ -356,8 +354,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return true if flow contains vlan match
      */
     private static boolean isVlanMatchPresent(final Flow flow) {
-        return Optional
-                .ofNullable(flow.getMatch())
+        // FIXME: get rid of this atrocity and just use null checks
+        return Optional.ofNullable(flow.getMatch())
                 .flatMap(m -> Optional.ofNullable(m.getVlanMatch()))
                 .isPresent();
     }
@@ -373,8 +371,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return true if flow contains SetVlanIdAction
      */
     private static boolean isSetVlanIdActionCasePresent(final Flow flow) {
-        return Optional
-                .ofNullable(flow.getInstructions())
+        // FIXME: get rid of this atrocity and just use null checks
+        return Optional.ofNullable(flow.getInstructions())
                 .flatMap(is -> Optional.ofNullable(is.nonnullInstruction()))
                 .flatMap(is -> is.values().stream()
                         .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types

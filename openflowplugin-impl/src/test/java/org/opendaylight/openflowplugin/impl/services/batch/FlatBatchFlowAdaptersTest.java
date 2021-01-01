@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -65,7 +66,7 @@ public class FlatBatchFlowAdaptersTest {
         final AddFlowsBatchInput addFlowsBatchInput = FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, NODE_REF);
         Iterator<BatchAddFlows> iterator = addFlowsBatchInput.nonnullBatchAddFlows().values().iterator();
 
-        Assert.assertTrue(addFlowsBatchInput.isBarrierAfter());
+        Assert.assertTrue(addFlowsBatchInput.getBarrierAfter());
         Assert.assertEquals(2, addFlowsBatchInput.getBatchAddFlows().size());
         Assert.assertEquals("1", iterator.next().getFlowId().getValue());
         Assert.assertEquals("2", iterator.next().getFlowId().getValue());
@@ -104,7 +105,7 @@ public class FlatBatchFlowAdaptersTest {
                 FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, NODE_REF);
         Iterator<BatchRemoveFlows> iterator = removeFlowsBatchInput.nonnullBatchRemoveFlows().values().iterator();
 
-        Assert.assertTrue(removeFlowsBatchInput.isBarrierAfter());
+        Assert.assertTrue(removeFlowsBatchInput.getBarrierAfter());
         Assert.assertEquals(2, removeFlowsBatchInput.getBatchRemoveFlows().size());
         Assert.assertEquals("1", iterator.next().getFlowId().getValue());
         Assert.assertEquals("2", iterator.next().getFlowId().getValue());
@@ -122,7 +123,7 @@ public class FlatBatchFlowAdaptersTest {
                 FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, NODE_REF);
         Iterator<BatchUpdateFlows> iterator = updateFlowsBatchInput.nonnullBatchUpdateFlows().values().iterator();
 
-        Assert.assertTrue(updateFlowsBatchInput.isBarrierAfter());
+        Assert.assertTrue(updateFlowsBatchInput.getBarrierAfter());
         Assert.assertEquals(2, updateFlowsBatchInput.getBatchUpdateFlows().size());
         Assert.assertEquals("1", iterator.next().getFlowId().getValue());
         Assert.assertEquals("2", iterator.next().getFlowId().getValue());
@@ -133,7 +134,7 @@ public class FlatBatchFlowAdaptersTest {
         final RpcResult<BatchFlowOutputListGrouping> input = RpcResultBuilder.<BatchFlowOutputListGrouping>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-flowError")
                 .withResult(new AddFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(Lists.newArrayList(
+                        .setBatchFailedFlowsOutput(BindingMap.ordered(
                                 createBatchFailedFlowsOutput(Uint16.ZERO, "f1"),
                                 createBatchFailedFlowsOutput(Uint16.ONE, "f2")
                         ))

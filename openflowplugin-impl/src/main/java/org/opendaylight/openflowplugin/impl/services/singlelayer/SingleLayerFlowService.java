@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -35,14 +34,11 @@ public final class SingleLayerFlowService<O extends DataObject> extends Abstract
         final FlowMessageBuilder flowMessageBuilder = new FlowMessageBuilder(input);
         final Class<? extends DataContainer> clazz = input.implementedInterface();
 
-        if (clazz.equals(AddFlowInput.class)
-                || clazz.equals(UpdatedFlow.class)) {
+        if (clazz.equals(AddFlowInput.class) || clazz.equals(UpdatedFlow.class)) {
             flowMessageBuilder.setCommand(FlowModCommand.OFPFCADD);
-        } else if (clazz.equals(RemoveFlowInput.class)
-                || clazz.equals(OriginalFlow.class)) {
-            flowMessageBuilder.setCommand(Boolean.TRUE.equals(input.isStrict())
-                    ? FlowModCommand.OFPFCDELETESTRICT
-                    : FlowModCommand.OFPFCDELETE);
+        } else if (clazz.equals(RemoveFlowInput.class) || clazz.equals(OriginalFlow.class)) {
+            flowMessageBuilder.setCommand(
+                Boolean.TRUE.equals(input.getStrict()) ? FlowModCommand.OFPFCDELETESTRICT : FlowModCommand.OFPFCDELETE);
         }
 
         return flowMessageBuilder

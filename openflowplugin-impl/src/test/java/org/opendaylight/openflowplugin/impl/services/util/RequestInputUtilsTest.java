@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.util;
 
 import static org.junit.Assert.assertEquals;
@@ -31,6 +30,6 @@ public class RequestInputUtilsTest {
         assertEquals(version, input.getVersion().toJava());
         assertEquals(xid, input.getXid());
         assertEquals(type, input.getType());
-        assertFalse(input.getFlags().isOFPMPFREQMORE());
+        assertFalse(input.getFlags().getOFPMPFREQMORE());
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
@@ -76,7 +75,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
         for (MeterBandHeader meterBandHeader : meterBandHeaders.nonnullMeterBandHeader().values()) {
             // The band types :drop,DSCP_Remark or experimenter.
             if (null != meterBandHeader.getMeterBandTypes() && null != meterBandHeader.getMeterBandTypes().getFlags()) {
-                if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDrop()) {
+                if (meterBandHeader.getMeterBandTypes().getFlags().getOfpmbtDrop()) {
                     if (meterBandHeader.getBandType() != null) {
                         MeterBandDropBuilder meterBandDropBuilder = new MeterBandDropBuilder();
                         meterBandDropBuilder.setType(MeterBandType.OFPMBTDROP);
@@ -93,7 +92,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                     } else {
                         logBandTypeMissing(MeterBandType.OFPMBTDROP);
                     }
-                } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtDscpRemark()) {
+                } else if (meterBandHeader.getMeterBandTypes().getFlags().getOfpmbtDscpRemark()) {
                     if (meterBandHeader.getBandType() != null) {
                         MeterBandDscpRemarkBuilder meterBandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
                         meterBandDscpRemarkBuilder.setType(MeterBandType.OFPMBTDSCPREMARK);
@@ -111,7 +110,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
                     } else {
                         logBandTypeMissing(MeterBandType.OFPMBTDSCPREMARK);
                     }
-                } else if (meterBandHeader.getMeterBandTypes().getFlags().isOfpmbtExperimenter()) {
+                } else if (meterBandHeader.getMeterBandTypes().getFlags().getOfpmbtExperimenter()) {
                     if (meterBandHeader.getBandType() != null) {
                         MeterBandExperimenterBuilder meterBandExperimenterBuilder = new MeterBandExperimenterBuilder();
                         meterBandExperimenterBuilder.setType(MeterBandType.OFPMBTEXPERIMENTER);
@@ -164,12 +163,8 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
         }
 
         meterModInputBuilder.setMeterId(new MeterId(source.getMeterId().getValue()));
-
-        if (null != source.getFlags()) {
-            meterModInputBuilder.setFlags(new MeterFlags(source.getFlags().isMeterBurst(), source.getFlags()
-                    .isMeterKbps(), source.getFlags().isMeterPktps(), source.getFlags().isMeterStats()));
-        } else {
-
+        final var sourceFlags = source.getFlags();
+        if (sourceFlags == null) {
             /*
              * As per 0F1.3.1,The rate field indicates the rate value above
              * which the corresponding band may apply to packets (see 5.7.1).
@@ -177,8 +172,10 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
              * includes OFPMF_PKTPS, in which case the rate is in packets per
              * seconds.
              */
-
             meterModInputBuilder.setFlags(new MeterFlags(false, false, true, false));
+        } else {
+            meterModInputBuilder.setFlags(new MeterFlags(sourceFlags.getMeterBurst(), sourceFlags.getMeterKbps(),
+                sourceFlags.getMeterPktps(), sourceFlags.getMeterStats()));
         }
 
         if (source.getMeterBandHeaders() != null) {
