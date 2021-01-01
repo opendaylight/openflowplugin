@@ -11,6 +11,7 @@ import static org.opendaylight.openflowplugin.applications.topology.lldp.utils.L
 
 import com.google.common.base.Strings;
 import java.math.BigInteger;
+import java.util.regex.Pattern;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.libraries.liblldp.EtherTypes;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
@@ -22,24 +23,20 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.common.Uint32;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility class for dealing with LLDP packets.
  */
 public final class LLDPUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(LLDPUtil.class);
-
+    private static final Pattern COLONIZE_REGEX = Pattern.compile("(?<=..)(..)");
     private static final String OF_URI_PREFIX = "openflow:";
 
     private LLDPUtil() {
+        // Hidden on purpose
     }
 
-    @NonNull
-    static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId, final MacAddress src,
-            final Uint32 outPortNo, final MacAddress destinationAddress)
-                    throws PacketException {
+    static byte @NonNull [] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
+            final MacAddress src, final Uint32 outPortNo, final MacAddress destinationAddress) throws PacketException {
         // Create discovery pkt
         LLDP discoveryPkt = new LLDP();
 
@@ -102,14 +99,13 @@ public final class LLDPUtil {
         return ethPkt.serialize();
     }
 
-    @NonNull
-    static byte[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
+    static byte @NonNull[] buildLldpFrame(final NodeId nodeId, final NodeConnectorId nodeConnectorId,
             final MacAddress srcMacAddress, final Uint32 outputPortNo) throws PacketException {
         return buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, null);
     }
 
     private static String colonize(final String orig) {
-        return orig.replaceAll("(?<=..)(..)", ":$1");
+        return COLONIZE_REGEX.matcher(orig).replaceAll(":$1");
     }
 
     private static BigInteger dataPathIdFromNodeId(final NodeId nodeId) {
