@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +15,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -102,7 +102,7 @@ public abstract class ServiceMocking {
     public void initialization() {
         lenient().when(mockedExtensionConverter.getExperimenterId())
                 .thenReturn(new ExperimenterId(DUMMY_EXPERIMENTER_ID));
-        lenient().when(mockedExtensionConverterProvider.getMessageConverter(Matchers.<TypeVersionKey>any()))
+        lenient().when(mockedExtensionConverterProvider.getMessageConverter(any(TypeVersionKey.class)))
                 .thenReturn(mockedExtensionConverter);
         lenient().when(mockedRequestContextStack.createRequestContext()).thenReturn(mockedRequestContext);
         lenient().when(mockedRequestContext.getXid()).thenReturn(DUMMY_XID);
@@ -128,7 +128,7 @@ public abstract class ServiceMocking {
                 .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION.toJava(), dataBroker, DUMMY_NODE_II));
         lenient().when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
-        lenient().when(mockedDeviceContext.getMultiMsgCollector(Matchers.any())).thenReturn(multiMessageCollector);
+        lenient().when(mockedDeviceContext.getMultiMsgCollector(any())).thenReturn(multiMessageCollector);
 
         setup();
     }
