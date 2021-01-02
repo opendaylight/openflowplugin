@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.deserializer;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
@@ -30,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnfBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates BundleControl messages (OpenFlow v1.3 extension #230).
@@ -39,8 +41,8 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
     private DeserializerRegistry deserializerRegistry;
 
     @Override
-    public BundleControlOnf deserialize(ByteBuf message) {
-        BundleId bundleId = new BundleId(message.readUnsignedInt());
+    public BundleControlOnf deserialize(final ByteBuf message) {
+        BundleId bundleId = new BundleId(readUint32(message));
         BundleControlType type = BundleControlType.forValue(message.readUnsignedShort());
         BundleFlags flags = createBundleFlags(message.readUnsignedShort());
         OnfControlGroupingDataBuilder builder = new OnfControlGroupingDataBuilder();
@@ -76,15 +78,16 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
     private BundleProperty createExperimenterBundleProperty(final int length, final ByteBuf message) {
         Objects.requireNonNull(deserializerRegistry);
 
-        BundlePropertyExperimenterBuilder experimenterProperty = new BundlePropertyExperimenterBuilder();
-        long experimenterId = message.readUnsignedInt();
-        long expType = message.readUnsignedInt();
-        experimenterProperty.setExperimenter(new ExperimenterId(experimenterId));
-        experimenterProperty.setExpType(expType);
+        final Uint32 experimenterId = readUint32(message);
+        final Uint32 expType = readUint32(message);
+
+        final BundlePropertyExperimenterBuilder experimenterProperty = new BundlePropertyExperimenterBuilder()
+            .setExperimenter(new ExperimenterId(experimenterId))
+            .setExpType(expType);
 
         OFDeserializer<BundlePropertyExperimenterData> deserializer = deserializerRegistry.getDeserializer(
-                new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF13_VERSION_ID, experimenterId, expType,
-                        BundlePropertyExperimenterData.class));
+            new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF13_VERSION_ID, experimenterId.toJava(),
+                expType.toJava(), BundlePropertyExperimenterData.class));
         experimenterProperty.setBundlePropertyExperimenterData(
                 deserializer.deserialize(message.readBytes(length - 12)));
 
@@ -94,7 +97,7 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry registry) {
         this.deserializerRegistry = registry;
     }
 
