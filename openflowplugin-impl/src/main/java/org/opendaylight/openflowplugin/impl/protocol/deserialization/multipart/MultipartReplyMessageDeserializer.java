@@ -38,7 +38,7 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
                         type, MultipartReplyBody.class));
 
         return new MultipartReplyBuilder()
-            .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setXid(xid)
             .setRequestMore(reqMore)
             .setMultipartReplyBody(deserializer.deserialize(message))
