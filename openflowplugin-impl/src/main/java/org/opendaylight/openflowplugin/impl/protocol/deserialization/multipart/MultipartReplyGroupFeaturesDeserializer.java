@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectLiveness;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.SelectWeight;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
-import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<MultipartReplyBody> {
-
     private static final int GROUP_TYPES = 4;
 
     @Override
@@ -38,14 +38,12 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
         return builder
             .setGroupTypesSupported(readGroupTypes(message))
             .setGroupCapabilitiesSupported(readGroupCapabilities(message))
-            .setMaxGroups(IntStream
-                    .range(0, GROUP_TYPES)
-                    .mapToObj(i -> Uint32.valueOf(message.readUnsignedInt()))
-                    .collect(Collectors.toList()))
-            .setActions(IntStream
-                    .range(0, GROUP_TYPES)
-                    .mapToObj(i -> Uint32.valueOf(message.readUnsignedInt()))
-                    .collect(Collectors.toList()))
+            .setMaxGroups(IntStream.range(0, GROUP_TYPES)
+                .mapToObj(i -> readUint32(message))
+                .collect(Collectors.toList()))
+            .setActions(IntStream.range(0, GROUP_TYPES)
+                .mapToObj(i -> readUint32(message))
+                .collect(Collectors.toList()))
             .build();
     }
 
@@ -98,5 +96,4 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
 
         return groupTypes;
     }
-
 }

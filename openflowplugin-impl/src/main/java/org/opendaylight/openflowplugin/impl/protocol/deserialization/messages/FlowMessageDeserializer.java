@@ -51,7 +51,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
     @Override
     @SuppressWarnings("checkstyle:LineLength")
-    public FlowMessage deserialize(ByteBuf message) {
+    public FlowMessage deserialize(final ByteBuf message) {
         final FlowMessageBuilder builder = new FlowMessageBuilder()
             .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setXid(readUint32(message))
@@ -63,7 +63,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
             .setHardTimeout(readUint16(message))
             .setPriority(readUint16(message))
             .setBufferId(readUint32(message))
-            .setOutPort(BigInteger.valueOf(message.readUnsignedInt()))
+            .setOutPort(readUint32(message).toUint64())
             .setOutGroup(readUint32(message))
             .setFlags(createFlowModFlagsFromBitmap(message.readUnsignedShort()));
 
@@ -125,7 +125,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
         return builder.build();
     }
 
-    private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
+    private static FlowModFlags createFlowModFlagsFromBitmap(final int input) {
         final Boolean ofp_FF_SendFlowRem = (input & 1 << 0) != 0;
         final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) != 0;
         final Boolean ofp_FF_ResetCounts = (input & 1 << 2) != 0;
@@ -136,7 +136,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 

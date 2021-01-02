@@ -298,7 +298,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         int nextTableLength = length;
 
         while (nextTableLength > 0) {
-            tableIds.add(Uint8.valueOf(message.readUnsignedByte()));
+            tableIds.add(readUint8(message));
             nextTableLength -= 1;
         }
 

@@ -32,7 +32,7 @@ public class OnfExperimenterErrorFactory implements OFDeserializer<ErrorMessage>
     public ErrorMessage deserialize(ByteBuf message) {
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
         builder.setVersion(EncodeConstants.OF_VERSION_1_3);
-        builder.setXid(message.readUnsignedInt());
+        builder.setXid(readUint32(message));
 
         int type = message.readUnsignedShort();
         ErrorType errorType = ErrorType.forValue(type);
