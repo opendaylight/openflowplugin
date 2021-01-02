@@ -5,12 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -43,30 +45,22 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
     @Override
     public PacketInMessage deserialize(final ByteBuf message) {
         final PacketInMessageBuilder packetInMessageBuilder = new PacketInMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3)
-                .setXid(message.readUnsignedInt());
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
+            .setXid(readUint32(message));
 
         // We are ignoring buffer id and total len as it is not specified in OpenFlowPlugin models
         message.readUnsignedInt();
         message.readUnsignedShort();
 
         packetInMessageBuilder
-                .setPacketInReason(PacketInUtil
-                        .getMdSalPacketInReason(PacketInReason
-                                .forValue(message.readUnsignedByte())))
-                .setTableId(new TableId(message.readUnsignedByte()));
+            .setPacketInReason(PacketInUtil.getMdSalPacketInReason(PacketInReason.forValue(message.readUnsignedByte())))
+            .setTableId(new TableId(readUint8(message)))
+            .setFlowCookie(new FlowCookie(readUint64(message)));
 
-        final byte[] cookie = new byte[Long.BYTES];
-        message.readBytes(cookie);
-
-        packetInMessageBuilder
-                .setFlowCookie(new FlowCookie(new BigInteger(1, cookie)));
-
-        final OFDeserializer<Match> matchDeserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = requireNonNull(registry).getDeserializer(MATCH_KEY);
 
         packetInMessageBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(message),
-                org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
-                        .Match.class));
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message.Match.class));
 
         message.skipBytes(PADDING_IN_PACKET_IN_HEADER);
         final byte[] data = new byte[message.readableBytes()];
