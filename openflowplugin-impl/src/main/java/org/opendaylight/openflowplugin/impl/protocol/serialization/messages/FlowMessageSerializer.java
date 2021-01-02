@@ -7,14 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -24,7 +27,6 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.InstructionUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
@@ -48,6 +50,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
@@ -55,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -75,7 +79,6 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private static final Uint32 DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
     private static final Uint64 DEFAULT_OUT_PORT = Uint64.valueOf(OFConstants.OFPP_ANY);
     private static final Uint32 DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
-    private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final FlowModFlags DEFAULT_FLAGS = new FlowModFlags(false, false, false, false, false);
     private static final Uint16 PUSH_VLAN = Uint16.valueOf(0x8100);
     private static final Integer PUSH_TAG = PUSH_VLAN.toJava();
@@ -116,19 +119,19 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private void writeFlow(final FlowMessage message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue()
-                .longValue());
-        outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID).toJava());
+        // FIXME: use Uint/ByteBuf utilities to skip toJava()/longValue()/intValue()
+        outBuffer.writeLong(requireNonNullElse(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
+        outBuffer.writeLong(requireNonNullElse(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue().longValue());
+        outBuffer.writeByte(requireNonNullElse(message.getTableId(), DEFAULT_TABLE_ID).toJava());
         outBuffer.writeByte(message.getCommand().getIntValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT).toJava());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT).toJava());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getPriority(), DEFAULT_PRIORITY).toJava());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
-        outBuffer.writeShort(createFlowModFlagsBitmask(MoreObjects.firstNonNull(message.getFlags(), DEFAULT_FLAGS)));
-        outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
+        outBuffer.writeShort(requireNonNullElse(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT).toJava());
+        outBuffer.writeShort(requireNonNullElse(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT).toJava());
+        outBuffer.writeShort(requireNonNullElse(message.getPriority(), DEFAULT_PRIORITY).toJava());
+        outBuffer.writeInt(requireNonNullElse(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
+        outBuffer.writeInt(requireNonNullElse(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
+        outBuffer.writeInt(requireNonNullElse(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
+        outBuffer.writeShort(createFlowModFlagsBitmask(requireNonNullElse(message.getFlags(), DEFAULT_FLAGS)));
+        outBuffer.writeShort(0);
         writeMatch(message, outBuffer);
         writeInstructions(message, outBuffer);
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
@@ -142,24 +145,13 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeVlanFlow(final FlowMessage message, final ByteBuf outBuffer) {
-        writeFlow(
-                new FlowMessageBuilder(message)
-                        .setMatch(new MatchBuilder(message.getMatch())
-                                .setVlanMatch(VLAN_MATCH_FALSE)
-                                .build())
-                        .setInstructions(new InstructionsBuilder()
-                                .setInstruction(updateSetVlanIdAction(message))
-                                .build())
-                        .build(),
-                outBuffer);
-
-        writeFlow(
-                new FlowMessageBuilder(message)
-                        .setMatch(new MatchBuilder(message.getMatch())
-                                .setVlanMatch(VLAN_MATCH_TRUE)
-                                .build())
-                        .build(),
-                outBuffer);
+        writeFlow(new FlowMessageBuilder(message)
+            .setMatch(new MatchBuilder(message.getMatch()).setVlanMatch(VLAN_MATCH_FALSE).build())
+            .setInstructions(new InstructionsBuilder().setInstruction(updateSetVlanIdAction(message)).build())
+            .build(), outBuffer);
+        writeFlow(new FlowMessageBuilder(message)
+            .setMatch(new MatchBuilder(message.getMatch()).setVlanMatch(VLAN_MATCH_TRUE).build())
+            .build(), outBuffer);
     }
 
     /**
@@ -169,10 +161,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
-        Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
+        requireNonNull(registry).<Match, OFSerializer<Match>>getSerializer(
                 new MessageTypeKey<>(message.getVersion().toJava(), Match.class)).serialize(message.getMatch(),
                     outBuffer);
-
     }
 
     /**
@@ -182,24 +173,40 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeInstructions(final FlowMessage message, final ByteBuf outBuffer) {
-        // Try to get IP protocol from IP match
-        final Optional<Uint8> protocol = Optional
-                .ofNullable(message.getMatch())
-                .flatMap(m -> Optional.ofNullable(m.getIpMatch()))
-                .flatMap(ipm -> Optional.ofNullable(ipm.getIpProtocol()));
+        final var instructions = message.getInstructions();
+        if (instructions == null) {
+            // Nothing to do
+            return;
+        }
 
-        // Update instructions if needed and then serialize all instructions
-        Optional.ofNullable(message.getInstructions())
-                .flatMap(is -> Optional.ofNullable(is.nonnullInstruction()))
-                .ifPresent(is -> is.values().stream()
-                        .filter(Objects::nonNull)
-                        .sorted(OrderComparator.build())
-                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
-                                .rev131026.Instruction::getInstruction)
-                        .filter(Objects::nonNull)
-                        .map(i -> protocol.flatMap(p -> updateInstruction(i, p)).orElse(i))
-                        .forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry,
-                                outBuffer)));
+        // Extract all instructions ...
+        Stream<Instruction> flowInstructions = instructions.nonnullInstruction().values().stream()
+            .filter(Objects::nonNull)
+            .sorted(OrderComparator.build())
+            .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
+            .filter(Objects::nonNull);
+
+        // ... updated them if needed ...
+        final Uint8 protocol = extractProtocol(message);
+        if (protocol != null) {
+            flowInstructions = flowInstructions.map(insn -> updateInstruction(insn, protocol));
+        }
+
+        // ... and serialize them
+        flowInstructions.forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry,
+            outBuffer));
+    }
+
+    // Try to get IP protocol from IP match
+    private static @Nullable Uint8 extractProtocol(final FlowMessage message) {
+        final var match = message.getMatch();
+        if (match != null) {
+            final var ipMatch = match.getIpMatch();
+            if (ipMatch != null) {
+                return ipMatch.getIpProtocol();
+            }
+        }
+        return null;
     }
 
     /**
@@ -207,24 +214,23 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      *
      * @param instruction instruction
      * @param protocol    protocol
-     * @return updated instruction or empty
+     * @return updated or original instruction
      */
-    private static Optional<Instruction> updateInstruction(final Instruction instruction, final Uint8 protocol) {
+    private static Instruction updateInstruction(final Instruction instruction, final Uint8 protocol) {
         if (instruction instanceof ApplyActionsCase) {
-            // FIXME: get rid of this atrocity and just use null checks
-            return Optional.ofNullable(((ApplyActionsCase) instruction).getApplyActions())
-                    .flatMap(aa -> Optional.ofNullable(aa.nonnullAction()))
-                    .map(as -> new ApplyActionsCaseBuilder()
-                            .setApplyActions(new ApplyActionsBuilder()
-                                    .setAction(as.values().stream()
-                                            .filter(Objects::nonNull)
-                                            .map(a -> updateSetTpActions(a, protocol))
-                                            .collect(Collectors.toList()))
-                                    .build())
-                            .build());
+            final var actions = ((ApplyActionsCase) instruction).getApplyActions();
+            if (actions != null) {
+                return new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(actions.nonnullAction().values().stream()
+                            .filter(Objects::nonNull)
+                            .map(a -> updateSetTpActions(a, protocol))
+                            .collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                        .build())
+                    .build();
+            }
         }
-
-        return Optional.empty();
+        return instruction;
     }
 
     /**
@@ -272,63 +278,78 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param message OpenFlowPlugin flow mod message
      * @return list of instructions
      */
-    private static List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-            .Instruction> updateSetVlanIdAction(final FlowMessage message) {
+    private static Map<
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
+                updateSetVlanIdAction(final FlowMessage message) {
         return message.getInstructions().nonnullInstruction().values()
                 .stream()
-                .map(i -> {
-                    final int[] offset = {0};
+                .map(FlowMessageSerializer::updateSetVlanIdAction)
+                .collect(BindingMap.<
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
+                        toOrderedMap());
+    }
 
-                    return i.getInstruction() instanceof ApplyActionsCase
-                            // FIXME: get rid of this atrocity and just use null checks
-                            ? Optional.ofNullable(((ApplyActionsCase) i.getInstruction()).getApplyActions())
-                            .flatMap(as -> Optional.ofNullable(as.nonnullAction()))
-                            .map(a -> a.values().stream()
-                                    .sorted(OrderComparator.build())
-                                    .flatMap(action -> {
-                                        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-                                                .action.list.Action> actions = new ArrayList<>();
+    private static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
+            updateSetVlanIdAction(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
+                .list.Instruction insn) {
+        final Instruction instruction = insn.getInstruction();
+        if (instruction instanceof ApplyActionsCase) {
+            final ApplyActions actions = ((ApplyActionsCase) instruction).getApplyActions();
+            if (actions != null) {
+                final int[] offset = {0};
 
-                                        // If current action is SetVlanId, insert PushVlan action before it and
-                                        // update order
-                                        if (action.getAction() instanceof SetVlanIdActionCase) {
-                                            actions.add(new ActionBuilder()
-                                                    .setAction(new PushVlanActionCaseBuilder()
-                                                            .setPushVlanAction(new PushVlanActionBuilder()
-                                                                    .setCfi(PUSH_CFI)
-                                                                    .setVlanId(((SetVlanIdActionCase) action
-                                                                        .getAction()).getSetVlanIdAction()
-                                                                            .getVlanId())
-                                                                    .setEthernetType(PUSH_VLAN)
-                                                                    .setTag(PUSH_TAG)
-                                                                    .build())
-                                                            .build())
-                                                    .withKey(action.key())
-                                                    .setOrder(action.getOrder() + offset[0])
-                                                    .build());
+                return Optional.of(actions)
+                    .flatMap(as -> Optional.ofNullable(as.nonnullAction()))
+                    .map(a -> a.values().stream()
+                        .sorted(OrderComparator.build())
+                        .flatMap(action -> {
+                            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
+                            .action.list.Action> actionList = new ArrayList<>();
 
-                                            offset[0]++;
-                                        }
-
-                                        // Update offset of action if there is any inserted PushVlan actions
-                                        actions.add(offset[0] > 0
-                                                ? new ActionBuilder(action).setOrder(action.getOrder() + offset[0])
-                                                .withKey(new ActionKey(action.getOrder() + offset[0]))
-                                                .build()
-                                                : action);
-
-                                        return actions.stream();
-                                    }))
-                            .map(as -> new InstructionBuilder(i)
-                                    .setInstruction(new ApplyActionsCaseBuilder()
-                                            .setApplyActions(new ApplyActionsBuilder()
-                                                    .setAction(as.collect(Collectors.toList()))
-                                                    .build())
+                            // If current action is SetVlanId, insert PushVlan action before it and
+                            // update order
+                            if (action.getAction() instanceof SetVlanIdActionCase) {
+                                actionList.add(new ActionBuilder()
+                                    .setAction(new PushVlanActionCaseBuilder()
+                                        .setPushVlanAction(new PushVlanActionBuilder()
+                                            .setCfi(PUSH_CFI)
+                                            .setVlanId(((SetVlanIdActionCase) action
+                                                .getAction()).getSetVlanIdAction()
+                                                .getVlanId())
+                                            .setEthernetType(PUSH_VLAN)
+                                            .setTag(PUSH_TAG)
                                             .build())
-                                    .build())
-                            .orElse(i)
-                            : i;
-                }).collect(Collectors.toList());
+                                        .build())
+                                    .withKey(action.key())
+                                    .setOrder(action.getOrder() + offset[0])
+                                    .build());
+
+                                offset[0]++;
+                            }
+
+                            // Update offset of action if there is any inserted PushVlan actions
+                            actionList.add(offset[0] > 0
+                                ? new ActionBuilder(action).setOrder(action.getOrder() + offset[0])
+                                    .withKey(new ActionKey(action.getOrder() + offset[0]))
+                                    .build()
+                                    : action);
+
+                            return actionList.stream();
+                        }))
+                    .map(as -> new InstructionBuilder(insn)
+                        .setInstruction(new ApplyActionsCaseBuilder()
+                            .setApplyActions(new ApplyActionsBuilder()
+                                .setAction(as.collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                                .build())
+                            .build())
+                        .build())
+                    .orElse(insn);
+
+            }
+        }
+        return insn;
     }
 
     /**
@@ -375,9 +396,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
             .filter(ApplyActionsCase.class::isInstance)
             .map(i -> ((ApplyActionsCase) i).getApplyActions())
             .filter(Objects::nonNull)
-            .map(ActionList::nonnullAction)
-            .filter(Objects::nonNull)
-            .flatMap(map -> map.values().stream())
+            .flatMap(actionList -> actionList.nonnullAction().values().stream())
             .map(Action::getAction)
             .anyMatch(SetVlanIdActionCase.class::isInstance);
     }
