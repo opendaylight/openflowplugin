@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.desc._case.multipart.reply.port.desc.PortsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Converts port mod, port status and port description MD-SAL messages to OF library data.
@@ -52,10 +53,8 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
      * @param version Openflow version
      * @return default empty port mod input
      */
-    public static PortModInput defaultResult(final short version) {
-        return new PortModInputBuilder()
-                .setVersion(version)
-                .build();
+    public static PortModInput defaultResult(final Uint8 version) {
+        return new PortModInputBuilder().setVersion(version).build();
     }
 
     private static PortConfig maskPortConfigFields(
