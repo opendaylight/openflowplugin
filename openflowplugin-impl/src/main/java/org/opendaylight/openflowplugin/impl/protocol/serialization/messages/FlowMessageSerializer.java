@@ -354,10 +354,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return true if flow contains vlan match
      */
     private static boolean isVlanMatchPresent(final Flow flow) {
-        // FIXME: get rid of this atrocity and just use null checks
-        return Optional.ofNullable(flow.getMatch())
-                .flatMap(m -> Optional.ofNullable(m.getVlanMatch()))
-                .isPresent();
+        final var match = flow.getMatch();
+        return match != null && match.getVlanMatch() != null;
     }
 
     /**
