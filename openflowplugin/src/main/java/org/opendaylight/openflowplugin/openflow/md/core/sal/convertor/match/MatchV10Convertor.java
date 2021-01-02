@@ -19,9 +19,11 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.Versi
 import org.opendaylight.openflowplugin.openflow.md.util.ActionUtil;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4Match;
@@ -63,6 +65,8 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
      * default IPv4.
      */
     private static final Ipv4Address ZERO_IPV4 = new Ipv4Address("0.0.0.0");
+
+    private static final Uint8 DEFAULT_PREFIX = Uint8.valueOf(32);
 
     /*
      * The value 0xffff (OFP_VLAN_NONE) is used to indicate
@@ -130,15 +134,13 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
      * @param matchBuilder match builder
      * @param ipv4         ip v4 match
      */
-    private static void convertL3Ipv4DstMatch(final MatchV10Builder matchBuilder,
-                                              final Ipv4Match ipv4) {
-        if (ipv4.getIpv4Destination() != null) {
-            Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(
-                    ipv4.getIpv4Destination().getValue()).iterator();
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
-            Integer prefix = buildPrefix(addressParts);
-            matchBuilder.setNwDst(ipv4Address);
-            matchBuilder.setNwDstMask(prefix.shortValue());
+    private static void convertL3Ipv4DstMatch(final MatchV10Builder matchBuilder, final Ipv4Match ipv4) {
+        final Ipv4Prefix destination = ipv4.getIpv4Destination();
+        if (destination != null) {
+            // TODO: consider using IetfInetUtil
+            Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split( destination.getValue()).iterator();
+            matchBuilder.setNwDst(new Ipv4Address(addressParts.next()));
+            matchBuilder.setNwDstMask(buildPrefix(addressParts));
         }
     }
 
@@ -149,31 +151,24 @@ public class MatchV10Convertor extends Convertor<Match, MatchV10, VersionConvert
      * @param matchBuilder match builder
      * @param ipv4         ip v4 match
      */
-    private static void convertL3Ipv4SrcMatch(final MatchV10Builder matchBuilder,
-                                              final Ipv4Match ipv4) {
-        if (ipv4.getIpv4Source() != null) {
-            Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(
-                    ipv4.getIpv4Source().getValue()).iterator();
-            Ipv4Address ipv4Address = new Ipv4Address(addressParts.next());
-            int prefix = buildPrefix(addressParts);
-
-            matchBuilder.setNwSrc(ipv4Address);
-            matchBuilder.setNwSrcMask((short) prefix);
+    private static void convertL3Ipv4SrcMatch(final MatchV10Builder matchBuilder, final Ipv4Match ipv4) {
+        final Ipv4Prefix source = ipv4.getIpv4Source();
+        if (source != null) {
+            // TODO: consider IetfInetUtil
+            Iterator<String> addressParts = IpConversionUtil.PREFIX_SPLITTER.split(source.getValue()).iterator();
+            matchBuilder.setNwSrc(new Ipv4Address(addressParts.next()));
+            matchBuilder.setNwSrcMask(buildPrefix(addressParts));
         }
     }
 
-    private static int buildPrefix(final Iterator<String> addressParts) {
-        int prefix = 32;
-        if (addressParts.hasNext()) {
-            prefix = Integer.parseInt(addressParts.next());
-        }
-        return prefix;
+    private static Uint8 buildPrefix(final Iterator<String> addressParts) {
+        return addressParts.hasNext() ? Uint8.valueOf(addressParts.next()) : DEFAULT_PREFIX;
     }
 
-    private static boolean convertDlVlanPcp(final MatchV10Builder matchBuilder,
-                                            final VlanMatch vlanMatch) {
-        if (vlanMatch.getVlanPcp() != null) {
-            matchBuilder.setDlVlanPcp(vlanMatch.getVlanPcp().getValue());
+    private static boolean convertDlVlanPcp(final MatchV10Builder matchBuilder, final VlanMatch vlanMatch) {
+        final VlanPcp vlanPcp = vlanMatch.getVlanPcp();
+        if (vlanPcp != null) {
+            matchBuilder.setDlVlanPcp(vlanPcp.getValue());
             return false;
         }
         return true;

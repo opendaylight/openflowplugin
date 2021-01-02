@@ -5,20 +5,16 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IPProtocols;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.dst.action._case.SetTpDstAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
@@ -28,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Icmp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpDst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv4CodeCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Icmpv6CodeCaseBuilder;
@@ -38,6 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.code._case.Icmpv6CodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.dst._case.TcpDstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.dst._case.UdpDstBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,41 +45,40 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
         super(SetTpDstActionCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
-    public Optional<Action> process(@NonNull final SetTpDstActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(final SetTpDstActionCase source, final ActionConvertorData data,
             final ConvertorExecutor convertorExecutor) {
-        IPProtocols protocol = null;
-
-        if (data.getIpProtocol() != null) {
-            protocol = IPProtocols.fromProtocolNum(data.getIpProtocol());
-        }
-
-        SetTpDstAction settpdstaction = source.getSetTpDstAction();
-
-        MatchEntryBuilder matchBuilder = new MatchEntryBuilder()
+        final MatchEntryBuilder matchBuilder = new MatchEntryBuilder()
                 .setOxmClass(OpenflowBasicClass.class)
                 .setHasMask(Boolean.FALSE);
-        int port = settpdstaction.getPort().getValue().toJava();
-        int code = 0xff & port;
+
+        final Uint8 ipProtocol = data.getIpProtocol();
+        final IPProtocols protocol;
+        if (ipProtocol != null) {
+            protocol = IPProtocols.fromProtocolNum(ipProtocol);
+        } else {
+            protocol = null;
+        }
 
         if (protocol != null) {
+            final Uint16 port = source.getSetTpDstAction().getPort().getValue();
+
             switch (protocol) {
                 case ICMP:
                     matchBuilder.setOxmMatchField(Icmpv4Code.class);
-                    Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
-                    Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
-                    icmpv4CodeBuilder.setIcmpv4Code((short) code);
-                    icmpv4CodeCaseBuilder.setIcmpv4Code(icmpv4CodeBuilder.build());
-                    matchBuilder.setMatchEntryValue(icmpv4CodeCaseBuilder.build());
+                    matchBuilder.setMatchEntryValue(new Icmpv4CodeCaseBuilder()
+                        .setIcmpv4Code(new Icmpv4CodeBuilder()
+                            .setIcmpv4Code(Uint8.valueOf(0xFF & port.toJava()))
+                            .build())
+                        .build());
                     break;
                 case ICMPV6:
                     matchBuilder.setOxmMatchField(Icmpv6Code.class);
-                    Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
-                    Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
-                    icmpv6CodeBuilder.setIcmpv6Code((short) code);
-                    icmpv6CodeCaseBuilder.setIcmpv6Code(icmpv6CodeBuilder.build());
-                    matchBuilder.setMatchEntryValue(icmpv6CodeCaseBuilder.build());
+                    matchBuilder.setMatchEntryValue(new Icmpv6CodeCaseBuilder()
+                        .setIcmpv6Code(new Icmpv6CodeBuilder()
+                            .setIcmpv6Code(Uint8.valueOf(0xFF & port.toJava()))
+                            .build())
+                        .build());
                     break;
                 case TCP:
                     matchBuilder.setOxmMatchField(TcpDst.class);
@@ -110,17 +106,10 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
             LOG.warn("Missing protocol with combination of SetSourcePort");
         }
 
-        List<MatchEntry> entries = new ArrayList<>();
-        entries.add(matchBuilder.build());
-
-        SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
-        setFieldBuilder.setMatchEntry(entries);
-
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        setFieldCaseBuilder.setSetFieldAction(setFieldBuilder.build());
-
         return Optional.of(new ActionBuilder()
-                .setActionChoice(setFieldCaseBuilder.build())
-                .build());
+            .setActionChoice(new SetFieldCaseBuilder()
+                .setSetFieldAction(new SetFieldActionBuilder().setMatchEntry(List.of(matchBuilder.build())).build())
+                .build())
+            .build());
     }
 }
