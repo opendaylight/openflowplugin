@@ -68,8 +68,8 @@ public class BundleAddMessageConverter implements
     private static final ConvertorExecutor CONVERTER_EXECUTOR = ConvertorManagerFactory.createDefaultManager();
 
     @Override
-    public BundleAddMessageOnf convert(BundleAddMessageSal experimenterMessageCase,
-            ExtensionConvertorData extensionData) throws ConversionException {
+    public BundleAddMessageOnf convert(final BundleAddMessageSal experimenterMessageCase,
+            final ExtensionConvertorData extensionData) throws ConversionException {
         final OnfAddMessageGroupingDataBuilder dataBuilder = new OnfAddMessageGroupingDataBuilder();
         dataBuilder.setBundleId(experimenterMessageCase.getSalAddMessageData().getBundleId());
         dataBuilder.setFlags(experimenterMessageCase.getSalAddMessageData().getFlags());
@@ -190,7 +190,7 @@ public class BundleAddMessageConverter implements
 
     @Override
     public ExperimenterId getExperimenterId() {
-        return new ExperimenterId(OnfConstants.ONF_EXPERIMENTER_ID);
+        return OnfConstants.ONF_EXPERIMENTER_ID;
     }
 
     @Override

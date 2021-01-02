@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.converter;
 
 import org.opendaylight.openflowplugin.extension.api.ConverterMessageToOFJava;
@@ -29,29 +28,26 @@ import org.slf4j.LoggerFactory;
 public class BundleControlConverter implements
         ConverterMessageToOFJava<BundleControlSal, BundleControlOnf, ExtensionConvertorData>,
         ConvertorMessageFromOFJava<BundleControlOnf, MessagePath> {
-
     private static final Logger LOG = LoggerFactory.getLogger(BundleControlConverter.class);
 
     @Override
     public BundleControlOnf convert(final BundleControlSal experimenterMessageCase, final ExtensionConvertorData data) {
         LOG.trace("Converting the bundle control message for device {} with xid {} and type {}",
-                data.getDatapathId(), data.getXid(), experimenterMessageCase.getSalControlData().getType());
+            data.getDatapathId(), data.getXid(), experimenterMessageCase.getSalControlData().getType());
         return new BundleControlOnfBuilder().setOnfControlGroupingData(
-                new OnfControlGroupingDataBuilder(experimenterMessageCase.getSalControlData()).build()).build();
+            new OnfControlGroupingDataBuilder(experimenterMessageCase.getSalControlData()).build()).build();
     }
 
     @Override
-    public BundleControlSal convert(BundleControlOnf input, MessagePath path) {
+    public BundleControlSal convert(final BundleControlOnf input, final MessagePath path) {
         return new BundleControlSalBuilder()
-                .setSalControlData(
-                        new SalControlDataBuilder(input.getOnfControlGroupingData()).build()
-                )
-                .build();
+            .setSalControlData(new SalControlDataBuilder(input.getOnfControlGroupingData()).build())
+            .build();
     }
 
     @Override
     public ExperimenterId getExperimenterId() {
-        return new ExperimenterId(OnfConstants.ONF_EXPERIMENTER_ID);
+        return OnfConstants.ONF_EXPERIMENTER_ID;
     }
 
     @Override

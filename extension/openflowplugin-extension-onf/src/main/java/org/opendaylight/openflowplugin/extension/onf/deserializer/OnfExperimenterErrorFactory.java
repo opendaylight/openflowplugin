@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.extension.onf.deserializer;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -16,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.OnfExperimenterErrorCode;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,15 +33,15 @@ public class OnfExperimenterErrorFactory implements OFDeserializer<ErrorMessage>
     private static final String UNKNOWN_CODE = "UNKNOWN_CODE";
 
     @Override
-    public ErrorMessage deserialize(ByteBuf message) {
+    public ErrorMessage deserialize(final ByteBuf message) {
         ErrorMessageBuilder builder = new ErrorMessageBuilder();
         builder.setVersion(EncodeConstants.OF_VERSION_1_3);
-        builder.setXid(message.readUnsignedInt());
+        builder.setXid(readUint32(message));
 
-        int type = message.readUnsignedShort();
-        ErrorType errorType = ErrorType.forValue(type);
+        final Uint16 type = readUint16(message);
+        ErrorType errorType = ErrorType.forValue(type.toJava());
         if (errorType != null && errorType.equals(ErrorType.EXPERIMENTER)) {
-            builder.setType(errorType.getIntValue());
+            builder.setType(type);
             builder.setTypeString(errorType.getName());
         } else {
             LOG.warn("Deserializing other than {} error message with {}", ErrorType.EXPERIMENTER.getName(),
@@ -46,10 +50,10 @@ public class OnfExperimenterErrorFactory implements OFDeserializer<ErrorMessage>
             builder.setTypeString(UNKNOWN_TYPE);
         }
 
-        int code = message.readUnsignedShort();
-        OnfExperimenterErrorCode errorCode = OnfExperimenterErrorCode.forValue(code);
+        final Uint16 code = readUint16(message);
+        OnfExperimenterErrorCode errorCode = OnfExperimenterErrorCode.forValue(code.toJava());
         if (errorCode != null) {
-            builder.setCode(errorCode.getIntValue());
+            builder.setCode(code);
             builder.setCodeString(errorCode.getName());
         } else {
             builder.setCode(code);
@@ -57,7 +61,7 @@ public class OnfExperimenterErrorFactory implements OFDeserializer<ErrorMessage>
         }
 
         builder.addAugmentation(new ExperimenterIdErrorBuilder()
-                .setExperimenter(new ExperimenterId(message.readUnsignedInt()))
+                .setExperimenter(new ExperimenterId(readUint32(message)))
                 .build());
 
         if (message.readableBytes() > 0) {
