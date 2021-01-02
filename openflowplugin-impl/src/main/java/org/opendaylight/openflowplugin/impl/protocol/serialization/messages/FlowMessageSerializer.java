@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -298,55 +297,46 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         if (instruction instanceof ApplyActionsCase) {
             final ApplyActions actions = ((ApplyActionsCase) instruction).getApplyActions();
             if (actions != null) {
-                final int[] offset = {0};
+                final int[] offset = { 0 };
 
-                return Optional.of(actions)
-                    .flatMap(as -> Optional.ofNullable(as.nonnullAction()))
-                    .map(a -> a.values().stream()
-                        .sorted(OrderComparator.build())
-                        .flatMap(action -> {
-                            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-                            .action.list.Action> actionList = new ArrayList<>();
+                return new InstructionBuilder(insn)
+                    .setInstruction(new ApplyActionsCaseBuilder()
+                        .setApplyActions(new ApplyActionsBuilder()
+                            .setAction(actions.nonnullAction().values().stream()
+                                .sorted(OrderComparator.build())
+                                .flatMap(action -> {
+                                    final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
+                                        .action.list.Action> actionList = new ArrayList<>();
 
-                            // If current action is SetVlanId, insert PushVlan action before it and
-                            // update order
-                            if (action.getAction() instanceof SetVlanIdActionCase) {
-                                actionList.add(new ActionBuilder()
-                                    .setAction(new PushVlanActionCaseBuilder()
-                                        .setPushVlanAction(new PushVlanActionBuilder()
-                                            .setCfi(PUSH_CFI)
-                                            .setVlanId(((SetVlanIdActionCase) action
-                                                .getAction()).getSetVlanIdAction()
-                                                .getVlanId())
-                                            .setEthernetType(PUSH_VLAN)
-                                            .setTag(PUSH_TAG)
-                                            .build())
-                                        .build())
-                                    .withKey(action.key())
-                                    .setOrder(action.getOrder() + offset[0])
-                                    .build());
+                                    // If current action is SetVlanId, insert PushVlan action before it and
+                                    // update order
+                                    if (action.getAction() instanceof SetVlanIdActionCase) {
+                                        actionList.add(new ActionBuilder()
+                                            .setAction(new PushVlanActionCaseBuilder()
+                                                .setPushVlanAction(new PushVlanActionBuilder()
+                                                    .setCfi(PUSH_CFI)
+                                                    .setVlanId(((SetVlanIdActionCase) action.getAction())
+                                                        .getSetVlanIdAction().getVlanId())
+                                                    .setEthernetType(PUSH_VLAN)
+                                                    .setTag(PUSH_TAG)
+                                                    .build())
+                                                .build())
+                                            .withKey(action.key())
+                                            .setOrder(action.getOrder() + offset[0])
+                                            .build());
 
-                                offset[0]++;
-                            }
+                                        offset[0]++;
+                                    }
 
-                            // Update offset of action if there is any inserted PushVlan actions
-                            actionList.add(offset[0] > 0
-                                ? new ActionBuilder(action).setOrder(action.getOrder() + offset[0])
-                                    .withKey(new ActionKey(action.getOrder() + offset[0]))
-                                    .build()
-                                    : action);
+                                    // Update offset of action if there is any inserted PushVlan actions
+                                    actionList.add(offset[0] <= 0 ? action
+                                        : new ActionBuilder(action).setOrder(action.getOrder() + offset[0]).build());
 
-                            return actionList.stream();
-                        }))
-                    .map(as -> new InstructionBuilder(insn)
-                        .setInstruction(new ApplyActionsCaseBuilder()
-                            .setApplyActions(new ApplyActionsBuilder()
-                                .setAction(as.collect(BindingMap.<ActionKey, Action>toOrderedMap()))
-                                .build())
+                                    return actionList.stream();
+                                }).collect(BindingMap.<ActionKey, Action>toOrderedMap()))
                             .build())
                         .build())
-                    .orElse(insn);
-
+                    .build();
             }
         }
         return insn;
