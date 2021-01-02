@@ -7,14 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
+
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -55,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -75,7 +79,6 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private static final Uint32 DEFAULT_BUFFER_ID = OFConstants.OFP_NO_BUFFER;
     private static final Uint64 DEFAULT_OUT_PORT = Uint64.valueOf(OFConstants.OFPP_ANY);
     private static final Uint32 DEFAULT_OUT_GROUP = OFConstants.OFPG_ANY;
-    private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final FlowModFlags DEFAULT_FLAGS = new FlowModFlags(false, false, false, false, false);
     private static final Uint16 PUSH_VLAN = Uint16.valueOf(0x8100);
     private static final Integer PUSH_TAG = PUSH_VLAN.toJava();
@@ -116,19 +119,19 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
     private void writeFlow(final FlowMessage message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
-        outBuffer.writeLong(MoreObjects.firstNonNull(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue()
-                .longValue());
-        outBuffer.writeByte(MoreObjects.firstNonNull(message.getTableId(), DEFAULT_TABLE_ID).toJava());
+        // FIXME: use Uint/ByteBuf utilities to skip toJava()/longValue()/intValue()
+        outBuffer.writeLong(requireNonNullElse(message.getCookie(), DEFAULT_COOKIE).getValue().longValue());
+        outBuffer.writeLong(requireNonNullElse(message.getCookieMask(), DEFAULT_COOKIE_MASK).getValue().longValue());
+        outBuffer.writeByte(requireNonNullElse(message.getTableId(), DEFAULT_TABLE_ID).toJava());
         outBuffer.writeByte(message.getCommand().getIntValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT).toJava());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT).toJava());
-        outBuffer.writeShort(MoreObjects.firstNonNull(message.getPriority(), DEFAULT_PRIORITY).toJava());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
-        outBuffer.writeInt(MoreObjects.firstNonNull(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
-        outBuffer.writeShort(createFlowModFlagsBitmask(MoreObjects.firstNonNull(message.getFlags(), DEFAULT_FLAGS)));
-        outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
+        outBuffer.writeShort(requireNonNullElse(message.getIdleTimeout(), DEFAULT_IDLE_TIMEOUT).toJava());
+        outBuffer.writeShort(requireNonNullElse(message.getHardTimeout(), DEFAULT_HARD_TIMEOUT).toJava());
+        outBuffer.writeShort(requireNonNullElse(message.getPriority(), DEFAULT_PRIORITY).toJava());
+        outBuffer.writeInt(requireNonNullElse(message.getBufferId(), DEFAULT_BUFFER_ID).intValue());
+        outBuffer.writeInt(requireNonNullElse(message.getOutPort(), DEFAULT_OUT_PORT).intValue());
+        outBuffer.writeInt(requireNonNullElse(message.getOutGroup(), DEFAULT_OUT_GROUP).intValue());
+        outBuffer.writeShort(createFlowModFlagsBitmask(requireNonNullElse(message.getFlags(), DEFAULT_FLAGS)));
+        outBuffer.writeShort(0);
         writeMatch(message, outBuffer);
         writeInstructions(message, outBuffer);
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
@@ -142,24 +145,13 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeVlanFlow(final FlowMessage message, final ByteBuf outBuffer) {
-        writeFlow(
-                new FlowMessageBuilder(message)
-                        .setMatch(new MatchBuilder(message.getMatch())
-                                .setVlanMatch(VLAN_MATCH_FALSE)
-                                .build())
-                        .setInstructions(new InstructionsBuilder()
-                                .setInstruction(updateSetVlanIdAction(message))
-                                .build())
-                        .build(),
-                outBuffer);
-
-        writeFlow(
-                new FlowMessageBuilder(message)
-                        .setMatch(new MatchBuilder(message.getMatch())
-                                .setVlanMatch(VLAN_MATCH_TRUE)
-                                .build())
-                        .build(),
-                outBuffer);
+        writeFlow(new FlowMessageBuilder(message)
+            .setMatch(new MatchBuilder(message.getMatch()).setVlanMatch(VLAN_MATCH_FALSE).build())
+            .setInstructions(new InstructionsBuilder().setInstruction(updateSetVlanIdAction(message)).build())
+            .build(), outBuffer);
+        writeFlow(new FlowMessageBuilder(message)
+            .setMatch(new MatchBuilder(message.getMatch()).setVlanMatch(VLAN_MATCH_TRUE).build())
+            .build(), outBuffer);
     }
 
     /**
@@ -169,10 +161,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
-        Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
+        requireNonNull(registry).<Match, OFSerializer<Match>>getSerializer(
                 new MessageTypeKey<>(message.getVersion().toJava(), Match.class)).serialize(message.getMatch(),
                     outBuffer);
-
     }
 
     /**
@@ -182,24 +173,40 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param outBuffer output buffer
      */
     private void writeInstructions(final FlowMessage message, final ByteBuf outBuffer) {
-        // Try to get IP protocol from IP match
-        final Optional<Uint8> protocol = Optional
-                .ofNullable(message.getMatch())
-                .flatMap(m -> Optional.ofNullable(m.getIpMatch()))
-                .flatMap(ipm -> Optional.ofNullable(ipm.getIpProtocol()));
+        final var instructions = message.getInstructions();
+        if (instructions == null) {
+            // Nothing to do
+            return;
+        }
 
-        // Update instructions if needed and then serialize all instructions
-        Optional.ofNullable(message.getInstructions())
-                .flatMap(is -> Optional.ofNullable(is.nonnullInstruction()))
-                .ifPresent(is -> is.values().stream()
-                        .filter(Objects::nonNull)
-                        .sorted(OrderComparator.build())
-                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
-                                .rev131026.Instruction::getInstruction)
-                        .filter(Objects::nonNull)
-                        .map(i -> protocol.flatMap(p -> updateInstruction(i, p)).orElse(i))
-                        .forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry,
-                                outBuffer)));
+        // Extract all instructions ...
+        Stream<Instruction> flowInstructions = instructions.nonnullInstruction().values().stream()
+            .filter(Objects::nonNull)
+            .sorted(OrderComparator.build())
+            .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
+            .filter(Objects::nonNull);
+
+        // ... updated them if needed ...
+        final Uint8 protocol = extractProtocol(message);
+        if (protocol != null) {
+            flowInstructions = flowInstructions.map(insn -> updateInstruction(insn, protocol));
+        }
+
+        // ... and serialize them
+        flowInstructions.forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry,
+            outBuffer));
+    }
+
+    // Try to get IP protocol from IP match
+    private static @Nullable Uint8 extractProtocol(final FlowMessage message) {
+        final var match = message.getMatch();
+        if (match != null) {
+            final var ipMatch = match.getIpMatch();
+            if (ipMatch != null) {
+                return ipMatch.getIpProtocol();
+            }
+        }
+        return null;
     }
 
     /**
@@ -207,24 +214,23 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      *
      * @param instruction instruction
      * @param protocol    protocol
-     * @return updated instruction or empty
+     * @return updated or original instruction
      */
-    private static Optional<Instruction> updateInstruction(final Instruction instruction, final Uint8 protocol) {
+    private static @Nullable Instruction updateInstruction(final Instruction instruction, final Uint8 protocol) {
         if (instruction instanceof ApplyActionsCase) {
-            // FIXME: get rid of this atrocity and just use null checks
-            return Optional.ofNullable(((ApplyActionsCase) instruction).getApplyActions())
-                    .flatMap(aa -> Optional.ofNullable(aa.nonnullAction()))
-                    .map(as -> new ApplyActionsCaseBuilder()
-                            .setApplyActions(new ApplyActionsBuilder()
-                                    .setAction(as.values().stream()
-                                            .filter(Objects::nonNull)
-                                            .map(a -> updateSetTpActions(a, protocol))
-                                            .collect(Collectors.toList()))
-                                    .build())
-                            .build());
+            final var actions = ((ApplyActionsCase) instruction).getApplyActions();
+            if (actions != null) {
+                return new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(actions.nonnullAction().values().stream()
+                            .filter(Objects::nonNull)
+                            .map(a -> updateSetTpActions(a, protocol))
+                            .collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                        .build())
+                    .build();
+            }
         }
-
-        return Optional.empty();
+        return instruction;
     }
 
     /**
