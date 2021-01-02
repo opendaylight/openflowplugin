@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.extension.onf.converter;
 import static org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil.extractDatapathId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -144,18 +144,18 @@ public class BundleAddMessageConverterTest {
     @Test
     public void testConvertUpdatePortCase() throws Exception {
         testConvert(new BundleUpdatePortCaseBuilder()
-                .setUpdatePortCaseData(new UpdatePortCaseDataBuilder()
+            .setUpdatePortCaseData(new UpdatePortCaseDataBuilder()
                 .setPort(new PortBuilder()
-                            .setPort(Collections.singletonList(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow
-                                        .types.port.rev130925.port.mod.port.PortBuilder()
-                                    .setConfiguration(Mockito.mock(PortConfig.class))
-                                    .setAdvertisedFeatures(Mockito.mock(PortFeatures.class))
-                                    .setPortNumber(new PortNumberUni(Uint32.ZERO))
-                                    .setHardwareAddress(Mockito.mock(MacAddress.class))
-                                    .withKey(new PortKey(Uint32.ZERO))
-                                    .build()))
-                            .build()).build())
-                .build(), BundlePortModCase.class);
+                    .setPort(BindingMap.of(new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925
+                            .port.mod.port.PortBuilder()
+                        .setConfiguration(Mockito.mock(PortConfig.class))
+                        .setAdvertisedFeatures(Mockito.mock(PortFeatures.class))
+                        .setPortNumber(new PortNumberUni(Uint32.ZERO))
+                        .setHardwareAddress(Mockito.mock(MacAddress.class))
+                        .withKey(new PortKey(Uint32.ZERO))
+                        .build()))
+                    .build()).build())
+            .build(), BundlePortModCase.class);
     }
 
     private void testConvert(final BundleInnerMessage message, final Class<? extends DataObject> clazz)
@@ -215,5 +215,4 @@ public class BundleAddMessageConverterTest {
 
         return new BundleAddMessageSalBuilder().setSalAddMessageData(dataBuilder.build()).build();
     }
-
 }
