@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.multipart.reply.port.desc.Ports;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.multipart.reply.multipart.reply.body.multipart.reply.port.desc.PortsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
-import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyPortDescDeserializer implements OFDeserializer<MultipartReplyBody> {
 
@@ -37,7 +37,7 @@ public class MultipartReplyPortDescDeserializer implements OFDeserializer<Multip
 
         while (message.readableBytes() > 0) {
             final PortsBuilder itemBuilder = new PortsBuilder();
-            itemBuilder.setPortNumber(new PortNumberUni(Uint32.valueOf(message.readUnsignedInt())));
+            itemBuilder.setPortNumber(new PortNumberUni(readUint32(message)));
             message.skipBytes(PADDING_IN_PORT_DESC_HEADER_01);
             itemBuilder.setHardwareAddress(ByteBufUtils.readIetfMacAddress(message));
             message.skipBytes(PADDING_IN_PORT_DESC_HEADER_02);
@@ -50,8 +50,8 @@ public class MultipartReplyPortDescDeserializer implements OFDeserializer<Multip
                 .setAdvertisedFeatures(readPortFeatures(message))
                 .setSupported(readPortFeatures(message))
                 .setPeerFeatures(readPortFeatures(message))
-                .setCurrentSpeed(message.readUnsignedInt())
-                .setMaximumSpeed(message.readUnsignedInt())
+                .setCurrentSpeed(readUint32(message))
+                .setMaximumSpeed(readUint32(message))
                 .build());
         }
 

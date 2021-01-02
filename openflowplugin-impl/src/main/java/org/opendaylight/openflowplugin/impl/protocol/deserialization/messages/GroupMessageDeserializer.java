@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, DeserializerRegistryInjector {
@@ -50,12 +53,12 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
     public GroupMessage deserialize(final ByteBuf message) {
         final GroupMessageBuilder builder = new GroupMessageBuilder()
             .setVersion(EncodeConstants.OF_VERSION_1_3)
-            .setXid(message.readUnsignedInt())
+            .setXid(readUint32(message))
             .setCommand(GroupModCommand.forValue(message.readUnsignedShort()));
 
         builder.setGroupType(GroupTypes.forValue(message.readUnsignedByte()));
         message.skipBytes(PADDING);
-        builder.setGroupId(new GroupId(message.readUnsignedInt()));
+        builder.setGroupId(new GroupId(readUint32(message)));
 
         final List<Bucket> buckets = new ArrayList<>();
 
@@ -63,15 +66,17 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
             final int length = message.readUnsignedShort();
 
             final BucketBuilder bucket = new BucketBuilder()
-                .setWeight(message.readUnsignedShort())
-                .setWatchPort(message.readUnsignedInt())
-                .setWatchGroup(message.readUnsignedInt());
+                .setWeight(readUint16(message))
+                .setWatchPort(readUint32(message))
+                .setWatchGroup(readUint32(message));
 
             message.skipBytes(PADDING_IN_BUCKETS_HEADER);
 
             if (message.readableBytes() > 0) {
-                final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-                    .Action> actions = new ArrayList<>();
+                final var actions = BindingMap.<
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+                        orderedBuilder();
                 final int startIndex = message.readerIndex();
                 final int bucketLength = length - BUCKETS_HEADER_LENGTH;
                 int offset = 0;
@@ -87,7 +92,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
                     offset++;
                 }
 
-                bucket.setAction(actions);
+                bucket.setAction(actions.build());
             }
 
             buckets.add(bucket.setBucketId(new BucketId(Uint32.valueOf(buckets.size()))).build());
@@ -96,7 +101,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
         buckets.sort(COMPARATOR);
         return builder
             .setBuckets(new BucketsBuilder()
-                .setBucket(buckets)
+                .setBucket(BindingMap.ordered(buckets))
                 .build())
             .build();
     }
