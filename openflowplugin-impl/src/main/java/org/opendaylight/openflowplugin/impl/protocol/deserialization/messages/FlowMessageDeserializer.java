@@ -53,7 +53,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
     @SuppressWarnings("checkstyle:LineLength")
     public FlowMessage deserialize(ByteBuf message) {
         final FlowMessageBuilder builder = new FlowMessageBuilder()
-            .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setXid(readUint32(message))
             .setCookie(new FlowCookie(BigInteger.valueOf(message.readLong())))
             .setCookieMask(new FlowCookie(BigInteger.valueOf(message.readLong())))
