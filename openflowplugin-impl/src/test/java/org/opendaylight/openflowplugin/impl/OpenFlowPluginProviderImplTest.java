@@ -18,7 +18,6 @@ import com.google.common.util.concurrent.Futures;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
@@ -86,12 +85,9 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     FlowGroupCacheManager flowGroupCacheManager;
 
-    private static final int RPC_REQUESTS_QUOTA = 500;
-    private static final long GLOBAL_NOTIFICATION_QUOTA = 131072;
     private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.ONE;
     private static final Uint16 THREAD_POOL_MAX_THREADS = Uint16.valueOf(32000);
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
-    private static final long BASIC_TIMER_DELAY = 1L;
     private static final boolean USE_SINGLE_LAYER_SERIALIZATION = false;
     private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
     private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
@@ -116,8 +112,8 @@ public class OpenFlowPluginProviderImplTest {
         when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString()),
                 any())).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
         when(configurationService.getProperty(
-                Matchers.eq(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString()),
-                Matchers.any())).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
+                eq(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString()), any()))
+                .thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
     }
 
     @Test
