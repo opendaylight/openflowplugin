@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
 import io.netty.buffer.ByteBuf;
@@ -28,7 +27,7 @@ public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
     @Override
     public PortMessage deserialize(final ByteBuf message) {
         final PortMessageBuilder builder = new PortMessageBuilder()
-                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(message.readUnsignedInt())
                 .setPortNumber(new PortNumberUni(Uint32.valueOf(message.readUnsignedInt())));
 

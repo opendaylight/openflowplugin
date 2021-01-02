@@ -46,7 +46,7 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
     @Override
     public MeterMessage deserialize(ByteBuf message) {
         final MeterMessageBuilder builder = new MeterMessageBuilder()
-                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(message.readUnsignedInt())
                 .setCommand(MeterModCommand.forValue(message.readUnsignedShort()))
                 .setFlags(readMeterFlags(message))

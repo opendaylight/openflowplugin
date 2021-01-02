@@ -49,7 +49,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
     @Override
     public GroupMessage deserialize(final ByteBuf message) {
         final GroupMessageBuilder builder = new GroupMessageBuilder()
-            .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setXid(message.readUnsignedInt())
             .setCommand(GroupModCommand.forValue(message.readUnsignedShort()));
 
