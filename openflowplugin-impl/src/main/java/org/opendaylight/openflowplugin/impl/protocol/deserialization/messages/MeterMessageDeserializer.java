@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -31,28 +31,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
 
 public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, DeserializerRegistryInjector {
-    private static final Logger LOG = LoggerFactory.getLogger(MeterMessageDeserializer.class);
     private static final int OFPMBTDROP = 1;
     private static final int OFPMBTDSCP = 2;
     private static final int OFPMBTEXPERIMENTER = 0xFFFF;
     private static final byte PADDING_IN_METER_BAND_DROP_HEADER = 4;
     private static final byte PADDING_IN_METER_BAND_DSCP_HEADER = 3;
+
     private DeserializerRegistry registry;
 
     @Override
-    public MeterMessage deserialize(ByteBuf message) {
+    public MeterMessage deserialize(final ByteBuf message) {
         final MeterMessageBuilder builder = new MeterMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
-                .setXid(message.readUnsignedInt())
+                .setXid(readUint32(message))
                 .setCommand(MeterModCommand.forValue(message.readUnsignedShort()))
                 .setFlags(readMeterFlags(message))
-                .setMeterId(new MeterId(message.readUnsignedInt()));
+                .setMeterId(new MeterId(readUint32(message)));
 
-        final List<MeterBandHeader> bands = new ArrayList<>();
+        final Builder<MeterBandHeaderKey, MeterBandHeader> bands = BindingMap.builder();
         long key = 0;
 
         while (message.readableBytes() > 0) {
@@ -67,8 +67,8 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                                     .setFlags(new MeterBandType(true, false, false))
                                     .build())
                             .setBandType(new DropBuilder()
-                                    .setDropRate(message.readUnsignedInt())
-                                    .setDropBurstSize(message.readUnsignedInt())
+                                    .setDropRate(readUint32(message))
+                                    .setDropBurstSize(readUint32(message))
                                     .build());
                     message.skipBytes(PADDING_IN_METER_BAND_DROP_HEADER);
                     break;
@@ -79,9 +79,9 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                                     .setFlags(new MeterBandType(false, true, false))
                                     .build())
                             .setBandType(new DscpRemarkBuilder()
-                                    .setDscpRemarkRate(message.readUnsignedInt())
-                                    .setDscpRemarkBurstSize(message.readUnsignedInt())
-                                    .setPrecLevel(message.readUnsignedByte())
+                                    .setDscpRemarkRate(readUint32(message))
+                                    .setDscpRemarkBurstSize(readUint32(message))
+                                    .setPrecLevel(readUint8(message))
                                     .build());
                     message.skipBytes(PADDING_IN_METER_BAND_DSCP_HEADER);
                     break;
@@ -106,29 +106,28 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                     // no operation
             }
 
-            bands.add(bandBuilder.withKey(new MeterBandHeaderKey(new BandId(key++))).build());
+            bands.add(bandBuilder.setBandId(new BandId(key++)).build());
         }
 
         return builder
                 .setMeterBandHeaders(new MeterBandHeadersBuilder()
-                        .setMeterBandHeader(bands)
+                        .setMeterBandHeader(bands.build())
                         .build())
                 .build();
     }
 
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 
-    private static MeterFlags readMeterFlags(ByteBuf message) {
+    private static MeterFlags readMeterFlags(final ByteBuf message) {
         int input = message.readUnsignedShort();
-        final Boolean mfKbps = (input & (1)) != 0;
-        final Boolean mfPktps = (input & (1 << 1)) != 0;
-        final Boolean mfBurst = (input & (1 << 2)) != 0;
-        final Boolean mfStats = (input & (1 << 3)) != 0;
+        final Boolean mfKbps = (input & 1) != 0;
+        final Boolean mfPktps = (input & 1 << 1) != 0;
+        final Boolean mfBurst = (input & 1 << 2) != 0;
+        final Boolean mfStats = (input & 1 << 3) != 0;
         return new MeterFlags(mfBurst, mfKbps, mfPktps, mfStats);
     }
-
 }
