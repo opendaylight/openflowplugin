@@ -31,7 +31,7 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
     private static final byte MESSAGE_TYPE = 27;
 
     @Override
-    public void serialize(GetAsyncOutput message, ByteBuf outBuffer) {
+    public void serialize(final GetAsyncOutput message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         serializePacketInMask(message.getPacketInMask(), outBuffer);
         serializePortStatusMask(message.getPortStatusMask(), outBuffer);
@@ -39,7 +39,7 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
 
-    private static void serializePacketInMask(List<PacketInMask> packetInMask, ByteBuf outBuffer) {
+    private static void serializePacketInMask(final List<PacketInMask> packetInMask, final ByteBuf outBuffer) {
         if (packetInMask != null) {
             for (PacketInMask currentPacketMask : packetInMask) {
                 List<PacketInReason> mask = currentPacketMask.getMask();
@@ -60,7 +60,7 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         }
     }
 
-    private static void serializePortStatusMask(List<PortStatusMask> portStatusMask, ByteBuf outBuffer) {
+    private static void serializePortStatusMask(final List<PortStatusMask> portStatusMask, final ByteBuf outBuffer) {
         if (portStatusMask != null) {
             for (PortStatusMask currentPortStatusMask : portStatusMask) {
                 List<PortReason> mask = currentPortStatusMask.getMask();
@@ -81,27 +81,18 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         }
     }
 
-    private static void serializeFlowRemovedMask(List<FlowRemovedMask> flowRemovedMask, ByteBuf outBuffer) {
+    private static void serializeFlowRemovedMask(final List<FlowRemovedMask> flowRemovedMask, final ByteBuf outBuffer) {
         if (flowRemovedMask != null) {
             for (FlowRemovedMask currentFlowRemovedMask : flowRemovedMask) {
                 List<FlowRemovedReason> mask = currentFlowRemovedMask.getMask();
                 if (mask != null) {
-                    Map<Integer, Boolean> flowRemovedReasonMap = new HashMap<>();
+                    int bitmap = 0;
                     for (FlowRemovedReason packetInReason : mask) {
-                        if (FlowRemovedReason.OFPRRIDLETIMEOUT.equals(packetInReason)) {
-                            flowRemovedReasonMap.put(FlowRemovedReason.OFPRRIDLETIMEOUT.getIntValue(), true);
-                        } else if (FlowRemovedReason.OFPRRHARDTIMEOUT.equals(packetInReason)) {
-                            flowRemovedReasonMap.put(FlowRemovedReason.OFPRRHARDTIMEOUT.getIntValue(), true);
-                        } else if (FlowRemovedReason.OFPRRDELETE.equals(packetInReason)) {
-                            flowRemovedReasonMap.put(FlowRemovedReason.OFPRRDELETE.getIntValue(), true);
-                        } else if (FlowRemovedReason.OFPRRGROUPDELETE.equals(packetInReason)) {
-                            flowRemovedReasonMap.put(FlowRemovedReason.OFPRRGROUPDELETE.getIntValue(), true);
-                        }
+                        bitmap |= 1 << packetInReason.getIntValue();
                     }
-                    outBuffer.writeInt(ByteBufUtils.fillBitMaskFromMap(flowRemovedReasonMap));
+                    outBuffer.writeInt(bitmap);
                 }
             }
         }
     }
-
 }
