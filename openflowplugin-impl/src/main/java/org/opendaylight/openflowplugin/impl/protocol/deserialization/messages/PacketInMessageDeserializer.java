@@ -43,7 +43,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
     @Override
     public PacketInMessage deserialize(final ByteBuf message) {
         final PacketInMessageBuilder packetInMessageBuilder = new PacketInMessageBuilder()
-                .setVersion((short) EncodeConstants.OF13_VERSION_ID)
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(message.readUnsignedInt());
 
         // We are ignoring buffer id and total len as it is not specified in OpenFlowPlugin models
