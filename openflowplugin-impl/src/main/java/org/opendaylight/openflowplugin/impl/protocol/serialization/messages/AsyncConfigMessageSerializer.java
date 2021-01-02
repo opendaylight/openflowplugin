@@ -8,10 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import io.netty.buffer.ByteBuf;
-import java.util.Map;
-import java.util.Optional;
-import java.util.WeakHashMap;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.AsyncConfigMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.FlowRemovedMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.PacketInMask;
@@ -26,23 +22,21 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
 
-        Optional.ofNullable(message.getPacketInMask())
-                .ifPresent(mask -> {
-                    serializePacketInMask(mask.getMasterMask(), outBuffer);
-                    serializePacketInMask(mask.getSlaveMask(), outBuffer);
-                });
-
-        Optional.ofNullable(message.getPortStatusMask())
-                .ifPresent(mask -> {
-                    serializePortStatusMask(mask.getMasterMask(), outBuffer);
-                    serializePortStatusMask(mask.getSlaveMask(), outBuffer);
-                });
-
-        Optional.ofNullable(message.getFlowRemovedMask())
-                .ifPresent(mask -> {
-                    serializeFlowRemovedMask(mask.getMasterMask(), outBuffer);
-                    serializeFlowRemovedMask(mask.getSlaveMask(), outBuffer);
-                });
+        final var packetIn = message.getPacketInMask();
+        if (packetIn != null) {
+            serializePacketInMask(packetIn.getMasterMask(), outBuffer);
+            serializePacketInMask(packetIn.getSlaveMask(), outBuffer);
+        }
+        final var portStatus = message.getPortStatusMask();
+        if (portStatus != null) {
+            serializePortStatusMask(portStatus.getMasterMask(), outBuffer);
+            serializePortStatusMask(portStatus.getSlaveMask(), outBuffer);
+        }
+        final var flowRemoved = message.getFlowRemovedMask();
+        if (flowRemoved != null) {
+            serializeFlowRemovedMask(flowRemoved.getMasterMask(), outBuffer);
+            serializeFlowRemovedMask(flowRemoved.getSlaveMask(), outBuffer);
+        }
 
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
     }
@@ -53,72 +47,53 @@ public class AsyncConfigMessageSerializer extends AbstractMessageSerializer<Asyn
     }
 
     private static void serializePacketInMask(final PacketInMask mask, final ByteBuf outBuffer) {
-        if (mask == null) {
-            return;
+        if (mask != null) {
+            int bitmap = 0;
+            if (mask.getNOMATCH()) {
+                bitmap |= 1 << PacketInReason.OFPRNOMATCH.getIntValue();
+            }
+            if (mask.getACTION()) {
+                bitmap |= 1 << PacketInReason.OFPRACTION.getIntValue();
+            }
+            if (mask.getINVALIDTTL()) {
+                bitmap |= 1 << PacketInReason.OFPRINVALIDTTL.getIntValue();
+            }
+            outBuffer.writeInt(bitmap);
         }
-
-        final Map<Integer, Boolean> map = new WeakHashMap<>();
-
-        if (mask.getNOMATCH()) {
-            map.put(PacketInReason.OFPRNOMATCH.getIntValue(), true);
-        }
-
-        if (mask.getACTION()) {
-            map.put(PacketInReason.OFPRACTION.getIntValue(), true);
-        }
-
-        if (mask.getINVALIDTTL()) {
-            map.put(PacketInReason.OFPRINVALIDTTL.getIntValue(), true);
-        }
-
-        outBuffer.writeInt(ByteBufUtils.fillBitMaskFromMap(map));
     }
 
     private static void serializePortStatusMask(final PortStatusMask mask, final ByteBuf outBuffer) {
-        if (mask == null) {
-            return;
+        if (mask != null) {
+            int bitmap = 0;
+            if (mask.getADD()) {
+                bitmap |= 1 << PortReason.OFPPRADD.getIntValue();
+            }
+            if (mask.getDELETE()) {
+                bitmap |= 1 << PortReason.OFPPRDELETE.getIntValue();
+            }
+            if (mask.getUPDATE()) {
+                bitmap |= 1 << PortReason.OFPPRMODIFY.getIntValue();
+            }
+            outBuffer.writeInt(bitmap);
         }
-
-        final Map<Integer, Boolean> map = new WeakHashMap<>();
-
-        if (mask.getADD()) {
-            map.put(PortReason.OFPPRADD.getIntValue(), true);
-        }
-
-        if (mask.getDELETE()) {
-            map.put(PortReason.OFPPRDELETE.getIntValue(), true);
-        }
-
-        if (mask.getUPDATE()) {
-            map.put(PortReason.OFPPRMODIFY.getIntValue(), true);
-        }
-
-        outBuffer.writeInt(ByteBufUtils.fillBitMaskFromMap(map));
     }
 
     private static void serializeFlowRemovedMask(final FlowRemovedMask mask, final ByteBuf outBuffer) {
-        if (mask == null) {
-            return;
+        if (mask != null) {
+            int bitmap = 0;
+            if (mask.getIDLETIMEOUT()) {
+                bitmap |= 1 << FlowRemovedReason.OFPRRIDLETIMEOUT.getIntValue();
+            }
+            if (mask.getHARDTIMEOUT()) {
+                bitmap |= 1 << FlowRemovedReason.OFPRRHARDTIMEOUT.getIntValue();
+            }
+            if (mask.getDELETE()) {
+                bitmap |= 1 << FlowRemovedReason.OFPRRDELETE.getIntValue();
+            }
+            if (mask.getGROUPDELETE()) {
+                bitmap |= 1 << FlowRemovedReason.OFPRRGROUPDELETE.getIntValue();
+            }
+            outBuffer.writeInt(bitmap);
         }
-
-        final Map<Integer, Boolean> map = new WeakHashMap<>();
-
-        if (mask.getIDLETIMEOUT()) {
-            map.put(FlowRemovedReason.OFPRRIDLETIMEOUT.getIntValue(), true);
-        }
-
-        if (mask.getHARDTIMEOUT()) {
-            map.put(FlowRemovedReason.OFPRRHARDTIMEOUT.getIntValue(), true);
-        }
-
-        if (mask.getDELETE()) {
-            map.put(FlowRemovedReason.OFPRRDELETE.getIntValue(), true);
-        }
-
-        if (mask.getGROUPDELETE()) {
-            map.put(FlowRemovedReason.OFPRRGROUPDELETE.getIntValue(), true);
-        }
-
-        outBuffer.writeInt(ByteBufUtils.fillBitMaskFromMap(map));
     }
 }
