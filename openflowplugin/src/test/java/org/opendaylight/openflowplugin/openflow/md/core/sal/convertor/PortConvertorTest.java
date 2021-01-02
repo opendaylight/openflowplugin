@@ -68,8 +68,9 @@ public class PortConvertorTest {
 
         VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        Optional<PortModInput> portOutOptional = convertorManager.convert(portBld.build(), data);
-        final PortModInput portOut = portOutOptional.orElse(PortConvertor.defaultResult(OFConstants.OFP_VERSION_1_3));
+        final Optional<PortModInput> portOutOptional = convertorManager.convert(portBld.build(), data);
+        final PortModInput portOut = portOutOptional
+            .orElse(PortConvertor.defaultResult(EncodeConstants.OF_VERSION_1_3));
 
         PortConfigV10 portConfV10 = new PortConfigV10(false, false, false, false, true, true, false);
 
