@@ -66,13 +66,13 @@ public class OnfExtensionProvider {
     private void registerSerializers() {
         switchConnectionProvider.registerExperimenterMessageSerializer(
                 new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
-                                                      OnfConstants.ONF_EXPERIMENTER_ID,
+                                                      OnfConstants.ONF_EXPERIMENTER_ID_LONG,
                                                       OnfConstants.ONF_ET_BUNDLE_CONTROL,
                                                       ExperimenterDataOfChoice.class),
                 new BundleControlFactory());
         switchConnectionProvider.registerExperimenterMessageSerializer(
                 new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
-                                                      OnfConstants.ONF_EXPERIMENTER_ID,
+                                                      OnfConstants.ONF_EXPERIMENTER_ID_LONG,
                                                       OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE,
                                                       ExperimenterDataOfChoice.class),
                 new BundleAddMessageFactory());
@@ -82,13 +82,13 @@ public class OnfExtensionProvider {
     private void registerDeserializers() {
         switchConnectionProvider.registerExperimenterMessageDeserializer(
                 new ExperimenterIdTypeDeserializerKey(OFConstants.OFP_VERSION_1_3,
-                                                      OnfConstants.ONF_EXPERIMENTER_ID,
+                                                      OnfConstants.ONF_EXPERIMENTER_ID_LONG,
                                                       OnfConstants.ONF_ET_BUNDLE_CONTROL,
                                                       ExperimenterDataOfChoice.class),
                 new org.opendaylight.openflowplugin.extension.onf.deserializer.BundleControlFactory());
         switchConnectionProvider.registerErrorDeserializer(
                 new ExperimenterIdDeserializerKey(OFConstants.OFP_VERSION_1_3,
-                                                  OnfConstants.ONF_EXPERIMENTER_ID,
+                                                  OnfConstants.ONF_EXPERIMENTER_ID_LONG,
                                                   ErrorMessage.class),
                 new OnfExperimenterErrorFactory());
     }

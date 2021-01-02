@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -16,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortNumberUni;
-import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
 
@@ -28,8 +29,8 @@ public class PortMessageDeserializer implements OFDeserializer<PortMessage> {
     public PortMessage deserialize(final ByteBuf message) {
         final PortMessageBuilder builder = new PortMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
-                .setXid(message.readUnsignedInt())
-                .setPortNumber(new PortNumberUni(Uint32.valueOf(message.readUnsignedInt())));
+                .setXid(readUint32(message))
+                .setPortNumber(new PortNumberUni(readUint32(message)));
 
         message.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_1);
         builder.setHardwareAddress(ByteBufUtils.readIetfMacAddress(message));
