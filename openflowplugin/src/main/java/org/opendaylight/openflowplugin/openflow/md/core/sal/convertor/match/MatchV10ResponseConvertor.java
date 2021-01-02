@@ -96,12 +96,15 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
         if (!source.getWildcards().getDLVLAN() && source.getDlVlan() != null) {
-            VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-            int vlanId = source.getDlVlan().toJava() == 0xffff ? 0 : source.getDlVlan().toJava();
-            vlanIdBuilder.setVlanId(
-                    new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId));
-            vlanIdBuilder.setVlanIdPresent(vlanId != 0);
-            vlanMatchBuilder.setVlanId(vlanIdBuilder.build());
+            Uint16 vlanId = source.getDlVlan();
+            if (vlanId.toJava() == 0xffff) {
+                vlanId = Uint16.ZERO;
+            }
+
+            vlanMatchBuilder.setVlanId(new VlanIdBuilder()
+                .setVlanId(new org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId(vlanId))
+                .setVlanIdPresent(!Uint16.ZERO.equals(vlanId))
+                .build());
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
         if (!source.getWildcards().getDLVLANPCP() && source.getDlVlanPcp() != null) {
