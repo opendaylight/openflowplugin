@@ -369,22 +369,17 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return true if flow contains SetVlanIdAction
      */
     private static boolean isSetVlanIdActionCasePresent(final Flow flow) {
-        // FIXME: get rid of this atrocity and just use null checks
-        return Optional.ofNullable(flow.getInstructions())
-                .flatMap(is -> Optional.ofNullable(is.nonnullInstruction()))
-                .flatMap(is -> is.values().stream()
-                        .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
-                                .rev131026.Instruction::getInstruction)
-                        .filter(ApplyActionsCase.class::isInstance)
-                        .map(i -> ((ApplyActionsCase) i).getApplyActions())
-                        .filter(Objects::nonNull)
-                        .map(ActionList::nonnullAction)
-                        .filter(Objects::nonNull)
-                        .flatMap(map -> map.values().stream())
-                        .map(Action::getAction)
-                        .filter(SetVlanIdActionCase.class::isInstance)
-                        .findFirst())
-                .isPresent();
+        final var instructions = flow.getInstructions();
+        return instructions != null && instructions.nonnullInstruction().values().stream()
+            .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
+            .filter(ApplyActionsCase.class::isInstance)
+            .map(i -> ((ApplyActionsCase) i).getApplyActions())
+            .filter(Objects::nonNull)
+            .map(ActionList::nonnullAction)
+            .filter(Objects::nonNull)
+            .flatMap(map -> map.values().stream())
+            .map(Action::getAction)
+            .anyMatch(SetVlanIdActionCase.class::isInstance);
     }
 
     @Override
