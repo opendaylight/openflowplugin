@@ -173,22 +173,22 @@ public class ConntrackCodec extends AbstractActionCodec {
     @Override
     public Action deserialize(final ByteBuf message) {
         final short length = deserializeCtHeader(message);
-        NxActionConntrackBuilder nxActionConntrackBuilder = new NxActionConntrackBuilder();
-        nxActionConntrackBuilder.setFlags(readUint16(message));
-        nxActionConntrackBuilder.setZoneSrc(readUint32(message));
-        nxActionConntrackBuilder.setConntrackZone(readUint16(message));
-        nxActionConntrackBuilder.setRecircTable(readUint8(message));
+        final var nxActionConntrackBuilder = new NxActionConntrackBuilder()
+            .setFlags(readUint16(message))
+            .setZoneSrc(readUint32(message))
+            .setConntrackZone(readUint16(message))
+            .setRecircTable(readUint8(message));
         message.skipBytes(5);
 
-        if  (length > CT_LENGTH) {
-            deserializeCtAction(message,nxActionConntrackBuilder, length - CT_LENGTH);
+        if (length > CT_LENGTH) {
+            deserializeCtAction(message, nxActionConntrackBuilder, length - CT_LENGTH);
         }
-        ActionBuilder actionBuilder = new ActionBuilder();
-        actionBuilder.setExperimenterId(getExperimenterId());
-        ActionConntrackBuilder actionConntrackBuilder = new ActionConntrackBuilder();
-        actionConntrackBuilder.setNxActionConntrack(nxActionConntrackBuilder.build());
-        actionBuilder.setActionChoice(actionConntrackBuilder.build());
-        return actionBuilder.build();
+        return new ActionBuilder()
+            .setExperimenterId(getExperimenterId())
+            .setActionChoice(new ActionConntrackBuilder()
+                .setNxActionConntrack(nxActionConntrackBuilder.build())
+                .build())
+            .build();
     }
 
     private static void deserializeCtAction(final ByteBuf message,
