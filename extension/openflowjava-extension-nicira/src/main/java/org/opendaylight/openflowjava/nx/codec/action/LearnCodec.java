@@ -35,8 +35,8 @@ public class LearnCodec extends AbstractActionCodec {
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        ActionLearn action = (ActionLearn) input.getActionChoice();
-        int length = LearnCodecUtil.calcLength(action);
+        final ActionLearn action = (ActionLearn) input.getActionChoice();
+        final int length = LearnCodecUtil.calcLength(action);
         int lengthMod = length % MUL_LENGTH;
         if (lengthMod != 0) {
             lengthMod = MUL_LENGTH - lengthMod;
@@ -50,28 +50,25 @@ public class LearnCodec extends AbstractActionCodec {
         if (lengthMod != 0) {
             outBuffer.writeZero(lengthMod);
         }
-
     }
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        ActionBuilder actionBuilder = new ActionBuilder();
-        actionBuilder.setExperimenterId(new ExperimenterId(NiciraConstants.NX_VENDOR_ID));
 
         short length = LearnCodecUtil.deserializeHeader(message);
-        final ActionLearnBuilder actionLearnBuilder = new ActionLearnBuilder();
 
-        NxActionLearnBuilder nxActionLearnBuilder = new NxActionLearnBuilder();
+        final var nxActionLearnBuilder = new NxActionLearnBuilder();
         LearnCodecUtil.deserializeLearnHeader(message, nxActionLearnBuilder);
 
         length -= LearnCodecUtil.HEADER_LENGTH;
 
         LearnCodecUtil.buildFlowModSpecs(nxActionLearnBuilder, message, length);
 
-        actionLearnBuilder.setNxActionLearn(nxActionLearnBuilder.build());
-
-        actionBuilder.setActionChoice(actionLearnBuilder.build());
-
-        return actionBuilder.build();
+        return new ActionBuilder()
+            .setExperimenterId(new ExperimenterId(NiciraConstants.NX_VENDOR_ID))
+            .setActionChoice( new ActionLearnBuilder()
+                .setNxActionLearn(nxActionLearnBuilder.build())
+                .build())
+            .build();
     }
 }
