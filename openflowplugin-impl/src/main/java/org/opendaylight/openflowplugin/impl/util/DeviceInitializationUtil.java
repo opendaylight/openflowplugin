@@ -8,11 +8,12 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import java.net.InetSocketAddress;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -95,14 +96,13 @@ public final class DeviceInitializationUtil {
     public static IpAddress getIpAddress(final ConnectionContext connectionContext,
                                          final InstanceIdentifier<Node> instanceIdentifier) {
         final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
-
-        return getRemoteAddress(connectionContext, instanceIdentifier)
-                .map(inetSocketAddress -> {
-                    final IpAddress ipAddress = IetfInetUtil.INSTANCE.ipAddressFor(inetSocketAddress.getAddress());
-                    LOG.info("IP address of the node {} is: {}", node, ipAddress);
-                    return ipAddress;
-                })
-                .orElse(null);
+        final InetSocketAddress address = getRemoteAddress(connectionContext, instanceIdentifier);
+        if (address == null) {
+            return null;
+        }
+        final IpAddress ipAddress = IetfInetUtil.INSTANCE.ipAddressFor(address.getAddress());
+        LOG.info("IP address of the node {} is: {}", node, ipAddress);
+        return ipAddress;
     }
 
     /**
@@ -115,15 +115,13 @@ public final class DeviceInitializationUtil {
     public static PortNumber getPortNumber(final ConnectionContext connectionContext,
                                            final InstanceIdentifier<Node> instanceIdentifier) {
         final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
-
-        return getRemoteAddress(connectionContext, instanceIdentifier)
-                .map(inetSocketAddress -> {
-                    final int port = inetSocketAddress.getPort();
-                    LOG.info("Port number of the node {} is: {}", node, port);
-                    return new PortNumber(port);
-                })
-                .orElse(null);
-
+        final InetSocketAddress address = getRemoteAddress(connectionContext, instanceIdentifier);
+        if (address == null) {
+            return null;
+        }
+        final int port = address.getPort();
+        LOG.info("Port number of the node {} is: {}", node, port);
+        return new PortNumber(port);
     }
 
     /**
@@ -140,18 +138,14 @@ public final class DeviceInitializationUtil {
                         .build());
     }
 
-    private static Optional<InetSocketAddress> getRemoteAddress(final ConnectionContext connectionContext,
+    private static @Nullable InetSocketAddress getRemoteAddress(final ConnectionContext connectionContext,
                                                                 final InstanceIdentifier<Node> instanceIdentifier) {
-        final Optional<InetSocketAddress> inetSocketAddress = Optional
-                .ofNullable(connectionContext.getConnectionAdapter())
-                .flatMap(connectionAdapter -> Optional.ofNullable(connectionAdapter.getRemoteAddress()));
-
-        if (!inetSocketAddress.isPresent()) {
-            LOG.warn("Remote address of the node {} cannot be obtained. No connection with switch.", PathUtil
-                    .extractNodeId(instanceIdentifier));
+        final ConnectionAdapter adapter = connectionContext.getConnectionAdapter();
+        final InetSocketAddress remoteAddress = adapter == null ? null : adapter.getRemoteAddress();
+        if (remoteAddress == null) {
+            LOG.warn("Remote address of the node {} cannot be obtained. No connection with switch.",
+                PathUtil.extractNodeId(instanceIdentifier));
         }
-
-        return inetSocketAddress;
+        return remoteAddress;
     }
-
 }
