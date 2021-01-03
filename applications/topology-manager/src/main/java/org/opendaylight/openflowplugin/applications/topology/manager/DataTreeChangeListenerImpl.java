@@ -31,7 +31,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeChangeListenerImpl.class);
     private static final long STARTUP_LOOP_TICK = 500L;
     private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-    protected final ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+    protected final ListenerRegistration<?> listenerRegistration;
     protected OperationProcessor operationProcessor;
 
     static final InstanceIdentifier<Topology> II_TO_TOPOLOGY = InstanceIdentifier.create(NetworkTopology.class)
@@ -77,7 +77,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
                        nodeKeyInTopology).build();
     }
 
-    NodeId provideTopologyNodeId(InstanceIdentifier<T> iiToNodeInInventory) {
+    NodeId provideTopologyNodeId(final InstanceIdentifier<T> iiToNodeInInventory) {
         final NodeKey inventoryNodeKey = iiToNodeInInventory.firstKeyOf(Node.class);
         if (inventoryNodeKey != null) {
             return new NodeId(inventoryNodeKey.getId().getValue());
