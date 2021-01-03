@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.nx.codec.match.NxmHeader;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -56,17 +58,17 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         return new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
     }
 
-    private static int getPaddingRemainder(int nonPaddedSize) {
-        int paddingRemainder = EncodeConstants.PADDING - (nonPaddedSize % EncodeConstants.PADDING);
+    private static int getPaddingRemainder(final int nonPaddedSize) {
+        int paddingRemainder = EncodeConstants.PADDING - nonPaddedSize % EncodeConstants.PADDING;
         return paddingRemainder % EncodeConstants.PADDING;
     }
 
-    protected static final void skipPadding(ByteBuf message, int startIndex) {
+    protected static final void skipPadding(final ByteBuf message, final int startIndex) {
         int nonPaddedSize = message.readerIndex() - startIndex;
         message.skipBytes(getPaddingRemainder(nonPaddedSize));
     }
 
-    protected static final void writePaddingAndSetLength(ByteBuf outBuffer, int startIndex) {
+    protected static final void writePaddingAndSetLength(final ByteBuf outBuffer, final int startIndex) {
         int nonPaddedSize = outBuffer.writerIndex() - startIndex;
         outBuffer.writeZero(getPaddingRemainder(nonPaddedSize));
         outBuffer.setShort(startIndex + Short.BYTES, outBuffer.writerIndex() - startIndex);
@@ -80,11 +82,8 @@ public abstract class AbstractActionCodec implements OFSerializer<Action>, OFDes
         }
     }
 
-    protected static BigInteger readNxmHeader(final ByteBuf message) {
-        int value = message.getUnsignedShort(message.readerIndex());
-        byte[] bytes = new byte[value == EncodeConstants.EXPERIMENTER_VALUE ? Long.BYTES : Integer.BYTES];
-        message.readBytes(bytes);
-        return new BigInteger(1, bytes);
+    protected static Uint64 readNxmHeader(final ByteBuf message) {
+        final int value = message.getUnsignedShort(message.readerIndex());
+        return value == EncodeConstants.EXPERIMENTER_VALUE ? readUint64(message) : readUint32(message).toUint64();
     }
-
 }
