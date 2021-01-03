@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.ct.mark._case.NxActionCtMarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNat;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofpact.actions.ofpact.actions.nx.action.nat._case.NxActionNatBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -204,7 +205,7 @@ public class ConntrackCodec extends AbstractActionCodec {
         int processedCtActionsLength = ctActionsLength;
 
         while (processedCtActionsLength > 0) {
-            int startReaderIndex = message.readerIndex();
+            final int startReaderIndex = message.readerIndex();
 
             if (EncodeConstants.EXPERIMENTER_VALUE == message.readUnsignedShort()) {
                 // NAT action
@@ -212,37 +213,39 @@ public class ConntrackCodec extends AbstractActionCodec {
                 message.setIndex(startReaderIndex, message.writerIndex());
 
                 final int startIndex = message.readerIndex();
-                int length = deserializeCtHeader(message);
+                final int length = deserializeCtHeader(message);
 
                 processedCtActionsLength = processedCtActionsLength - length;
-                NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
                 message.skipBytes(2);
-                nxActionNatBuilder.setFlags(readUint16(message));
+                final var nxActionNatBuilder = new NxActionNatBuilder()
+                    .setFlags(readUint16(message));
 
-                int rangePresent = message.readUnsignedShort();
+                final Uint16 rangePresent = readUint16(message);
                 nxActionNatBuilder.setRangePresent(rangePresent);
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue())) {
+
+                final int rangeBits = rangePresent.toJava();
+                if ((rangeBits & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue()) != 0) {
                     InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
                     nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
                 }
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue())) {
+                if ((rangeBits & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue()) != 0) {
                     InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
                     nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
                 }
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue())) {
+                if ((rangeBits & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue()) != 0) {
                     nxActionNatBuilder.setPortMin(readUint16(message));
                 }
-                if (0 != (rangePresent & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue())) {
+                if ((rangeBits & NxActionNatRangePresent.NXNATRANGEPROTOMAX.getIntValue()) != 0) {
                     nxActionNatBuilder.setPortMax(readUint16(message));
                 }
 
-                NxActionNatCaseBuilder caseBuilder = new NxActionNatCaseBuilder();
-                caseBuilder.setNxActionNat(nxActionNatBuilder.build());
-                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
-                ctActionsBuilder.setOfpactActions(caseBuilder.build());
-                ctActionsList.add(ctActionsBuilder.build());
-                int pad = length - (message.readerIndex() - startIndex);
-                message.skipBytes(pad);
+                ctActionsList.add(new CtActionsBuilder()
+                    .setOfpactActions(new NxActionNatCaseBuilder()
+                    .setNxActionNat(nxActionNatBuilder.build()).build())
+                    .build());
+
+                // Padding
+                message.skipBytes(length - (message.readerIndex() - startIndex));
             } else {
                 // only other possible action here is currently ct_mark
                 // reset indices
@@ -251,15 +254,15 @@ public class ConntrackCodec extends AbstractActionCodec {
 
                 deserializeCtHeaderWithoutSubtype(message);
 
-                NxActionCtMarkBuilder nxActionCtMarkBuilder = new NxActionCtMarkBuilder();
-                nxActionCtMarkBuilder.setCtMark(readUint32(message));
+                ctActionsList.add(new CtActionsBuilder()
+                    .setOfpactActions(new NxActionCtMarkCaseBuilder()
+                        .setNxActionCtMark(new NxActionCtMarkBuilder()
+                            .setCtMark(readUint32(message))
+                            .build())
+                        .build())
+                    .build());
 
-                NxActionCtMarkCaseBuilder caseBuilder = new NxActionCtMarkCaseBuilder();
-                caseBuilder.setNxActionCtMark(nxActionCtMarkBuilder.build());
-                CtActionsBuilder ctActionsBuilder = new CtActionsBuilder();
-                ctActionsBuilder.setOfpactActions(caseBuilder.build());
-                ctActionsList.add(ctActionsBuilder.build());
-                // padding
+                // Padding
                 message.skipBytes(Integer.BYTES);
             }
         }
