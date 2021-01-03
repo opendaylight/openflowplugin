@@ -8,8 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions;
 
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
-import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -21,11 +22,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 
 public abstract class AbstractActionInstructionSerializer<T extends Instruction>
         extends AbstractInstructionSerializer<T> implements SerializerRegistryInjector {
-
-    private SerializerRegistry registry;
+    private SerializerRegistry registry = null;
 
     @Override
-    public void serialize(T input, ByteBuf outBuffer) {
+    public void serialize(final T input, final ByteBuf outBuffer) {
         outBuffer.writeShort(getType());
     }
 
@@ -36,25 +36,24 @@ public abstract class AbstractActionInstructionSerializer<T extends Instruction>
      * @param outBuffer output buffer
      * @param startIndex start index of byte buffer
      */
-    protected void writeActions(ActionList actions, short version, ByteBuf outBuffer, int startIndex) {
-        Optional.ofNullable(actions).flatMap(as -> Optional.ofNullable(as.nonnullAction())).map(as -> {
+    protected void writeActions(final ActionList actions, final short version, final ByteBuf outBuffer,
+            final int startIndex) {
+        if (actions != null) {
             final int lengthIndex = outBuffer.writerIndex();
             outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
             outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
-            as.values().stream().sorted(OrderComparator.build()).forEach(a -> ActionUtil
-                    .writeAction(a.getAction(), version, registry, outBuffer));
+            actions.nonnullAction().values().stream()
+                .sorted(OrderComparator.build())
+                .forEach(a -> ActionUtil.writeAction(a.getAction(), version, registry, outBuffer));
             outBuffer.setShort(lengthIndex, outBuffer.writerIndex() - startIndex);
-            return actions;
-        }).orElseGet(() -> {
+        } else {
             outBuffer.writeShort(getLength());
             outBuffer.writeZero(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
-            return actions;
-        });
+        }
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
+        registry = requireNonNull(serializerRegistry);
     }
-
 }
