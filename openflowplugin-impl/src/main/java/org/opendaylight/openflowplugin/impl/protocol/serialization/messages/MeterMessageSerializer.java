@@ -18,10 +18,12 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterMessage;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.BandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeaders;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,47 +59,50 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
     }
 
     private void serializeBands(final MeterBandHeaders meterBandHeaders, final ByteBuf outBuffer) {
-        if (meterBandHeaders != null && meterBandHeaders.getMeterBandHeader() != null) {
-            meterBandHeaders.nonnullMeterBandHeader().values().forEach(meterBandHeader ->
+        if (meterBandHeaders != null) {
+            for (MeterBandHeader meterBandHeader : meterBandHeaders.nonnullMeterBandHeader().values()) {
+                final BandType type = meterBandHeader.getBandType();
+                if (type != null) {
                     // FIXME: get rid of this atrocity and just use a null check
                     Optional.ofNullable(meterBandHeader.getMeterBandTypes())
-                            .flatMap(m -> Optional.ofNullable(m.getFlags()))
-                            .ifPresent(flags -> Optional.ofNullable(meterBandHeader.getBandType()).ifPresent(type -> {
-                                if (flags.getOfpmbtDrop()) {
-                                    final Drop band = (Drop) type;
-                                    outBuffer.writeShort(MeterBandType.OFPMBTDROP.getIntValue());
+                        .flatMap(m -> Optional.ofNullable(m.getFlags()))
+                        .ifPresent(flags -> {
+                            if (flags.getOfpmbtDrop()) {
+                                final Drop band = (Drop) type;
+                                outBuffer.writeShort(MeterBandType.OFPMBTDROP.getIntValue());
 
-                                    outBuffer.writeShort(LENGTH_OF_METER_BANDS);
-                                    outBuffer.writeInt(band.getDropRate().intValue());
-                                    outBuffer.writeInt(band.getDropBurstSize().intValue());
-                                    outBuffer.writeZero(PADDING_IN_METER_BAND_DROP);
-                                } else if (flags.getOfpmbtDscpRemark()) {
-                                    final DscpRemark band = (DscpRemark) type;
-                                    outBuffer.writeShort(MeterBandType.OFPMBTDSCPREMARK.getIntValue());
+                                outBuffer.writeShort(LENGTH_OF_METER_BANDS);
+                                outBuffer.writeInt(band.getDropRate().intValue());
+                                outBuffer.writeInt(band.getDropBurstSize().intValue());
+                                outBuffer.writeZero(PADDING_IN_METER_BAND_DROP);
+                            } else if (flags.getOfpmbtDscpRemark()) {
+                                final DscpRemark band = (DscpRemark) type;
+                                outBuffer.writeShort(MeterBandType.OFPMBTDSCPREMARK.getIntValue());
 
-                                    outBuffer.writeShort(LENGTH_OF_METER_BANDS);
-                                    outBuffer.writeInt(band.getDscpRemarkRate().intValue());
-                                    outBuffer.writeInt(band.getDscpRemarkBurstSize().intValue());
-                                    outBuffer.writeByte(band.getPrecLevel().toJava());
-                                    outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
-                                } else if (flags.getOfpmbtExperimenter()) {
-                                    final Experimenter band = (Experimenter) type;
+                                outBuffer.writeShort(LENGTH_OF_METER_BANDS);
+                                outBuffer.writeInt(band.getDscpRemarkRate().intValue());
+                                outBuffer.writeInt(band.getDscpRemarkBurstSize().intValue());
+                                outBuffer.writeByte(band.getPrecLevel().toJava());
+                                outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
+                            } else if (flags.getOfpmbtExperimenter()) {
+                                final Experimenter band = (Experimenter) type;
 
-                                    // TODO: finish experimenter serialization
-                                    final ExperimenterIdSerializerKey<Experimenter> key =
-                                            new ExperimenterIdSerializerKey<>(
-                                                    EncodeConstants.OF13_VERSION_ID,
-                                                    band.getExperimenter().toJava(),
-                                                    (Class<Experimenter>) type.implementedInterface());
+                                // TODO: finish experimenter serialization
+                                final ExperimenterIdSerializerKey<Experimenter> key =
+                                    new ExperimenterIdSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+                                        band.getExperimenter().toJava(),
+                                        (Class<Experimenter>) type.implementedInterface());
 
-                                    try {
-                                        final OFSerializer<Experimenter> serializer = registry.getSerializer(key);
-                                        serializer.serialize(band, outBuffer);
-                                    } catch (final IllegalStateException e) {
-                                        LOG.warn("Serializer for key: {} wasn't found", key, e);
-                                    }
+                                final OFSerializer<Experimenter> serializer = registry.getSerializer(key);
+                                try {
+                                    serializer.serialize(band, outBuffer);
+                                } catch (final IllegalStateException e) {
+                                    LOG.warn("Serializer for key: {} wasn't found", key, e);
                                 }
-                            })));
+                            }
+                        });
+                }
+            }
         }
     }
 
