@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
-import com.google.common.base.Preconditions;
-import java.util.Collections;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -21,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.statistics.FlowTableStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Implementation define a contract between {@link FlowTableStatistics} data object
@@ -52,20 +53,18 @@ public class FlowTableStatNotificationSupplierImpl extends
     @Override
     public FlowTableStatisticsUpdate createNotification(final FlowTableStatistics flowTableStatistics,
                                                         final InstanceIdentifier<FlowTableStatistics> path) {
-        Preconditions.checkArgument(flowTableStatistics != null);
-        Preconditions.checkArgument(path != null);
+        checkArgument(flowTableStatistics != null);
+        checkArgument(path != null);
 
-        final FlowTableAndStatisticsMapBuilder ftsmBuilder = new FlowTableAndStatisticsMapBuilder(flowTableStatistics);
-        ftsmBuilder.withKey(new FlowTableAndStatisticsMapKey(
-                new TableId(path.firstKeyOf(Table.class).getId())));
-
-        final FlowTableStatisticsUpdateBuilder builder = new FlowTableStatisticsUpdateBuilder();
-        builder.setId(getNodeId(path));
-        builder.setMoreReplies(Boolean.FALSE);
-        // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.emptyList());
-        builder.setFlowTableAndStatisticsMap(Collections.singletonList(ftsmBuilder.build()));
-        return builder.build();
+        return new FlowTableStatisticsUpdateBuilder()
+            .setId(getNodeId(path))
+            .setMoreReplies(Boolean.FALSE)
+            // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
+            .setNodeConnector(BindingMap.of())
+            .setFlowTableAndStatisticsMap(BindingMap.of(new FlowTableAndStatisticsMapBuilder(flowTableStatistics)
+                .withKey(new FlowTableAndStatisticsMapKey(new TableId(path.firstKeyOf(Table.class).getId())))
+                .build()))
+            .build();
     }
 }
 

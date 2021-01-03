@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.item.stat;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Collections;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -52,19 +53,18 @@ public class FlowStatNotificationSupplierImpl extends AbstractNotificationSuppli
     @Override
     public FlowsStatisticsUpdate createNotification(final FlowStatistics flowStatistics,
                                                     final InstanceIdentifier<FlowStatistics> path) {
-        Preconditions.checkArgument(flowStatistics != null);
-        Preconditions.checkArgument(path != null);
+        checkArgument(flowStatistics != null);
+        checkArgument(path != null);
 
-        final FlowAndStatisticsMapListBuilder fsmlBuilder = new FlowAndStatisticsMapListBuilder(flowStatistics);
-        fsmlBuilder.setFlowId(new FlowId(path.firstKeyOf(Flow.class).getId().getValue()));
-
-        final FlowsStatisticsUpdateBuilder builder = new FlowsStatisticsUpdateBuilder();
-        builder.setId(getNodeId(path));
-        builder.setMoreReplies(Boolean.FALSE);
-        // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
-        builder.setNodeConnector(Collections.emptyList());
-        builder.setFlowAndStatisticsMapList(Collections.singletonList(fsmlBuilder.build()));
-        return builder.build();
+        return new FlowsStatisticsUpdateBuilder()
+            .setId(getNodeId(path))
+            .setMoreReplies(Boolean.FALSE)
+            // NOTE : fix if it needs, but we have to ask DataStore for the NodeConnector list
+            .setNodeConnector(Collections.emptyMap())
+            .setFlowAndStatisticsMapList(Collections.singletonList(new FlowAndStatisticsMapListBuilder(flowStatistics)
+                .setFlowId(new FlowId(path.firstKeyOf(Flow.class).getId().getValue()))
+                .build()))
+            .build();
     }
 }
 

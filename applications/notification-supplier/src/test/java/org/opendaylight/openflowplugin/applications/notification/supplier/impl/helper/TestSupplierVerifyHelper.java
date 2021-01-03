@@ -7,22 +7,17 @@
  */
 package org.opendaylight.openflowplugin.applications.notification.supplier.impl.helper;
 
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 
 public final class TestSupplierVerifyHelper {
-
     private TestSupplierVerifyHelper() {
-        throw new UnsupportedOperationException("Test utility class");
+        // Hidden on purpose
     }
 
-    public static void verifyDataTreeChangeListenerRegistration(DataBroker dataBroker) {
-
-        Mockito.verify(dataBroker).registerDataTreeChangeListener(
-                ArgumentMatchers.<DataTreeIdentifier>any(),
-                ArgumentMatchers.<DataTreeChangeListener>any());
+    public static void verifyDataTreeChangeListenerRegistration(final DataBroker dataBroker) {
+        verify(dataBroker).registerDataTreeChangeListener(any(), any());
     }
 }
