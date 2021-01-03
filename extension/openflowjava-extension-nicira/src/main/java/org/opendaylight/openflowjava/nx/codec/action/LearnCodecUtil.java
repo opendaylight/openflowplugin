@@ -256,9 +256,9 @@ public final class LearnCodecUtil {
     private FlowMods readFlowModAddMatchFromField(final ByteBuf message, final short numBits) {
         final var builder = new FlowModAddMatchFromFieldBuilder()
             .setSrcField(readUint32(message))
-            .setSrcOfs((int) message.readShort())
+            .setSrcOfs(readUint16(message))
             .setDstField(readUint32(message))
-            .setDstOfs((int) message.readShort())
+            .setDstOfs(readUint16(message))
             .setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - Short.BYTES;
 
@@ -273,7 +273,7 @@ public final class LearnCodecUtil {
         final var builder = new FlowModAddMatchFromValueBuilder()
             .setValue(readUint16(message))
             .setSrcField(readUint32(message))
-            .setSrcOfs((int) message.readShort())
+            .setSrcOfs(readUint16(message))
             .setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - Short.BYTES;
 
@@ -287,9 +287,9 @@ public final class LearnCodecUtil {
     private FlowMods readFlowModCopyFromField(final ByteBuf message, final short numBits) {
         final var builder = new FlowModCopyFieldIntoFieldBuilder()
             .setSrcField(readUint32(message))
-            .setSrcOfs((int) message.readShort())
+            .setSrcOfs(readUint16(message))
             .setDstField(readUint32(message))
-            .setDstOfs((int) message.readShort())
+            .setDstOfs(readUint16(message))
             .setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - Short.BYTES;
 
@@ -304,7 +304,7 @@ public final class LearnCodecUtil {
         final var builder = new FlowModCopyValueIntoFieldBuilder()
             .setValue(readUint16(message))
             .setDstField(readUint32(message))
-            .setDstOfs((int) message.readShort())
+            .setDstOfs(readUint16(message))
             .setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - Short.BYTES;
 
@@ -318,7 +318,7 @@ public final class LearnCodecUtil {
     private FlowMods readFlowToPort(final ByteBuf message, final short numBits) {
         final var builder = new FlowModOutputToPortBuilder()
             .setSrcField(readUint32(message))
-            .setSrcOfs((int) message.readShort())
+            .setSrcOfs(readUint16(message))
             .setFlowModNumBits((int) numBits);
         length -= TO_PORT_LENGTH - Short.BYTES;
 
