@@ -135,7 +135,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
         final ProcessFlatBatchInput processFlatBatchInput = processFlatBatchInputCpt.getValue();
         Assert.assertFalse(processFlatBatchInput.getExitOnFirstError());
-        Assert.assertEquals(13, processFlatBatchInput.getBatch().size());
+        Assert.assertEquals(13, processFlatBatchInput.nonnullBatch().size());
 
         Assert.assertTrue(rpcResult.isDone());
         Assert.assertTrue(rpcResult.get().isSuccessful());
@@ -161,10 +161,10 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(2, batchBag.size());
         Assert.assertEquals(FlatBatchRemoveFlowCase.class, batchBag.get(0).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveFlowCase) batchBag.get(0).getBatchChoice())
-                .getFlatBatchRemoveFlow().size());
+                .nonnullFlatBatchRemoveFlow().size());
         Assert.assertEquals(FlatBatchRemoveFlowCase.class, batchBag.get(1).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveFlowCase) batchBag.get(1).getBatchChoice())
-                .getFlatBatchRemoveFlow().size());
+                .nonnullFlatBatchRemoveFlow().size());
     }
 
     @Test
@@ -176,13 +176,13 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(3, batchBag.size());
         Assert.assertEquals(FlatBatchAddGroupCase.class, batchBag.get(0).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddGroupCase) batchBag.get(0).getBatchChoice())
-                .getFlatBatchAddGroup().size());
+                .nonnullFlatBatchAddGroup().size());
         Assert.assertEquals(FlatBatchAddGroupCase.class, batchBag.get(1).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddGroupCase) batchBag.get(1).getBatchChoice())
-                .getFlatBatchAddGroup().size());
+                .nonnullFlatBatchAddGroup().size());
         Assert.assertEquals(FlatBatchUpdateGroupCase.class, batchBag.get(2).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchUpdateGroupCase) batchBag.get(2).getBatchChoice())
-                .getFlatBatchUpdateGroup().size());
+                .nonnullFlatBatchUpdateGroup().size());
     }
 
     @Test
@@ -193,10 +193,10 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(2, batchBag.size());
         Assert.assertEquals(FlatBatchRemoveGroupCase.class, batchBag.get(0).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveGroupCase) batchBag.get(0).getBatchChoice())
-                .getFlatBatchRemoveGroup().size());
+                .nonnullFlatBatchRemoveGroup().size());
         Assert.assertEquals(FlatBatchRemoveGroupCase.class, batchBag.get(1).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveGroupCase) batchBag.get(1).getBatchChoice())
-                .getFlatBatchRemoveGroup().size());
+                .nonnullFlatBatchRemoveGroup().size());
     }
 
     @Test
@@ -208,10 +208,10 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(2, batchBag.size());
         Assert.assertEquals(FlatBatchAddMeterCase.class, batchBag.get(0).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddMeterCase) batchBag.get(0).getBatchChoice())
-                .getFlatBatchAddMeter().size());
+                .nonnullFlatBatchAddMeter().size());
         Assert.assertEquals(FlatBatchUpdateMeterCase.class, batchBag.get(1).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchUpdateMeterCase) batchBag.get(1).getBatchChoice())
-                .getFlatBatchUpdateMeter().size());
+                .nonnullFlatBatchUpdateMeter().size());
     }
 
     @Test
@@ -222,7 +222,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(1, batchBag.size());
         Assert.assertEquals(FlatBatchRemoveMeterCase.class, batchBag.get(0).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchRemoveMeterCase) batchBag.get(0).getBatchChoice())
-                .getFlatBatchRemoveMeter().size());
+                .nonnullFlatBatchRemoveMeter().size());
     }
 
     @Test
@@ -234,13 +234,13 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
         Assert.assertEquals(3, batchBag.size());
         Assert.assertEquals(FlatBatchAddFlowCase.class, batchBag.get(0).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddFlowCase) batchBag.get(0).getBatchChoice())
-                .getFlatBatchAddFlow().size());
+                .nonnullFlatBatchAddFlow().size());
         Assert.assertEquals(FlatBatchUpdateFlowCase.class, batchBag.get(1).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchUpdateFlowCase) batchBag.get(1).getBatchChoice())
-                .getFlatBatchUpdateFlow().size());
+                .nonnullFlatBatchUpdateFlow().size());
         Assert.assertEquals(FlatBatchAddFlowCase.class, batchBag.get(2).getBatchChoice().implementedInterface());
         Assert.assertEquals(3, ((FlatBatchAddFlowCase) batchBag.get(2).getBatchChoice())
-                .getFlatBatchAddFlow().size());
+                .nonnullFlatBatchAddFlow().size());
     }
 
     @Test
