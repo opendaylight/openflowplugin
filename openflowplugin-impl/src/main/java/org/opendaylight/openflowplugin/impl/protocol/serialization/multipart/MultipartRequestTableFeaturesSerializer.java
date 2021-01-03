@@ -7,11 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -20,59 +19,53 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TableProperties;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 
 public class MultipartRequestTableFeaturesSerializer implements OFSerializer<MultipartRequestTableFeatures>,
         SerializerRegistryInjector {
-
     private static final byte PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY = 5;
-    private SerializerRegistry registry;
+
+    private SerializerRegistry registry = null;
 
     @Override
     public void serialize(final MultipartRequestTableFeatures multipartRequestTableFeatures, final ByteBuf byteBuf) {
-        Optional
-            .ofNullable(multipartRequestTableFeatures.nonnullTableFeatures())
-            .ifPresent(tableFeatures -> tableFeatures.values()
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(tableFeature -> {
-                    final int featureIndex = byteBuf.writerIndex();
-                    byteBuf.writeShort(EncodeConstants.EMPTY_LENGTH);
-                    byteBuf.writeByte(tableFeature.getTableId().byteValue());
-                    byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
-                    byteBuf.writeBytes(tableFeature.getName().getBytes(StandardCharsets.UTF_8));
-                    byteBuf.writeZero(32 - tableFeature.getName().getBytes(StandardCharsets.UTF_8).length);
-                    byteBuf.writeLong(tableFeature.getMetadataMatch().longValue());
-                    byteBuf.writeLong(tableFeature.getMetadataWrite().longValue());
-                    byteBuf.writeInt(ByteBufUtils.fillBitMask(0, tableFeature.getConfig().getDEPRECATEDMASK()));
-                    byteBuf.writeInt(tableFeature.getMaxEntries().intValue());
-                    serializeProperties(tableFeature.getTableProperties(), byteBuf);
-                    byteBuf.setShort(featureIndex, byteBuf.writerIndex() - featureIndex);
-                }));
+        for (TableFeatures tableFeature : multipartRequestTableFeatures.nonnullTableFeatures().values()) {
+            final int featureIndex = byteBuf.writerIndex();
+            byteBuf.writeShort(EncodeConstants.EMPTY_LENGTH);
+            byteBuf.writeByte(tableFeature.getTableId().byteValue());
+            byteBuf.writeZero(PADDING_IN_MULTIPART_REQUEST_TABLE_FEATURES_BODY);
+
+            final byte[] nameBytes = tableFeature.getName().getBytes(StandardCharsets.UTF_8);
+            byteBuf.writeBytes(nameBytes);
+            byteBuf.writeZero(32 - nameBytes.length);
+            // FIXME: use writeUint() instead of .longValue()/intValue() here
+            byteBuf.writeLong(tableFeature.getMetadataMatch().longValue());
+            byteBuf.writeLong(tableFeature.getMetadataWrite().longValue());
+            byteBuf.writeInt(ByteBufUtils.fillBitMask(0, tableFeature.getConfig().getDEPRECATEDMASK()));
+            byteBuf.writeInt(tableFeature.getMaxEntries().intValue());
+            serializeProperties(tableFeature.getTableProperties(), byteBuf);
+            byteBuf.setShort(featureIndex, byteBuf.writerIndex() - featureIndex);
+        }
     }
 
     @SuppressWarnings("unchecked")
     private void serializeProperties(final TableProperties tableProperties, final ByteBuf byteBuf) {
-        Optional
-            .ofNullable(tableProperties)
-            .flatMap(properties -> Optional.ofNullable(properties.nonnullTableFeatureProperties()))
-            .ifPresent(properties -> properties.values()
-                .stream()
-                .filter(Objects::nonNull)
-                .forEach(property -> {
-                    final Class<? extends TableFeaturePropType> clazz = (Class<? extends TableFeaturePropType>) property
-                        .getTableFeaturePropType()
-                        .implementedInterface();
+        if (tableProperties != null) {
+            for (TableFeatureProperties property : tableProperties.nonnullTableFeatureProperties().values()) {
+                final Class<? extends TableFeaturePropType> clazz =
+                    (Class<? extends TableFeaturePropType>) property.getTableFeaturePropType().implementedInterface();
 
-                    Preconditions.checkNotNull(registry)
-                        .<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
-                            new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
-                                .serialize(property.getTableFeaturePropType(), byteBuf);
-                }));
+                registry.<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
+                        new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
+                            .serialize(property.getTableFeaturePropType(), byteBuf);
+            }
+        }
     }
 
     @Override
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        registry = serializerRegistry;
+        registry = requireNonNull(serializerRegistry);
     }
 }
