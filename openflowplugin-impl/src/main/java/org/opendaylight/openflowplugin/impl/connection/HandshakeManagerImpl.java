@@ -40,10 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HandshakeManagerImpl implements HandshakeManager {
-
-    private static final long ACTIVE_XID = 20L;
-
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeManagerImpl.class);
+    private static final long ACTIVE_XID = 20L;
 
     private Short lastProposedVersion;
     private Short lastReceivedVersion;
@@ -59,7 +57,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
 
     private final HandshakeListener handshakeListener;
 
-    private boolean useVersionBitmap; // not final just for unit test
+    // not final just for unit test
+    private boolean useVersionBitmap;
 
     private final DeviceConnectionRateLimiter deviceConnectionRateLimiter;
     private final int deviceConnectionHoldTime;
@@ -145,10 +144,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * Handles the version negotiation step by step.
      *
      * @param remoteVersion remote version
-     * @throws Exception exception
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
-    private void handleStepByStepVersionNegotiation(final Short remoteVersion) throws Exception {
+    private void handleStepByStepVersionNegotiation(final Short remoteVersion) {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", remoteVersion, lastProposedVersion,
                   highestVersion);
 
@@ -439,7 +436,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         LOG.debug("future features [{}] hooked ..", xid);
     }
 
-    public boolean isAllowedToConnect(BigInteger nodeId) {
+    public boolean isAllowedToConnect(final BigInteger nodeId) {
         // The device isn't allowed for connection till device connection hold time is over
         if (deviceConnectionHoldTime > 0) {
             LocalDateTime lastConnectionTime = deviceConnectionStatusProvider.getDeviceLastConnectionTime(nodeId);
@@ -468,9 +465,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * This method is not thread safe and can only safely be used from a test.
      */
     @VisibleForTesting
-    @SuppressFBWarnings("IS2_INCONSISTENT_SYNC") // because shake() is synchronized
+    @SuppressFBWarnings(value = "IS2_INCONSISTENT_SYNC", justification = "because shake() is synchronized")
     void setUseVersionBitmap(final boolean useVersionBitmap) {
         this.useVersionBitmap = useVersionBitmap;
     }
-
 }
