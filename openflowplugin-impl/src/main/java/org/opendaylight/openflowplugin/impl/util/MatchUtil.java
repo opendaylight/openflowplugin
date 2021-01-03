@@ -8,11 +8,9 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionResolvers;
@@ -30,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNotifSwitchFlowRemovedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListKey;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -51,8 +50,7 @@ public final class MatchUtil {
 
                 return matchBuilder.build();
             })
-            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow
-                    .Match.class, (match) -> {
+            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class, match -> {
                     final MatchBuilder matchBuilder = new MatchBuilder(match);
 
                     resolveExtensions(match).ifPresent(extensionLists -> matchBuilder
@@ -62,8 +60,8 @@ public final class MatchUtil {
 
                     return matchBuilder.build();
                 })
-            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed
-                    .Match.class, (match) -> {
+            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match.class,
+                match -> {
                     final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed
                             .MatchBuilder matchBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
                             .rev131026.flow.mod.removed.MatchBuilder(match);
@@ -75,8 +73,8 @@ public final class MatchUtil {
 
                     return matchBuilder.build();
                 })
-            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
-                    .Match.class, (match) -> {
+            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match.class,
+                match -> {
                     final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
                             .MatchBuilder matchBuilder =
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
@@ -89,8 +87,8 @@ public final class MatchUtil {
 
                     return matchBuilder.build();
                 })
-            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
-                    .Match.class, (match) -> {
+            .put(org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message.Match.class,
+                match -> {
                     final org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message
                             .MatchBuilder matchBuilder =
                             new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
@@ -144,12 +142,8 @@ public final class MatchUtil {
         return matchMatchFunction == null ? null : implementedInterface.cast(matchMatchFunction.apply(match));
     }
 
-    private static Optional<List<ExtensionList>> resolveExtensions(final Match match) {
-        return ExtensionResolvers
-                .getMatchExtensionResolver()
-                .getExtension(match)
-                .flatMap(matchExtension ->
-                        Optional.ofNullable(matchExtension.nonnullExtensionList().values()
-                        .stream().collect(Collectors.toList())));
+    private static Optional<Map<ExtensionListKey, ExtensionList>> resolveExtensions(final Match match) {
+        return ExtensionResolvers.getMatchExtensionResolver().getExtension(match)
+            .flatMap(matchExtension -> Optional.ofNullable(matchExtension.getExtensionList()));
     }
 }
