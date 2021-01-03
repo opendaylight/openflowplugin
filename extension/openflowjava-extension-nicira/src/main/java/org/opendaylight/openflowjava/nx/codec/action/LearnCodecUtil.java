@@ -52,9 +52,13 @@ public final class LearnCodecUtil {
     private static final int FROM_VALUE_LENGTH = 10;
     private static final int TO_PORT_LENGTH = 8;
     private static final int EMPTY_FLOW_MOD_LENGTH = 2;
-    private static short length;
 
-    private LearnCodecUtil() {
+    // For overflow detection. We should probably just ByteBuf.slice() and fail-fast, i.e. don't read stuff beyond
+    // message length limit.
+    private short length;
+
+    private LearnCodecUtil(final short length) {
+        this.length = length;
     }
 
     static short deserializeHeader(ByteBuf message) {
@@ -198,13 +202,12 @@ public final class LearnCodecUtil {
         nxActionLearnBuilder.setFinHardTimeout(message.readUnsignedShort());
     }
 
-    static synchronized void buildFlowModSpecs(NxActionLearnBuilder nxActionLearnBuilder, ByteBuf message,
-            short messageLength) {
-        LearnCodecUtil.length = messageLength;
+    static void buildFlowModSpecs(NxActionLearnBuilder nxActionLearnBuilder, ByteBuf message, short messageLength) {
+        final LearnCodecUtil tmp = new LearnCodecUtil(messageLength);
         List<FlowMods> flowModeList = new ArrayList<>();
 
-        while (LearnCodecUtil.length > 0) {
-            FlowMods flowMod = readFlowMod(message);
+        while (tmp.length > 0) {
+            FlowMods flowMod = tmp.readFlowMod(message);
 
             if (flowMod != null) {
                 flowModeList.add(flowMod);
@@ -213,14 +216,14 @@ public final class LearnCodecUtil {
             }
         }
 
-        if (LearnCodecUtil.length != 0) {
+        if (tmp.length != 0) {
             LOG.error("Learn Codec read {} bytes more than needed from stream. Packet might be corrupted",
                     Math.abs(messageLength));
         }
         nxActionLearnBuilder.setFlowMods(flowModeList);
     }
 
-    private static FlowMods readFlowMod(ByteBuf message) {
+    private FlowMods readFlowMod(ByteBuf message) {
         short header = message.readShort();
         length -= EncodeConstants.SIZE_OF_SHORT_IN_BYTES;
         if (header == 0) {
@@ -248,9 +251,7 @@ public final class LearnCodecUtil {
         return null;
     }
 
-
-
-    private static FlowMods readFlowModAddMatchFromField(ByteBuf message, short numBits) {
+    private FlowMods readFlowModAddMatchFromField(ByteBuf message, short numBits) {
         FlowModAddMatchFromFieldBuilder builder = new FlowModAddMatchFromFieldBuilder();
         builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
@@ -266,7 +267,7 @@ public final class LearnCodecUtil {
         return flowModsBuilder.build();
     }
 
-    private static FlowMods readFlowModAddMatchFromValue(ByteBuf message, short numBits) {
+    private FlowMods readFlowModAddMatchFromValue(ByteBuf message, short numBits) {
         FlowModAddMatchFromValueBuilder builder = new FlowModAddMatchFromValueBuilder();
         builder.setValue(message.readUnsignedShort());
         builder.setSrcField(message.readUnsignedInt());
@@ -281,7 +282,7 @@ public final class LearnCodecUtil {
         return flowModsBuilder.build();
     }
 
-    private static FlowMods readFlowModCopyFromField(ByteBuf message, short numBits) {
+    private FlowMods readFlowModCopyFromField(ByteBuf message, short numBits) {
         FlowModCopyFieldIntoFieldBuilder builder = new FlowModCopyFieldIntoFieldBuilder();
         builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
@@ -297,7 +298,7 @@ public final class LearnCodecUtil {
         return flowModsBuilder.build();
     }
 
-    private static FlowMods readFlowModCopyFromValue(ByteBuf message, short numBits) {
+    private FlowMods readFlowModCopyFromValue(ByteBuf message, short numBits) {
         FlowModCopyValueIntoFieldBuilder builder = new FlowModCopyValueIntoFieldBuilder();
         builder.setValue(message.readUnsignedShort());
         builder.setDstField(message.readUnsignedInt());
@@ -312,7 +313,7 @@ public final class LearnCodecUtil {
         return flowModsBuilder.build();
     }
 
-    private static FlowMods readFlowToPort(ByteBuf message, short numBits) {
+    private FlowMods readFlowToPort(ByteBuf message, short numBits) {
         FlowModOutputToPortBuilder builder = new FlowModOutputToPortBuilder();
         builder.setSrcField(message.readUnsignedInt());
         builder.setSrcOfs((int) message.readShort());
