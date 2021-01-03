@@ -40,7 +40,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
 
     @Override
     public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification modification : modifications) {
+        for (DataTreeModification<FlowCapableNode> modification : modifications) {
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:
                     processAddedNode(modification);

@@ -37,6 +37,7 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
     }
 
     @Override
+    @Deprecated
     public void onLinkDiscovered(final LinkDiscovered notification) {
         processor.enqueueOperation(new TopologyOperation() {
             @Override
@@ -54,11 +55,13 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
     }
 
     @Override
+    @Deprecated
     public void onLinkOverutilized(final LinkOverutilized notification) {
         // NOOP
     }
 
     @Override
+    @Deprecated
     public void onLinkRemoved(final LinkRemoved notification) {
         processor.enqueueOperation(new TopologyOperation() {
             @Override
@@ -86,8 +89,8 @@ class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
     }
 
     @Override
+    @Deprecated
     public void onLinkUtilizationNormal(final LinkUtilizationNormal notification) {
         // NOOP
     }
-
 }
