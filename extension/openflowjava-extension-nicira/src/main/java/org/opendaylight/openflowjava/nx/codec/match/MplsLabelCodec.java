@@ -16,11 +16,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfMplsLabel;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.oxm.of.mpls.label.grouping.MplsLabelValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfMplsLabelCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfMplsLabelCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MplsLabelCodec extends AbstractMatchCodec {
 
@@ -34,21 +34,21 @@ public class MplsLabelCodec extends AbstractMatchCodec {
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
-        OfMplsLabelCaseValue value = (OfMplsLabelCaseValue) input.getMatchEntryValue();
-        outBuffer.writeInt(value.getMplsLabelValues().getMplsLabel().intValue());
+        outBuffer.writeInt(((OfMplsLabelCaseValue) input.getMatchEntryValue()).getMplsLabelValues().getMplsLabel()
+            .intValue());
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
-        OfMplsLabelCaseValueBuilder caseBuilder = new OfMplsLabelCaseValueBuilder();
-        MplsLabelValuesBuilder valuesBuilder = new MplsLabelValuesBuilder();
-        valuesBuilder.setMplsLabel(message.readLong()).build();
-        caseBuilder.setMplsLabelValues(valuesBuilder.build());
-        matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntryBuilder.build();
+    public MatchEntry deserialize(final ByteBuf message) {
+        return deserializeHeaderToBuilder(message)
+            .setMatchEntryValue(new OfMplsLabelCaseValueBuilder()
+                .setMplsLabelValues(new MplsLabelValuesBuilder()
+                    .setMplsLabel(Uint32.valueOf(message.readLong()))
+                    .build())
+                .build())
+            .build();
     }
 
     @Override
