@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import com.google.common.collect.ImmutableMap;
@@ -58,7 +57,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class TableFeaturesMatchFieldDeserializer {
@@ -251,25 +249,19 @@ public class TableFeaturesMatchFieldDeserializer {
      * @param message input buffer
      * @return set field match
      */
+    // FIXME: consider a nullable return
     public Optional<SetFieldMatch> deserialize(final ByteBuf message) {
-        int oxmClass = message.getUnsignedShort(message.readerIndex());
-        int oxmField = message.getUnsignedByte(message.readerIndex() + Short.BYTES) >>> 1;
-        Uint32 expId = null;
+        final int oxmClass = message.getUnsignedShort(message.readerIndex());
+        final int oxmField = message.getUnsignedByte(message.readerIndex() + Short.BYTES) >>> 1;
 
+        final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, oxmClass,
+            oxmField);
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
-            expId = Uint32.valueOf(message.getUnsignedInt(message.readerIndex() + Short.BYTES + 2 * Byte.BYTES));
+            key.setExperimenterId(Uint32.valueOf(
+                message.getUnsignedInt(message.readerIndex() + Short.BYTES + 2 * Byte.BYTES)));
         }
 
-        final MatchEntryDeserializerKey key =
-                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
-
-        key.setExperimenterId(expId);
-
-        return Optional
-                .ofNullable(codeToFieldMap.get(key))
-                .map(clazz -> processHeader(message)
-                        .withKey(new SetFieldMatchKey(clazz))
-                        .setMatchType(clazz)
-                        .build());
+        final Class<? extends MatchField> clazz = codeToFieldMap.get(key);
+        return clazz == null ? Optional.empty() : Optional.of(processHeader(message).setMatchType(clazz).build());
     }
 }
