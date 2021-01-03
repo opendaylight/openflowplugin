@@ -53,22 +53,31 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.FlatBatchUpdateMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.flow._case.FlatBatchAddFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.flow._case.FlatBatchRemoveFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.group._case.FlatBatchRemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.group._case.FlatBatchRemoveGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.group._case.FlatBatchRemoveGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlowBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.flow._case.FlatBatchUpdateFlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -81,6 +90,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
@@ -137,7 +148,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent())))
                     // TODO: propagate from input
                     .setExitOnFirstError(false)
-                    .setBatch(batchBag)
+                    .setBatch(BindingMap.ordered(batchBag))
                     .build();
 
             final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
@@ -161,7 +172,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             @Override
             public void onSuccess(final RpcResult<ProcessFlatBatchOutput> result) {
                 if (!result.isSuccessful() && result.getResult() != null
-                        && !result.getResult().getBatchFailure().isEmpty()) {
+                        && !result.getResult().nonnullBatchFailure().isEmpty()) {
                     Map<Range<Uint16>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
                     decrementBatchFailuresCounters(result.getResult().nonnullBatchFailure().values(), batchMap,
                             counters);
@@ -228,7 +239,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     @VisibleForTesting
-    static int assembleRemoveFlows(final List<Batch> batchBag, int batchOrder,
+    static int assembleRemoveFlows(final List<Batch> batchBag, final int batchOrder,
             final Map<TableKey, ItemSyncBox<Flow>> flowItemSyncTableMap) {
         // process flow remove
         int order = batchOrder;
@@ -237,8 +248,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 final ItemSyncBox<Flow> flowItemSyncBox = syncBoxEntry.getValue();
 
                 if (!flowItemSyncBox.getItemsToPush().isEmpty()) {
-                    final List<FlatBatchRemoveFlow> flatBatchRemoveFlowBag =
-                            new ArrayList<>(flowItemSyncBox.getItemsToUpdate().size());
+                    final Builder<FlatBatchRemoveFlowKey, FlatBatchRemoveFlow> flatBatchRemoveFlowBag =
+                            BindingMap.orderedBuilder(flowItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
                     for (Flow flow : flowItemSyncBox.getItemsToPush()) {
                         flatBatchRemoveFlowBag.add(new FlatBatchRemoveFlowBuilder(flow)
@@ -248,7 +259,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchRemoveFlowCaseBuilder()
-                                    .setFlatBatchRemoveFlow(flatBatchRemoveFlowBag)
+                                    .setFlatBatchRemoveFlow(flatBatchRemoveFlowBag.build())
                                     .build())
                             .setBatchOrder(Uint16.valueOf(order))
                             .build();
@@ -261,15 +272,15 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     @VisibleForTesting
-    static int assembleAddOrUpdateGroups(final List<Batch> batchBag, int batchOrder,
+    static int assembleAddOrUpdateGroups(final List<Batch> batchBag, final int batchOrder,
             final List<ItemSyncBox<Group>> groupsToAddOrUpdate) {
         // process group add+update
         int order = batchOrder;
         if (groupsToAddOrUpdate != null) {
             for (ItemSyncBox<Group> groupItemSyncBox : groupsToAddOrUpdate) {
                 if (!groupItemSyncBox.getItemsToPush().isEmpty()) {
-                    final List<FlatBatchAddGroup> flatBatchAddGroupBag =
-                            new ArrayList<>(groupItemSyncBox.getItemsToUpdate().size());
+                    final Builder<FlatBatchAddGroupKey, FlatBatchAddGroup> flatBatchAddGroupBag =
+                        BindingMap.orderedBuilder(groupItemSyncBox.getItemsToPush().size());
                     int itemOrder = 0;
                     for (Group group : groupItemSyncBox.getItemsToPush()) {
                         flatBatchAddGroupBag.add(new FlatBatchAddGroupBuilder(group)
@@ -277,7 +288,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchAddGroupCaseBuilder()
-                                    .setFlatBatchAddGroup(flatBatchAddGroupBag)
+                                    .setFlatBatchAddGroup(flatBatchAddGroupBag.build())
                                     .build())
                             .setBatchOrder(Uint16.valueOf(order))
                             .build();
@@ -286,8 +297,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 }
 
                 if (!groupItemSyncBox.getItemsToUpdate().isEmpty()) {
-                    final List<FlatBatchUpdateGroup> flatBatchUpdateGroupBag =
-                            new ArrayList<>(groupItemSyncBox.getItemsToUpdate().size());
+                    final Builder<FlatBatchUpdateGroupKey, FlatBatchUpdateGroup> flatBatchUpdateGroupBag =
+                        BindingMap.orderedBuilder(groupItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
                     for (ItemSyncBox.ItemUpdateTuple<Group> groupUpdate : groupItemSyncBox.getItemsToUpdate()) {
                         flatBatchUpdateGroupBag.add(new FlatBatchUpdateGroupBuilder()
@@ -298,7 +309,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchUpdateGroupCaseBuilder()
-                                    .setFlatBatchUpdateGroup(flatBatchUpdateGroupBag)
+                                    .setFlatBatchUpdateGroup(flatBatchUpdateGroupBag.build())
                                     .build())
                             .setBatchOrder(Uint16.valueOf(order))
                             .build();
@@ -311,15 +322,15 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     @VisibleForTesting
-    static int assembleRemoveGroups(final List<Batch> batchBag, int batchOrder,
+    static int assembleRemoveGroups(final List<Batch> batchBag, final int batchOrder,
             final List<ItemSyncBox<Group>> groupsToRemoveOrUpdate) {
         // process group add+update
         int order = batchOrder;
         if (groupsToRemoveOrUpdate != null) {
             for (ItemSyncBox<Group> groupItemSyncBox : groupsToRemoveOrUpdate) {
                 if (!groupItemSyncBox.getItemsToPush().isEmpty()) {
-                    final List<FlatBatchRemoveGroup> flatBatchRemoveGroupBag =
-                            new ArrayList<>(groupItemSyncBox.getItemsToUpdate().size());
+                    final Builder<FlatBatchRemoveGroupKey, FlatBatchRemoveGroup> flatBatchRemoveGroupBag =
+                        BindingMap.orderedBuilder(groupItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
                     for (Group group : groupItemSyncBox.getItemsToPush()) {
                         flatBatchRemoveGroupBag.add(new FlatBatchRemoveGroupBuilder(group)
@@ -327,7 +338,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchRemoveGroupCaseBuilder()
-                                    .setFlatBatchRemoveGroup(flatBatchRemoveGroupBag)
+                                    .setFlatBatchRemoveGroup(flatBatchRemoveGroupBag.build())
                                     .build())
                             .setBatchOrder(Uint16.valueOf(order))
                             .build();
@@ -340,14 +351,14 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     @VisibleForTesting
-    static int assembleAddOrUpdateMeters(final List<Batch> batchBag, int batchOrder,
+    static int assembleAddOrUpdateMeters(final List<Batch> batchBag, final int batchOrder,
             final ItemSyncBox<Meter> meterItemSyncBox) {
         // process meter add+update
         int order = batchOrder;
         if (meterItemSyncBox != null) {
             if (!meterItemSyncBox.getItemsToPush().isEmpty()) {
-                final List<FlatBatchAddMeter> flatBatchAddMeterBag =
-                        new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
+                final Builder<FlatBatchAddMeterKey, FlatBatchAddMeter> flatBatchAddMeterBag =
+                    BindingMap.orderedBuilder(meterItemSyncBox.getItemsToPush().size());
                 int itemOrder = 0;
                 for (Meter meter : meterItemSyncBox.getItemsToPush()) {
                     flatBatchAddMeterBag.add(new FlatBatchAddMeterBuilder(meter)
@@ -356,7 +367,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 }
                 final Batch batch = new BatchBuilder()
                         .setBatchChoice(new FlatBatchAddMeterCaseBuilder()
-                                .setFlatBatchAddMeter(flatBatchAddMeterBag)
+                                .setFlatBatchAddMeter(flatBatchAddMeterBag.build())
                                 .build())
                         .setBatchOrder(Uint16.valueOf(order))
                         .build();
@@ -365,8 +376,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             }
 
             if (!meterItemSyncBox.getItemsToUpdate().isEmpty()) {
-                final List<FlatBatchUpdateMeter> flatBatchUpdateMeterBag =
-                        new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
+                final Builder<FlatBatchUpdateMeterKey, FlatBatchUpdateMeter> flatBatchUpdateMeterBag =
+                        BindingMap.orderedBuilder(meterItemSyncBox.getItemsToUpdate().size());
                 int itemOrder = 0;
                 for (ItemSyncBox.ItemUpdateTuple<Meter> meterUpdate : meterItemSyncBox.getItemsToUpdate()) {
                     flatBatchUpdateMeterBag.add(new FlatBatchUpdateMeterBuilder()
@@ -377,7 +388,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 }
                 final Batch batch = new BatchBuilder()
                         .setBatchChoice(new FlatBatchUpdateMeterCaseBuilder()
-                                .setFlatBatchUpdateMeter(flatBatchUpdateMeterBag)
+                                .setFlatBatchUpdateMeter(flatBatchUpdateMeterBag.build())
                                 .build())
                         .setBatchOrder(Uint16.valueOf(order))
                         .build();
@@ -389,13 +400,13 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     @VisibleForTesting
-    static int assembleRemoveMeters(final List<Batch> batchBag, int batchOrder,
+    static int assembleRemoveMeters(final List<Batch> batchBag, final int batchOrder,
             final ItemSyncBox<Meter> meterItemSyncBox) {
         // process meter remove
         int order = batchOrder;
         if (meterItemSyncBox != null && !meterItemSyncBox.getItemsToPush().isEmpty()) {
-            final List<FlatBatchRemoveMeter> flatBatchRemoveMeterBag =
-                    new ArrayList<>(meterItemSyncBox.getItemsToUpdate().size());
+            final Builder<FlatBatchRemoveMeterKey, FlatBatchRemoveMeter> flatBatchRemoveMeterBag =
+                BindingMap.orderedBuilder(meterItemSyncBox.getItemsToPush().size());
             int itemOrder = 0;
             for (Meter meter : meterItemSyncBox.getItemsToPush()) {
                 flatBatchRemoveMeterBag.add(new FlatBatchRemoveMeterBuilder(meter)
@@ -404,7 +415,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             }
             final Batch batch = new BatchBuilder()
                     .setBatchChoice(new FlatBatchRemoveMeterCaseBuilder()
-                            .setFlatBatchRemoveMeter(flatBatchRemoveMeterBag)
+                            .setFlatBatchRemoveMeter(flatBatchRemoveMeterBag.build())
                             .build())
                     .setBatchOrder(Uint16.valueOf(order))
                     .build();
@@ -415,7 +426,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     @VisibleForTesting
-    static int assembleAddOrUpdateFlows(final List<Batch> batchBag, int batchOrder,
+    static int assembleAddOrUpdateFlows(final List<Batch> batchBag, final int batchOrder,
             final Map<TableKey, ItemSyncBox<Flow>> flowItemSyncTableMap) {
         // process flow add+update
         int order = batchOrder;
@@ -424,8 +435,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 final ItemSyncBox<Flow> flowItemSyncBox = syncBoxEntry.getValue();
 
                 if (!flowItemSyncBox.getItemsToPush().isEmpty()) {
-                    final List<FlatBatchAddFlow> flatBatchAddFlowBag =
-                            new ArrayList<>(flowItemSyncBox.getItemsToUpdate().size());
+                    final Builder<FlatBatchAddFlowKey, FlatBatchAddFlow> flatBatchAddFlowBag =
+                        BindingMap.orderedBuilder(flowItemSyncBox.getItemsToPush().size());
                     int itemOrder = 0;
                     for (Flow flow : flowItemSyncBox.getItemsToPush()) {
                         flatBatchAddFlowBag.add(new FlatBatchAddFlowBuilder(flow)
@@ -435,7 +446,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchAddFlowCaseBuilder()
-                                    .setFlatBatchAddFlow(flatBatchAddFlowBag)
+                                    .setFlatBatchAddFlow(flatBatchAddFlowBag.build())
                                     .build())
                             .setBatchOrder(Uint16.valueOf(order))
                             .build();
@@ -444,8 +455,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                 }
 
                 if (!flowItemSyncBox.getItemsToUpdate().isEmpty()) {
-                    final List<FlatBatchUpdateFlow> flatBatchUpdateFlowBag =
-                            new ArrayList<>(flowItemSyncBox.getItemsToUpdate().size());
+                    final Builder<FlatBatchUpdateFlowKey, FlatBatchUpdateFlow> flatBatchUpdateFlowBag =
+                        BindingMap.orderedBuilder(flowItemSyncBox.getItemsToUpdate().size());
                     int itemOrder = 0;
                     for (ItemSyncBox.ItemUpdateTuple<Flow> flowUpdate : flowItemSyncBox.getItemsToUpdate()) {
                         flatBatchUpdateFlowBag.add(new FlatBatchUpdateFlowBuilder()
@@ -457,7 +468,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     }
                     final Batch batch = new BatchBuilder()
                             .setBatchChoice(new FlatBatchUpdateFlowCaseBuilder()
-                                    .setFlatBatchUpdateFlow(flatBatchUpdateFlowBag)
+                                    .setFlatBatchUpdateFlow(flatBatchUpdateFlowBag.build())
                                     .build())
                             .setBatchOrder(Uint16.valueOf(order))
                             .build();

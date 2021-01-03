@@ -41,17 +41,12 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link SyncReactorImpl}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorImplTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(SyncReactorImplTest.class);
-
     private static final NodeId NODE_ID = new NodeId("unit-nodeId");
     private static final InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID)).augmentation(FlowCapableNode.class);
