@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.samples.sample.bundles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -29,20 +28,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
@@ -50,10 +46,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -81,6 +75,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -104,7 +99,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
     private final SalBundleService bundleService;
     private ListenerRegistration<?> listenerReg;
 
-    public SampleFlowCapableNodeListener(DataBroker dataBroker, SalBundleService bundleService) {
+    public SampleFlowCapableNodeListener(final DataBroker dataBroker, final SalBundleService bundleService) {
         this.dataBroker = dataBroker;
         this.bundleService = bundleService;
     }
@@ -129,7 +124,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
     }
 
     @Override
-    public void onDataTreeChanged(Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 LOG.info("Node connected:  {}",
@@ -184,7 +179,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         }
     }
 
-    private static <T> CompletableFuture<T> makeCompletableFuture(Future<T> future) {
+    private static <T> CompletableFuture<T> makeCompletableFuture(final Future<T> future) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return future.get();
@@ -194,7 +189,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         }, EXECUTOR);
     }
 
-    private static List<Message> createMessages(NodeRef nodeRef) {
+    private static List<Message> createMessages(final NodeRef nodeRef) {
         List<Message> messages  = new ArrayList<>();
 
 
@@ -225,115 +220,87 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         return messages;
     }
 
-    private static Flow createFlow(String flowId, Uint32 groupId, Uint16 priority, Uint8 tableId) {
-        MatchBuilder matchBuilder = new MatchBuilder();
-        matchBuilder.setEthernetMatch(new EthernetMatchBuilder()
-                .setEthernetType(new EthernetTypeBuilder()
-                        .setType(new EtherType(Uint32.valueOf(2048))).build()).build());
-
-        FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.setMatch(matchBuilder.build());
-        flowBuilder.setInstructions(createGroupInstructions(groupId).build());
-        flowBuilder.setPriority(priority);
-        flowBuilder.setCookie(new FlowCookie(Uint64.valueOf(flowId + "" + priority)));
-
-        FlowKey key = new FlowKey(new FlowId(flowId));
-        flowBuilder.setHardTimeout(Uint16.ZERO);
-        flowBuilder.setIdleTimeout(Uint16.ZERO);
-        flowBuilder.setStrict(false);
-        flowBuilder.setContainerName(null);
-        flowBuilder.setId(new FlowId(flowId));
-        flowBuilder.setTableId(tableId);
-        flowBuilder.withKey(key);
-        flowBuilder.setFlowName("FlowWithGroupInstruction");
-
-        return flowBuilder.build();
+    private static Flow createFlow(final String flowId, final Uint32 groupId, final Uint16 priority,
+            final Uint8 tableId) {
+        return new FlowBuilder()
+            .setId(new FlowId(flowId))
+            .setTableId(tableId)
+            .setMatch(new MatchBuilder()
+                .setEthernetMatch(new EthernetMatchBuilder()
+                    .setEthernetType(new EthernetTypeBuilder()
+                        .setType(new EtherType(Uint32.valueOf(2048)))
+                        .build())
+                    .build())
+                .build())
+            .setInstructions(createGroupInstructions(groupId).build())
+            .setPriority(priority)
+            .setCookie(new FlowCookie(Uint64.valueOf(flowId + "" + priority)))
+            .setHardTimeout(Uint16.ZERO)
+            .setIdleTimeout(Uint16.ZERO)
+            .setStrict(false)
+            .setContainerName(null)
+            .setFlowName("FlowWithGroupInstruction")
+            .build();
     }
 
-    private static Group createGroup(Uint32 groupId) {
-        GroupBuilder groupBuilder = new GroupBuilder();
-        GroupKey groupKey = new GroupKey(new GroupId(groupId));
-        groupBuilder.withKey(groupKey);
-        groupBuilder.setGroupId(groupKey.getGroupId());
-        groupBuilder.setBarrier(false);
-        groupBuilder.setGroupName("Foo");
-        groupBuilder.setContainerName(null);
-        groupBuilder.setGroupType(GroupTypes.GroupAll);
-        groupBuilder.setBuckets(createBuckets().build());
-
-        return groupBuilder.build();
+    private static Group createGroup(final Uint32 groupId) {
+        return new GroupBuilder()
+            .setGroupId(new GroupId(groupId))
+            .setBarrier(false)
+            .setGroupName("Foo")
+            .setContainerName(null)
+            .setGroupType(GroupTypes.GroupAll)
+            .setBuckets(createBuckets().build())
+            .build();
     }
 
     private static BucketsBuilder createBuckets() {
-        List<Action> actionList = new ArrayList<>();
-
-        actionList.add(new ActionBuilder()
-                .setOrder(0)
-                .setAction(new PopVlanActionCaseBuilder()
-                        .setPopVlanAction(new PopVlanActionBuilder().build())
-                        .build()).build());
-
-        BucketBuilder bucketBuilder = new BucketBuilder()
+        return new BucketsBuilder()
+            .setBucket(BindingMap.ordered(new BucketBuilder()
                 .setBucketId(new BucketId(Uint32.valueOf(12)))
-                .setAction(actionList);
-
-        List<Bucket> bucketList = new ArrayList<>();
-        bucketList.add(bucketBuilder.build());
-
-        actionList = new ArrayList<>();
-        SetFieldCaseBuilder setFieldCaseBuilder = new SetFieldCaseBuilder();
-        setFieldCaseBuilder.setSetField(new SetFieldBuilder()
-                .setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Source(new Ipv4Prefix("10.0.1.0/32"))
+                .setAction(BindingMap.of(new ActionBuilder()
+                    .setOrder(0)
+                    .setAction(new PopVlanActionCaseBuilder()
+                        .setPopVlanAction(new PopVlanActionBuilder().build())
                         .build())
-                .build());
-
-        actionList.add(new ActionBuilder()
-                .setAction(setFieldCaseBuilder.build())
-                .setOrder(0)
-                .build());
-
-        setFieldCaseBuilder = new SetFieldCaseBuilder();
-        setFieldCaseBuilder.setSetField(new SetFieldBuilder()
-                .setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Destination(new Ipv4Prefix("10.0.10.0/32"))
+                    .build()))
+                .build(), new BucketBuilder()
+                .setBucketId(new BucketId(Uint32.valueOf(13)))
+                .setAction(BindingMap.of(new ActionBuilder()
+                    .setAction(new SetFieldCaseBuilder()
+                        .setSetField(new SetFieldBuilder()
+                            .setLayer3Match(new Ipv4MatchBuilder().setIpv4Source(new Ipv4Prefix("10.0.1.0/32")).build())
+                            .build())
                         .build())
-                .build());
-
-        actionList.add(new ActionBuilder()
-                .setAction(setFieldCaseBuilder.build())
-                .setOrder(0)
-                .build());
-
-        bucketBuilder = new BucketBuilder();
-        bucketBuilder.setBucketId(new BucketId(Uint32.valueOf(13)));
-        bucketBuilder.setAction(actionList);
-
-        bucketList.add(bucketBuilder.build());
-
-        BucketsBuilder bucketsBuilder = new BucketsBuilder();
-        bucketsBuilder.setBucket(bucketList);
-
-        return bucketsBuilder;
+                    .setOrder(0)
+                    .build(), new ActionBuilder()
+                    .setOrder(0)
+                    .setAction(new SetFieldCaseBuilder()
+                        .setSetField(new SetFieldBuilder()
+                            .setLayer3Match(new Ipv4MatchBuilder()
+                                .setIpv4Destination(new Ipv4Prefix("10.0.10.0/32"))
+                                .build())
+                            .build())
+                        .build())
+                    .build()))
+                .build()));
     }
 
-    private static InstructionsBuilder createGroupInstructions(Uint32 groupId) {
-
-        Action action = new ActionBuilder()
-                .setAction(new GroupActionCaseBuilder()
-                    .setGroupAction(new GroupActionBuilder().setGroupId(groupId).build())
-                    .build())
-                .setOrder(1)
-                .withKey(new ActionKey(0))
-                .build();
-
-        Instruction instruction = new InstructionBuilder()
-                .setInstruction(new ApplyActionsCaseBuilder()
-                    .setApplyActions(new ApplyActionsBuilder().setAction(Map.of(action.key(), action)).build()).build())
-                .withKey(new InstructionKey(0))
-                .build();
-
+    private static InstructionsBuilder createGroupInstructions(final Uint32 groupId) {
         return new InstructionsBuilder()
-                .setInstruction(Map.of(instruction.key(), instruction));
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new GroupActionCaseBuilder()
+                                .setGroupAction(new GroupActionBuilder().setGroupId(groupId).build())
+                                .build())
+                            .setOrder(1)
+                            .withKey(new ActionKey(0))
+                            .build()))
+                        .build())
+                    .build())
+                .withKey(new InstructionKey(0))
+                .build()));
     }
 }
