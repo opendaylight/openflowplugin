@@ -9,14 +9,13 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.NxActionRegLoadBuilder;
@@ -41,14 +40,14 @@ public class RegLoadCodec extends AbstractActionCodec {
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        final ActionBuilder actionBuilder = deserializeHeader(message);
-        NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
-        final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
-        nxActionRegLoadBuilder.setOfsNbits(readUint16(message));
-        nxActionRegLoadBuilder.setDst(readUint32(message));
-        nxActionRegLoadBuilder.setValue(BigInteger.valueOf(message.readLong()));
-        actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
-        actionBuilder.setActionChoice(actionRegLoadBuilder.build());
-        return actionBuilder.build();
+        return deserializeHeader(message)
+            .setActionChoice(new ActionRegLoadBuilder()
+                .setNxActionRegLoad(new NxActionRegLoadBuilder()
+                    .setOfsNbits(readUint16(message))
+                    .setDst(readUint32(message))
+                    .setValue(readUint64(message))
+                    .build())
+                .build())
+            .build();
     }
 }
