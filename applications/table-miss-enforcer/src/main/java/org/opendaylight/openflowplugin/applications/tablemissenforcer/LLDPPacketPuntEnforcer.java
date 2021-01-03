@@ -9,9 +9,7 @@ package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -25,9 +23,7 @@ import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -42,14 +38,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -116,58 +111,46 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     }
 
     static Flow createFlow() {
-        FlowBuilder flowBuilder = new FlowBuilder();
-        flowBuilder.setMatch(new MatchBuilder().build());
-        flowBuilder.setInstructions(createSendToControllerInstructions().build());
-        flowBuilder.setPriority(Uint16.ZERO);
-
-        FlowKey key = new FlowKey(new FlowId(DEFAULT_FLOW_ID));
-        flowBuilder.setBarrier(Boolean.FALSE);
-        flowBuilder.setBufferId(OFConstants.OFP_NO_BUFFER);
-        flowBuilder.setCookie(new FlowCookie(Uint64.TEN));
-        flowBuilder.setCookieMask(new FlowCookie(Uint64.TEN));
-        flowBuilder.setHardTimeout(Uint16.ZERO);
-        flowBuilder.setIdleTimeout(Uint16.ZERO);
-        flowBuilder.setInstallHw(false);
-        flowBuilder.setStrict(false);
-        flowBuilder.setContainerName(null);
-        flowBuilder.setFlags(new FlowModFlags(false, false, false, false, true));
-        flowBuilder.setId(new FlowId("12"));
-        flowBuilder.setTableId(TABLE_ID);
-        flowBuilder.withKey(key);
-        flowBuilder.setFlowName(LLDP_PUNT_WHOLE_PACKET_FLOW);
-
-        return flowBuilder.build();
+        return new FlowBuilder()
+            .setMatch(new MatchBuilder().build())
+            .setInstructions(createSendToControllerInstructions().build())
+            .setPriority(Uint16.ZERO)
+            .setBarrier(Boolean.FALSE)
+            .setBufferId(OFConstants.OFP_NO_BUFFER)
+            .setCookie(new FlowCookie(Uint64.TEN))
+            .setCookieMask(new FlowCookie(Uint64.TEN))
+            .setHardTimeout(Uint16.ZERO)
+            .setIdleTimeout(Uint16.ZERO)
+            .setInstallHw(false)
+            .setStrict(false)
+            .setContainerName(null)
+            .setFlags(new FlowModFlags(false, false, false, false, true))
+            .setId(new FlowId("12"))
+            .setTableId(TABLE_ID)
+            .withKey(new FlowKey(new FlowId(DEFAULT_FLOW_ID)))
+            .setFlowName(LLDP_PUNT_WHOLE_PACKET_FLOW)
+            .build();
     }
 
     private static InstructionsBuilder createSendToControllerInstructions() {
-        final List<Action> actionList = new ArrayList<>();
-        ActionBuilder ab = new ActionBuilder();
-
-        OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
-        Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                // Wrap our Apply Action in an Instruction
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        // Create an Apply Action
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new OutputActionCaseBuilder()
+                                .setOutputAction(new OutputActionBuilder()
+                                    .setMaxLength(OFConstants.OFPCML_NO_BUFFER)
+                                    .setOutputNodeConnector(new Uri(OutputPortValues.CONTROLLER.toString()))
+                                    .build())
+                                .build())
+                            .setOrder(0)
+                            .build()))
+                        .build())
+                    .build())
+                .setOrder(0)
+                .build()));
     }
-
 }

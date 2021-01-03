@@ -110,9 +110,9 @@ public class LLDPDataTreeChangeListenerTest {
         assertThat(insn, instanceOf(ApplyActionsCase.class));
         final ApplyActionsCase applyActionsCase = (ApplyActionsCase) insn;
         assertNotNull(applyActionsCase.getApplyActions().getAction());
-        assertEquals(1, applyActionsCase.getApplyActions().getAction().size());
+        assertEquals(1, applyActionsCase.getApplyActions().nonnullAction().size());
 
-        final Action action = applyActionsCase.getApplyActions().getAction().values().iterator().next().getAction();
+        final Action action = applyActionsCase.getApplyActions().nonnullAction().values().iterator().next().getAction();
         assertThat(action, instanceOf(OutputActionCase.class));
         final OutputActionCase outputActionCase = (OutputActionCase) action;
         assertEquals("CONTROLLER", outputActionCase.getOutputAction().getOutputNodeConnector().getValue());
