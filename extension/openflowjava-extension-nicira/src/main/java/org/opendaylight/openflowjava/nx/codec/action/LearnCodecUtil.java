@@ -236,11 +236,8 @@ public final class LearnCodecUtil {
         final short dst = (short) ((header & DST_MASK) >> DST_POS);
         final Uint16 numBits = Uint16.fromShortBits((short) (header & NUM_BITS_MASK));
 
-        if (src == 0 && dst == 0 && numBits.shortValue() != 0) {
+        if (src == 0 && dst == 0) {
             return readFlowModAddMatchFromField(message, numBits);
-        } else if (src == 0 && dst == 0) {
-            message.skipBytes(EMPTY_FLOW_MOD_LENGTH);
-            length -= EMPTY_FLOW_MOD_LENGTH;
         } else if (src == 1 && dst == 0) {
             return readFlowModAddMatchFromValue(message, numBits);
         } else if (src == 0 && dst == 1) {
@@ -249,11 +246,18 @@ public final class LearnCodecUtil {
             return readFlowModCopyFromValue(message, numBits);
         } else if (src == 0 && dst == 2) {
             return readFlowToPort(message, numBits);
+        } else {
+            return null;
         }
-        return null;
     }
 
     private FlowMods readFlowModAddMatchFromField(final ByteBuf message, final Uint16 numBits) {
+        if (numBits.shortValue() == 0) {
+            message.skipBytes(EMPTY_FLOW_MOD_LENGTH);
+            length -= EMPTY_FLOW_MOD_LENGTH;
+            return null;
+        }
+
         final var builder = new FlowModAddMatchFromFieldBuilder()
             .setSrcField(readUint32(message))
             .setSrcOfs(readUint16(message))
