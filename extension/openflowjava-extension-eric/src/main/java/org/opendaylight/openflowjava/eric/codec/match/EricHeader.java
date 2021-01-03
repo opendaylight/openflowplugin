@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric.codec.match;
 
 import com.google.common.primitives.Ints;
@@ -21,15 +20,15 @@ public class EricHeader {
     private final boolean hasMask;
     private final int length;
 
-    public EricHeader(long header) {
+    public EricHeader(final long header) {
         this.headerAsLong = header;
         this.oxmClass = Ints.checkedCast(extractSub(header, 16, 16));
         this.ericField = Ints.checkedCast(extractSub(header, 7, 9));
-        this.hasMask = extractSub(header, 1, 8) == 1 ? true : false;
+        this.hasMask = extractSub(header, 1, 8) == 1;
         this.length = Ints.checkedCast(extractSub(header, 8, 0));
     }
 
-    public EricHeader(int oxmClass, int ericField, boolean hasMask, int length) {
+    public EricHeader(final int oxmClass, final int ericField, final boolean hasMask, final int length) {
         this.oxmClass = oxmClass;
         this.ericField = ericField;
         this.hasMask = hasMask;
@@ -72,7 +71,7 @@ public class EricHeader {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
