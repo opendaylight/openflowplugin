@@ -17,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.tun.id.grouping.TunIdValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TunIdCaseValue;
@@ -32,20 +31,18 @@ public class TunIdCodec extends AbstractMatchCodec {
             EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         outBuffer.writeLong(((TunIdCaseValue) input.getMatchEntryValue()).getTunIdValues().getValue().longValue());
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
-        MatchEntryBuilder matchEntriesBuilder = deserializeHeaderToBuilder(message);
-        TunIdCaseValueBuilder caseBuilder = new TunIdCaseValueBuilder();
-        TunIdValuesBuilder tunIdBuilder = new TunIdValuesBuilder();
-        tunIdBuilder.setValue(BigInteger.valueOf(message.readLong()));
-        caseBuilder.setTunIdValues(tunIdBuilder.build());
-        matchEntriesBuilder.setMatchEntryValue(caseBuilder.build());
-        return matchEntriesBuilder.build();
+    public MatchEntry deserialize(final ByteBuf message) {
+        return deserializeHeaderToBuilder(message)
+            .setMatchEntryValue(new TunIdCaseValueBuilder()
+                .setTunIdValues(new TunIdValuesBuilder().setValue(BigInteger.valueOf(message.readLong())).build())
+                .build())
+            .build();
     }
 
     @Override
