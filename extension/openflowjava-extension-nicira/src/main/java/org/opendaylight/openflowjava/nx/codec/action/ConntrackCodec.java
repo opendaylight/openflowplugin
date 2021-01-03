@@ -11,16 +11,14 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import com.google.common.net.InetAddresses;
 import io.netty.buffer.ByteBuf;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.NxActionNatRangePresent;
@@ -225,12 +223,10 @@ public class ConntrackCodec extends AbstractActionCodec {
 
                 final int rangeBits = rangePresent.toJava();
                 if ((rangeBits & NxActionNatRangePresent.NXNATRANGEIPV4MIN.getIntValue()) != 0) {
-                    InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                    nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
+                    nxActionNatBuilder.setIpAddressMin(readIpv4Address(message));
                 }
                 if ((rangeBits & NxActionNatRangePresent.NXNATRANGEIPV4MAX.getIntValue()) != 0) {
-                    InetAddress address = InetAddresses.fromInteger((int)message.readUnsignedInt());
-                    nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance(address.getHostAddress()));
+                    nxActionNatBuilder.setIpAddressMax(readIpv4Address(message));
                 }
                 if ((rangeBits & NxActionNatRangePresent.NXNATRANGEPROTOMIN.getIntValue()) != 0) {
                     nxActionNatBuilder.setPortMin(readUint16(message));
@@ -268,6 +264,10 @@ public class ConntrackCodec extends AbstractActionCodec {
         }
 
         nxActionConntrackBuilder.setCtActions(ctActionsList);
+    }
+
+    private static IpAddress readIpv4Address(final ByteBuf message) {
+        return new IpAddress(IetfInetUtil.INSTANCE.ipv4AddressFor(message.readInt()));
     }
 
     private static short deserializeCtHeaderWithoutSubtype(final ByteBuf message) {
