@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
@@ -221,17 +222,17 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         if (!mandatory) {
             return;
         }
-
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
+        if (contextChainMap.containsKey(deviceInfo)) {
             LOG.warn("This mastering is mandatory, destroying context chain and closing connection for device {}.",
                      deviceInfo);
             destroyContextChain(deviceInfo);
-        });
+        }
     }
 
     @Override
     public void onMasterRoleAcquired(final DeviceInfo deviceInfo, final ContextChainMastershipState mastershipState) {
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
+        final ContextChain contextChain = contextChainMap.get(deviceInfo);
+        if (contextChain != null) {
             if (!ContextChainMastershipState.INITIAL_SUBMIT.equals(mastershipState)) {
                 if (contextChain.isMastered(mastershipState, true)) {
                     Futures.addCallback(ownershipChangeListener.becomeMasterBeforeSubmittedDS(deviceInfo),
@@ -243,34 +244,39 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                 OF_EVENT_LOG.debug("Master Elected, Node: {}", deviceInfo.getDatapathId());
                 deviceManager.sendNodeAddedNotification(deviceInfo.getNodeInstanceIdentifier());
             }
-        });
+        }
     }
 
     @Override
     public void onSlaveRoleAcquired(final DeviceInfo deviceInfo) {
         ownershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
         LOG.info("Role SLAVE was granted to device {}", deviceInfo);
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(ContextChain::makeContextChainStateSlave);
+        final ContextChain contextChain = contextChainMap.get(deviceInfo);
+        if (contextChain != null) {
+            contextChain.makeContextChainStateSlave();
+        }
     }
 
     @Override
     public void onSlaveRoleNotAcquired(final DeviceInfo deviceInfo, final String reason) {
         LOG.error("Not able to set SLAVE role on device {}, reason: {}", deviceInfo, reason);
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> destroyContextChain(deviceInfo));
+        if (contextChainMap.containsKey(deviceInfo)) {
+            destroyContextChain(deviceInfo);
+        }
     }
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-
-        Optional.ofNullable(connectionContext.getDeviceInfo()).map(contextChainMap::get).ifPresent(contextChain -> {
+        final ContextChain contextChain = contextChainMap.get(deviceInfo);
+        if (contextChain != null) {
             if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
                 LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
             } else {
                 LOG.info("Device {} disconnected.", deviceInfo);
                 destroyContextChain(deviceInfo);
             }
-        });
+        }
     }
 
     @VisibleForTesting
@@ -326,9 +332,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
             final String dpnId = getDpnIdFromNodeName(entityName);
             nodeCleanerExecutor.schedule(() -> {
                 try {
-                    Optional<EntityOwnershipState> ownershipState = getCurrentOwnershipStatus(entityName);
-                    if (!ownershipState.isPresent()
-                            || Objects.equals(ownershipState.get(), EntityOwnershipState.NO_OWNER)) {
+                    EntityOwnershipState ownershipState = getCurrentOwnershipStatus(entityName);
+                    if (ownershipState == null || EntityOwnershipState.NO_OWNER.equals(ownershipState)) {
                         LOG.debug("Entity {} has no owner", entityName);
                         final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
                                 DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName));
@@ -363,11 +368,12 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private void destroyContextChain(final DeviceInfo deviceInfo) {
         OF_EVENT_LOG.debug("Destroying context chain for device {}", deviceInfo.getDatapathId());
         ownershipChangeListener.becomeSlaveOrDisconnect(deviceInfo);
-        Optional.ofNullable(contextChainMap.get(deviceInfo)).ifPresent(contextChain -> {
+        final ContextChain contextChain = contextChainMap.get(deviceInfo);
+        if (contextChain != null) {
             deviceManager.sendNodeRemovedNotification(deviceInfo.getNodeInstanceIdentifier());
             contextChain.close();
             connectingDevices.remove(deviceInfo);
-        });
+        }
     }
 
     @Override
@@ -425,18 +431,18 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         return nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
     }
 
-    private Optional<EntityOwnershipState> getCurrentOwnershipStatus(final String nodeId) {
+    private @Nullable EntityOwnershipState getCurrentOwnershipStatus(final String nodeId) {
         org.opendaylight.mdsal.eos.binding.api.Entity entity = createNodeEntity(nodeId);
         Optional<EntityOwnershipState> ownershipStatus
                 = entityOwnershipService.getOwnershipState(entity);
 
         if (ownershipStatus.isPresent()) {
             LOG.debug("Current ownership status for node {} is {}", nodeId, ownershipStatus.get());
-            return Optional.of(ownershipStatus.get());
-        } else {
-            LOG.trace("Ownership status is not available for node {}", nodeId);
+            return ownershipStatus.get();
         }
-        return Optional.empty();
+
+        LOG.trace("Ownership status is not available for node {}", nodeId);
+        return null;
     }
 
     private static org.opendaylight.mdsal.eos.binding.api.Entity createNodeEntity(final String nodeId) {
