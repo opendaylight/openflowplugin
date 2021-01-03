@@ -9,15 +9,15 @@ package org.opendaylight.openflowplugin.openflow.md.core.session;
 
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.extension.api.core.session.ExtensionSessionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class ExtensionSessionManagerImpl implements ExtensionSessionManager {
-    private static final Logger LOG = LoggerFactory.getLogger(ExtensionSessionManagerImpl.class);
-
-    private static ExtensionSessionManagerImpl INSTANCE = new ExtensionSessionManagerImpl();
+    private static final ExtensionSessionManagerImpl INSTANCE = new ExtensionSessionManagerImpl();
 
     private ExtensionConverterProvider extensionConverterProvider;
+
+    private ExtensionSessionManagerImpl() {
+        // Hidden on purpose
+    }
 
     /**
      * Returns singleton instance.
@@ -26,12 +26,8 @@ public final class ExtensionSessionManagerImpl implements ExtensionSessionManage
         return INSTANCE;
     }
 
-    private ExtensionSessionManagerImpl() {
-    }
-
     @Override
-    public void setExtensionConverterProvider(
-            ExtensionConverterProvider extensionConverterProvider) {
+    public void setExtensionConverterProvider(final ExtensionConverterProvider extensionConverterProvider) {
         this.extensionConverterProvider = extensionConverterProvider;
     }
 
