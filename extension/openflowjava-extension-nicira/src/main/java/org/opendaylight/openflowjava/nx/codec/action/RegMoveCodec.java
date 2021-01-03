@@ -14,7 +14,6 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
@@ -43,17 +42,18 @@ public class RegMoveCodec extends AbstractActionCodec {
     @Override
     public Action deserialize(final ByteBuf message) {
         final int startIndex = message.readerIndex();
-        final ActionBuilder actionBuilder = deserializeHeader(message);
-        final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
-        NxActionRegMoveBuilder nxActionRegMoveBuilder = new NxActionRegMoveBuilder();
-        nxActionRegMoveBuilder.setNBits(readUint16(message));
-        nxActionRegMoveBuilder.setSrcOfs(readUint16(message));
-        nxActionRegMoveBuilder.setDstOfs(readUint16(message));
-        nxActionRegMoveBuilder.setSrc(readNxmHeader(message));
-        nxActionRegMoveBuilder.setDst(readNxmHeader(message));
+        final var actionBuilder = deserializeHeader(message)
+            .setActionChoice(new ActionRegMoveBuilder()
+                .setNxActionRegMove(new NxActionRegMoveBuilder()
+                    .setNBits(readUint16(message))
+                    .setSrcOfs(readUint16(message))
+                    .setDstOfs(readUint16(message))
+                    .setSrc(readNxmHeader(message))
+                    .setDst(readNxmHeader(message))
+                    .build())
+                .build());
         skipPadding(message, startIndex);
-        actionRegMoveBuilder.setNxActionRegMove(nxActionRegMoveBuilder.build());
-        actionBuilder.setActionChoice(actionRegMoveBuilder.build());
+
         return actionBuilder.build();
     }
 }
