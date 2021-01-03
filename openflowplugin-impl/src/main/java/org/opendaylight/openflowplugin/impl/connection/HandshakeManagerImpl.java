@@ -145,10 +145,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * Handles the version negotiation step by step.
      *
      * @param remoteVersion remote version
-     * @throws Exception exception
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
-    private void handleStepByStepVersionNegotiation(final Short remoteVersion) throws Exception {
+    private void handleStepByStepVersionNegotiation(final Short remoteVersion) {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", remoteVersion, lastProposedVersion,
                   highestVersion);
 
@@ -439,7 +437,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         LOG.debug("future features [{}] hooked ..", xid);
     }
 
-    public boolean isAllowedToConnect(BigInteger nodeId) {
+    public boolean isAllowedToConnect(final BigInteger nodeId) {
         // The device isn't allowed for connection till device connection hold time is over
         if (deviceConnectionHoldTime > 0) {
             LocalDateTime lastConnectionTime = deviceConnectionStatusProvider.getDeviceLastConnectionTime(nodeId);
