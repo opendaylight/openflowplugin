@@ -39,12 +39,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.NxActionLearnBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowMods;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.nx.action.learn.FlowModsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class LearnCodecUtil {
+    // For LearnCodec (for now?)
+    static final int HEADER_LENGTH = 32;
+
     private static final Logger LOG = LoggerFactory.getLogger(LearnCodecUtil.class);
-    public static final int HEADER_LENGTH = 32;
     private static final short SRC_MASK = 0x2000;
     private static final short DST_MASK = 0x1800;
     private static final short NUM_BITS_MASK = 0x07FF;
@@ -54,12 +57,16 @@ public final class LearnCodecUtil {
     private static final int FROM_VALUE_LENGTH = 10;
     private static final int TO_PORT_LENGTH = 8;
     private static final int EMPTY_FLOW_MOD_LENGTH = 2;
+
+    // FIXME: You might wonder, why has a static utility method a static mutable field. Look for FIXMEs and users of
+    //        this field for a nice story.
     private static short length;
 
     private LearnCodecUtil() {
+        // Hidden on purpose
     }
 
-    static short deserializeHeader(ByteBuf message) {
+    static short deserializeHeader(final ByteBuf message) {
         // size of experimenter type
         message.skipBytes(Short.BYTES);
         // size of length
@@ -75,7 +82,7 @@ public final class LearnCodecUtil {
      *                                 SERIALIZATION
     */
 
-    static void serializeLearnHeader(final ByteBuf outBuffer, ActionLearn action) {
+    static void serializeLearnHeader(final ByteBuf outBuffer, final ActionLearn action) {
         outBuffer.writeShort(action.getNxActionLearn().getIdleTimeout().shortValue());
         outBuffer.writeShort(action.getNxActionLearn().getHardTimeout().shortValue());
         outBuffer.writeShort(action.getNxActionLearn().getPriority().shortValue());
@@ -87,96 +94,87 @@ public final class LearnCodecUtil {
         outBuffer.writeShort(action.getNxActionLearn().getFinHardTimeout().shortValue());
     }
 
-    static void serializeFlowMods(final ByteBuf outBuffer, ActionLearn action) {
-        if (action.getNxActionLearn().getFlowMods() != null) {
-            for (FlowMods flowMod : action.getNxActionLearn().getFlowMods()) {
-                if (flowMod.getFlowModSpec() instanceof FlowModAddMatchFromFieldCase) {
-                    FlowModAddMatchFromField flowModSpecFromField = ((FlowModAddMatchFromFieldCase) flowMod
-                            .getFlowModSpec()).getFlowModAddMatchFromField();
-                    toFlowModSpecHeader(flowModSpecFromField, outBuffer);
-                    outBuffer.writeInt(flowModSpecFromField.getSrcField().intValue());
-                    outBuffer.writeShort(flowModSpecFromField.getSrcOfs().shortValue());
-                    outBuffer.writeInt(flowModSpecFromField.getDstField().intValue());
-                    outBuffer.writeShort(flowModSpecFromField.getDstOfs().shortValue());
-                } else if (flowMod.getFlowModSpec() instanceof FlowModAddMatchFromValueCase) {
-                    FlowModAddMatchFromValue flowModSpec = ((FlowModAddMatchFromValueCase) flowMod.getFlowModSpec())
-                            .getFlowModAddMatchFromValue();
-                    toFlowModSpecHeader(flowModSpec, outBuffer);
-                    outBuffer.writeShort(flowModSpec.getValue().shortValue());
-                    outBuffer.writeInt(flowModSpec.getSrcField().intValue());
-                    outBuffer.writeShort(flowModSpec.getSrcOfs().shortValue());
+    static void serializeFlowMods(final ByteBuf outBuffer, final ActionLearn action) {
+        for (FlowMods flowMod : action.getNxActionLearn().nonnullFlowMods()) {
+            final var modSpec = flowMod.getFlowModSpec();
+            if (modSpec instanceof FlowModAddMatchFromFieldCase) {
+                final var flowModSpecFromField = ((FlowModAddMatchFromFieldCase) modSpec).getFlowModAddMatchFromField();
+                toFlowModSpecHeader(flowModSpecFromField, outBuffer);
+                // TODO: Use ByteBufUtils.writeUint() instead of intValue()/shortValue()?
+                outBuffer.writeInt(flowModSpecFromField.getSrcField().intValue());
+                outBuffer.writeShort(flowModSpecFromField.getSrcOfs().shortValue());
+                outBuffer.writeInt(flowModSpecFromField.getDstField().intValue());
+                outBuffer.writeShort(flowModSpecFromField.getDstOfs().shortValue());
+            } else if (modSpec instanceof FlowModAddMatchFromValueCase) {
+                final var flowModSpec = ((FlowModAddMatchFromValueCase) modSpec).getFlowModAddMatchFromValue();
+                toFlowModSpecHeader(flowModSpec, outBuffer);
+                outBuffer.writeShort(flowModSpec.getValue().shortValue());
+                outBuffer.writeInt(flowModSpec.getSrcField().intValue());
+                outBuffer.writeShort(flowModSpec.getSrcOfs().shortValue());
 
-                } else if (flowMod.getFlowModSpec() instanceof FlowModCopyFieldIntoFieldCase) {
-                    FlowModCopyFieldIntoField flowModSpec = ((FlowModCopyFieldIntoFieldCase) flowMod.getFlowModSpec())
-                            .getFlowModCopyFieldIntoField();
-                    toFlowModSpecHeader(flowModSpec, outBuffer);
-                    outBuffer.writeInt(flowModSpec.getSrcField().intValue());
-                    outBuffer.writeShort(flowModSpec.getSrcOfs().shortValue());
-                    outBuffer.writeInt(flowModSpec.getDstField().intValue());
-                    outBuffer.writeShort(flowModSpec.getDstOfs().shortValue());
+            } else if (modSpec instanceof FlowModCopyFieldIntoFieldCase) {
+                final var flowModSpec = ((FlowModCopyFieldIntoFieldCase) modSpec).getFlowModCopyFieldIntoField();
+                toFlowModSpecHeader(flowModSpec, outBuffer);
+                outBuffer.writeInt(flowModSpec.getSrcField().intValue());
+                outBuffer.writeShort(flowModSpec.getSrcOfs().shortValue());
+                outBuffer.writeInt(flowModSpec.getDstField().intValue());
+                outBuffer.writeShort(flowModSpec.getDstOfs().shortValue());
 
-                } else if (flowMod.getFlowModSpec() instanceof FlowModCopyValueIntoFieldCase) {
-                    FlowModCopyValueIntoField flowModSpec = ((FlowModCopyValueIntoFieldCase) flowMod.getFlowModSpec())
-                            .getFlowModCopyValueIntoField();
-                    toFlowModSpecHeader(flowModSpec, outBuffer);
-                    outBuffer.writeShort(flowModSpec.getValue().shortValue());
-                    outBuffer.writeInt(flowModSpec.getDstField().intValue());
-                    outBuffer.writeShort(flowModSpec.getDstOfs().shortValue());
+            } else if (modSpec instanceof FlowModCopyValueIntoFieldCase) {
+                final var flowModSpec = ((FlowModCopyValueIntoFieldCase) modSpec).getFlowModCopyValueIntoField();
+                toFlowModSpecHeader(flowModSpec, outBuffer);
+                outBuffer.writeShort(flowModSpec.getValue().shortValue());
+                outBuffer.writeInt(flowModSpec.getDstField().intValue());
+                outBuffer.writeShort(flowModSpec.getDstOfs().shortValue());
 
-                } else if (flowMod.getFlowModSpec() instanceof FlowModOutputToPortCase) {
-                    FlowModOutputToPort flowModSpec = ((FlowModOutputToPortCase) flowMod.getFlowModSpec())
-                            .getFlowModOutputToPort();
-                    toFlowModSpecHeader(flowModSpec, outBuffer);
-                    outBuffer.writeInt(flowModSpec.getSrcField().intValue());
-                    outBuffer.writeShort(flowModSpec.getSrcOfs().shortValue());
-                }
+            } else if (modSpec instanceof FlowModOutputToPortCase) {
+                final var flowModSpec = ((FlowModOutputToPortCase) modSpec).getFlowModOutputToPort();
+                toFlowModSpecHeader(flowModSpec, outBuffer);
+                outBuffer.writeInt(flowModSpec.getSrcField().intValue());
+                outBuffer.writeShort(flowModSpec.getSrcOfs().shortValue());
             }
         }
     }
 
-    private static void toFlowModSpecHeader(FlowModOutputToPort flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(0,2,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
+    private static void toFlowModSpecHeader(final FlowModOutputToPort flowModSpec, final ByteBuf outBuffer) {
+        serializeFlowModSpecHeader(0, 2, flowModSpec.getFlowModNumBits(), outBuffer);
     }
 
-    private static void toFlowModSpecHeader(FlowModCopyValueIntoField flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(1,1,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
+    private static void toFlowModSpecHeader(final FlowModCopyValueIntoField flowModSpec, final ByteBuf outBuffer) {
+        serializeFlowModSpecHeader(1, 1, flowModSpec.getFlowModNumBits(), outBuffer);
     }
 
-    private static void toFlowModSpecHeader(FlowModCopyFieldIntoField flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(0,1,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
+    private static void toFlowModSpecHeader(final FlowModCopyFieldIntoField flowModSpec, final ByteBuf outBuffer) {
+        serializeFlowModSpecHeader(0, 1, flowModSpec.getFlowModNumBits(), outBuffer);
     }
 
-    private static void toFlowModSpecHeader(FlowModAddMatchFromValue flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(1,0,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
+    private static void toFlowModSpecHeader(final FlowModAddMatchFromValue flowModSpec, final ByteBuf outBuffer) {
+        serializeFlowModSpecHeader(1, 0, flowModSpec.getFlowModNumBits(), outBuffer);
     }
 
-    private static void toFlowModSpecHeader(FlowModAddMatchFromField flowModSpec, ByteBuf outBuffer) {
-        serializeFlowModSpecHeader(0,0,(short)flowModSpec.getFlowModNumBits().toJava(), outBuffer);
+    private static void toFlowModSpecHeader(final FlowModAddMatchFromField flowModSpec, final ByteBuf outBuffer) {
+        serializeFlowModSpecHeader(0, 0, flowModSpec.getFlowModNumBits(), outBuffer);
     }
 
-    private static void serializeFlowModSpecHeader(int src, int dst, short bitNum, ByteBuf outBuffer) {
-        short value = 0;
-        value |= src << SRC_POS;
-        value |= dst << DST_POS;
-        value |= bitNum;
-        outBuffer.writeShort(value);
+    private static void serializeFlowModSpecHeader(final int src, final int dst, final Uint16 bitNum,
+            final ByteBuf outBuffer) {
+        outBuffer.writeShort(src << SRC_POS | dst << DST_POS | (short) bitNum.toJava());
     }
 
-    static int calcLength(ActionLearn action) {
+    static int calcLength(final ActionLearn action) {
         int actionLength = HEADER_LENGTH;
-        if (action.getNxActionLearn().getFlowMods() == null) {
-            return actionLength;
-        }
-        for (FlowMods flowMod : action.getNxActionLearn().getFlowMods()) {
-            if (flowMod.getFlowModSpec() instanceof FlowModAddMatchFromFieldCase) {
+
+        for (FlowMods flowMod : action.getNxActionLearn().nonnullFlowMods()) {
+            final var modSpec = flowMod.getFlowModSpec();
+            if (modSpec instanceof FlowModAddMatchFromFieldCase) {
                 actionLength += FROM_FIELD_LENGTH;
-            } else if (flowMod.getFlowModSpec() instanceof FlowModAddMatchFromValueCase) {
+            } else if (modSpec instanceof FlowModAddMatchFromValueCase) {
                 actionLength += FROM_VALUE_LENGTH;
-            } else if (flowMod.getFlowModSpec() instanceof FlowModCopyFieldIntoFieldCase) {
+            } else if (modSpec instanceof FlowModCopyFieldIntoFieldCase) {
                 actionLength += FROM_FIELD_LENGTH;
-            } else if (flowMod.getFlowModSpec() instanceof FlowModCopyValueIntoFieldCase) {
+            } else if (modSpec instanceof FlowModCopyValueIntoFieldCase) {
                 actionLength += FROM_VALUE_LENGTH;
-            } else if (flowMod.getFlowModSpec() instanceof FlowModOutputToPortCase) {
+            } else if (modSpec instanceof FlowModOutputToPortCase) {
                 actionLength += TO_PORT_LENGTH;
             }
         }
@@ -188,23 +186,28 @@ public final class LearnCodecUtil {
      *                                 DESERIALIZATION
     */
 
-    static void deserializeLearnHeader(final ByteBuf message, NxActionLearnBuilder nxActionLearnBuilder) {
-        nxActionLearnBuilder.setIdleTimeout(readUint16(message));
-        nxActionLearnBuilder.setHardTimeout(readUint16(message));
-        nxActionLearnBuilder.setPriority(readUint16(message));
-        nxActionLearnBuilder.setCookie(BigInteger.valueOf(message.readLong()));
-        nxActionLearnBuilder.setFlags(readUint16(message));
-        nxActionLearnBuilder.setTableId(readUint8(message));
+    static void deserializeLearnHeader(final ByteBuf message, final NxActionLearnBuilder nxActionLearnBuilder) {
+        nxActionLearnBuilder
+            .setIdleTimeout(readUint16(message))
+            .setHardTimeout(readUint16(message))
+            .setPriority(readUint16(message))
+            // FIXME: what conversion are we trying to do here?
+            .setCookie(BigInteger.valueOf(message.readLong()))
+            .setFlags(readUint16(message))
+            .setTableId(readUint8(message));
         message.skipBytes(1);
-        nxActionLearnBuilder.setFinIdleTimeout(readUint16(message));
-        nxActionLearnBuilder.setFinHardTimeout(readUint16(message));
+        nxActionLearnBuilder
+            .setFinIdleTimeout(readUint16(message))
+            .setFinHardTimeout(readUint16(message));
     }
 
-    static synchronized void buildFlowModSpecs(NxActionLearnBuilder nxActionLearnBuilder, ByteBuf message,
-            short messageLength) {
+    // FIXME: OMG: this thing has its synchronized global state ...
+    static synchronized void buildFlowModSpecs(final NxActionLearnBuilder nxActionLearnBuilder, final ByteBuf message,
+            final short messageLength) {
+        // ... which is this integer!
         LearnCodecUtil.length = messageLength;
-        List<FlowMods> flowModeList = new ArrayList<>();
 
+        List<FlowMods> flowModeList = new ArrayList<>();
         while (LearnCodecUtil.length > 0) {
             FlowMods flowMod = readFlowMod(message);
 
@@ -215,6 +218,7 @@ public final class LearnCodecUtil {
             }
         }
 
+        // ... which is used for this warning
         if (LearnCodecUtil.length != 0) {
             LOG.error("Learn Codec read {} bytes more than needed from stream. Packet might be corrupted",
                     Math.abs(messageLength));
@@ -222,16 +226,16 @@ public final class LearnCodecUtil {
         nxActionLearnBuilder.setFlowMods(flowModeList);
     }
 
-    private static FlowMods readFlowMod(ByteBuf message) {
-        short header = message.readShort();
+    private static FlowMods readFlowMod(final ByteBuf message) {
+        final short header = message.readShort();
         length -= Short.BYTES;
         if (header == 0) {
             return null;
         }
 
-        short src = (short) ((header & SRC_MASK) >> SRC_POS);
-        short dst = (short) ((header & DST_MASK) >> DST_POS);
-        short numBits = (short) (header & NUM_BITS_MASK);
+        final short src = (short) ((header & SRC_MASK) >> SRC_POS);
+        final short dst = (short) ((header & DST_MASK) >> DST_POS);
+        final short numBits = (short) (header & NUM_BITS_MASK);
 
         if (src == 0 && dst == 0 && numBits != 0) {
             return readFlowModAddMatchFromField(message, numBits);
@@ -250,81 +254,77 @@ public final class LearnCodecUtil {
         return null;
     }
 
-
-
-    private static FlowMods readFlowModAddMatchFromField(ByteBuf message, short numBits) {
-        FlowModAddMatchFromFieldBuilder builder = new FlowModAddMatchFromFieldBuilder();
-        builder.setSrcField(readUint32(message));
-        builder.setSrcOfs((int) message.readShort());
-        builder.setDstField(readUint32(message));
-        builder.setDstOfs((int) message.readShort());
-        builder.setFlowModNumBits((int) numBits);
+    private static FlowMods readFlowModAddMatchFromField(final ByteBuf message, final short numBits) {
+        final var builder = new FlowModAddMatchFromFieldBuilder()
+            .setSrcField(readUint32(message))
+            .setSrcOfs((int) message.readShort())
+            .setDstField(readUint32(message))
+            .setDstOfs((int) message.readShort())
+            .setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - Short.BYTES;
 
-        FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
-        FlowModAddMatchFromFieldCaseBuilder caseBuilder = new FlowModAddMatchFromFieldCaseBuilder();
-        caseBuilder.setFlowModAddMatchFromField(builder.build());
-        flowModsBuilder.setFlowModSpec(caseBuilder.build());
-        return flowModsBuilder.build();
+        return new FlowModsBuilder()
+            .setFlowModSpec(new FlowModAddMatchFromFieldCaseBuilder()
+                .setFlowModAddMatchFromField(builder.build())
+                .build())
+            .build();
     }
 
-    private static FlowMods readFlowModAddMatchFromValue(ByteBuf message, short numBits) {
-        FlowModAddMatchFromValueBuilder builder = new FlowModAddMatchFromValueBuilder();
-        builder.setValue(readUint16(message));
-        builder.setSrcField(readUint32(message));
-        builder.setSrcOfs((int) message.readShort());
-        builder.setFlowModNumBits((int) numBits);
+    private static FlowMods readFlowModAddMatchFromValue(final ByteBuf message, final short numBits) {
+        final var builder = new FlowModAddMatchFromValueBuilder()
+            .setValue(readUint16(message))
+            .setSrcField(readUint32(message))
+            .setSrcOfs((int) message.readShort())
+            .setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - Short.BYTES;
 
-        FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
-        FlowModAddMatchFromValueCaseBuilder caseBuilder = new FlowModAddMatchFromValueCaseBuilder();
-        caseBuilder.setFlowModAddMatchFromValue(builder.build());
-        flowModsBuilder.setFlowModSpec(caseBuilder.build());
-        return flowModsBuilder.build();
+        return new FlowModsBuilder()
+            .setFlowModSpec(new FlowModAddMatchFromValueCaseBuilder()
+                .setFlowModAddMatchFromValue(builder.build())
+                .build())
+            .build();
     }
 
-    private static FlowMods readFlowModCopyFromField(ByteBuf message, short numBits) {
-        FlowModCopyFieldIntoFieldBuilder builder = new FlowModCopyFieldIntoFieldBuilder();
-        builder.setSrcField(readUint32(message));
-        builder.setSrcOfs((int) message.readShort());
-        builder.setDstField(readUint32(message));
-        builder.setDstOfs((int) message.readShort());
-        builder.setFlowModNumBits((int) numBits);
+    private static FlowMods readFlowModCopyFromField(final ByteBuf message, final short numBits) {
+        final var builder = new FlowModCopyFieldIntoFieldBuilder()
+            .setSrcField(readUint32(message))
+            .setSrcOfs((int) message.readShort())
+            .setDstField(readUint32(message))
+            .setDstOfs((int) message.readShort())
+            .setFlowModNumBits((int) numBits);
         length -= FROM_FIELD_LENGTH - Short.BYTES;
 
-        FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
-        FlowModCopyFieldIntoFieldCaseBuilder caseBuilder = new FlowModCopyFieldIntoFieldCaseBuilder();
-        caseBuilder.setFlowModCopyFieldIntoField(builder.build());
-        flowModsBuilder.setFlowModSpec(caseBuilder.build());
-        return flowModsBuilder.build();
+        return new FlowModsBuilder()
+            .setFlowModSpec(new FlowModCopyFieldIntoFieldCaseBuilder()
+                .setFlowModCopyFieldIntoField(builder.build())
+                .build())
+            .build();
     }
 
-    private static FlowMods readFlowModCopyFromValue(ByteBuf message, short numBits) {
-        FlowModCopyValueIntoFieldBuilder builder = new FlowModCopyValueIntoFieldBuilder();
-        builder.setValue(readUint16(message));
-        builder.setDstField(readUint32(message));
-        builder.setDstOfs((int) message.readShort());
-        builder.setFlowModNumBits((int) numBits);
+    private static FlowMods readFlowModCopyFromValue(final ByteBuf message, final short numBits) {
+        final var builder = new FlowModCopyValueIntoFieldBuilder()
+            .setValue(readUint16(message))
+            .setDstField(readUint32(message))
+            .setDstOfs((int) message.readShort())
+            .setFlowModNumBits((int) numBits);
         length -= FROM_VALUE_LENGTH - Short.BYTES;
 
-        FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
-        FlowModCopyValueIntoFieldCaseBuilder caseBuilder = new FlowModCopyValueIntoFieldCaseBuilder();
-        caseBuilder.setFlowModCopyValueIntoField(builder.build());
-        flowModsBuilder.setFlowModSpec(caseBuilder.build());
-        return flowModsBuilder.build();
+        return new FlowModsBuilder()
+            .setFlowModSpec(new FlowModCopyValueIntoFieldCaseBuilder()
+                .setFlowModCopyValueIntoField(builder.build())
+                .build())
+            .build();
     }
 
-    private static FlowMods readFlowToPort(ByteBuf message, short numBits) {
-        FlowModOutputToPortBuilder builder = new FlowModOutputToPortBuilder();
-        builder.setSrcField(readUint32(message));
-        builder.setSrcOfs((int) message.readShort());
-        builder.setFlowModNumBits((int) numBits);
+    private static FlowMods readFlowToPort(final ByteBuf message, final short numBits) {
+        final var builder = new FlowModOutputToPortBuilder()
+            .setSrcField(readUint32(message))
+            .setSrcOfs((int) message.readShort())
+            .setFlowModNumBits((int) numBits);
         length -= TO_PORT_LENGTH - Short.BYTES;
 
-        FlowModsBuilder flowModsBuilder = new FlowModsBuilder();
-        FlowModOutputToPortCaseBuilder caseBuilder = new FlowModOutputToPortCaseBuilder();
-        caseBuilder.setFlowModOutputToPort(builder.build());
-        flowModsBuilder.setFlowModSpec(caseBuilder.build());
-        return flowModsBuilder.build();
+        return new FlowModsBuilder()
+            .setFlowModSpec(new FlowModOutputToPortCaseBuilder().setFlowModOutputToPort(builder.build()).build())
+            .build();
     }
 }
