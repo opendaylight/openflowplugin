@@ -58,12 +58,12 @@ public final class LearnCodecUtil {
     private static final int TO_PORT_LENGTH = 8;
     private static final int EMPTY_FLOW_MOD_LENGTH = 2;
 
-    // FIXME: You might wonder, why has a static utility method a static mutable field. Look for FIXMEs and users of
-    //        this field for a nice story.
-    private static short length;
+    // For overflow detection. We should probably just ByteBuf.slice() and fail-fast, i.e. don't read stuff beyond
+    // message length limit.
+    private short length;
 
-    private LearnCodecUtil() {
-        // Hidden on purpose
+    private LearnCodecUtil(final short length) {
+        this.length = length;
     }
 
     static short deserializeHeader(final ByteBuf message) {
@@ -201,16 +201,15 @@ public final class LearnCodecUtil {
             .setFinHardTimeout(readUint16(message));
     }
 
-    // FIXME: OMG: this thing has its synchronized global state ...
-    static synchronized void buildFlowModSpecs(final NxActionLearnBuilder nxActionLearnBuilder, final ByteBuf message,
+    static void buildFlowModSpecs(final NxActionLearnBuilder nxActionLearnBuilder, final ByteBuf message,
             final short messageLength) {
-        // ... which is this integer!
-        LearnCodecUtil.length = messageLength;
+        new LearnCodecUtil(messageLength).buildFlowModSpecs(nxActionLearnBuilder, message);
+    }
 
-        List<FlowMods> flowModeList = new ArrayList<>();
-        while (LearnCodecUtil.length > 0) {
-            FlowMods flowMod = readFlowMod(message);
-
+    private void buildFlowModSpecs(final NxActionLearnBuilder nxActionLearnBuilder, final ByteBuf message) {
+        final List<FlowMods> flowModeList = new ArrayList<>();
+        while (length > 0) {
+            final FlowMods flowMod = readFlowMod(message);
             if (flowMod != null) {
                 flowModeList.add(flowMod);
             } else {
@@ -218,15 +217,14 @@ public final class LearnCodecUtil {
             }
         }
 
-        // ... which is used for this warning
-        if (LearnCodecUtil.length != 0) {
+        if (length != 0) {
             LOG.error("Learn Codec read {} bytes more than needed from stream. Packet might be corrupted",
-                    Math.abs(messageLength));
+                Math.abs(length));
         }
         nxActionLearnBuilder.setFlowMods(flowModeList);
     }
 
-    private static FlowMods readFlowMod(final ByteBuf message) {
+    private FlowMods readFlowMod(final ByteBuf message) {
         final short header = message.readShort();
         length -= Short.BYTES;
         if (header == 0) {
@@ -254,7 +252,7 @@ public final class LearnCodecUtil {
         return null;
     }
 
-    private static FlowMods readFlowModAddMatchFromField(final ByteBuf message, final short numBits) {
+    private FlowMods readFlowModAddMatchFromField(final ByteBuf message, final short numBits) {
         final var builder = new FlowModAddMatchFromFieldBuilder()
             .setSrcField(readUint32(message))
             .setSrcOfs((int) message.readShort())
@@ -270,7 +268,7 @@ public final class LearnCodecUtil {
             .build();
     }
 
-    private static FlowMods readFlowModAddMatchFromValue(final ByteBuf message, final short numBits) {
+    private FlowMods readFlowModAddMatchFromValue(final ByteBuf message, final short numBits) {
         final var builder = new FlowModAddMatchFromValueBuilder()
             .setValue(readUint16(message))
             .setSrcField(readUint32(message))
@@ -285,7 +283,7 @@ public final class LearnCodecUtil {
             .build();
     }
 
-    private static FlowMods readFlowModCopyFromField(final ByteBuf message, final short numBits) {
+    private FlowMods readFlowModCopyFromField(final ByteBuf message, final short numBits) {
         final var builder = new FlowModCopyFieldIntoFieldBuilder()
             .setSrcField(readUint32(message))
             .setSrcOfs((int) message.readShort())
@@ -301,7 +299,7 @@ public final class LearnCodecUtil {
             .build();
     }
 
-    private static FlowMods readFlowModCopyFromValue(final ByteBuf message, final short numBits) {
+    private FlowMods readFlowModCopyFromValue(final ByteBuf message, final short numBits) {
         final var builder = new FlowModCopyValueIntoFieldBuilder()
             .setValue(readUint16(message))
             .setDstField(readUint32(message))
@@ -316,7 +314,7 @@ public final class LearnCodecUtil {
             .build();
     }
 
-    private static FlowMods readFlowToPort(final ByteBuf message, final short numBits) {
+    private FlowMods readFlowToPort(final ByteBuf message, final short numBits) {
         final var builder = new FlowModOutputToPortBuilder()
             .setSrcField(readUint32(message))
             .setSrcOfs((int) message.readShort())
