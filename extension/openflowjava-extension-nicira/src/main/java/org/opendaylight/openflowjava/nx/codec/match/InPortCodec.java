@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.in.port.type.grouping.NxmOfInPortValuesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfInPortCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfInPortCaseValueBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class InPortCodec extends AbstractMatchCodec {
 
@@ -35,17 +36,19 @@ public class InPortCodec extends AbstractMatchCodec {
             NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         OfInPortCaseValue value = (OfInPortCaseValue) input.getMatchEntryValue();
         outBuffer.writeInt(value.getNxmOfInPortValues().getValue().toJava());
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         return deserializeHeaderToBuilder(message)
                 .setMatchEntryValue(new OfInPortCaseValueBuilder()
-                    .setNxmOfInPortValues(new NxmOfInPortValuesBuilder().setValue(message.readInt()).build())
+                    .setNxmOfInPortValues(new NxmOfInPortValuesBuilder()
+                        .setValue(Uint16.valueOf(message.readInt()))
+                        .build())
                     .build())
                 .build();
     }
