@@ -43,7 +43,7 @@ public final class ActionUtil {
      * @param dscpValue TypeOfService value
      * @return TOS value
      */
-    public static Short dscpToTos(final short dscpValue) {
-        return (short) (dscpValue << ActionUtil.ENC_FIELD_BIT_SIZE);
+    public static Uint8 dscpToTos(final short dscpValue) {
+        return Uint8.valueOf((short) (dscpValue << ActionUtil.ENC_FIELD_BIT_SIZE));
     }
 }
