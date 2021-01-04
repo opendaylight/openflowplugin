@@ -69,7 +69,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
@@ -169,6 +168,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -778,49 +778,28 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     private static InstructionsBuilder createDecNwTtlInstructions() {
-        final DecNwTtlBuilder ta = new DecNwTtlBuilder();
-        final DecNwTtl decNwTtl = ta.build();
-        final ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-        ab.withKey(new ActionKey(0));
-        // Add our drop action to a list
-        final List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.withKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        ib.withKey(new InstructionKey(0));
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
+                            .withKey(new ActionKey(0))
+                            .build()))
+                        .build())
+                    .build())
+                .setOrder(0)
+                .build()));
     }
 
     private static InstructionsBuilder createMeterInstructions() {
-
-        final MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(Uint32.ONE));
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .withKey(new InstructionKey(0))
+                .setInstruction(new MeterCaseBuilder()
+                    .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.ONE)).build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createMetadataInstructions() {
