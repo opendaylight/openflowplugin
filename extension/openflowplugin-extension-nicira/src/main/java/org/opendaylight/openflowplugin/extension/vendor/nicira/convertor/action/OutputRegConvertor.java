@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -15,7 +16,6 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputRegBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg.grouping.NxActionOutputRegBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionOutputRegGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionOutputRegNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
@@ -27,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionOutputRegNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.NxOutputReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.NxOutputRegBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.nx.output.reg.Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.output.reg.grouping.nx.output.reg.SrcBuilder;
 
 /**
@@ -42,29 +41,29 @@ public class OutputRegConvertor implements
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             final Action input, final ActionPath path) {
-        NxActionOutputReg action = ((ActionOutputReg) input.getActionChoice()).getNxActionOutputReg();
-        SrcBuilder srcBuilder = new SrcBuilder();
-        srcBuilder.setSrcChoice(FieldChoiceResolver.resolveSrcChoice(action.getSrc()));
-        srcBuilder.setOfsNbits(action.getNBits());
-        NxOutputRegBuilder builder = new NxOutputRegBuilder();
-        builder.setSrc(srcBuilder.build());
-        builder.setMaxLen(action.getMaxLen());
-        return resolveAction(builder.build(), path);
+        final var action = ((ActionOutputReg) input.getActionChoice()).getNxActionOutputReg();
+        return resolveAction(new NxOutputRegBuilder()
+            .setSrc(new SrcBuilder()
+                .setSrcChoice(FieldChoiceResolver.resolveSrcChoice(action.getSrc()))
+                .setOfsNbits(action.getNBits())
+                .build())
+            .setMaxLen(action.getMaxLen())
+            .build(), path);
     }
 
     @Override
     public Action convert(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
-        Preconditions.checkArgument(nxActionArg instanceof NxActionOutputRegGrouping);
-        NxActionOutputRegGrouping nxAction = (NxActionOutputRegGrouping) nxActionArg;
-        Src src = nxAction.getNxOutputReg().getSrc();
-        final ActionOutputRegBuilder builder = new ActionOutputRegBuilder();
-        NxActionOutputRegBuilder nxActionOutputRegBuilder = new NxActionOutputRegBuilder();
-        nxActionOutputRegBuilder.setSrc(FieldChoiceResolver.resolveSrcHeaderUint32(src.getSrcChoice()));
-        nxActionOutputRegBuilder.setNBits(src.getOfsNbits());
-        nxActionOutputRegBuilder.setMaxLen(nxAction.getNxOutputReg().getMaxLen());
-        builder.setNxActionOutputReg(nxActionOutputRegBuilder.build());
-        return ActionUtil.createAction(builder.build());
+        checkArgument(nxActionArg instanceof NxActionOutputRegGrouping);
+        final var nxAction = (NxActionOutputRegGrouping) nxActionArg;
+        final var src = nxAction.getNxOutputReg().getSrc();
+        return ActionUtil.createAction(new ActionOutputRegBuilder()
+            .setNxActionOutputReg(new NxActionOutputRegBuilder()
+                .setSrc(FieldChoiceResolver.resolveSrcHeaderUint32(src.getSrcChoice()))
+                .setNBits(src.getOfsNbits())
+                .setMaxLen(nxAction.getNxOutputReg().getMaxLen())
+                .build())
+            .build());
     }
 
     static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(

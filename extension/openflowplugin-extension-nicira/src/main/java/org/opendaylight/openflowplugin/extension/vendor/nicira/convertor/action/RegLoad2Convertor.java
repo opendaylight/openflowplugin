@@ -90,8 +90,8 @@ public class RegLoad2Convertor implements
         ConvertorActionFromOFJava<Action, ActionPath> {
 
     @Override
-    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(Action input,
-                                                                                                      ActionPath path) {
+    public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
+            final Action input, final ActionPath path) {
         NxActionRegLoad2 actionRegLoad2 = ((ActionRegLoad2) input.getActionChoice()).getNxActionRegLoad2();
         MatchEntry matchEntry = actionRegLoad2.getMatchEntry().get(0);
         NxRegLoad nxRegLoad = resolveRegLoad(matchEntry);
@@ -100,7 +100,7 @@ public class RegLoad2Convertor implements
 
     @Override
     public Action convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
         Preconditions.checkArgument(actionCase instanceof NxActionRegLoadGrouping);
 
         NxActionRegLoadGrouping nxAction = (NxActionRegLoadGrouping) actionCase;
@@ -112,7 +112,7 @@ public class RegLoad2Convertor implements
         return ActionUtil.createAction(actionRegLoad2);
     }
 
-    private static MatchEntry resolveMatchEntry(NxRegLoad nxRegLoad) {
+    private static MatchEntry resolveMatchEntry(final NxRegLoad nxRegLoad) {
         Dst dst = nxRegLoad.getDst();
         Uint64 value = nxRegLoad.getValue();
         Uint16 start = dst.getStart();
@@ -124,7 +124,7 @@ public class RegLoad2Convertor implements
         return resolveMatchEntry(dstChoice, value, mask);
     }
 
-    private static MatchEntry resolveMatchEntry(DstChoice dstChoice, Uint64 value, Uint64 mask) {
+    private static MatchEntry resolveMatchEntry(final DstChoice dstChoice, final Uint64 value, final Uint64 mask) {
         try {
             if (dstChoice instanceof DstNxNshFlagsCase) {
                 return NshFlagsConvertor.buildMatchEntry(Uint8.valueOf(value), Uint8.valueOf(mask));
@@ -157,7 +157,7 @@ public class RegLoad2Convertor implements
         throw new CodecPreconditionException("Missing implementation of a case in dst-choice? " + dstChoice.getClass());
     }
 
-    private static NxRegLoad resolveRegLoad(MatchEntry matchEntry) {
+    private static NxRegLoad resolveRegLoad(final MatchEntry matchEntry) {
         Class<? extends MatchField> oxmMatchField = matchEntry.getOxmMatchField();
         ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) matchEntry.getMatchEntryValue();
         OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
@@ -167,9 +167,9 @@ public class RegLoad2Convertor implements
     }
 
     private static NxRegLoad resolveRegLoad(
-            Class<? extends MatchField> oxmMatchField,
-            NxExpMatchEntryValue value,
-            DstBuilder dstBuilder) {
+            final Class<? extends MatchField> oxmMatchField,
+            final NxExpMatchEntryValue value,
+            final DstBuilder dstBuilder) {
 
         if (NxmNxNshFlags.class.equals(oxmMatchField)) {
             int valueLength = NiciraMatchCodecs.NSH_FLAGS_CODEC.getValueLength();
@@ -223,29 +223,20 @@ public class RegLoad2Convertor implements
         throw new CodecPreconditionException("Missing codec for " + value.implementedInterface());
     }
 
-    private static NxRegLoad resolveRegLoad(Uint8 value, @Nullable Uint8 mask, int valueLength, DstBuilder dstBuilder) {
-        return resolveRegLoad(
-                Uint64.valueOf(value),
-                mask == null ? null : Uint64.valueOf(mask),
-                valueLength,
-                dstBuilder);
+    private static NxRegLoad resolveRegLoad(final Uint8 value, final @Nullable Uint8 mask, final int valueLength,
+            final DstBuilder dstBuilder) {
+        return resolveRegLoad(value.toUint64(), mask == null ? null : mask.toUint64(), valueLength, dstBuilder);
     }
 
-    private static NxRegLoad resolveRegLoad(Uint32 value, @Nullable Uint32 mask, int valueLength,
-            DstBuilder dstBuilder) {
-        return resolveRegLoad(
-            Uint64.valueOf(value),
-                mask == null ? null : Uint64.valueOf(mask),
-                valueLength,
-                dstBuilder);
+    private static NxRegLoad resolveRegLoad(final Uint32 value, final @Nullable Uint32 mask, final int valueLength,
+            final DstBuilder dstBuilder) {
+        return resolveRegLoad(value.toUint64(), mask == null ? null : mask.toUint64(), valueLength, dstBuilder);
     }
 
     // Convert the value/mask pair of the openflowjava reg_load2 action to the
     // value/bit range pair of the openfloplugin reg_load action.
-    private static NxRegLoad resolveRegLoad(Uint64 value,
-                                            @Nullable Uint64 mask,
-                                            int length,
-                                            DstBuilder dstBuilder) {
+    private static NxRegLoad resolveRegLoad(Uint64 value, final @Nullable Uint64 mask, final int length,
+            final DstBuilder dstBuilder) {
         final int start;
         final int end;
         if (mask == null) {
@@ -268,12 +259,10 @@ public class RegLoad2Convertor implements
             value = Uint64.fromLongBits(newValueBits);
         }
 
-        dstBuilder.setStart(start);
-        dstBuilder.setEnd(end - 1);
-        NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
-        nxRegLoadBuilder.setDst(dstBuilder.build());
-        nxRegLoadBuilder.setValue(value);
-        return nxRegLoadBuilder.build();
+        return new NxRegLoadBuilder()
+            .setDst(dstBuilder.setStart(Uint16.valueOf(start)).setEnd(Uint16.valueOf(end - 1)).build())
+            .setValue(value)
+            .build();
     }
 
     private static int lowestSetBit(final long value) {
@@ -286,7 +275,7 @@ public class RegLoad2Convertor implements
 
     // Convert value/bit range pair of the openfloplugin reg_load action to the
     // value/mask pair of the openflowjava reg_load2 action.
-    private static Uint64[] resolveValueMask(Uint64 value, Uint16 start, Uint16 end) {
+    private static Uint64[] resolveValueMask(final Uint64 value, final Uint16 start, final Uint16 end) {
         final int startInt = start.toJava();
         final int bits = end.toJava() - startInt + 1;
         final long valueBits = value.longValue();

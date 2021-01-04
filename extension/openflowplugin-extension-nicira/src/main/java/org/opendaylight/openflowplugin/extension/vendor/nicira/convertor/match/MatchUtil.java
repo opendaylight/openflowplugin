@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.primitives.Longs;
-import com.google.common.primitives.UnsignedBytes;
-import java.util.Iterator;
 import org.opendaylight.openflowplugin.extension.api.AugmentationGroupingResolver;
 import org.opendaylight.openflowplugin.extension.api.AugmentationGroupingResolver.Factory;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
@@ -78,9 +74,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author msunal
  */
 public final class MatchUtil {
-    private static final Splitter SPLITTER = Splitter.on('.');
-    private static final Joiner JOINER = Joiner.on('.');
-
     public static final AugmentationGroupingResolver<NxmNxRegGrouping, Extension> REG_RESOLVER;
     public static final AugmentationGroupingResolver<NxmNxTunIdGrouping, Extension> TUN_ID_RESOLVER;
     public static final AugmentationGroupingResolver<NxmNxArpShaGrouping, Extension> ARP_SHA_RESOLVER;
@@ -163,17 +156,17 @@ public final class MatchUtil {
     }
 
     private MatchUtil() {
+        // Hidden on purpose
     }
 
     public static MatchEntryBuilder createDefaultMatchEntryBuilder(final Class<? extends MatchField> matchField,
                                                                    final Class<? extends OxmClassBase> oxmClass,
                                                                    final MatchEntryValue matchEntryValue) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(matchField);
-        matchEntryBuilder.setOxmClass(oxmClass);
-        matchEntryBuilder.setMatchEntryValue(matchEntryValue);
-        return matchEntryBuilder;
+        return new MatchEntryBuilder()
+            .setHasMask(false)
+            .setOxmMatchField(matchField)
+            .setOxmClass(oxmClass)
+            .setMatchEntryValue(matchEntryValue);
     }
 
     public static <V extends Augmentation<ExperimenterIdCase>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
@@ -186,36 +179,11 @@ public final class MatchUtil {
             .build());
     }
 
-    public static Long ipv4ToLong(final Ipv4Address ipv4) {
-        Iterator<String> iterator = SPLITTER.split(ipv4.getValue()).iterator();
-        byte[] bytes = new byte[8];
-        for (int i = 0; i < bytes.length; i++) {
-            if (i < 4) {
-                bytes[i] = 0;
-            } else {
-                bytes[i] = UnsignedBytes.parseUnsignedByte(iterator.next());
-            }
-        }
-        Long result = Longs.fromByteArray(bytes);
-        return result;
+    public static Uint32 ipv4ToUint32(final Ipv4Address ipv4) {
+        return Uint32.fromIntBits(IetfInetUtil.INSTANCE.ipv4AddressBits(ipv4));
     }
 
-    public static Ipv4Address longToIpv4Address(final Uint32 value) {
-        return longToIpv4Address(value.toJava());
-    }
-
-    public static Ipv4Address longToIpv4Address(final Long value) {
-        return longToIpv4Address(value.longValue());
-    }
-
-    public static Ipv4Address longToIpv4Address(final long value) {
-        byte[] bytes = Longs.toByteArray(value);
-        String[] strArray = new String[4];
-        for (int i = 4; i < bytes.length; i++) {
-            strArray[i - 4] = UnsignedBytes.toString(bytes[i]);
-        }
-        String str = JOINER.join(strArray);
-        Ipv4Address result = new Ipv4Address(str);
-        return result;
+    public static Ipv4Address uint32ToIpv4Address(final Uint32 value) {
+        return IetfInetUtil.INSTANCE.ipv4AddressFor(value.intValue());
     }
 }
