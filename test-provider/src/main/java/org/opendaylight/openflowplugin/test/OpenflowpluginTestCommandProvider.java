@@ -9,8 +9,6 @@ package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -69,9 +67,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.in._case.CopyTtlInBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.copy.ttl.out._case.CopyTtlOutBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.mpls.ttl._case.DecMplsTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.drop.action._case.DropActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.flood.action._case.FloodActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.flood.all.action._case.FloodAllActionBuilder;
@@ -103,7 +99,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.pcp.action._case.SetVlanPcpActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.strip.vlan.action._case.StripVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.sw.path.action._case.SwPathActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
@@ -128,7 +123,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.go.to.table._case.GoToTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -136,7 +130,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp;
@@ -169,6 +162,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -177,7 +171,6 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("checkstyle:MethodName")
 public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
@@ -209,18 +202,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     private static NodeBuilder createTestNode(final String nodeId) {
-        String localNodeId;
-
-        if (nodeId == null) {
-            localNodeId = OpenflowpluginTestActivator.NODE_ID;
-        } else {
-            localNodeId = nodeId;
-        }
-
-        final NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(localNodeId));
-        builder.withKey(new NodeKey(builder.getId()));
-        return builder;
+        return new NodeBuilder().setId(new NodeId(nodeId != null ? nodeId : OpenflowpluginTestActivator.NODE_ID));
     }
 
     private static InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
@@ -231,7 +213,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             final String tableId) {
         final long TEST_ID = 123;
 
-        final FlowBuilder flow = new FlowBuilder();
         long id = TEST_ID;
 
         String flowType = flowTypeArg;
@@ -239,7 +220,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flowType = "f1";
         }
 
-        flow.setPriority(Uint16.TWO);
+        final FlowBuilder flow = new FlowBuilder()
+            .setPriority(Uint16.TWO);
 
         switch (flowType) {
             case "f1":
@@ -686,29 +668,26 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 LOG.warn("flow type not understood: {}", flowType);
         }
 
-        final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
-        if (null == flow.getBarrier()) {
+        if (flow.getBarrier() == null) {
             flow.setBarrier(Boolean.FALSE);
         }
-        flow.setCookie(new FlowCookie(Uint64.TEN));
-        flow.setCookieMask(new FlowCookie(Uint64.TEN));
-        flow.setHardTimeout(Uint16.ZERO);
-        flow.setIdleTimeout(Uint16.ZERO);
-        flow.setInstallHw(false);
-        flow.setStrict(false);
-        flow.setContainerName(null);
-        flow.setFlags(new FlowModFlags(false, false, false, false, true));
-        flow.setId(new FlowId("12"));
-        flow.setTableId(getTableId(tableId));
 
-        flow.withKey(key);
-        flow.setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
-        return flow;
+        return flow
+            .setCookie(new FlowCookie(Uint64.TEN))
+            .setCookieMask(new FlowCookie(Uint64.TEN))
+            .setHardTimeout(Uint16.ZERO)
+            .setIdleTimeout(Uint16.ZERO)
+            .setInstallHw(false)
+            .setStrict(false)
+            .setContainerName(null)
+            .setFlags(new FlowModFlags(false, false, false, false, true))
+            .setId(new FlowId("12"))
+            .setTableId(getTableId(tableId))
+            .withKey(new FlowKey(new FlowId(Long.toString(id))))
+            .setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
     }
 
-
     private static FlowBuilder createTestFlowPerfTest(final String flowTypeArg, final String tableId, final int id) {
-        final FlowBuilder flow = new FlowBuilder();
         String flowType = flowTypeArg;
         int flowId = id;
 
@@ -716,7 +695,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             flowType = "f1";
         }
 
-        flow.setPriority(Uint16.valueOf(flowId));
+        final FlowBuilder flow = new FlowBuilder()
+            .setPriority(Uint16.valueOf(flowId));
 
         switch (flowType) {
             case "f1":
@@ -728,37 +708,32 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
                 LOG.warn("flow type not understood: {}", flowType);
         }
 
-        final FlowKey key = new FlowKey(new FlowId(Long.toString(flowId)));
-        if (null == flow.getBarrier()) {
+        if (flow.getBarrier() == null) {
             flow.setBarrier(Boolean.FALSE);
         }
-        flow.setCookie(new FlowCookie(Uint64.TEN));
-        flow.setCookieMask(new FlowCookie(Uint64.TEN));
-        flow.setHardTimeout(Uint16.ZERO);
-        flow.setIdleTimeout(Uint16.ZERO);
-        flow.setInstallHw(false);
-        flow.setStrict(false);
-        flow.setContainerName(null);
-        flow.setFlags(new FlowModFlags(false, false, false, false, true));
-        flow.setId(new FlowId("12"));
-        flow.setTableId(getTableId(tableId));
 
-        flow.withKey(key);
-        flow.setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
-        return flow;
+        return flow
+            .setCookie(new FlowCookie(Uint64.TEN))
+            .setCookieMask(new FlowCookie(Uint64.TEN))
+            .setHardTimeout(Uint16.ZERO)
+            .setIdleTimeout(Uint16.ZERO)
+            .setInstallHw(false)
+            .setStrict(false)
+            .setContainerName(null)
+            .setFlags(new FlowModFlags(false, false, false, false, true))
+            .setId(new FlowId("12"))
+            .setTableId(getTableId(tableId))
+            .withKey(new FlowKey(new FlowId(Long.toString(flowId))))
+            .setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
     }
 
     private static FlowBuilder createtablemiss() {
-        final FlowBuilder flow = new FlowBuilder();
-        final long id = 456;
-        final MatchBuilder matchBuilder = new MatchBuilder();
-        flow.setMatch(matchBuilder.build());
-        flow.setInstructions(createSentToControllerInstructions().build());
-        flow.setPriority(Uint16.ZERO);
-        flow.setTableId(Uint8.ZERO);
-        final FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
-        flow.withKey(key);
-        return flow;
+        return new FlowBuilder()
+            .setMatch(new MatchBuilder().build())
+            .setInstructions(createSentToControllerInstructions().build())
+            .setPriority(Uint16.ZERO)
+            .setTableId(Uint8.ZERO)
+            .withKey(new FlowKey(new FlowId("456")));
     }
 
     private static Uint8 getTableId(final String tableId) {
@@ -778,1413 +753,928 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     private static InstructionsBuilder createDecNwTtlInstructions() {
-        final DecNwTtlBuilder ta = new DecNwTtlBuilder();
-        final DecNwTtl decNwTtl = ta.build();
-        final ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-        ab.withKey(new ActionKey(0));
-        // Add our drop action to a list
-        final List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.withKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        ib.withKey(new InstructionKey(0));
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createMeterInstructions() {
-
-        final MeterBuilder aab = new MeterBuilder();
-        aab.setMeterId(new MeterId(Uint32.ONE));
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new MeterCaseBuilder().setMeter(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new MeterCaseBuilder()
+                    .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.ONE)).build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createMetadataInstructions() {
-
-        final WriteMetadataBuilder aab = new WriteMetadataBuilder();
-        aab.setMetadata(Uint64.valueOf(10));
-        aab.setMetadataMask(Uint64.valueOf(10));
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new WriteMetadataCaseBuilder().setWriteMetadata(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .withKey(new InstructionKey(0))
+                .setInstruction(new WriteMetadataCaseBuilder()
+                    .setWriteMetadata(new WriteMetadataBuilder()
+                        .setMetadata(Uint64.TEN).setMetadataMask(Uint64.TEN)
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createGotoTableInstructions() {
-
-        final GoToTableBuilder aab = new GoToTableBuilder();
-        aab.setTableId(Uint8.valueOf(5));
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new GoToTableCaseBuilder().setGoToTable(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new GoToTableCaseBuilder()
+                    .setGoToTable(new GoToTableBuilder().setTableId(Uint8.valueOf(5)).build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createDropInstructions() {
-        final DropActionBuilder dab = new DropActionBuilder();
-        final DropAction dropAction = dab.build();
-        final ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DropActionCaseBuilder().setDropAction(dropAction).build());
-        ab.withKey(new ActionKey(0));
-        // Add our drop action to a list
-        final List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-        ab.withKey(new ActionKey(0));
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
         // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .withKey(new ActionKey(0))
+                            .setAction(new DropActionCaseBuilder()
+                                .setDropAction(new DropActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final ControllerActionBuilder controller = new ControllerActionBuilder();
-        controller.setMaxLength(Uint16.valueOf(5));
-        ab.setAction(new ControllerActionCaseBuilder().setControllerAction(controller.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new ControllerActionCaseBuilder()
+                                .setControllerAction(new ControllerActionBuilder()
+                                    .setMaxLength(Uint16.valueOf(5))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction1() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(Uint16.valueOf(56));
-        final Uri value = new Uri("PCEP");
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new OutputActionCaseBuilder()
+                                .setOutputAction(new OutputActionBuilder()
+                                    .setMaxLength(Uint16.valueOf(56))
+                                    .setOutputNodeConnector(new Uri("PCEP"))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createOutputInstructions() {
-
         // test case for Output Port works if the particular port exists
         // this particular test-case is for Port : 1
         // tested as (addMDFlow openflow:<dpid> f82)
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final OutputActionBuilder output = new OutputActionBuilder();
-
-        final Uri value = new Uri("1");
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new OutputActionCaseBuilder()
+                                .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("1")).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createOutputInstructions(final String outputType, final Uint16 outputValue) {
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(outputValue);
-        final Uri value = new Uri(outputType);
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new OutputActionCaseBuilder()
+                                .setOutputAction(new OutputActionBuilder()
+                                    .setMaxLength(outputValue)
+                                    .setOutputNodeConnector(new Uri(outputType))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createSentToControllerInstructions() {
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(Uint16.MAX_VALUE);
-        final Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new OutputActionCaseBuilder()
+                                .setOutputAction(new OutputActionBuilder()
+                                    .setMaxLength(Uint16.MAX_VALUE)
+                                    .setOutputNodeConnector(new Uri(OutputPortValues.CONTROLLER.toString()))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
-
     private static InstructionsBuilder createStripVlanInstructions() {
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final StripVlanActionBuilder stripActionBuilder = new StripVlanActionBuilder();
-        ab.setAction(new StripVlanActionCaseBuilder().setStripVlanAction(stripActionBuilder.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new StripVlanActionCaseBuilder()
+                                .setStripVlanAction(new StripVlanActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction2() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final PushMplsActionBuilder push = new PushMplsActionBuilder();
-        push.setEthernetType(Uint16.valueOf(0x8847));
-        ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new PushMplsActionCaseBuilder()
+                                .setPushMplsAction(new PushMplsActionBuilder()
+                                    .setEthernetType(Uint16.valueOf(0x8847))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction3() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final PushPbbActionBuilder pbb = new PushPbbActionBuilder();
-        pbb.setEthernetType(Uint16.valueOf(0x88E7));
-        ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new PushPbbActionCaseBuilder()
+                                .setPushPbbAction(new PushPbbActionBuilder()
+                                    .setEthernetType(Uint16.valueOf(0x88E7))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction4() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final PushVlanActionBuilder vlan = new PushVlanActionBuilder();
-        vlan.setEthernetType(Uint16.valueOf(0x8100));
-        ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new PushVlanActionCaseBuilder()
+                                .setPushVlanAction(new PushVlanActionBuilder()
+                                    .setEthernetType(Uint16.valueOf(0x8100))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction5() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetDlDstActionBuilder setdl = new SetDlDstActionBuilder();
-        setdl.setAddress(new MacAddress("00:05:b9:7c:81:5f"));
-        ab.setAction(new SetDlDstActionCaseBuilder().setSetDlDstAction(setdl.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetDlDstActionCaseBuilder()
+                                .setSetDlDstAction(new SetDlDstActionBuilder()
+                                    .setAddress(new MacAddress("00:05:b9:7c:81:5f"))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction6() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetDlSrcActionBuilder src = new SetDlSrcActionBuilder();
-        src.setAddress(new MacAddress("00:05:b9:7c:81:5f"));
-        ab.setAction(new SetDlSrcActionCaseBuilder().setSetDlSrcAction(src.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder().setAction(BindingMap.of(new ActionBuilder()
+                        .setOrder(0)
+                        .setAction(new SetDlSrcActionCaseBuilder()
+                            .setSetDlSrcAction(new SetDlSrcActionBuilder()
+                                .setAddress(new MacAddress("00:05:b9:7c:81:5f"))
+                                .build())
+                            .build()).build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction7() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetVlanIdActionBuilder vl = new SetVlanIdActionBuilder();
-        final VlanId a = new VlanId(Uint16.valueOf(4000));
-        vl.setVlanId(a);
-        ab.setAction(new SetVlanIdActionCaseBuilder().setSetVlanIdAction(vl.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetVlanIdActionCaseBuilder()
+                                .setSetVlanIdAction(new SetVlanIdActionBuilder()
+                                    .setVlanId(new VlanId(Uint16.valueOf(4000))).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction8() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
-        final VlanPcp pcp1 = new VlanPcp(Uint8.TWO);
-        pcp.setVlanPcp(pcp1);
-        ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetVlanPcpActionCaseBuilder()
+                                .setSetVlanPcpAction(new SetVlanPcpActionBuilder()
+                                    .setVlanPcp(new VlanPcp(Uint8.TWO))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction88() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetVlanPcpActionBuilder pcp = new SetVlanPcpActionBuilder();
-        // the code point is a 3-bit(0-7) field representing the frame priority level
-        final VlanPcp pcp1 = new VlanPcp(Uint8.valueOf(4));
-        pcp.setVlanPcp(pcp1);
-        ab.setAction(new SetVlanPcpActionCaseBuilder().setSetVlanPcpAction(pcp.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetVlanPcpActionCaseBuilder()
+                                .setSetVlanPcpAction(new SetVlanPcpActionBuilder()
+                                    // the code point is a 3-bit(0-7) field representing the frame priority level
+                                    .setVlanPcp(new VlanPcp(Uint8.valueOf(4)))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction9() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
-        ab.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(new CopyTtlInBuilder().build()).build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction10() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
-        ab.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new CopyTtlOutCaseBuilder()
+                                .setCopyTtlOut(new CopyTtlOutBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction11() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
-        ab.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.withKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instruction
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new DecMplsTtlCaseBuilder()
+                                .setDecMplsTtl(new DecMplsTtlBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction12() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final DecNwTtlBuilder nwttl = new DecNwTtlBuilder();
-        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(nwttl.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction13() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final DropActionBuilder drop = new DropActionBuilder();
-        ab.setAction(new DropActionCaseBuilder().setDropAction(drop.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new DropActionCaseBuilder()
+                                .setDropAction(new DropActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction14() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final FloodActionBuilder fld = new FloodActionBuilder();
-        ab.setAction(new FloodActionCaseBuilder().setFloodAction(fld.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new FloodActionCaseBuilder()
+                                .setFloodAction(new FloodActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction15() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final FloodAllActionBuilder fldall = new FloodAllActionBuilder();
-        ab.setAction(new FloodAllActionCaseBuilder().setFloodAllAction(fldall.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new FloodAllActionCaseBuilder()
+                                .setFloodAllAction(new FloodAllActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction16() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final GroupActionBuilder groupActionB = new GroupActionBuilder();
-        groupActionB.setGroupId(Uint32.ONE);
-        groupActionB.setGroup("0");
-        ab.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new GroupActionCaseBuilder()
+                                .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction17() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final HwPathActionBuilder hwPathB = new HwPathActionBuilder();
-        ab.setAction(new HwPathActionCaseBuilder().setHwPathAction(hwPathB.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new HwPathActionCaseBuilder()
+                                .setHwPathAction(new HwPathActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction18() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final LoopbackActionBuilder loopbackActionBuilder = new LoopbackActionBuilder();
-        ab.setAction(new LoopbackActionCaseBuilder().setLoopbackAction(loopbackActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new LoopbackActionCaseBuilder()
+                                .setLoopbackAction(new LoopbackActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction19() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
-        popMplsActionBuilder.setEthernetType(Uint16.valueOf(0xB));
-        ab.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new PopMplsActionCaseBuilder()
+                                .setPopMplsAction(new PopMplsActionBuilder()
+                                    .setEthernetType(Uint16.valueOf(0xB))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction20() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
-        ab.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new PopPbbActionCaseBuilder()
+                                .setPopPbbAction(new PopPbbActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction21() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final PopVlanActionBuilder popVlanActionBuilder = new PopVlanActionBuilder();
-        ab.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(popVlanActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new PopVlanActionCaseBuilder()
+                                .setPopVlanAction(new PopVlanActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction22() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetDlTypeActionBuilder setDlTypeActionBuilder = new SetDlTypeActionBuilder();
-        setDlTypeActionBuilder.setDlType(new EtherType(Uint32.valueOf(8)));
-        ab.setAction(new SetDlTypeActionCaseBuilder().setSetDlTypeAction(setDlTypeActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetDlTypeActionCaseBuilder()
+                                .setSetDlTypeAction(new SetDlTypeActionBuilder()
+                                    .setDlType(new EtherType(Uint32.valueOf(8)))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction23(final NodeId nodeId) {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder().setOrder(0).build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction24() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
-        setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
-        ab.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMplsTtlActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetMplsTtlActionCaseBuilder()
+                                .setSetMplsTtlAction(new SetMplsTtlActionBuilder().setMplsTtl(Uint8.ONE).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction25() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetNextHopActionBuilder setNextHopActionBuilder = new SetNextHopActionBuilder();
-        final Ipv4Builder ipnext = new Ipv4Builder();
-        final Ipv4Prefix prefix = new Ipv4Prefix(IPV4_PREFIX);
-        ipnext.setIpv4Address(prefix);
-        setNextHopActionBuilder.setAddress(ipnext.build());
-        ab.setAction(new SetNextHopActionCaseBuilder().setSetNextHopAction(setNextHopActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetNextHopActionCaseBuilder()
+                                .setSetNextHopAction(new SetNextHopActionBuilder()
+                                    .setAddress(new Ipv4Builder().setIpv4Address(new Ipv4Prefix(IPV4_PREFIX)).build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction26() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetNwDstActionBuilder setNwDstActionBuilder = new SetNwDstActionBuilder();
-        final Ipv4Builder ipdst = new Ipv4Builder();
-        final Ipv4Prefix prefixdst = new Ipv4Prefix("10.0.0.21/24");
-        ipdst.setIpv4Address(prefixdst);
-        setNwDstActionBuilder.setAddress(ipdst.build());
-        ab.setAction(new SetNwDstActionCaseBuilder().setSetNwDstAction(setNwDstActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetNwDstActionCaseBuilder()
+                                .setSetNwDstAction(new SetNwDstActionBuilder()
+                                    .setAddress(new Ipv4Builder()
+                                        .setIpv4Address(new Ipv4Prefix("10.0.0.21/24"))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction27() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetNwSrcActionBuilder setNwsrcActionBuilder = new SetNwSrcActionBuilder();
-        final Ipv4Builder ipsrc = new Ipv4Builder();
-        final Ipv4Prefix prefixsrc = new Ipv4Prefix("10.0.23.21/24");
-        ipsrc.setIpv4Address(prefixsrc);
-        setNwsrcActionBuilder.setAddress(ipsrc.build());
-        ab.setAction(new SetNwSrcActionCaseBuilder().setSetNwSrcAction(setNwsrcActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetNwSrcActionCaseBuilder()
+                                .setSetNwSrcAction(new SetNwSrcActionBuilder()
+                                    .setAddress(new Ipv4Builder()
+                                        .setIpv4Address(new Ipv4Prefix("10.0.23.21/24"))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction28() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
-        setNwTosActionBuilder.setTos(8);
-        ab.setAction(new SetNwTosActionCaseBuilder().setSetNwTosAction(setNwTosActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetNwTosActionCaseBuilder()
+                                .setSetNwTosAction(new SetNwTosActionBuilder().setTos(8).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction29() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
-        setNwTtlActionBuilder.setNwTtl(Uint8.ONE);
-        ab.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetNwTtlActionCaseBuilder()
+                                .setSetNwTtlAction(new SetNwTtlActionBuilder().setNwTtl(Uint8.ONE).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction30() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
-        setQueueActionBuilder.setQueueId(Uint32.ONE);
-        ab.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetQueueActionCaseBuilder()
+                                .setSetQueueAction(new SetQueueActionBuilder().setQueueId(Uint32.ONE).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction31() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetTpDstActionBuilder setTpDstActionBuilder = new SetTpDstActionBuilder();
-        setTpDstActionBuilder.setPort(new PortNumber(Uint16.valueOf(109)));
-
-        ab.setAction(new SetTpDstActionCaseBuilder().setSetTpDstAction(setTpDstActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetTpDstActionCaseBuilder()
+                                .setSetTpDstAction(new SetTpDstActionBuilder()
+                                    .setPort(new PortNumber(Uint16.valueOf(109)))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction32() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetTpSrcActionBuilder setTpSrcActionBuilder = new SetTpSrcActionBuilder();
-        setTpSrcActionBuilder.setPort(new PortNumber(Uint16.valueOf(109)));
-        ab.setAction(new SetTpSrcActionCaseBuilder().setSetTpSrcAction(setTpSrcActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetTpSrcActionCaseBuilder()
+                                .setSetTpSrcAction(new SetTpSrcActionBuilder()
+                                    .setPort(new PortNumber(Uint16.valueOf(109)))
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction33() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SetVlanCfiActionBuilder setVlanCfiActionBuilder = new SetVlanCfiActionBuilder();
-        setVlanCfiActionBuilder.setVlanCfi(new VlanCfi(2));
-        ab.setAction(new SetVlanCfiActionCaseBuilder().setSetVlanCfiAction(setVlanCfiActionBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetVlanCfiActionCaseBuilder()
+                                .setSetVlanCfiAction(new SetVlanCfiActionBuilder().setVlanCfi(new VlanCfi(2)).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction34() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-
-        final SwPathActionBuilder swPathAction = new SwPathActionBuilder();
-        ab.setAction(new SwPathActionCaseBuilder().setSwPathAction(swPathAction.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        // Create an Apply Action
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SwPathActionCaseBuilder()
+                                .setSwPathAction(new SwPathActionBuilder().build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction35() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final ActionBuilder ab1 = new ActionBuilder();
-        final ActionBuilder ab2 = new ActionBuilder();
-
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
-        final SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
-
         // Ethernet
-        final EthernetMatchBuilder ethernetMatch = new EthernetMatchBuilder();
-        final EthernetSourceBuilder ethSourceBuilder = new EthernetSourceBuilder();
-        ethSourceBuilder.setAddress(new MacAddress("00:00:00:00:00:01"));
-        final EthernetMatchBuilder ethernetMatch1 = new EthernetMatchBuilder();
-        final EthernetDestinationBuilder ethDestBuilder = new EthernetDestinationBuilder();
-        ethDestBuilder.setAddress(new MacAddress("00:00:00:00:00:02"));
-        final EthernetMatchBuilder ethernetMatch2 = new EthernetMatchBuilder();
-        final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
-
-        ethernetMatch.setEthernetSource(ethSourceBuilder.build());
-        ethernetMatch1.setEthernetDestination(ethDestBuilder.build());
-        ethernetMatch2.setEthernetType(ethTypeBuilder.build());
-        setFieldBuilder.setEthernetMatch(ethernetMatch.build());
-        setFieldBuilder1.setEthernetMatch(ethernetMatch1.build());
-        setFieldBuilder2.setEthernetMatch(ethernetMatch2.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
-
-        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
-        ab2.withKey(new ActionKey(2));
-        actionList.add(ab2.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        ib.withKey(new InstructionKey(0));
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setEthernetMatch(new EthernetMatchBuilder()
+                                        .setEthernetSource(new EthernetSourceBuilder()
+                                            .setAddress(new MacAddress("00:00:00:00:00:01"))
+                                            .build())
+                                        .build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(1)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setEthernetMatch(new EthernetMatchBuilder()
+                                        .setEthernetDestination(new EthernetDestinationBuilder()
+                                            .setAddress(new MacAddress("00:00:00:00:00:02"))
+                                            .build())
+                                        .build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(2)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setEthernetMatch(new EthernetMatchBuilder()
+                                        .setEthernetType(new EthernetTypeBuilder()
+                                            .setType(new EtherType(Uint32.valueOf(0x86dd))).build())
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction36() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final ActionBuilder ab1 = new ActionBuilder();
-
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
-
-        // Vlan
-        final VlanMatchBuilder vlanBuilder = new VlanMatchBuilder();
-        final VlanMatchBuilder vlanBuilder1 = new VlanMatchBuilder();
-        final VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
-        final VlanId vlanId = new VlanId(Uint16.TEN);
-        final VlanPcp vpcp = new VlanPcp(Uint8.valueOf(3));
-        vlanBuilder.setVlanPcp(vpcp);
-        vlanBuilder1.setVlanId(vlanIdBuilder.setVlanId(vlanId).setVlanIdPresent(true).build());
-        setFieldBuilder.setVlanMatch(vlanBuilder.build());
-        setFieldBuilder1.setVlanMatch(vlanBuilder1.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder().setSetField(new SetFieldBuilder()
+                                .setVlanMatch(new VlanMatchBuilder()
+                                    .setVlanPcp(new VlanPcp(Uint8.valueOf(3)))
+                                    .build())
+                                .build()).build()).build(), new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder().setSetField(new SetFieldBuilder()
+                                .setVlanMatch(new VlanMatchBuilder()
+                                    .setVlanId(new VlanIdBuilder()
+                                        .setVlanId(new VlanId(Uint16.TEN))
+                                        .setVlanIdPresent(true)
+                                        .build())
+                                    .build())
+                                .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction37() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final ActionBuilder ab1 = new ActionBuilder();
-        final ActionBuilder ab2 = new ActionBuilder();
-
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
-        final SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
         // Ip
-        final IpMatchBuilder ipmatch = new IpMatchBuilder();
-        final IpMatchBuilder ipmatch1 = new IpMatchBuilder();
-        final IpMatchBuilder ipmatch2 = new IpMatchBuilder();
-        final Dscp dscp = new Dscp(Uint8.valueOf(3));
-        ipmatch.setIpDscp(dscp);
-        ipmatch1.setIpEcn(Uint8.TWO);
-        ipmatch2.setIpProtocol(Uint8.valueOf(120));
-        setFieldBuilder.setIpMatch(ipmatch.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        setFieldBuilder1.setIpMatch(ipmatch1.build());
-        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
-
-        setFieldBuilder2.setIpMatch(ipmatch2.build());
-        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
-        ab2.withKey(new ActionKey(2));
-        actionList.add(ab2.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setIpMatch(new IpMatchBuilder().setIpDscp(new Dscp(Uint8.valueOf(3))).build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(1)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setIpMatch(new IpMatchBuilder().setIpEcn(Uint8.TWO).build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(2)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setIpMatch(new IpMatchBuilder().setIpProtocol(Uint8.valueOf(120)).build())
+                                    .build())
+                                .build()).build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction38() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final ActionBuilder ab1 = new ActionBuilder();
-
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
         // IPv4
-        final Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        final Ipv4MatchBuilder ipv4Match1 = new Ipv4MatchBuilder();
-        final Ipv4Prefix dstip = new Ipv4Prefix("200.71.9.5210");
-        final Ipv4Prefix srcip = new Ipv4Prefix("100.1.1.1");
-        ipv4Match1.setIpv4Destination(dstip);
-        ipv4Match.setIpv4Source(srcip);
-        setFieldBuilder.setLayer3Match(ipv4Match.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        setFieldBuilder1.setLayer3Match(ipv4Match1.build());
-        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setLayer3Match(new Ipv4MatchBuilder()
+                                        .setIpv4Source(new Ipv4Prefix("100.1.1.1"))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(1)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setLayer3Match(new Ipv4MatchBuilder()
+                                        .setIpv4Destination(new Ipv4Prefix("200.71.9.5210"))
+                                        .build())
+                                .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
-    private static InstructionsBuilder createAppyActionInstruction39() {
+    // FIXME: refactor these for brevity
 
-        final List<Action> actionList = new ArrayList<>();
+    private static InstructionsBuilder createAppyActionInstruction39() {
         final ActionBuilder ab = new ActionBuilder();
         final ActionBuilder ab1 = new ActionBuilder();
 
@@ -2200,32 +1690,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         tcpmatch1.setTcpDestinationPort(tcpdstport);
         setFieldBuilder.setLayer4Match(tcpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
+        ab.setOrder(0);
 
         setFieldBuilder1.setLayer4Match(tcpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
 
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction40() {
-
-        final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
         final ActionBuilder ab1 = new ActionBuilder();
 
@@ -2241,32 +1723,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         udpmatch1.setUdpSourcePort(udpsrcport);
         setFieldBuilder.setLayer4Match(udpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
+        ab.setOrder(0);
 
         setFieldBuilder1.setLayer4Match(udpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
 
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction41() {
-
-        final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
         final ActionBuilder ab1 = new ActionBuilder();
 
@@ -2282,32 +1756,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         sctpmatch1.setSctpDestinationPort(dstport);
         setFieldBuilder.setLayer4Match(sctpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
+        ab.setOrder(0);
 
         setFieldBuilder1.setLayer4Match(sctpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
 
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction42() {
-
-        final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
         final ActionBuilder ab1 = new ActionBuilder();
         final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
@@ -2320,32 +1786,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         icmpv4match1.setIcmpv4Code(Uint8.ZERO);
         setFieldBuilder.setIcmpv4Match(icmpv4match.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
+        ab.setOrder(0);
 
         setFieldBuilder1.setIcmpv4Match(icmpv4match1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
 
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction43() {
-
-        final List<Action> actionList = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
         final ActionBuilder ab1 = new ActionBuilder();
         final ActionBuilder ab2 = new ActionBuilder();
@@ -2380,47 +1838,36 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         arpmatch4.setArpTargetTransportAddress(dstiparp);
         setFieldBuilder.setLayer3Match(arpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
+        ab.setOrder(0);
 
         setFieldBuilder1.setLayer3Match(arpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
 
         setFieldBuilder2.setLayer3Match(arpmatch2.build());
         ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
         ab2.withKey(new ActionKey(2));
-        actionList.add(ab2.build());
 
         setFieldBuilder3.setLayer3Match(arpmatch3.build());
         ab3.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder3.build()).build());
         ab3.withKey(new ActionKey(3));
-        actionList.add(ab3.build());
 
         setFieldBuilder4.setLayer3Match(arpmatch4.build());
         ab4.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder4.build()).build());
         ab4.withKey(new ActionKey(4));
-        actionList.add(ab4.build());
 
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(ab.build(), ab1.build(), ab2.build(), ab3.build(), ab4.build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction44() {
-
-        final List<Action> actionLists = new ArrayList<>();
         final ActionBuilder ab = new ActionBuilder();
         final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
         final ActionBuilder ab1 = new ActionBuilder();
@@ -2451,241 +1898,185 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         setFieldBuilder.setLayer3Match(ipv6Builder.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionLists.add(ab.build());
+        ab.setOrder(0);
 
         setFieldBuilder1.setLayer3Match(ipv6Builder1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
         ab1.withKey(new ActionKey(1));
-        actionLists.add(ab1.build());
 
         setFieldBuilder5.setLayer3Match(ipv6Builder5.build());
         ab5.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder5.build()).build());
         ab5.withKey(new ActionKey(5));
-        actionLists.add(ab5.build());
 
         setFieldBuilder6.setLayer3Match(ipv6Builder6.build());
         ab6.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder6.build()).build());
         ab6.withKey(new ActionKey(6));
-        actionLists.add(ab6.build());
 
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionLists);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(ab.build(), ab1.build(), ab5.build(), ab6.build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction45() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final ActionBuilder ab1 = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
-
         // Icmpv6
-        final Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder();
-        final Icmpv6MatchBuilder icmpv6match1 = new Icmpv6MatchBuilder();
-        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
-        icmpv6match1.setIcmpv6Code(Uint8.ZERO);
-        setFieldBuilder.setIcmpv6Match(icmpv6match.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        setFieldBuilder1.setIcmpv6Match(icmpv6match1.build());
-        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setIcmpv6Match(new Icmpv6MatchBuilder().setIcmpv6Type(Uint8.valueOf(135)).build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(1)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setIcmpv6Match(new Icmpv6MatchBuilder().setIcmpv6Code(Uint8.ZERO).build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction46() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final ActionBuilder ab1 = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder1 = new SetFieldBuilder();
-        final ActionBuilder ab2 = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder2 = new SetFieldBuilder();
-
         // MPLS
-        final ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
-        final ProtocolMatchFieldsBuilder protomatch1 = new ProtocolMatchFieldsBuilder();
-        final ProtocolMatchFieldsBuilder protomatch2 = new ProtocolMatchFieldsBuilder();
-        protomatch.setMplsLabel(Uint32.valueOf(36008));
-        protomatch1.setMplsTc(Uint8.valueOf(4));
-        protomatch2.setMplsBos(Uint8.ONE);
-        setFieldBuilder.setProtocolMatchFields(protomatch.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        setFieldBuilder1.setProtocolMatchFields(protomatch1.build());
-        ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
-        actionList.add(ab1.build());
-
-        setFieldBuilder2.setProtocolMatchFields(protomatch2.build());
-        ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
-        ab2.withKey(new ActionKey(2));
-        actionList.add(ab2.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
+                                        .setMplsLabel(Uint32.valueOf(36008))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(1)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
+                                        .setMplsTc(Uint8.valueOf(4))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build(), new ActionBuilder()
+                            .setOrder(2)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
+                                        .setMplsBos(Uint8.ONE)
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction47() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        // PBB
-        final ProtocolMatchFieldsBuilder protomatch = new ProtocolMatchFieldsBuilder();
-        protomatch.setPbb(new PbbBuilder().setPbbIsid(Uint32.valueOf(4)).setPbbMask(Uint32.valueOf(0x10000)).build());
-        setFieldBuilder.setProtocolMatchFields(protomatch.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        actionList.add(ab.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
+                                        .setPbb(new PbbBuilder()
+                                            .setPbbIsid(Uint32.valueOf(4))
+                                            .setPbbMask(Uint32.valueOf(0x10000))
+                                            .build())
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction48() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        // Tunnel
-        final TunnelBuilder tunnel = new TunnelBuilder();
-        tunnel.setTunnelId(Uint64.valueOf(10668));
-        setFieldBuilder.setTunnel(tunnel.build());
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                .setSetField(new SetFieldBuilder()
+                                    // Tunnel
+                                    .setTunnel(new TunnelBuilder().setTunnelId(Uint64.valueOf(10668)).build()).build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createTunnelIpv4DstInstructions() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        // Build the tunnel endpoint destination IPv4 address
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final Ipv4Prefix dstIp = new Ipv4Prefix("172.16.100.100");
-        // Add the mew IPv4 object as the tunnel destination
-        final TunnelIpv4MatchBuilder tunnelIpv4DstMatchBuilder = new TunnelIpv4MatchBuilder();
-        tunnelIpv4DstMatchBuilder.setTunnelIpv4Destination(dstIp);
-        setFieldBuilder.setLayer3Match(tunnelIpv4DstMatchBuilder.build());
-        // Add the IPv4 tunnel dst to the set_field value
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Resulting action is a per/flow src TEP (set_field:172.16.100.100->tun_dst)
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-        // Add the action to the ordered list of Instructions
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        // Add the Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                // Add the IPv4 tunnel dst to the set_field value
+                                .setSetField(new SetFieldBuilder()
+                                    .setLayer3Match(new TunnelIpv4MatchBuilder()
+                                        // Add the mew IPv4 object as the tunnel destination
+                                        .setTunnelIpv4Destination(new Ipv4Prefix("172.16.100.100"))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static InstructionsBuilder createTunnelIpv4SrcInstructions() {
-
-        final List<Action> actionList = new ArrayList<>();
-        final ActionBuilder ab = new ActionBuilder();
-        // Build the tunnel endpoint source IPv4 address
-        final SetFieldBuilder setFieldBuilder = new SetFieldBuilder();
-        final Ipv4Prefix dstIp = new Ipv4Prefix("172.16.100.200");
-        // Add the new IPv4 object as the tunnel destination
-        final TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder = new TunnelIpv4MatchBuilder();
-        tunnelIpv4MatchBuilder.setTunnelIpv4Source(dstIp);
-        setFieldBuilder.setLayer3Match(tunnelIpv4MatchBuilder.build());
-        // Add the IPv4 tunnel src to the set_field value
-        ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
-        actionList.add(ab.build());
-        // Resulting action is a per/flow src TEP (set_field:172.16.100.100->tun_src)
-        final ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-        // Add the action to the ordered list of Instructions
-        final InstructionBuilder ib = new InstructionBuilder();
-        ib.setOrder(0);
-        ib.withKey(new InstructionKey(0));
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        // Put our Instruction in a list of Instructions
-        final InstructionsBuilder isb = new InstructionsBuilder();
-        final List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        isb.setInstruction(instructions);
-        return isb;
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
+                            .setOrder(0)
+                            .setAction(new SetFieldCaseBuilder()
+                                // Add the IPv4 tunnel src to the set_field value
+                                .setSetField(new SetFieldBuilder()
+                                    .setLayer3Match(new TunnelIpv4MatchBuilder()
+                                        // Add the new IPv4 object as the tunnel destination
+                                        .setTunnelIpv4Source(new Ipv4Prefix("172.16.100.200"))
+                                        .build())
+                                    .build())
+                                .build())
+                            .build()))
+                        .build())
+                    .build())
+                .build()));
     }
 
     private static MatchBuilder createLLDPMatch() {
@@ -3128,6 +2519,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         return match;
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _removeMDFlow(final CommandInterpreter ci) {
         final ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         final NodeBuilder tn = createTestNode(ci.nextArgument());
@@ -3161,6 +2553,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      *
      * @param ci arguments: switchId flowType tableNum, e.g.: addMDFlow openflow:1 f1 42
      */
+    @SuppressWarnings("checkstyle:MethodName")
     public void _addMDFlow(final CommandInterpreter ci) {
         final NodeBuilder tn = createTestNode(ci.nextArgument());
         final String flowtype = ci.nextArgument();
@@ -3195,6 +2588,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         }, MoreExecutors.directExecutor());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _modifyMDFlow(final CommandInterpreter ci) {
         final NodeBuilder tn = createTestNode(ci.nextArgument());
         final FlowBuilder tf = createTestFlow(tn, ci.nextArgument(), ci.nextArgument());
@@ -3213,6 +2607,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      * usage testSwitchFlows <numberOfSwitches> <numberOfFlows> <warmup iterations> <Number Of Threads>
      * ex: _perfFlowTest 10 5 1 2
      */
+    @SuppressWarnings("checkstyle:MethodName")
     public void _perfFlowTest(final CommandInterpreter ci) {
 
         final String numberOfSwtichesStr = ci.nextArgument();
@@ -3355,7 +2750,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
      * usage testAllFlows <dp>
      * ex: _perfFlowTest 1
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
+    @SuppressWarnings({ "checkstyle:MethodName", "checkstyle:IllegalCatch" })
     public void _testAllFlows(final CommandInterpreter ci) {
         String dataPathID = ci.nextArgument();
         final int numberOfFlows = 82;

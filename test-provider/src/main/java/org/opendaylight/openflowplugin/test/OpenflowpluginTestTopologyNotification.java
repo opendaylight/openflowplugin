@@ -24,7 +24,7 @@ public class OpenflowpluginTestTopologyNotification {
     private final TopologyEventListener topologyEventListener = new TopologyEventListener();
     private final NotificationService notificationService;
 
-    public OpenflowpluginTestTopologyNotification(NotificationService notificationService) {
+    public OpenflowpluginTestTopologyNotification(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
@@ -35,32 +35,36 @@ public class OpenflowpluginTestTopologyNotification {
 
     private static final class TopologyEventListener implements FlowTopologyDiscoveryListener {
         @Override
+        @Deprecated
         @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
-        public void onLinkDiscovered(LinkDiscovered notification) {
+        public void onLinkDiscovered(final LinkDiscovered notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkDiscovered notification ........");
             LOG.debug("-------------------------------------------");
         }
 
         @Override
+        @Deprecated
         @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
-        public void onLinkOverutilized(LinkOverutilized notification) {
+        public void onLinkOverutilized(final LinkOverutilized notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkOverutilized notification ........");
             LOG.debug("-------------------------------------------");
         }
 
         @Override
+        @Deprecated
         @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
-        public void onLinkRemoved(LinkRemoved notification) {
+        public void onLinkRemoved(final LinkRemoved notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkRemoved notification   ........");
             LOG.debug("-------------------------------------------");
         }
 
         @Override
+        @Deprecated
         @SuppressFBWarnings("SLF4J_SIGN_ONLY_FORMAT")
-        public void onLinkUtilizationNormal(LinkUtilizationNormal notification) {
+        public void onLinkUtilizationNormal(final LinkUtilizationNormal notification) {
             LOG.debug("-------------------------------------------");
             LOG.debug("LinkUtilizationNormal notification ........");
             LOG.debug("-------------------------------------------");

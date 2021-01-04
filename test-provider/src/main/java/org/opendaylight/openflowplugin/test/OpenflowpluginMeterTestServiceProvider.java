@@ -155,8 +155,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
-        return new AbstractObjectRegistration<OpenflowpluginMeterTestServiceProvider>(this) {
-
+        return new AbstractObjectRegistration<>(this) {
             @Override
             protected void removeRegistration() {
                 meterRegistration.close();

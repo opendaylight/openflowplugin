@@ -11,9 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -60,7 +58,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Bucke
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -72,12 +69,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 
-@SuppressWarnings("checkstyle:MethodName")
 public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
     private static final String ORIGINAL_GROUP_NAME = "Foo";
 
@@ -213,7 +210,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
                 bucket.setAction(createInportOutputAction());
                 break;
             case "a24":
-                bucket.setAction(Collections.emptyList());
+                bucket.setAction(Map.of());
                 break;
             case "a25":
                 bucket.setAction(createNonAppyOutputAction());
@@ -247,135 +244,108 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         group.setGroupName(ORIGINAL_GROUP_NAME);
         group.setBarrier(false);
         BucketsBuilder value = new BucketsBuilder();
-        List<Bucket> value1 = new ArrayList<>();
-        value1.add(bucket.build());
-        value.setBucket(value1);
+        value.setBucket(BindingMap.of(bucket.build()));
         group.setBuckets(value.build());
         testGroup = group.build();
         return group;
     }
 
 
-    private static List<Action> createPopVlanAction() {
+    private static Map<ActionKey, Action> createPopVlanAction() {
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
         action.withKey(new ActionKey(0));
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createPushVlanAction() {
+    private static Map<ActionKey, Action> createPushVlanAction() {
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
         vlan.setEthernetType(Uint16.valueOf(0x8100));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createPushMplsAction() {
+    private static Map<ActionKey, Action> createPushMplsAction() {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
         push.setEthernetType(Uint16.valueOf(0x8847));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createPopMplsAction() {
+    private static Map<ActionKey, Action> createPopMplsAction() {
         PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
         popMplsActionBuilder.setEthernetType(Uint16.valueOf(0XB));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createPopPbbAction() {
+    private static Map<ActionKey, Action> createPopPbbAction() {
         PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createPushPbbAction() {
+    private static Map<ActionKey, Action> createPushPbbAction() {
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
         pbb.setEthernetType(Uint16.valueOf(0x88E7));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createSetMplsTtlAction() {
+    private static Map<ActionKey, Action> createSetMplsTtlAction() {
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(
                 setMplsTtlActionBuilder.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createSetNwTtlAction() {
+    private static Map<ActionKey, Action> createSetNwTtlAction() {
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
         setNwTtlActionBuilder.setNwTtl(Uint8.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createSetQueueAction() {
+    private static Map<ActionKey, Action> createSetQueueAction() {
         SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
         setQueueActionBuilder.setQueueId(Uint32.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
         action.withKey(new ActionKey(0));
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-
-    private static List<Action> createCopyTtlInAction() {
+    private static Map<ActionKey, Action> createCopyTtlInAction() {
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createCopyTtlOutAction() {
+    private static Map<ActionKey, Action> createCopyTtlOutAction() {
         CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createDecMplsTtlAction() {
+    private static Map<ActionKey, Action> createDecMplsTtlAction() {
         DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createDecNwTtlAction() {
+    private static Map<ActionKey, Action> createDecNwTtlAction() {
         DecNwTtlBuilder nwttl = new DecNwTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(nwttl.build()).build());
@@ -389,13 +359,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.withKey(new ActionKey(0));
         ab.setOrder(0);
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(ab.build(), action.build());
     }
 
-    private static List<Action> createFloodOutputAction() {
+    private static Map<ActionKey, Action> createFloodOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -404,12 +371,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createAllOutputAction() {
+    private static Map<ActionKey, Action> createAllOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -418,12 +383,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createAnyOutputAction() {
+    private static Map<ActionKey, Action> createAnyOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -432,12 +395,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createNormalOutputAction() {
+    private static Map<ActionKey, Action> createNormalOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -446,12 +407,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createInportOutputAction() {
+    private static Map<ActionKey, Action> createInportOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -460,12 +419,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> creatTableOutputAction() {
+    private static Map<ActionKey, Action> creatTableOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -474,12 +431,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createControllerAction() {
+    private static Map<ActionKey, Action> createControllerAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -488,12 +443,10 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createLocalOutputAction() {
+    private static Map<ActionKey, Action> createLocalOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
@@ -502,24 +455,20 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
         ab.withKey(new ActionKey(0));
 
-        List<Action> actions = new ArrayList<>();
-        actions.add(ab.build());
-        return actions;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createGroupAction() {
+    private static Map<ActionKey, Action> createGroupAction() {
         GroupActionBuilder groupActionB = new GroupActionBuilder();
         groupActionB.setGroupId(Uint32.ONE);
         groupActionB.setGroup("0");
         ActionBuilder action = new ActionBuilder();
         action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
         action.withKey(new ActionKey(0));
-        List<Action> actions = new ArrayList<>();
-        actions.add(action.build());
-        return actions;
+        return BindingMap.of(action.build());
     }
 
-    private static List<Action> createNonAppyOutputAction() {
+    private static Map<ActionKey, Action> createNonAppyOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
@@ -528,41 +477,34 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         output.setMaxLength(Uint16.valueOf(66000));
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
 
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(ab.build());
-        return actionList;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createNonAppyPushMplsAction() {
-        List<Action> actionList = new ArrayList<>();
+    private static Map<ActionKey, Action> createNonAppyPushMplsAction() {
         ActionBuilder ab = new ActionBuilder();
         PushMplsActionBuilder push = new PushMplsActionBuilder();
         push.setEthernetType(Uint16.valueOf(0x8849));
         ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        actionList.add(ab.build());
-        return actionList;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createNonAppyPushPbbAction() {
-        List<Action> actionList = new ArrayList<>();
+    private static Map<ActionKey, Action> createNonAppyPushPbbAction() {
         ActionBuilder ab = new ActionBuilder();
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
         pbb.setEthernetType(Uint16.valueOf(0x88E8));
         ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        actionList.add(ab.build());
-        return actionList;
+        return BindingMap.of(ab.build());
     }
 
-    private static List<Action> createNonAppyPushVlanAction() {
-        List<Action> actionList = new ArrayList<>();
+    private static Map<ActionKey, Action> createNonAppyPushVlanAction() {
         ActionBuilder ab = new ActionBuilder();
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
         vlan.setEthernetType(Uint16.valueOf(0x8101));
         ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
-        actionList.add(ab.build());
-        return actionList;
+        return BindingMap.of(ab.build());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _removeGroup(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
@@ -591,6 +533,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         }, MoreExecutors.directExecutor());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _addGroup(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
@@ -626,6 +569,7 @@ public class OpenflowpluginGroupTestCommandProvider implements CommandProvider {
         }, MoreExecutors.directExecutor());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _modifyGroup(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
