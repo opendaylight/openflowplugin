@@ -26,8 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.meter.band.stats.BandStatKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.meter.stats.MeterBandStats;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -58,47 +58,39 @@ public class MeterStatsResponseConvertor extends Convertor<
     }
 
     @Override
-    public List<MeterStats> convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
+    public List<MeterStats> convert(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
             .multipart.reply.multipart.reply.body.multipart.reply.meter._case.multipart.reply.meter.MeterStats> source,
-            VersionConvertorData data) {
-        List<MeterStats> convertedSALMeters = new ArrayList<>();
+            final VersionConvertorData data) {
+        final List<MeterStats> convertedSALMeters = new ArrayList<>(source.size());
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply
-                .body.multipart.reply.meter._case.multipart.reply.meter.MeterStats meterStats : source) {
+        for (var meterStats : source) {
             // Convert MeterStats message from library to MD SAL defined MeterStats
-            MeterStatsBuilder salMeterStats = new MeterStatsBuilder();
-            salMeterStats.setByteInCount(new Counter64(meterStats.getByteInCount()));
-
-            DurationBuilder time = new DurationBuilder();
-            time.setSecond(new Counter32(meterStats.getDurationSec()));
-            time.setNanosecond(new Counter32(meterStats.getDurationNsec()));
-            salMeterStats.setDuration(time.build());
-
-            salMeterStats.setFlowCount(new Counter32(meterStats.getFlowCount()));
-            salMeterStats.setMeterId(new MeterId(meterStats.getMeterId().getValue()));
-            salMeterStats.setPacketInCount(new Counter64(meterStats.getPacketInCount()));
-            salMeterStats.withKey(new MeterStatsKey(salMeterStats.getMeterId()));
-
             List<MeterBandStats> allMeterBandStats = meterStats.nonnullMeterBandStats();
 
-            MeterBandStatsBuilder meterBandStatsBuilder = new MeterBandStatsBuilder();
-            List<BandStat> listAllBandStats = new ArrayList<>();
+            final BindingMap.Builder<BandStatKey, BandStat> bandStats =
+                BindingMap.orderedBuilder(allMeterBandStats.size());
             int bandKey = 0;
 
             for (MeterBandStats meterBandStats : allMeterBandStats) {
-                BandStatBuilder bandStatBuilder = new BandStatBuilder();
-                bandStatBuilder.setByteBandCount(new Counter64(meterBandStats.getByteBandCount()));
-                bandStatBuilder.setPacketBandCount(new Counter64(meterBandStats.getPacketBandCount()));
-                BandId bandId = new BandId(Uint32.valueOf(bandKey));
-                bandStatBuilder.withKey(new BandStatKey(bandId));
-                bandStatBuilder.setBandId(bandId);
+                bandStats.add(new BandStatBuilder()
+                    .setByteBandCount(new Counter64(meterBandStats.getByteBandCount()))
+                    .setPacketBandCount(new Counter64(meterBandStats.getPacketBandCount()))
+                    .setBandId(new BandId(Uint32.valueOf(bandKey)))
+                    .build());
                 bandKey++;
-                listAllBandStats.add(bandStatBuilder.build());
             }
 
-            meterBandStatsBuilder.setBandStat(listAllBandStats);
-            salMeterStats.setMeterBandStats(meterBandStatsBuilder.build());
-            convertedSALMeters.add(salMeterStats.build());
+            convertedSALMeters.add(new MeterStatsBuilder()
+                .setByteInCount(new Counter64(meterStats.getByteInCount()))
+                .setDuration(new DurationBuilder()
+                    .setSecond(new Counter32(meterStats.getDurationSec()))
+                    .setNanosecond(new Counter32(meterStats.getDurationNsec()))
+                    .build())
+                .setFlowCount(new Counter32(meterStats.getFlowCount()))
+                .setMeterId(new MeterId(meterStats.getMeterId().getValue()))
+                .setPacketInCount(new Counter64(meterStats.getPacketInCount()))
+                .setMeterBandStats(new MeterBandStatsBuilder().setBandStat(bandStats.build()).build())
+                .build());
         }
 
         return convertedSALMeters;
