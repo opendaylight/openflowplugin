@@ -64,8 +64,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private final NotificationService notificationService;
     private Registration listener1Reg;
 
-    public OpenflowpluginMeterTestCommandProvider(DataBroker dataBroker, NotificationService notificationService,
-            BundleContext ctx) {
+    public OpenflowpluginMeterTestCommandProvider(final DataBroker dataBroker, final NotificationService notificationService,
+            final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.ctx = ctx;
@@ -80,7 +80,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         createTestMeter();
     }
 
-    private void createUserNode(String nodeRef) {
+    private void createUserNode(final String nodeRef) {
         NodeBuilder builder = new NodeBuilder();
         builder.setId(new NodeId(nodeRef));
         builder.withKey(new NodeKey(builder.getId()));
@@ -94,30 +94,31 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         testNode = builder.build();
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
     private static final class MeterEventListener implements SalMeterListener {
-
         @Override
-        public void onMeterAdded(MeterAdded notification) {
+        @Deprecated
+        public void onMeterAdded(final MeterAdded notification) {
             LOG.info("Meter to be added {}", notification.toString());
             LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
         @Override
-        public void onMeterRemoved(MeterRemoved notification) {
+        @Deprecated
+        public void onMeterRemoved(final MeterRemoved notification) {
             LOG.info("Meter to be removed {}", notification.toString());
             LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
         @Override
-        public void onMeterUpdated(MeterUpdated notification) {
+        @Deprecated
+        public void onMeterUpdated(final MeterUpdated notification) {
             LOG.info("Meter to be updated {}", notification.toString());
             LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
-
     }
 
     private MeterBuilder createTestMeter() {
@@ -155,7 +156,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return meter;
     }
 
-    private MeterBuilder createTestMeters(String s1, String s2) {
+    private MeterBuilder createTestMeters(final String s1, final String s2) {
         // Sample data , committing to DataStore
         MeterKey key = new MeterKey(new MeterId(Uint32.valueOf(s1)));
         MeterBuilder meter = new MeterBuilder();
@@ -229,12 +230,12 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
@@ -310,18 +311,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _addMeter(CommandInterpreter ci) {
+    public void _addMeter(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -335,7 +336,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         writeMeter(ci, testMeter);
     }
 
-    public void _addMeters(CommandInterpreter ci) {
+    public void _addMeters(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -374,7 +375,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         // writeMeter(ci, testMeter);
     }
 
-    private void writeMeter(final CommandInterpreter ci, Meter meter) {
+    private void writeMeter(final CommandInterpreter ci, final Meter meter) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
@@ -383,18 +384,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    private void writeMeter(final CommandInterpreter ci, Meter meter, Meter meter1) {
+    private void writeMeter(final CommandInterpreter ci, final Meter meter, final Meter meter1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
@@ -409,18 +410,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _modifyMeter(CommandInterpreter ci) {
+    public void _modifyMeter(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -437,7 +438,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         writeMeter(ci, meter.build());
     }
 
-    public void _modifyMeters(CommandInterpreter ci) {
+    public void _modifyMeters(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
