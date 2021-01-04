@@ -10,11 +10,6 @@
     <artifactId>openflowjava-extension-nicira</artifactId>
     <packaging>bundle</packaging>
 
-    <properties>
-        <!-- FIXME: Remove this -->
-        <odlparent.modernizer.enforce>false</odlparent.modernizer.enforce>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>

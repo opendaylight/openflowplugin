@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.primitives.Ints;
 import java.math.BigInteger;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -41,7 +40,7 @@ public class NxmHeader {
      * @param header the header as {@code BigInteger}.
      * @see NxmHeader#NxmHeader(long)
      */
-    public NxmHeader(Uint64 header) {
+    public NxmHeader(final Uint64 header) {
         this.headerAsLong = header.longValue();
         if (isExperimenter(header)) {
             this.experimenterId = (int) this.headerAsLong;
@@ -52,10 +51,14 @@ public class NxmHeader {
         }
 
         this.header = header;
-        this.oxmClass = Ints.checkedCast(extractSub(this.shortHeader, 16, 16));
-        this.nxmField = Ints.checkedCast(extractSub(this.shortHeader, 7, 9));
-        this.hasMask = extractSub(this.shortHeader, 1, 8) == 1;
-        this.length = Ints.checkedCast(extractSub(this.shortHeader, 8, 0));
+        try {
+            this.oxmClass = Math.toIntExact(extractSub(this.shortHeader, 16, 16));
+            this.nxmField = Math.toIntExact(extractSub(this.shortHeader, 7, 9));
+            this.hasMask = extractSub(this.shortHeader, 1, 8) == 1;
+            this.length = Math.toIntExact(extractSub(this.shortHeader, 8, 0));
+        } catch (ArithmeticException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     /**
@@ -67,7 +70,7 @@ public class NxmHeader {
      *
      * @param header the header as a {@code long}.
      */
-    public NxmHeader(long header) {
+    public NxmHeader(final long header) {
         this(Uint64.fromLongBits(header));
     }
 
@@ -79,7 +82,7 @@ public class NxmHeader {
      * @param hasMask the hasMask field.
      * @param length the length field.
      */
-    public NxmHeader(int oxmClass, int nxmField, boolean hasMask, int length) {
+    public NxmHeader(final int oxmClass, final int nxmField, final boolean hasMask, final int length) {
         this(oxmClass, nxmField, hasMask, length, -1);
     }
 
@@ -92,11 +95,12 @@ public class NxmHeader {
      * @param length the length field.
      * @param experimenterId the esperimenter id field.
      */
-    public NxmHeader(int nxmField, boolean hasMask, int length, long experimenterId) {
+    public NxmHeader(final int nxmField, final boolean hasMask, final int length, final long experimenterId) {
         this(EncodeConstants.EXPERIMENTER_VALUE, nxmField, hasMask, length, experimenterId);
     }
 
-    private NxmHeader(int oxmClass, int nxmField, boolean hasMask, int length, long experimenterId) {
+    private NxmHeader(final int oxmClass, final int nxmField, final boolean hasMask, final int length,
+            final long experimenterId) {
         this.oxmClass = oxmClass;
         this.nxmField = nxmField;
         this.hasMask = hasMask;
@@ -161,7 +165,7 @@ public class NxmHeader {
         return oxmClass == EncodeConstants.EXPERIMENTER_VALUE;
     }
 
-    public static boolean isExperimenter(Uint64 uint) {
+    public static boolean isExperimenter(final Uint64 uint) {
         return uint.longValue() >>> 48 == EncodeConstants.EXPERIMENTER_VALUE;
     }
 
@@ -171,7 +175,7 @@ public class NxmHeader {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
@@ -71,8 +71,8 @@ import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
 public class NiciraExtensionsRegistrator implements AutoCloseable {
     private final NiciraExtensionCodecRegistrator registrator;
 
-    public NiciraExtensionsRegistrator(NiciraExtensionCodecRegistrator registrator) {
-        this.registrator = Preconditions.checkNotNull(registrator);
+    public NiciraExtensionsRegistrator(final NiciraExtensionCodecRegistrator registrator) {
+        this.registrator = requireNonNull(registrator);
 
         registrator.registerActionDeserializer(RegLoadCodec.DESERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
         registrator.registerActionSerializer(RegLoadCodec.SERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
