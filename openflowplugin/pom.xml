@@ -11,11 +11,6 @@
     <artifactId>openflowplugin</artifactId>
     <packaging>bundle</packaging>
 
-    <properties>
-        <!-- FIXME: Remove this -->
-        <odlparent.modernizer.enforce>false</odlparent.modernizer.enforce>
-    </properties>
-
     <build>
         <plugins>
             <plugin>

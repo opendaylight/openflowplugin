@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
-import com.google.common.base.Preconditions;
 
 /**
  * Injection lookup key based on version and target object.
@@ -27,7 +28,7 @@ public class ConvertorKey {
      */
     public ConvertorKey(final int version, final Class<?> targetClazz) {
         this.version = version;
-        this.targetClazz = Preconditions.checkNotNull(targetClazz);
+        this.targetClazz = requireNonNull(targetClazz);
     }
 
     @Override

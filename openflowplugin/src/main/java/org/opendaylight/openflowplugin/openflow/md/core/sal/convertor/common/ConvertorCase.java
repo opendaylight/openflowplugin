@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -35,10 +35,10 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      * @param errorOnEmpty      the error on empty
      * @param supportedVersions the supported versions
      */
-    protected ConvertorCase(Class<F> type, boolean errorOnEmpty, Short... supportedVersions) {
+    protected ConvertorCase(final Class<F> type, final boolean errorOnEmpty, final Short... supportedVersions) {
         this.type = type;
         this.errorOnEmpty = errorOnEmpty;
-        this.supportedVersions = Arrays.asList(Preconditions.checkNotNull(supportedVersions));
+        this.supportedVersions = Arrays.asList(requireNonNull(supportedVersions));
     }
 
     /**
