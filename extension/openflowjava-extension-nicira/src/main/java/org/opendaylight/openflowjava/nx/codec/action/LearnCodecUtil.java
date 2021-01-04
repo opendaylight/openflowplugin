@@ -10,10 +10,10 @@ package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearn;
@@ -192,8 +192,7 @@ public final class LearnCodecUtil {
             .setIdleTimeout(readUint16(message))
             .setHardTimeout(readUint16(message))
             .setPriority(readUint16(message))
-            // FIXME: what conversion are we trying to do here?
-            .setCookie(BigInteger.valueOf(message.readLong()))
+            .setCookie(readUint64(message))
             .setFlags(readUint16(message))
             .setTableId(readUint8(message));
         message.skipBytes(1);

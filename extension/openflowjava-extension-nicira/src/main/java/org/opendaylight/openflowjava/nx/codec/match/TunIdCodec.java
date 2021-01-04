@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowjava.nx.codec.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -40,7 +41,7 @@ public class TunIdCodec extends AbstractMatchCodec {
     public MatchEntry deserialize(final ByteBuf message) {
         return deserializeHeaderToBuilder(message)
             .setMatchEntryValue(new TunIdCaseValueBuilder()
-                .setTunIdValues(new TunIdValuesBuilder().setValue(BigInteger.valueOf(message.readLong())).build())
+                .setTunIdValues(new TunIdValuesBuilder().setValue(readUint64(message)).build())
                 .build())
             .build();
     }
