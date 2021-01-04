@@ -9,8 +9,7 @@ package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -26,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
@@ -37,21 +35,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings("checkstyle:MethodName")
 public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
-
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
+
     private final DataBroker dataBroker;
     private final BundleContext ctx;
     private Meter testMeter;
@@ -64,8 +61,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private final NotificationService notificationService;
     private Registration listener1Reg;
 
-    public OpenflowpluginMeterTestCommandProvider(DataBroker dataBroker, NotificationService notificationService,
-            BundleContext ctx) {
+    public OpenflowpluginMeterTestCommandProvider(final DataBroker dataBroker, final NotificationService notificationService,
+            final BundleContext ctx) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.ctx = ctx;
@@ -80,89 +77,84 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         createTestMeter();
     }
 
-    private void createUserNode(String nodeRef) {
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(nodeRef));
-        builder.withKey(new NodeKey(builder.getId()));
-        testNode = builder.build();
+    private void createUserNode(final String nodeRef) {
+        testNode = new NodeBuilder().setId(new NodeId(nodeRef)).build();
     }
 
     private void createTestNode() {
-        NodeBuilder builder = new NodeBuilder();
-        builder.setId(new NodeId(OpenflowpluginTestActivator.NODE_ID));
-        builder.withKey(new NodeKey(builder.getId()));
-        testNode = builder.build();
+        testNode = new NodeBuilder().setId(new NodeId(OpenflowpluginTestActivator.NODE_ID)).build();
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(Node node) {
+    private static @NonNull InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 
     private static final class MeterEventListener implements SalMeterListener {
-
         @Override
-        public void onMeterAdded(MeterAdded notification) {
+        @Deprecated
+        public void onMeterAdded(final MeterAdded notification) {
             LOG.info("Meter to be added {}", notification.toString());
             LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
         @Override
-        public void onMeterRemoved(MeterRemoved notification) {
+        @Deprecated
+        public void onMeterRemoved(final MeterRemoved notification) {
             LOG.info("Meter to be removed {}", notification.toString());
             LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
 
         @Override
-        public void onMeterUpdated(MeterUpdated notification) {
+        @Deprecated
+        public void onMeterUpdated(final MeterUpdated notification) {
             LOG.info("Meter to be updated {}", notification.toString());
             LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
         }
-
     }
 
     private MeterBuilder createTestMeter() {
         // Sample data , committing to DataStore
-
-        MeterKey key = new MeterKey(new MeterId(Uint32.valueOf(12)));
-        MeterBuilder meter = new MeterBuilder();
-        meter.setContainerName("abcd");
-        meter.withKey(key);
-        meter.setMeterId(new MeterId(Uint32.valueOf(9)));
-        meter.setMeterName(originalMeterName);
-        meter.setFlags(new MeterFlags(true, false, false, false));
-        MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
-        bandHeader.setBandRate(Uint32.valueOf(234));
-        bandHeader.setBandBurstSize(Uint32.valueOf(444));
-        DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
-        dscpRemark.setDscpRemarkBurstSize(Uint32.valueOf(5));
-        dscpRemark.setPrecLevel(Uint8.ONE);
-        dscpRemark.setDscpRemarkRate(Uint32.valueOf(12));
-        bandHeader.setBandType(dscpRemark.build());
-        MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
-        MeterBandType bandType = new MeterBandType(false, true, false);
-        bandTypes.setFlags(bandType);
-        bandHeader.setMeterBandTypes(bandTypes.build());
-        bandHeader.setBandId(new BandId(Uint32.ZERO));
-
-        List<MeterBandHeader> bandHdr = new ArrayList<>();
-        bandHdr.add(bandHeader.build());
-
-        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
-        bandHeaders.setMeterBandHeader(bandHdr);
-        meter.setMeterBandHeaders(bandHeaders.build());
+        final MeterBuilder meter = new MeterBuilder()
+            .setContainerName("abcd")
+            .withKey(new MeterKey(new MeterId(Uint32.valueOf(12))))
+            .setMeterId(new MeterId(Uint32.valueOf(9)))
+            .setMeterName(originalMeterName)
+            .setFlags(new MeterFlags(true, false, false, false))
+            .setMeterBandHeaders(new MeterBandHeadersBuilder()
+                .setMeterBandHeader(BindingMap.of(new MeterBandHeaderBuilder()
+                    .setBandRate(Uint32.valueOf(234))
+                    .setBandBurstSize(Uint32.valueOf(444))
+                    .setBandType(new DscpRemarkBuilder()
+                        .setDscpRemarkBurstSize(Uint32.valueOf(5))
+                        .setPrecLevel(Uint8.ONE)
+                        .setDscpRemarkRate(Uint32.valueOf(12))
+                        .build())
+                    .setMeterBandTypes(new MeterBandTypesBuilder()
+                        .setFlags(new MeterBandType(false, true, false))
+                        .build())
+                    .setBandId(new BandId(Uint32.ZERO))
+                    .build()))
+                .build());
 
         testMeter = meter.build();
         return meter;
     }
 
-    private MeterBuilder createTestMeters(String s1, String s2) {
+    private MeterBuilder createTestMeters(final String s1, final String s2) {
         // Sample data , committing to DataStore
-        MeterKey key = new MeterKey(new MeterId(Uint32.valueOf(s1)));
-        MeterBuilder meter = new MeterBuilder();
-        meter.setContainerName("abcd");
-        meter.withKey(key);
-        meter.setMeterId(new MeterId(Uint32.valueOf(9)));
-        MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder();
+        final MeterBuilder meter = new MeterBuilder()
+            .setContainerName("abcd")
+            .withKey(new MeterKey(new MeterId(Uint32.valueOf(s1))))
+            .setMeterId(new MeterId(Uint32.valueOf(9)))
+            .setFlags(new MeterFlags(true, false, false, false));
+        final MeterBandHeaderBuilder bandHeader = new MeterBandHeaderBuilder()
+            .setBandBurstSize(Uint32.valueOf(444))
+            .setBandType(new DscpRemarkBuilder()
+                .setDscpRemarkBurstSize(Uint32.valueOf(5)).setPrecLevel(Uint8.ONE).setDscpRemarkRate(Uint32.valueOf(12))
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(false, true, false)).build())
+            .setBandId(new BandId(Uint32.ZERO));
+
         if (s2.equalsIgnoreCase("modify")) {
             meter.setMeterName(updatedMeterName);
             bandHeader.setBandRate(Uint32.valueOf(234));
@@ -170,26 +162,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             meter.setMeterName(originalMeterName);
             bandHeader.setBandRate(Uint32.valueOf(123));
         }
-        meter.setFlags(new MeterFlags(true, false, false, false));
 
-        bandHeader.setBandBurstSize(Uint32.valueOf(444));
-        DscpRemarkBuilder dscpRemark = new DscpRemarkBuilder();
-        dscpRemark.setDscpRemarkBurstSize(Uint32.valueOf(5));
-        dscpRemark.setPrecLevel(Uint8.ONE);
-        dscpRemark.setDscpRemarkRate(Uint32.valueOf(12));
-        bandHeader.setBandType(dscpRemark.build());
-        MeterBandTypesBuilder bandTypes = new MeterBandTypesBuilder();
-        MeterBandType bandType = new MeterBandType(false, true, false);
-        bandTypes.setFlags(bandType);
-        bandHeader.setMeterBandTypes(bandTypes.build());
-        bandHeader.setBandId(new BandId(Uint32.ZERO));
-
-        List<MeterBandHeader> bandHdr = new ArrayList<>();
-        bandHdr.add(bandHeader.build());
-
-        MeterBandHeadersBuilder bandHeaders = new MeterBandHeadersBuilder();
-        bandHeaders.setMeterBandHeader(bandHdr);
-        meter.setMeterBandHeaders(bandHeaders.build());
+        meter.setMeterBandHeaders(new MeterBandHeadersBuilder()
+            .setMeterBandHeader(BindingMap.of(bandHeader.build()))
+            .build());
 
         int firstInt = Integer.parseInt(s1);
         switch (firstInt) {
@@ -212,6 +188,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         return meter;
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _removeMeter(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
@@ -229,17 +206,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
+    @SuppressWarnings("checkstyle:MethodName")
     public void _removeMeters(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
@@ -310,18 +288,19 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _addMeter(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _addMeter(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -335,7 +314,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         writeMeter(ci, testMeter);
     }
 
-    public void _addMeters(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _addMeters(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -374,7 +354,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         // writeMeter(ci, testMeter);
     }
 
-    private void writeMeter(final CommandInterpreter ci, Meter meter) {
+    private void writeMeter(final CommandInterpreter ci, final Meter meter) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
@@ -383,18 +363,18 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    private void writeMeter(final CommandInterpreter ci, Meter meter, Meter meter1) {
+    private void writeMeter(final CommandInterpreter ci, final Meter meter, final Meter meter1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
                 .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
@@ -409,18 +389,19 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(CommitInfo notUsed) {
+            public void onSuccess(final CommitInfo notUsed) {
                 ci.println("Status of Group Data Loaded Transaction: success.");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
             }
         }, MoreExecutors.directExecutor());
     }
 
-    public void _modifyMeter(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _modifyMeter(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
@@ -437,7 +418,8 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
         writeMeter(ci, meter.build());
     }
 
-    public void _modifyMeters(CommandInterpreter ci) {
+    @SuppressWarnings("checkstyle:MethodName")
+    public void _modifyMeters(final CommandInterpreter ci) {
         String nref = ci.nextArgument();
 
         if (nref == null) {
