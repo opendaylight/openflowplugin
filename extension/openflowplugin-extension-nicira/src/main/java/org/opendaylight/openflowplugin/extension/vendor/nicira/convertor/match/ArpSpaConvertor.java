@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.spa.grouping.NxmOfArpSpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.spa.grouping.NxmOfArpSpaBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for ArpSpaCase.
@@ -59,12 +60,15 @@ public class ArpSpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Long value = IpConverter.ipv4AddressToLong(matchGrouping.get().getNxmOfArpSpa().getIpv4Address());
-        ArpSpaCaseValueBuilder arpSpaCaseValueBuilder = new ArpSpaCaseValueBuilder();
-        arpSpaCaseValueBuilder.setArpSpaValues(new ArpSpaValuesBuilder()
-                .setValue(value).build());
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx
-                .match.rev140421.NxmOfArpSpa.class, Nxm0Class.class, arpSpaCaseValueBuilder.build()).build();
+        return MatchUtil.createDefaultMatchEntryBuilder(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpSpa.class,
+            Nxm0Class.class, new ArpSpaCaseValueBuilder()
+                .setArpSpaValues(new ArpSpaValuesBuilder()
+                    .setValue(Uint32.valueOf(IpConverter.ipv4AddressToLong(matchGrouping.get().getNxmOfArpSpa()
+                        .getIpv4Address())))
+                    .build())
+                .build())
+            .build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfArpSpa value,
