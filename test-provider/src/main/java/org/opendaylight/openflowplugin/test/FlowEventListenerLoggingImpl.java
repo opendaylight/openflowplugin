@@ -21,30 +21,32 @@ import org.slf4j.LoggerFactory;
  * Dummy implementation flushing events into log.
  */
 public class FlowEventListenerLoggingImpl implements SalFlowListener {
-
-    private static final Logger LOG = LoggerFactory
-            .getLogger(FlowEventListenerLoggingImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FlowEventListenerLoggingImpl.class);
 
     @Override
-    public void onFlowAdded(FlowAdded notification) {
+    @Deprecated
+    public void onFlowAdded(final FlowAdded notification) {
         LOG.info("flow to be added {}", notification.toString());
         LOG.info("added flow Xid {}", notification.getTransactionId().getValue());
     }
 
     @Override
-    public void onFlowRemoved(FlowRemoved notification) {
+    @Deprecated
+    public void onFlowRemoved(final FlowRemoved notification) {
         LOG.debug("removed flow {}", notification.toString());
         LOG.debug("remove flow Xid {}", notification.getTransactionId().getValue());
     }
 
     @Override
-    public void onFlowUpdated(FlowUpdated notification) {
+    @Deprecated
+    public void onFlowUpdated(final FlowUpdated notification) {
         LOG.debug("updated flow {}", notification.toString());
         LOG.debug("updated flow Xid {}", notification.getTransactionId().getValue());
     }
 
     @Override
-    public void onNodeErrorNotification(NodeErrorNotification notification) {
+    @Deprecated
+    public void onNodeErrorNotification(final NodeErrorNotification notification) {
     //commenting as we have a NodeErrorListener
     /*    LOG.error("Error notification  flow Xid........................."
                 + notification.getTransactionId().getValue());
@@ -55,14 +57,14 @@ public class FlowEventListenerLoggingImpl implements SalFlowListener {
     }
 
     @Override
-    public void onNodeExperimenterErrorNotification(
-            NodeExperimenterErrorNotification notification) {
+    @Deprecated
+    public void onNodeExperimenterErrorNotification(final NodeExperimenterErrorNotification notification) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
-    public void onSwitchFlowRemoved(SwitchFlowRemoved notification) {
+    @Deprecated
+    public void onSwitchFlowRemoved(final SwitchFlowRemoved notification) {
         LOG.debug("Switch flow removed : Cookies {}", notification.getCookie().toString());
     }
 }
