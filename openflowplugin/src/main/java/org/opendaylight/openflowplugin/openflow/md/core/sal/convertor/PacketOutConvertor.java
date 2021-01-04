@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.google.common.collect.Iterables;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.dat
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
@@ -111,16 +109,15 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
             bufferId = source.getBufferId();
         }
 
-        PortNumber outPort = null;
-        NodeConnectorRef outRef = source.getEgress();
-        Iterable<PathArgument> outArgs = outRef.getValue().getPathArguments();
-
+        final PortNumber outPort;
+        final Iterable<PathArgument> outArgs = source.getEgress().getValue().getPathArguments();
         if (Iterables.size(outArgs) >= 3) {
             outPort = getPortNumber(Iterables.get(outArgs, 2), data.getVersion());
         } else {
             // TODO : P4 search for some normal exception
             // new Exception("PORT NR not exist in Egress");
             LOG.error("PORT NR not exist in Egress");
+            outPort = null;
         }
 
         final List<Action> actions;
@@ -135,19 +132,17 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
             final Optional<List<Action>> convertedActions = getConvertorExecutor().convert(
                     inputActions, actionConvertorData);
 
-            actions = convertedActions.orElse(Collections.emptyList());
-
+            actions = convertedActions.orElse(List.of());
         } else {
             // TODO VD P! wait for way to move Actions (e.g. augmentation)
-            OutputActionCaseBuilder outputActionCaseBuilder = new OutputActionCaseBuilder();
-            OutputActionBuilder outputActionBuilder = new OutputActionBuilder();
-            outputActionBuilder.setPort(outPort);
-            outputActionBuilder.setMaxLength(OFConstants.OFPCML_NO_BUFFER);
-            outputActionCaseBuilder.setOutputAction(outputActionBuilder.build());
-            ActionBuilder actionBuild = new ActionBuilder();
-            actionBuild.setActionChoice(outputActionCaseBuilder.build());
-            actions = new ArrayList<>();
-            actions.add(actionBuild.build());
+            actions = List.of(new ActionBuilder()
+                .setActionChoice(new OutputActionCaseBuilder()
+                    .setOutputAction( new OutputActionBuilder()
+                        .setPort(outPort)
+                        .setMaxLength(OFConstants.OFPCML_NO_BUFFER)
+                        .build())
+                    .build())
+                .build());
         }
 
         return new PacketOutInputBuilder()
