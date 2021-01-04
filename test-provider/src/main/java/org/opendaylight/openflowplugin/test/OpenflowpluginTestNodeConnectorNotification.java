@@ -25,7 +25,7 @@ public class OpenflowpluginTestNodeConnectorNotification {
     private final PortEventListener portEventListener = new PortEventListener();
     private final NotificationService notificationService;
 
-    public OpenflowpluginTestNodeConnectorNotification(NotificationService notificationService) {
+    public OpenflowpluginTestNodeConnectorNotification(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
@@ -42,28 +42,32 @@ public class OpenflowpluginTestNodeConnectorNotification {
         List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
 
         @Override
-        public void onNodeConnectorRemoved(NodeConnectorRemoved notification) {
+        @Deprecated
+        public void onNodeConnectorRemoved(final NodeConnectorRemoved notification) {
             LOG.debug("NodeConnectorRemoved Notification");
             LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
             nodeConnectorRemoved.add(notification);
         }
 
         @Override
-        public void onNodeConnectorUpdated(NodeConnectorUpdated notification) {
+        @Deprecated
+        public void onNodeConnectorUpdated(final NodeConnectorUpdated notification) {
             LOG.debug("NodeConnectorUpdated Notification");
             LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
             nodeConnectorUpdated.add(notification);
         }
 
         @Override
-        public void onNodeRemoved(NodeRemoved notification) {
+        @Deprecated
+        public void onNodeRemoved(final NodeRemoved notification) {
             LOG.debug("NodeRemoved Notification");
             LOG.debug("NodeRef {}", notification.getNodeRef());
             nodeRemoved.add(notification);
         }
 
         @Override
-        public void onNodeUpdated(NodeUpdated notification) {
+        @Deprecated
+        public void onNodeUpdated(final NodeUpdated notification) {
             LOG.debug("NodeUpdated Notification");
             LOG.debug("NodeRef {}", notification.getNodeRef());
             nodeUpdated.add(notification);
