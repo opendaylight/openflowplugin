@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.common.collect.Iterables;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.opendaylight.controller.sal.common.util.Arguments;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -32,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.IdentifiableItem;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
@@ -71,13 +72,14 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
     }
 
     private static PortNumber getPortNumber(final PathArgument pathArgument, final Short ofVersion) {
+        checkArgument(pathArgument instanceof IdentifiableItem, "Unexpected path argument %s", pathArgument);
+
         // FIXME VD P! find InstanceIdentifier helper
-        InstanceIdentifier.IdentifiableItem<?, ?> item = Arguments.checkInstanceOf(pathArgument,
-                InstanceIdentifier.IdentifiableItem.class);
-        NodeConnectorKey key = Arguments.checkInstanceOf(item.getKey(), NodeConnectorKey.class);
-        Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(
-                OpenflowVersion.get(ofVersion), key.getId());
-        return new PortNumber(port);
+        final Object key = ((IdentifiableItem<?, ?>) pathArgument).getKey();
+        checkArgument(key instanceof NodeConnectorKey, "Unexpected key %s", key);
+
+        return new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
+            ((NodeConnectorKey) key).getId()));
     }
 
     @Override
@@ -148,14 +150,13 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
             actions.add(actionBuild.build());
         }
 
-        PacketOutInputBuilder builder = new PacketOutInputBuilder();
-        builder.setAction(actions);
-        builder.setData(source.getPayload());
-        builder.setVersion(data.getVersion());
-        builder.setXid(data.getXid());
-        builder.setInPort(inPortNr);
-        builder.setBufferId(bufferId);
-
-        return builder.build();
+        return new PacketOutInputBuilder()
+            .setAction(actions)
+            .setData(source.getPayload())
+            .setVersion(data.getVersion())
+            .setXid(data.getXid())
+            .setInPort(inPortNr)
+            .setBufferId(bufferId)
+            .build();
     }
 }
