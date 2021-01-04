@@ -291,11 +291,11 @@ public final class FieldChoiceResolver {
      * @param header the OXM/NXM header.
      * @return the destination choice.
      */
-    static DstChoice resolveDstChoice(Uint32 header) {
+    static DstChoice resolveDstChoice(final Uint32 header) {
         return NXMHEADER_TO_DST_CHOICE.get(header.toJava());
     }
 
-    static DstChoice resolveDstChoice(Long header) {
+    static DstChoice resolveDstChoice(final Long header) {
         return NXMHEADER_TO_DST_CHOICE.get(header);
     }
 
@@ -306,7 +306,7 @@ public final class FieldChoiceResolver {
      * @param header the OXM/NXM header.
      * @return the destination choice.
      */
-    static DstChoice resolveDstChoice(Uint64 header) {
+    static DstChoice resolveDstChoice(final Uint64 header) {
         return NXMHEADER_TO_DST_CHOICE.get(header);
     }
 
@@ -317,11 +317,11 @@ public final class FieldChoiceResolver {
      * @param header the OXM/NXM header.
      * @return the source choice.
      */
-    static SrcChoice resolveSrcChoice(Long header) {
+    static SrcChoice resolveSrcChoice(final Long header) {
         return NXMHEADER_TO_SRC_CHOICE.get(header);
     }
 
-    static SrcChoice resolveSrcChoice(Uint32 header) {
+    static SrcChoice resolveSrcChoice(final Uint32 header) {
         return NXMHEADER_TO_SRC_CHOICE.get(header.toJava());
     }
 
@@ -332,7 +332,7 @@ public final class FieldChoiceResolver {
      * @param header the OXM/NXM header.
      * @return the destination choice.
      */
-    static SrcChoice resolveSrcChoice(Uint64 header) {
+    static SrcChoice resolveSrcChoice(final Uint64 header) {
         return NXMHEADER_TO_SRC_CHOICE.get(header);
     }
 
@@ -344,14 +344,14 @@ public final class FieldChoiceResolver {
      * @return the OXM/NXM header as uint32 {@code Long}.
      * @throws IllegalArgumentException if the field is experimenter.
      */
-    static Long resolveDstHeaderUint32(DstChoice dstChoice) {
+    static Uint32 resolveDstHeaderUint32(final DstChoice dstChoice) {
         NxmHeader nxmHeader = dstChoice instanceof DstNxRegCase
                 ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice)
                 : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface());
         if (nxmHeader.isExperimenter()) {
             throw new IllegalArgumentException("Cannot fit experimenter destination choice on a uint32 header");
         }
-        return nxmHeader.toLong();
+        return Uint32.valueOf(nxmHeader.toLong());
     }
 
     /**
@@ -361,7 +361,7 @@ public final class FieldChoiceResolver {
      * @param dstChoice the destination choice field.
      * @return the OXM/NXM header as uint64 {@code BigInteger}.
      */
-    static Uint64 resolveDstHeaderUint64(DstChoice dstChoice) {
+    static Uint64 resolveDstHeaderUint64(final DstChoice dstChoice) {
         return dstChoice instanceof DstNxRegCase
                 ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).toUint64()
                 : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface()).toUint64();
@@ -375,7 +375,7 @@ public final class FieldChoiceResolver {
      * @return the OXM/NXM header as uint32 {@code Long}.
      * @throws IllegalArgumentException if the field is experimenter.
      */
-    static Long resolveSrcHeaderUint32(SrcChoice srcChoice) {
+    static Long resolveSrcHeaderUint32(final SrcChoice srcChoice) {
         NxmHeader nxmHeader = srcChoice instanceof SrcNxRegCase
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice)
                 : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface());
@@ -392,7 +392,7 @@ public final class FieldChoiceResolver {
      * @param srcChoice the destination choice field.
      * @return the OXM/NXM header as uint64 {@code BigInteger}.
      */
-    static Uint64 resolveSrcHeaderUint64(SrcChoice srcChoice) {
+    static Uint64 resolveSrcHeaderUint64(final SrcChoice srcChoice) {
         return srcChoice instanceof SrcNxRegCase
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).toUint64()
                 : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface()).toUint64();
@@ -404,7 +404,7 @@ public final class FieldChoiceResolver {
      * @param srcChoice the source choice field.
      * @return true if experimenter.
      */
-    static boolean isExperimenter(SrcChoice srcChoice) {
+    static boolean isExperimenter(final SrcChoice srcChoice) {
         return srcChoice instanceof SrcNxRegCase
                 ? REG_SRC_CHOICE_TO_NXMHEADER.get(srcChoice).isExperimenter()
                 : SRC_CHOICE_TYPE_TO_NXMHEADER.get(srcChoice.implementedInterface()).isExperimenter();
@@ -416,7 +416,7 @@ public final class FieldChoiceResolver {
      * @param dstChoice the destination choice field.
      * @return true if experimenter.
      */
-    static boolean isExperimenter(DstChoice dstChoice) {
+    static boolean isExperimenter(final DstChoice dstChoice) {
         return dstChoice instanceof DstNxRegCase
                 ? REG_DST_CHOICE_TO_NXMHEADER.get(dstChoice).isExperimenter()
                 : DST_CHOICE_TYPE_TO_NXMHEADER.get(dstChoice.implementedInterface()).isExperimenter();
