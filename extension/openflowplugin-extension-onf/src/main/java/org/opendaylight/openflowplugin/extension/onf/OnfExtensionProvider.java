@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeSerializerKey;
@@ -36,20 +36,19 @@ import org.slf4j.LoggerFactory;
  * Main provider for ONF extensions.
  */
 public class OnfExtensionProvider {
-
     private static final Logger LOG = LoggerFactory.getLogger(OnfExtensionProvider.class);
-
-    private final SwitchConnectionProvider switchConnectionProvider;
-    private final ExtensionConverterRegistrator converterRegistrator;
 
     private static final BundleControlConverter BUNDLE_CONTROL_CONVERTER = new BundleControlConverter();
     private static final BundleAddMessageConverter BUNDLE_ADD_MESSAGE_CONVERTER = new BundleAddMessageConverter();
 
+    private final SwitchConnectionProvider switchConnectionProvider;
+    private final ExtensionConverterRegistrator converterRegistrator;
+
     public OnfExtensionProvider(final SwitchConnectionProvider switchConnectionProvider,
                                 final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
-        this.switchConnectionProvider = Preconditions.checkNotNull(switchConnectionProvider,
+        this.switchConnectionProvider = requireNonNull(switchConnectionProvider,
                 "SwitchConnectionProvider can not be null!");
-        this.converterRegistrator = Preconditions.checkNotNull(converterRegistrator.getExtensionConverterRegistrator(),
+        this.converterRegistrator = requireNonNull(converterRegistrator.getExtensionConverterRegistrator(),
                 "ExtensionConverterRegistrator can not be null!");
     }
 
@@ -57,53 +56,34 @@ public class OnfExtensionProvider {
      * Init method for registration of converters called by blueprint.
      */
     public void init() {
-        registerSerializers();
-        registerDeserializers();
-        registerConverters();
+        switchConnectionProvider.registerExperimenterMessageSerializer(
+            new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
+                OnfConstants.ONF_EXPERIMENTER_ID_LONG, OnfConstants.ONF_ET_BUNDLE_CONTROL,
+                ExperimenterDataOfChoice.class), new BundleControlFactory());
+        switchConnectionProvider.registerExperimenterMessageSerializer(
+            new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
+                OnfConstants.ONF_EXPERIMENTER_ID_LONG, OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE,
+                ExperimenterDataOfChoice.class), new BundleAddMessageFactory());
+
+        switchConnectionProvider.registerExperimenterMessageDeserializer(
+            new ExperimenterIdTypeDeserializerKey(OFConstants.OFP_VERSION_1_3,
+                OnfConstants.ONF_EXPERIMENTER_ID_LONG, OnfConstants.ONF_ET_BUNDLE_CONTROL,
+                ExperimenterDataOfChoice.class),
+            new org.opendaylight.openflowplugin.extension.onf.deserializer.BundleControlFactory());
+        switchConnectionProvider.registerErrorDeserializer(
+            new ExperimenterIdDeserializerKey(OFConstants.OFP_VERSION_1_3,
+                OnfConstants.ONF_EXPERIMENTER_ID_LONG, ErrorMessage.class),
+            new OnfExperimenterErrorFactory());
+
+        converterRegistrator.registerMessageConvertor(
+            new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), BUNDLE_CONTROL_CONVERTER);
+        converterRegistrator.registerMessageConvertor(
+            new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class), BUNDLE_CONTROL_CONVERTER);
+        converterRegistrator.registerMessageConvertor(
+            new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3), BUNDLE_ADD_MESSAGE_CONVERTER);
+        converterRegistrator.registerMessageConvertor(
+            new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class), BUNDLE_ADD_MESSAGE_CONVERTER);
+
         LOG.info("ONF Extension Provider started.");
     }
-
-    private void registerSerializers() {
-        switchConnectionProvider.registerExperimenterMessageSerializer(
-                new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
-                                                      OnfConstants.ONF_EXPERIMENTER_ID_LONG,
-                                                      OnfConstants.ONF_ET_BUNDLE_CONTROL,
-                                                      ExperimenterDataOfChoice.class),
-                new BundleControlFactory());
-        switchConnectionProvider.registerExperimenterMessageSerializer(
-                new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
-                                                      OnfConstants.ONF_EXPERIMENTER_ID_LONG,
-                                                      OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE,
-                                                      ExperimenterDataOfChoice.class),
-                new BundleAddMessageFactory());
-    }
-
-
-    private void registerDeserializers() {
-        switchConnectionProvider.registerExperimenterMessageDeserializer(
-                new ExperimenterIdTypeDeserializerKey(OFConstants.OFP_VERSION_1_3,
-                                                      OnfConstants.ONF_EXPERIMENTER_ID_LONG,
-                                                      OnfConstants.ONF_ET_BUNDLE_CONTROL,
-                                                      ExperimenterDataOfChoice.class),
-                new org.opendaylight.openflowplugin.extension.onf.deserializer.BundleControlFactory());
-        switchConnectionProvider.registerErrorDeserializer(
-                new ExperimenterIdDeserializerKey(OFConstants.OFP_VERSION_1_3,
-                                                  OnfConstants.ONF_EXPERIMENTER_ID_LONG,
-                                                  ErrorMessage.class),
-                new OnfExperimenterErrorFactory());
-    }
-
-    private void registerConverters() {
-        converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), BUNDLE_CONTROL_CONVERTER);
-        converterRegistrator.registerMessageConvertor(
-                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class), BUNDLE_CONTROL_CONVERTER);
-        converterRegistrator.registerMessageConvertor(
-                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3),
-                    BUNDLE_ADD_MESSAGE_CONVERTER);
-        converterRegistrator.registerMessageConvertor(
-                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class),
-                    BUNDLE_ADD_MESSAGE_CONVERTER);
-    }
-
 }
