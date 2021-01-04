@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.tpa.grouping.NxmOfArpTpa;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.tpa.grouping.NxmOfArpTpaBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for ArpTpaCase.
@@ -46,7 +47,7 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 public class ArpTpaConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         ArpTpaCaseValue arpTpaCaseValue = (ArpTpaCaseValue) input.getMatchEntryValue();
         Ipv4Address ipv4Address = IpConverter.longToIpv4Address(arpTpaCaseValue.getArpTpaValues().getValue());
         return resolveAugmentation(new NxmOfArpTpaBuilder().setIpv4Address(ipv4Address).build(), path,
@@ -54,22 +55,23 @@ public class ArpTpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<NxmOfArpTpaGrouping> matchGrouping = MatchUtil.ARP_TPA_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
         }
-        Long value = IpConverter.ipv4AddressToLong(matchGrouping.get().getNxmOfArpTpa().getIpv4Address());
-        ArpTpaCaseValueBuilder arpTpaCaseValueBuilder = new ArpTpaCaseValueBuilder();
-        arpTpaCaseValueBuilder.setArpTpaValues(new ArpTpaValuesBuilder()
-                .setValue(value).build());
         return MatchUtil.createDefaultMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpTpa.class,
-                Nxm0Class.class, arpTpaCaseValueBuilder.build()).build();
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpTpa.class,
+            Nxm0Class.class, new ArpTpaCaseValueBuilder()
+                .setArpTpaValues(new ArpTpaValuesBuilder()
+                    .setValue(Uint32.valueOf(
+                        IpConverter.ipv4AddressToLong(matchGrouping.get().getNxmOfArpTpa().getIpv4Address()))).build())
+                .build())
+            .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfArpTpa value,
-            MatchPath path, Class<? extends ExtensionKey> key) {
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfArpTpa value,
+            final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
