@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -15,7 +16,6 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegMoveGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.DstBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.Src;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.move.grouping.nx.reg.move.SrcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Convert to/from SAL flow model to openflowjava model for NxActionRegMove action.
@@ -46,44 +47,45 @@ public class RegMoveConvertor implements
 
     @Override
     public Action convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
-        Preconditions.checkArgument(nxActionArg instanceof NxActionRegMoveGrouping);
-        NxActionRegMoveGrouping nxAction = (NxActionRegMoveGrouping) nxActionArg;
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
+        checkArgument(nxActionArg instanceof NxActionRegMoveGrouping);
+        final NxActionRegMoveGrouping nxAction = (NxActionRegMoveGrouping) nxActionArg;
+        final Dst dst = nxAction.getNxRegMove().getDst();
+        final Src src = nxAction.getNxRegMove().getSrc();
 
-        Dst dst = nxAction.getNxRegMove().getDst();
-        Src src = nxAction.getNxRegMove().getSrc();
-        final ActionRegMoveBuilder actionRegMoveBuilder = new ActionRegMoveBuilder();
-        NxActionRegMoveBuilder nxActionRegMove = new NxActionRegMoveBuilder();
-
-        nxActionRegMove.setDst(FieldChoiceResolver.resolveDstHeaderUint64(dst.getDstChoice()));
-        nxActionRegMove.setDstOfs(dst.getStart());
-        nxActionRegMove.setSrc(FieldChoiceResolver.resolveSrcHeaderUint64(src.getSrcChoice()));
-        nxActionRegMove.setSrcOfs(src.getStart());
-        nxActionRegMove.setNBits(dst.getEnd().toJava() - dst.getStart().toJava() + 1);
-        actionRegMoveBuilder.setNxActionRegMove(nxActionRegMove.build());
-        return ActionUtil.createAction(actionRegMoveBuilder.build());
+        return ActionUtil.createAction(new ActionRegMoveBuilder()
+            .setNxActionRegMove(new NxActionRegMoveBuilder()
+                .setDst(FieldChoiceResolver.resolveDstHeaderUint64(dst.getDstChoice()))
+                .setDstOfs(dst.getStart())
+                .setSrc(FieldChoiceResolver.resolveSrcHeaderUint64(src.getSrcChoice()))
+                .setSrcOfs(src.getStart())
+                .setNBits(Uint16.valueOf(dst.getEnd().toJava() - dst.getStart().toJava() + 1))
+                .build())
+            .build());
     }
 
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
-            Action input, ActionPath path) {
-        NxActionRegMove actionRegMove = ((ActionRegMove) input.getActionChoice()).getNxActionRegMove();
-        DstBuilder dstBuilder = new DstBuilder();
-        dstBuilder.setDstChoice(FieldChoiceResolver.resolveDstChoice(actionRegMove.getDst()));
-        dstBuilder.setStart(actionRegMove.getDstOfs());
-        dstBuilder.setEnd(actionRegMove.getDstOfs().toJava() + actionRegMove.getNBits().toJava() - 1);
-        SrcBuilder srcBuilder = new SrcBuilder();
-        srcBuilder.setSrcChoice(FieldChoiceResolver.resolveSrcChoice(actionRegMove.getSrc()));
-        srcBuilder.setStart(actionRegMove.getSrcOfs());
-        srcBuilder.setEnd(actionRegMove.getSrcOfs().toJava() + actionRegMove.getNBits().toJava() - 1);
-        NxRegMoveBuilder nxRegMoveBuilder = new NxRegMoveBuilder();
-        nxRegMoveBuilder.setDst(dstBuilder.build());
-        nxRegMoveBuilder.setSrc(srcBuilder.build());
-        return resolveAction(nxRegMoveBuilder.build(), path);
+            final Action input, final ActionPath path) {
+        final var actionRegMove = ((ActionRegMove) input.getActionChoice()).getNxActionRegMove();
+        final int delta = actionRegMove.getNBits().toJava() - 1;
+
+        return resolveAction(new NxRegMoveBuilder()
+            .setDst(new DstBuilder()
+                .setDstChoice(FieldChoiceResolver.resolveDstChoice(actionRegMove.getDst()))
+                .setStart(actionRegMove.getDstOfs())
+                .setEnd(Uint16.valueOf(actionRegMove.getDstOfs().toJava() + delta))
+                .build())
+            .setSrc(new SrcBuilder()
+                .setSrcChoice(FieldChoiceResolver.resolveSrcChoice(actionRegMove.getSrc()))
+                .setStart(actionRegMove.getSrcOfs())
+                .setEnd(Uint16.valueOf(actionRegMove.getSrcOfs().toJava() + delta))
+                .build())
+            .build(), path);
     }
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
-            NxRegMove value, ActionPath path) {
+            final NxRegMove value, final ActionPath path) {
         switch (path) {
             case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
                 return new NxActionRegMoveNodesNodeTableFlowWriteActionsCaseBuilder().setNxRegMove(value).build();
