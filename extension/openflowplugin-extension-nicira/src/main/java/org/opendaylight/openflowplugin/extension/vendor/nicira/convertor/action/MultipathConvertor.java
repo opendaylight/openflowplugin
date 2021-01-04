@@ -51,7 +51,7 @@ public class MultipathConvertor implements
         Dst dst = nxAction.getNxMultipath().getDst();
 
         final int start = dst.getStart().toJava();
-        nxActionMultipathBuilder.setOfsNbits(start << 6 | dst.getEnd().toJava() - start);
+        nxActionMultipathBuilder.setOfsNbits(Uint16.valueOf(start << 6 | dst.getEnd().toJava() - start));
         // We resolve the destination as a uint32 header, multipath action
         // does not support 8-byte experimenter headers.
         nxActionMultipathBuilder.setDst(FieldChoiceResolver.resolveDstHeaderUint32(dst.getDstChoice()));
