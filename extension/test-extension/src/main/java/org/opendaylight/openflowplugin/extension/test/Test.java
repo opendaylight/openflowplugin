@@ -9,16 +9,11 @@ package org.opendaylight.openflowplugin.extension.test;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -28,9 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -39,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg0;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxRegCaseBuilder;
@@ -50,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInpu
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -69,120 +62,74 @@ public class Test implements TestService {
 
     private SalFlowService flowService;
 
-
     @Override
-    public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(TestFlowInput input) {
-        AddFlowInputBuilder flow = new AddFlowInputBuilder();
-        flow.setPriority(Uint16.TWO);
-        flow.setMatch(createMatchBld().build());
-        flow.setInstructions(createDecNwTtlInstructionsBld().build());
-        flow.setBarrier(Boolean.FALSE);
-        flow.setCookie(new FlowCookie(Uint64.TEN));
-        flow.setCookieMask(new FlowCookie(Uint64.TEN));
-        flow.setHardTimeout(Uint16.ZERO);
-        flow.setIdleTimeout(Uint16.ZERO);
-        flow.setInstallHw(false);
-        flow.setStrict(false);
-        flow.setContainerName(null);
-        flow.setFlags(new FlowModFlags(false, false, false, false, true));
-        flow.setTableId(Uint8.ZERO);
-
-        flow.setFlowName("NiciraFLOW");
-
+    public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(final TestFlowInput input) {
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 .builder(Nodes.class) // File under nodes
                 // A particular node identified by nodeKey
                 .child(Node.class, new NodeKey(new NodeId("openflow:1"))).build();
-        flow.setNode(new NodeRef(flowInstanceId));
 
-        pushFlowViaRpc(flow.build());
+        pushFlowViaRpc(new AddFlowInputBuilder()
+            .setPriority(Uint16.TWO)
+            .setMatch(new MatchBuilder()
+                .setLayer3Match(new Ipv4MatchBuilder().setIpv4Destination(new Ipv4Prefix("10.0.0.1/24")).build())
+                .setEthernetMatch(new EthernetMatchBuilder()
+                    .setEthernetType(new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(0x0800))).build())
+                    .build())
+                // .addAugmentation(createNxMatchAugment().getAugmentationObject())
+                .build())
+            .setInstructions(new InstructionsBuilder()
+                .setInstruction(BindingMap.of(new InstructionBuilder()
+                    .setOrder(0)
+                    .setInstruction(new ApplyActionsCaseBuilder()
+                        .setApplyActions(new ApplyActionsBuilder()
+                            .setAction(BindingMap.of(new ActionBuilder()
+                                .setOrder(0)
+                                .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
+                                .build(), new ActionBuilder()
+                                // base part
+                                .setOrder(1)
+                                .setAction(new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder()
+                                    // vendor part
+                                    .setNxRegLoad(new NxRegLoadBuilder()
+                                        .setDst(new DstBuilder()
+                                            .setDstChoice(new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build())
+                                            .setStart(Uint16.ZERO)
+                                            .setEnd(Uint16.valueOf(5))
+                                            .build())
+                                        .setValue(Uint64.valueOf(55L))
+                                        .build())
+                                    .build())
+                                .build()))
+                            .build())
+                        .build())
+                    .build()))
+                .build())
+            .setBarrier(Boolean.FALSE)
+            .setCookie(new FlowCookie(Uint64.TEN))
+            .setCookieMask(new FlowCookie(Uint64.TEN))
+            .setHardTimeout(Uint16.ZERO)
+            .setIdleTimeout(Uint16.ZERO)
+            .setInstallHw(false)
+            .setStrict(false)
+            .setContainerName(null)
+            .setFlags(new FlowModFlags(false, false, false, false, true))
+            .setTableId(Uint8.ZERO)
+            .setFlowName("NiciraFLOW")
+            .setNode(new NodeRef(flowInstanceId))
+            .build());
 
         return Futures.immediateFuture(RpcResultBuilder.<TestFlowOutput>status(true).build());
     }
 
-    private void pushFlowViaRpc(AddFlowInput addFlowInput) {
+    private void pushFlowViaRpc(final AddFlowInput addFlowInput) {
         if (flowService != null) {
             LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
         }
     }
 
-    public void setFlowService(SalFlowService flowService) {
+    public void setFlowService(final SalFlowService flowService) {
         this.flowService = flowService;
-    }
-
-    private static MatchBuilder createMatchBld() {
-        MatchBuilder match = new MatchBuilder();
-        Ipv4MatchBuilder ipv4Match = new Ipv4MatchBuilder();
-        Ipv4Prefix prefix = new Ipv4Prefix("10.0.0.1/24");
-        ipv4Match.setIpv4Destination(prefix);
-        Ipv4Match i4m = ipv4Match.build();
-        match.setLayer3Match(i4m);
-
-        EthernetMatchBuilder eth = new EthernetMatchBuilder();
-        EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x0800)));
-        eth.setEthernetType(ethTypeBuilder.build());
-        match.setEthernetMatch(eth.build());
-
-//        AugmentTuple<Match> extAugmentWrapper = createNxMatchAugment();
-//        match.addAugmentation(extAugmentWrapper.getAugmentationClass(), extAugmentWrapper.getAugmentationObject());
-
-        return match;
-    }
-
-    private static InstructionsBuilder createDecNwTtlInstructionsBld() {
-        // Add our drop action to a list
-        List<Action> actionList = new ArrayList<>();
-        actionList.add(createOFAction(0).build());
-        actionList.add(createNxActionBld(1).build());
-
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder();
-        aab.setAction(actionList);
-
-        // Wrap our Apply Action in an Instruction
-        InstructionBuilder ib = new InstructionBuilder();
-        ib.setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build());
-        ib.withKey(new InstructionKey(0));
-        ib.setOrder(0);
-
-        // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder();
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(ib.build());
-        ib.withKey(new InstructionKey(0));
-        isb.setInstruction(instructions);
-        return isb;
-    }
-
-    private static ActionBuilder createOFAction(int actionKeyVal) {
-        DecNwTtlBuilder ta = new DecNwTtlBuilder();
-        DecNwTtl decNwTtl = ta.build();
-        ActionBuilder ab = new ActionBuilder();
-        ab.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(decNwTtl).build());
-        ab.withKey(new ActionKey(actionKeyVal));
-        return ab;
-    }
-
-    private static ActionBuilder createNxActionBld(int actionKeyVal) {
-        // vendor part
-        DstNxRegCaseBuilder nxRegCaseBld = new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class);
-        DstBuilder dstBld = new DstBuilder()
-            .setDstChoice(nxRegCaseBld.build())
-            .setStart(Uint16.ZERO)
-            .setEnd(Uint16.valueOf(5));
-        NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
-        nxRegLoadBuilder.setDst(dstBld.build());
-        nxRegLoadBuilder.setValue(Uint64.valueOf(55L));
-        NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder topNxActionCaseBld =
-                new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder();
-        topNxActionCaseBld.setNxRegLoad(nxRegLoadBuilder.build());
-
-        // base part
-        ActionBuilder abExt = new ActionBuilder();
-        abExt.withKey(new ActionKey(actionKeyVal));
-        abExt.setAction(topNxActionCaseBld.build());
-        return abExt;
     }
 }

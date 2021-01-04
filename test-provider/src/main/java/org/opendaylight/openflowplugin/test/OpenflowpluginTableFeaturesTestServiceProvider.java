@@ -93,7 +93,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
      */
     @Override
     public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(
-            UpdateTableInput input) {
+            final UpdateTableInput input) {
         OpenflowpluginTableFeaturesTestServiceProvider.LOG.info("updateTable - {}", input);
         return null;
     }
@@ -104,7 +104,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
-        return new AbstractObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider>(this) {
+        return new AbstractObjectRegistration<>(this) {
             @Override
             protected void removeRegistration() {
                 tableRegistration.close();

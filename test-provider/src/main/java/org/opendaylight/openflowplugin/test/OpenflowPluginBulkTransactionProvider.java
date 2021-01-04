@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.test;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -469,7 +470,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
     }
 
-    private static InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
+    private static @NonNull InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
     }
 

@@ -40,8 +40,8 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
     private ObjectRegistration<SalFlowService> flowRegistration;
     private final NotificationPublishService notificationProviderService;
 
-    public OpenflowpluginTestServiceProvider(DataBroker dataService,
-            NotificationPublishService notificationProviderService) {
+    public OpenflowpluginTestServiceProvider(final DataBroker dataService,
+            final NotificationPublishService notificationProviderService) {
         this.dataService = dataService;
         this.notificationProviderService = notificationProviderService;
     }
@@ -102,7 +102,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * service.rev130819.AddFlowInput)
      */
     @Override
-    public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
+    public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(final AddFlowInput input) {
         OpenflowpluginTestServiceProvider.LOG.info("addFlow - {}", input);
         return null;
     }
@@ -117,7 +117,7 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * .service.rev130819.RemoveFlowInput)
      */
     @Override
-    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         OpenflowpluginTestServiceProvider.LOG.info("removeFlow - {}", input);
         return null;
     }
@@ -132,17 +132,17 @@ public class OpenflowpluginTestServiceProvider implements AutoCloseable,
      * .service.rev130819.UpdateFlowInput)
      */
     @Override
-    public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
+    public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
         OpenflowpluginTestServiceProvider.LOG.info("updateFlow - {}", input);
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(RpcProviderService rpcRegistry) {
+    public ObjectRegistration<OpenflowpluginTestServiceProvider> register(final RpcProviderService rpcRegistry) {
         setFlowRegistration(rpcRegistry.registerRpcImplementation(SalFlowService.class, this, ImmutableSet.of(
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
-        return new AbstractObjectRegistration<OpenflowpluginTestServiceProvider>(this) {
+        return new AbstractObjectRegistration<>(this) {
             @Override
             protected void removeRegistration() {
                 flowRegistration.close();

@@ -39,96 +39,111 @@ public class NodeErrorListenerLoggingImpl implements NodeErrorListener {
     private static final Logger LOG = LoggerFactory.getLogger(NodeErrorListenerLoggingImpl.class);
 
     @Override
-    public void onBadActionErrorNotification(BadActionErrorNotification notification) {
+    @Deprecated
+    public void onBadActionErrorNotification(final BadActionErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onBadInstructionErrorNotification(BadInstructionErrorNotification notification) {
+    @Deprecated
+    public void onBadInstructionErrorNotification(final BadInstructionErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onBadMatchErrorNotification(BadMatchErrorNotification notification) {
+    @Deprecated
+    public void onBadMatchErrorNotification(final BadMatchErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onBadRequestErrorNotification(BadRequestErrorNotification notification) {
+    @Deprecated
+    public void onBadRequestErrorNotification(final BadRequestErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onExperimenterErrorNotification(ExperimenterErrorNotification notification) {
+    @Deprecated
+    public void onExperimenterErrorNotification(final ExperimenterErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onFlowModErrorNotification(FlowModErrorNotification notification) {
+    @Deprecated
+    public void onFlowModErrorNotification(final FlowModErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onGroupModErrorNotification(GroupModErrorNotification notification) {
+    @Deprecated
+    public void onGroupModErrorNotification(final GroupModErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onHelloFailedErrorNotification(HelloFailedErrorNotification notification) {
+    @Deprecated
+    public void onHelloFailedErrorNotification(final HelloFailedErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onMeterModErrorNotification(MeterModErrorNotification notification) {
+    @Deprecated
+    public void onMeterModErrorNotification(final MeterModErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onPortModErrorNotification(PortModErrorNotification notification) {
+    @Deprecated
+    public void onPortModErrorNotification(final PortModErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onQueueOpErrorNotification(QueueOpErrorNotification notification) {
+    @Deprecated
+    public void onQueueOpErrorNotification(final QueueOpErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onRoleRequestErrorNotification(RoleRequestErrorNotification notification) {
+    @Deprecated
+    public void onRoleRequestErrorNotification(final RoleRequestErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onSwitchConfigErrorNotification(SwitchConfigErrorNotification notification) {
+    @Deprecated
+    public void onSwitchConfigErrorNotification(final SwitchConfigErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onTableFeaturesErrorNotification(TableFeaturesErrorNotification notification) {
+    @Deprecated
+    public void onTableFeaturesErrorNotification(final TableFeaturesErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
     @Override
-    public void onTableModErrorNotification(TableModErrorNotification notification) {
+    @Deprecated
+    public void onTableModErrorNotification(final TableModErrorNotification notification) {
         LOG.error("Error notification {}", toStr(notification.getType(), notification.getCode(),
                 notification.getTransactionId().getValue()));
     }
 
-    private static String toStr(ErrorType type, Uint16 code, Uint64 xid) {
+    private static String toStr(final ErrorType type, final Uint16 code, final Uint64 xid) {
         return "[Type=" + type + ", Code=" + code + ", Xid =" + xid + "]";
     }
 }
