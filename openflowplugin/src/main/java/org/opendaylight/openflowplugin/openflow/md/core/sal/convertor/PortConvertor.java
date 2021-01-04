@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import static java.util.Objects.requireNonNullElse;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.MoreObjects;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -43,8 +44,9 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * </pre>
  */
 public class PortConvertor extends Convertor<Port, PortModInput, VersionConvertorData> {
-
     private static final Set<Class<?>> TYPES = Collections.singleton(Port.class);
+    private static final PortConfig PORTCONFIG = new PortConfig(true, true, true, true);
+    private static final PortConfigV10 PORTCONFIG_V10 = new PortConfigV10(true, true, true, true, true, true, true);
 
     /**
      * Create default empty port mod input
@@ -106,30 +108,20 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     static Ports toPortDesc(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source,
             final short version) {
-
-        PortsBuilder ofPortDescDataBuilder = new PortsBuilder();
-
-        ofPortDescDataBuilder.setPortNo(OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version),
-                source.getPortNumber())); // portNO
-
-        ofPortDescDataBuilder.setHwAddr(source.getHardwareAddress());
-        ofPortDescDataBuilder.setName(source.getName());
-
-        PortConfig config = maskPortConfigFields(source.getConfiguration());
-
-        ofPortDescDataBuilder.setConfig(config);
-
-        PortState portState = getPortState(source.getState());
-
-        ofPortDescDataBuilder.setState(portState);
-        ofPortDescDataBuilder.setCurrentFeatures(getPortFeatures(source.getCurrentFeature()));
-        ofPortDescDataBuilder.setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()));
-        ofPortDescDataBuilder.setSupportedFeatures(getPortFeatures(source.getSupported()));
-        ofPortDescDataBuilder.setPeerFeatures(getPortFeatures(source.getPeerFeatures()));
-        ofPortDescDataBuilder.setCurrSpeed(source.getCurrentSpeed());
-        ofPortDescDataBuilder.setMaxSpeed(source.getMaximumSpeed());
-
-        return ofPortDescDataBuilder.build();
+        return new PortsBuilder()
+            // portNO
+            .setPortNo(OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version), source.getPortNumber()))
+            .setHwAddr(source.getHardwareAddress())
+            .setName(source.getName())
+            .setConfig(maskPortConfigFields(source.getConfiguration()))
+            .setState(getPortState(source.getState()))
+            .setCurrentFeatures(getPortFeatures(source.getCurrentFeature()))
+            .setAdvertisedFeatures(getPortFeatures(source.getAdvertisedFeatures()))
+            .setSupportedFeatures(getPortFeatures(source.getSupported()))
+            .setPeerFeatures(getPortFeatures(source.getPeerFeatures()))
+            .setCurrSpeed(source.getCurrentSpeed())
+            .setMaxSpeed(source.getMaximumSpeed())
+            .build();
 
     }
 
@@ -145,26 +137,20 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
 
     @Override
     public PortModInput convert(final Port source, final VersionConvertorData data) {
-        PortConfig config = maskPortConfigFields(source.getConfiguration());
-        PortConfigV10 configV10 = maskPortConfigV10Fields(source.getConfiguration());
+        final var config = maskPortConfigFields(source.getConfiguration());
+        final var configV10 = maskPortConfigV10Fields(source.getConfiguration());
 
-        PortModInputBuilder portModInputBuilder = new PortModInputBuilder();
-        portModInputBuilder.setAdvertise(getPortFeatures(source.getAdvertisedFeatures()));
-        portModInputBuilder.setPortNo(new PortNumber(OpenflowPortsUtil.getProtocolPortNumber(
-                OpenflowVersion.get(data.getVersion()), source.getPortNumber())));
-
-        portModInputBuilder.setConfig(config);
-        portModInputBuilder.setMask(MoreObjects.firstNonNull(maskPortConfigFields(source.getMask()),
-                new PortConfig(true, true, true, true)));
-
-        portModInputBuilder.setHwAddress(new MacAddress(source.getHardwareAddress()));
-
-        portModInputBuilder.setVersion(data.getVersion());
-
-        portModInputBuilder.setConfigV10(configV10);
-        portModInputBuilder.setMaskV10(MoreObjects.firstNonNull(maskPortConfigV10Fields(source.getMask()),
-                new PortConfigV10(true, true, true, true, true, true, true)));
-        portModInputBuilder.setAdvertiseV10(getPortFeaturesV10(source.getAdvertisedFeatures()));
-        return portModInputBuilder.build();
+        return new PortModInputBuilder()
+            .setAdvertise(getPortFeatures(source.getAdvertisedFeatures()))
+            .setPortNo(new PortNumber(OpenflowPortsUtil.getProtocolPortNumber(
+                OpenflowVersion.get(data.getVersion()), source.getPortNumber())))
+            .setConfig(config)
+            .setMask(requireNonNullElse(maskPortConfigFields(source.getMask()), PORTCONFIG))
+            .setHwAddress(new MacAddress(source.getHardwareAddress()))
+            .setVersion(data.getVersion())
+            .setConfigV10(configV10)
+            .setMaskV10(requireNonNullElse(maskPortConfigV10Fields(source.getMask()), PORTCONFIG_V10))
+            .setAdvertiseV10(getPortFeaturesV10(source.getAdvertisedFeatures()))
+            .build();
     }
 }
