@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -15,7 +16,6 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoadBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.NxActionRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load.grouping.NxActionRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionRegLoadGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCaseBuilder;
@@ -27,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNodesNodeTableFlowWriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoad;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.Dst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
@@ -43,37 +42,34 @@ public class RegLoadConvertor implements
     @Override
     public Action convert(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action nxActionArg) {
-        Preconditions.checkArgument(nxActionArg instanceof NxActionRegLoadGrouping);
-
-        NxActionRegLoadGrouping nxAction = (NxActionRegLoadGrouping) nxActionArg;
-        Dst dst = nxAction.getNxRegLoad().getDst();
-
-
-        final ActionRegLoadBuilder actionRegLoadBuilder = new ActionRegLoadBuilder();
-        NxActionRegLoadBuilder nxActionRegLoadBuilder = new NxActionRegLoadBuilder();
-        // We resolve the destination as a uint32 header, reg load action
-        // does not support 8-byte experimenter headers.
-        nxActionRegLoadBuilder.setDst(FieldChoiceResolver.resolveDstHeaderUint32(dst.getDstChoice()));
-
+        checkArgument(nxActionArg instanceof NxActionRegLoadGrouping);
+        final var nxAction = (NxActionRegLoadGrouping) nxActionArg;
+        final var dst = nxAction.getNxRegLoad().getDst();
         final int start = dst.getStart().toJava();
-        nxActionRegLoadBuilder.setOfsNbits(Uint16.valueOf(start << 6 | dst.getEnd().toJava() - start));
-        nxActionRegLoadBuilder.setValue(nxAction.getNxRegLoad().getValue());
-        actionRegLoadBuilder.setNxActionRegLoad(nxActionRegLoadBuilder.build());
-        return ActionUtil.createAction(actionRegLoadBuilder.build());
+
+        return ActionUtil.createAction(new ActionRegLoadBuilder()
+            .setNxActionRegLoad(new NxActionRegLoadBuilder()
+                // We resolve the destination as a uint32 header, reg load action
+                // does not support 8-byte experimenter headers.
+                .setDst(FieldChoiceResolver.resolveDstHeaderUint32(dst.getDstChoice()))
+                .setOfsNbits(Uint16.valueOf(start << 6 | dst.getEnd().toJava() - start))
+                .setValue(nxAction.getNxRegLoad().getValue())
+                .build())
+            .build());
     }
 
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
             final Action input, final ActionPath path) {
-        NxActionRegLoad actionRegLoad = ((ActionRegLoad) input.getActionChoice()).getNxActionRegLoad();
-        DstBuilder dstBuilder = new DstBuilder();
-        dstBuilder.setDstChoice(FieldChoiceResolver.resolveDstChoice(actionRegLoad.getDst()));
-        dstBuilder.setStart(resolveStart(actionRegLoad.getOfsNbits()));
-        dstBuilder.setEnd(resolveEnd(actionRegLoad.getOfsNbits()));
-        NxRegLoadBuilder nxRegLoadBuilder = new NxRegLoadBuilder();
-        nxRegLoadBuilder.setDst(dstBuilder.build());
-        nxRegLoadBuilder.setValue(actionRegLoad.getValue());
-        return resolveAction(nxRegLoadBuilder.build(), path);
+        final var actionRegLoad = ((ActionRegLoad) input.getActionChoice()).getNxActionRegLoad();
+        return resolveAction(new NxRegLoadBuilder()
+            .setDst(new DstBuilder()
+                .setDstChoice(FieldChoiceResolver.resolveDstChoice(actionRegLoad.getDst()))
+                .setStart(resolveStart(actionRegLoad.getOfsNbits()))
+                .setEnd(resolveEnd(actionRegLoad.getOfsNbits()))
+                .build())
+            .setValue(actionRegLoad.getValue())
+            .build(), path);
     }
 
     private static Uint16 resolveStart(final Uint16 ofsNBints) {
