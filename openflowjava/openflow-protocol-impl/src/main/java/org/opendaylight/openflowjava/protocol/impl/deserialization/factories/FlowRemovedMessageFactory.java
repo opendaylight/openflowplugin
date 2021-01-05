@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -34,12 +34,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  */
 public class FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMessage>,
         DeserializerRegistryInjector {
-
-    private DeserializerRegistry registry;
+    private DeserializerRegistry registry = null;
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public FlowRemovedMessage deserialize(ByteBuf rawMessage) {
+    public FlowRemovedMessage deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
@@ -57,12 +55,11 @@ public class FlowRemovedMessageFactory implements OFDeserializer<FlowRemovedMess
                 .setByteCount(readUint64(rawMessage));
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(new MessageCodeKey(
                 EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
-        builder.setMatch(matchDeserializer.deserialize(rawMessage));
-        return builder.build();
+        return builder.setMatch(matchDeserializer.deserialize(rawMessage)).build();
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
+        registry = requireNonNull(deserializerRegistry);
     }
 }

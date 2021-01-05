@@ -25,11 +25,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  */
 public class FeaturesReplyMessageFactory implements OFDeserializer<GetFeaturesOutput> {
-
     private static final byte PADDING_IN_FEATURES_REPLY_HEADER = 2;
 
     @Override
-    public GetFeaturesOutput deserialize(ByteBuf rawMessage) {
+    public GetFeaturesOutput deserialize(final ByteBuf rawMessage) {
         GetFeaturesOutputBuilder builder = new GetFeaturesOutputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
@@ -38,12 +37,13 @@ public class FeaturesReplyMessageFactory implements OFDeserializer<GetFeaturesOu
                 .setTables(readUint8(rawMessage))
                 .setAuxiliaryId(readUint8(rawMessage));
         rawMessage.skipBytes(PADDING_IN_FEATURES_REPLY_HEADER);
-        builder.setCapabilities(createCapabilities(rawMessage.readUnsignedInt()));
-        builder.setReserved(readUint32(rawMessage));
-        return builder.build();
+        return builder
+            .setCapabilities(createCapabilities(rawMessage.readUnsignedInt()))
+            .setReserved(readUint32(rawMessage))
+            .build();
     }
 
-    private static Capabilities createCapabilities(long input) {
+    private static Capabilities createCapabilities(final long input) {
         final Boolean flowStats = (input & 1 << 0) != 0;
         final Boolean tableStats = (input & 1 << 1) != 0;
         final Boolean portStats = (input & 1 << 2) != 0;
@@ -51,8 +51,6 @@ public class FeaturesReplyMessageFactory implements OFDeserializer<GetFeaturesOu
         final Boolean ipReasm = (input & 1 << 5) != 0;
         final Boolean queueStats = (input & 1 << 6) != 0;
         final Boolean portBlocked = (input & 1 << 8) != 0;
-        return new Capabilities(flowStats, groupStats, ipReasm,
-                portBlocked, portStats, queueStats, tableStats);
+        return new Capabilities(flowStats, groupStats, ipReasm, portBlocked, portStats, queueStats, tableStats);
     }
-
 }

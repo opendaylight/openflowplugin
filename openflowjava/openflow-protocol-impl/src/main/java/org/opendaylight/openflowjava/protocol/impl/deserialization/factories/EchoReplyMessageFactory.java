@@ -23,9 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class EchoReplyMessageFactory extends VersionAssignableFactory<EchoOutput> {
     @Override
     public EchoOutput deserialize(final ByteBuf rawMessage) {
-        EchoOutputBuilder builder = new EchoOutputBuilder();
-        builder.setVersion(getVersion());
-        builder.setXid(readUint32(rawMessage));
+        final EchoOutputBuilder builder = new EchoOutputBuilder()
+            .setVersion(getVersion())
+            .setXid(readUint32(rawMessage));
         int remainingBytes = rawMessage.readableBytes();
         if (remainingBytes > 0) {
             byte[] data = new byte[remainingBytes];

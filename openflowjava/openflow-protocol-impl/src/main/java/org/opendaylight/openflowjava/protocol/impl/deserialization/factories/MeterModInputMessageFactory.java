@@ -7,14 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -40,21 +39,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  */
 public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput>, DeserializerRegistryInjector {
-
-    private DeserializerRegistry registry;
     private static final byte PADDING_IN_METER_BAND_DROP_HEADER = 4;
     private static final byte PADDING_IN_METER_BAND_DSCP_HEADER = 3;
 
+    private DeserializerRegistry registry = null;
+
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
+        registry = requireNonNull(deserializerRegistry);
     }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public MeterModInput deserialize(ByteBuf rawMessage) {
-        Objects.requireNonNull(registry);
-
+    public MeterModInput deserialize(final ByteBuf rawMessage) {
         MeterModInputBuilder builder = new MeterModInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
@@ -68,28 +64,28 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
             int bandType = rawMessage.readUnsignedShort();
             switch (bandType) {
                 case 1:
-                    final MeterBandDropCaseBuilder bandDropCaseBuilder = new MeterBandDropCaseBuilder();
-                    MeterBandDropBuilder bandDropBuilder = new MeterBandDropBuilder();
-                    bandDropBuilder.setType(MeterBandType.forValue(bandType));
                     rawMessage.readUnsignedShort();
-                    bandDropBuilder.setRate(readUint32(rawMessage));
-                    bandDropBuilder.setBurstSize(readUint32(rawMessage));
+                    MeterBandDropBuilder bandDropBuilder = new MeterBandDropBuilder()
+                        .setType(MeterBandType.forValue(bandType))
+                        .setRate(readUint32(rawMessage))
+                        .setBurstSize(readUint32(rawMessage));
                     rawMessage.skipBytes(PADDING_IN_METER_BAND_DROP_HEADER);
-                    bandDropCaseBuilder.setMeterBandDrop(bandDropBuilder.build());
-                    bandsBuilder.setMeterBand(bandDropCaseBuilder.build());
+
+                    bandsBuilder.setMeterBand(new MeterBandDropCaseBuilder()
+                        .setMeterBandDrop(bandDropBuilder.build())
+                        .build());
                     break;
                 case 2:
-                    final MeterBandDscpRemarkCaseBuilder bandDscpRemarkCaseBuilder =
-                        new MeterBandDscpRemarkCaseBuilder();
-                    MeterBandDscpRemarkBuilder bandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder();
-                    bandDscpRemarkBuilder.setType(MeterBandType.forValue(bandType));
                     rawMessage.readUnsignedShort();
-                    bandDscpRemarkBuilder.setRate(readUint32(rawMessage));
-                    bandDscpRemarkBuilder.setBurstSize(readUint32(rawMessage));
-                    bandDscpRemarkBuilder.setPrecLevel(readUint8(rawMessage));
+                    MeterBandDscpRemarkBuilder bandDscpRemarkBuilder = new MeterBandDscpRemarkBuilder()
+                        .setType(MeterBandType.forValue(bandType))
+                        .setRate(readUint32(rawMessage))
+                        .setBurstSize(readUint32(rawMessage))
+                        .setPrecLevel(readUint8(rawMessage));
                     rawMessage.skipBytes(PADDING_IN_METER_BAND_DSCP_HEADER);
-                    bandDscpRemarkCaseBuilder.setMeterBandDscpRemark(bandDscpRemarkBuilder.build());
-                    bandsBuilder.setMeterBand(bandDscpRemarkCaseBuilder.build());
+                    bandsBuilder.setMeterBand(new MeterBandDscpRemarkCaseBuilder()
+                        .setMeterBandDscpRemark(bandDscpRemarkBuilder.build())
+                        .build());
                     break;
                 case 0xFFFF:
                     long expId = rawMessage.getUnsignedInt(rawMessage.readerIndex() + 2 * Integer.BYTES);
@@ -104,12 +100,11 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
             }
             bandsList.add(bandsBuilder.build());
         }
-        builder.setBands(bandsList);
-        return builder.build();
+        return builder.setBands(bandsList).build();
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static MeterFlags createMeterFlags(int input) {
+    private static MeterFlags createMeterFlags(final int input) {
         final Boolean mfKBPS = (input & 1 << 0) != 0;
         final Boolean mfPKTPS = (input & 1 << 1) != 0;
         final Boolean mfBURST = (input & 1 << 2) != 0;

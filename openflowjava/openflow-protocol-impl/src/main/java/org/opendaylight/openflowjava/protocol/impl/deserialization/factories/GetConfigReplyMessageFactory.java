@@ -23,14 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  */
 public class GetConfigReplyMessageFactory extends VersionAssignableFactory<GetConfigOutput> {
-
     @Override
     public GetConfigOutput deserialize(final ByteBuf rawMessage) {
-        GetConfigOutputBuilder builder = new GetConfigOutputBuilder();
-        builder.setVersion(getVersion());
-        builder.setXid(readUint32(rawMessage));
-        builder.setFlags(SwitchConfigFlag.forValue(rawMessage.readUnsignedShort()));
-        builder.setMissSendLen(readUint16(rawMessage));
-        return builder.build();
+        return new GetConfigOutputBuilder()
+            .setVersion(getVersion())
+            .setXid(readUint32(rawMessage))
+            .setFlags(SwitchConfigFlag.forValue(rawMessage.readUnsignedShort()))
+            .setMissSendLen(readUint16(rawMessage))
+            .build();
     }
 }
