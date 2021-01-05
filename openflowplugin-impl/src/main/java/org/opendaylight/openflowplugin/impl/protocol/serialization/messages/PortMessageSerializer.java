@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -53,17 +52,14 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
     }
 
     private static Integer createPortConfigBitMask(final PortConfig config) {
-        return config == null ? null : ByteBufUtils.fillBitMaskFromMap(ImmutableMap
-                .<Integer, Boolean>builder()
-                .put(0, config.getPORTDOWN())
-                .put(2, config.getNORECV())
-                .put(5, config.getNOFWD())
-                .put(6, config.getNOPACKETIN())
-                .build());
+        return config == null ? null : ByteBufUtils.bitOf(0, config.getPORTDOWN())
+            | ByteBufUtils.bitOf(2, config.getNORECV())
+            | ByteBufUtils.bitOf(5, config.getNOFWD())
+            | ByteBufUtils.bitOf(6, config.getNOPACKETIN());
     }
 
     private static int createPortFeaturesBitMask(final PortFeatures feature) {
-        return ByteBufUtils.fillBitMask(0,
+        return ByteBufUtils.fillBitMask(
                 feature.getTenMbHd(),
                 feature.getTenMbFd(),
                 feature.getHundredMbHd(),
