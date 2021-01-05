@@ -14,29 +14,23 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTosCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTosCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.tos._case.SetNwTosActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
  * OF10SetNwTosActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF10SetNwTosActionDeserializer extends AbstractActionDeserializer<SetNwTosCase> {
+public class OF10SetNwTosActionDeserializer extends AbstractActionCaseDeserializer<SetNwTosCase> {
     public OF10SetNwTosActionDeserializer() {
         super(new SetNwTosCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
+    protected SetNwTosCase deserializeAction(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        SetNwTosCaseBuilder caseBuilder = new SetNwTosCaseBuilder();
-        SetNwTosActionBuilder tosBuilder = new SetNwTosActionBuilder();
-        tosBuilder.setNwTos(readUint8(input));
-        caseBuilder.setSetNwTosAction(tosBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+        final var nwTos = readUint8(input);
         input.skipBytes(ActionConstants.PADDING_IN_SET_NW_TOS_ACTION);
-        return builder.build();
+
+        return new SetNwTosCaseBuilder().setSetNwTosAction(new SetNwTosActionBuilder().setNwTos(nwTos).build()).build();
     }
 }

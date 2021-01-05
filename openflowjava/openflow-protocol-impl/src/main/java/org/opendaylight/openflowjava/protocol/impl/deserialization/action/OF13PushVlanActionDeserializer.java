@@ -7,36 +7,25 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.vlan._case.PushVlanActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
-import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
 
 /**
  * OF13PushVlanActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF13PushVlanActionDeserializer extends AbstractActionDeserializer<PushVlanCase> {
+public final class OF13PushVlanActionDeserializer extends AbstractEtherTypeActionDeserializer<PushVlanCase> {
     public OF13PushVlanActionDeserializer() {
         super(new PushVlanCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
-        input.skipBytes(2 * Short.BYTES);
-        final ActionBuilder builder = new ActionBuilder()
-                .setActionChoice(new PushVlanCaseBuilder()
-                    .setPushVlanAction(new PushVlanActionBuilder()
-                        .setEthertype(new EtherType(ByteBufUtils.readUint16(input)))
-                        .build())
-                    .build());
-        input.skipBytes(ActionConstants.ETHERTYPE_ACTION_PADDING);
-        return builder.build();
+    PushVlanCase createAction(final EtherType etherType) {
+        return new PushVlanCaseBuilder()
+            .setPushVlanAction(new PushVlanActionBuilder().setEthertype(etherType).build())
+            .build();
     }
 }

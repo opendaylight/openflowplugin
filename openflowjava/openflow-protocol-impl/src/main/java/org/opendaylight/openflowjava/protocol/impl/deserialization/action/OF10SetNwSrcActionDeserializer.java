@@ -12,28 +12,24 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.src._case.SetNwSrcActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
  * OF10SetNwSrcActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF10SetNwSrcActionDeserializer extends AbstractActionDeserializer<SetNwSrcCase> {
+public final class OF10SetNwSrcActionDeserializer extends AbstractActionCaseDeserializer<SetNwSrcCase> {
     public OF10SetNwSrcActionDeserializer() {
         super(new SetNwSrcCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
+    protected SetNwSrcCase deserializeAction(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        SetNwSrcCaseBuilder caseBuilder = new SetNwSrcCaseBuilder();
-        SetNwSrcActionBuilder actionBuilder = new SetNwSrcActionBuilder();
-        actionBuilder.setIpAddress(ByteBufUtils.readIetfIpv4Address(input));
-        caseBuilder.setSetNwSrcAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
-        return builder.build();
+        return new SetNwSrcCaseBuilder()
+            .setSetNwSrcAction(new SetNwSrcActionBuilder()
+                .setIpAddress(ByteBufUtils.readIetfIpv4Address(input))
+                .build())
+            .build();
     }
 }
