@@ -7,35 +7,25 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
-import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetDlDstCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetDlDstCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.dl.dst._case.SetDlDstActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
  * OF10SetDlDstActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF10SetDlDstActionDeserializer extends AbstractActionDeserializer<SetDlDstCase> {
+public final class OF10SetDlDstActionDeserializer extends AbstractOF10SetDlActionDeserializer<SetDlDstCase> {
     public OF10SetDlDstActionDeserializer() {
         super(new SetDlDstCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
-        input.skipBytes(2 * Short.BYTES);
-        SetDlDstCaseBuilder caseBuilder = new SetDlDstCaseBuilder();
-        SetDlDstActionBuilder actionBuilder = new SetDlDstActionBuilder();
-        actionBuilder.setDlDstAddress(ByteBufUtils.readIetfMacAddress(input));
-        caseBuilder.setSetDlDstAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
-        input.skipBytes(ActionConstants.PADDING_IN_DL_ADDRESS_ACTION);
-        return builder.build();
+    SetDlDstCase createAction(final MacAddress macAddress) {
+        return new SetDlDstCaseBuilder()
+            .setSetDlDstAction(new SetDlDstActionBuilder().setDlDstAddress(macAddress).build())
+            .build();
     }
 }

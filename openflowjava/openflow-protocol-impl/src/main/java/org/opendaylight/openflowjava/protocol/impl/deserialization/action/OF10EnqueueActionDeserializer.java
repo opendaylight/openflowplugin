@@ -12,12 +12,9 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.EnqueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.EnqueueCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.enqueue._case.EnqueueActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.QueueId;
 
@@ -26,21 +23,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  *
  * @author michal.polkorab
  */
-public class OF10EnqueueActionDeserializer extends AbstractActionDeserializer<OutputActionCase> {
+public final class OF10EnqueueActionDeserializer extends AbstractActionCaseDeserializer<EnqueueCase> {
     public OF10EnqueueActionDeserializer() {
-        // FIXME: it looks this should be EnqueueCase instead
-        super(new OutputActionCaseBuilder().build());
+        super(new EnqueueCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
+    protected EnqueueCase deserializeAction(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        EnqueueActionBuilder actionBuilder = new EnqueueActionBuilder();
-        actionBuilder.setPort(new PortNumber(readUint16(input).toUint32()));
+        final var port = new PortNumber(readUint16(input).toUint32());
+        final var queueId = new QueueId(readUint32(input));
         input.skipBytes(ActionConstants.PADDING_IN_ENQUEUE_ACTION);
-        actionBuilder.setQueueId(new QueueId(readUint32(input)));
-        return new ActionBuilder()
-                .setActionChoice(new EnqueueCaseBuilder().setEnqueueAction(actionBuilder.build()).build())
-                .build();
+
+        return new EnqueueCaseBuilder()
+            .setEnqueueAction(new EnqueueActionBuilder().setPort(port).setQueueId(queueId).build())
+            .build();
     }
 }
