@@ -152,7 +152,7 @@ public abstract class ByteBufUtils {
      * @param out writing buffer
      * @param index writing index
      */
-    public static void updateOFHeaderLength(final ByteBuf out, int index) {
+    public static void updateOFHeaderLength(final ByteBuf out, final int index) {
         out.setShort(index + EncodeConstants.OFHEADER_LENGTH_INDEX, out.writerIndex() - index);
     }
 
@@ -377,9 +377,7 @@ public abstract class ByteBufUtils {
     }
 
     public static Ipv4Address readIetfIpv4Address(final ByteBuf buf) {
-        final byte[] tmp = new byte[4];
-        buf.readBytes(tmp);
-        return IetfInetUtil.INSTANCE.ipv4AddressFor(tmp);
+        return IetfInetUtil.INSTANCE.ipv4AddressFor(buf.readInt());
     }
 
     public static Ipv6Address readIetfIpv6Address(final ByteBuf buf) {
