@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -50,7 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
@@ -68,6 +68,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -91,44 +92,43 @@ public class FlowConvertorTest {
      */
     @Test
     public void test() {
-        RemoveFlowInputBuilder flowBuilder = new RemoveFlowInputBuilder();
-        flowBuilder.setBarrier(false);
-        flowBuilder.setCookie(new FlowCookie(Uint64.valueOf(4)));
-        flowBuilder.setCookieMask(new FlowCookie(Uint64.valueOf(5)));
-        flowBuilder.setTableId(Uint8.valueOf(6));
-        flowBuilder.setStrict(true);
-        flowBuilder.setIdleTimeout(Uint16.valueOf(50));
-        flowBuilder.setHardTimeout(Uint16.valueOf(500));
-        flowBuilder.setPriority(Uint16.valueOf(40));
-        flowBuilder.setBufferId(Uint32.valueOf(18));
-        flowBuilder.setOutPort(Uint64.valueOf(65535));
-        flowBuilder.setOutGroup(Uint32.valueOf(5000));
-        flowBuilder.setFlags(null);
-        flowBuilder.setMatch(null);
-        RemoveFlowInput flow = flowBuilder.build();
+        RemoveFlowInput flow = new RemoveFlowInputBuilder()
+            .setBarrier(false)
+            .setCookie(new FlowCookie(Uint64.valueOf(4)))
+            .setCookieMask(new FlowCookie(Uint64.valueOf(5)))
+            .setTableId(Uint8.valueOf(6))
+            .setStrict(true)
+            .setIdleTimeout(Uint16.valueOf(50))
+            .setHardTimeout(Uint16.valueOf(500))
+            .setPriority(Uint16.valueOf(40))
+            .setBufferId(Uint32.valueOf(18))
+            .setOutPort(Uint64.valueOf(65535))
+            .setOutGroup(Uint32.valueOf(5000))
+            .setFlags(null)
+            .setMatch(null)
+            .build();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.valueOf(42));
 
         List<FlowModInputBuilder> flowMod = convert(flow, data);
 
-        Assert.assertEquals("Wrong version", 4, flowMod.get(0).getVersion().intValue());
-        Assert.assertEquals("Wrong cookie", 4, flowMod.get(0).getCookie().intValue());
-        Assert.assertEquals("Wrong cookie mask", 5, flowMod.get(0).getCookieMask().intValue());
-        Assert.assertEquals("Wrong table id", 6, flowMod.get(0).getTableId().getValue().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCDELETESTRICT, flowMod.get(0).getCommand());
-        Assert.assertEquals("Wrong idle timeout", 50, flowMod.get(0).getIdleTimeout().intValue());
-        Assert.assertEquals("Wrong hard timeout", 500, flowMod.get(0).getHardTimeout().intValue());
-        Assert.assertEquals("Wrong priority", 40, flowMod.get(0).getPriority().intValue());
-        Assert.assertEquals("Wrong buffer id", 18, flowMod.get(0).getBufferId().intValue());
-        Assert.assertEquals("Wrong out port", 65535, flowMod.get(0).getOutPort().getValue().intValue());
-        Assert.assertEquals("Wrong out group", 5000, flowMod.get(0).getOutGroup().intValue());
-        Assert.assertEquals("Wrong flags", new FlowModFlags(false, false, false, false, false),
-                flowMod.get(0).getFlags());
-        Assert.assertEquals("Wrong match",
+        assertEquals("Wrong version", 4, flowMod.get(0).getVersion().intValue());
+        assertEquals("Wrong cookie", 4, flowMod.get(0).getCookie().intValue());
+        assertEquals("Wrong cookie mask", 5, flowMod.get(0).getCookieMask().intValue());
+        assertEquals("Wrong table id", 6, flowMod.get(0).getTableId().getValue().intValue());
+        assertEquals("Wrong command", FlowModCommand.OFPFCDELETESTRICT, flowMod.get(0).getCommand());
+        assertEquals("Wrong idle timeout", 50, flowMod.get(0).getIdleTimeout().intValue());
+        assertEquals("Wrong hard timeout", 500, flowMod.get(0).getHardTimeout().intValue());
+        assertEquals("Wrong priority", 40, flowMod.get(0).getPriority().intValue());
+        assertEquals("Wrong buffer id", 18, flowMod.get(0).getBufferId().intValue());
+        assertEquals("Wrong out port", 65535, flowMod.get(0).getOutPort().getValue().intValue());
+        assertEquals("Wrong out group", 5000, flowMod.get(0).getOutGroup().intValue());
+        assertEquals("Wrong flags", new FlowModFlags(false, false, false, false, false), flowMod.get(0).getFlags());
+        assertEquals("Wrong match",
                 "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType",
                 flowMod.get(0).getMatch().getType().getName());
-        Assert.assertEquals("Wrong match entries size", 0, flowMod.get(0).getMatch().nonnullMatchEntry().size());
+        assertEquals("Wrong match entries size", 0, flowMod.get(0).getMatch().nonnullMatchEntry().size());
     }
 
     /**
@@ -145,8 +145,8 @@ public class FlowConvertorTest {
 
         List<FlowModInputBuilder> flowMod = convert(flow, data);
 
-        Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
+        assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
+        assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
     }
 
     /**
@@ -154,111 +154,85 @@ public class FlowConvertorTest {
      */
     @Test
     public void testInstructionsTranslation() {
-        InstructionBuilder instructionBuilder = new InstructionBuilder();
-        GoToTableCaseBuilder goToCaseBuilder = new GoToTableCaseBuilder();
-        GoToTableBuilder goToBuilder = new GoToTableBuilder();
-        goToBuilder.setTableId(Uint8.ONE);
-        goToCaseBuilder.setGoToTable(goToBuilder.build());
-        instructionBuilder.setInstruction(goToCaseBuilder.build());
-        instructionBuilder.setOrder(0);
-
-        List<Instruction> instructions = new ArrayList<>();
-        instructions.add(instructionBuilder.build());
-        instructionBuilder = new InstructionBuilder();
-        WriteMetadataCaseBuilder metaCaseBuilder = new WriteMetadataCaseBuilder();
-        WriteMetadataBuilder metaBuilder = new WriteMetadataBuilder();
-        metaBuilder.setMetadata(Uint64.valueOf(2));
-        metaBuilder.setMetadataMask(Uint64.valueOf(3));
-        metaCaseBuilder.setWriteMetadata(metaBuilder.build());
-        instructionBuilder.setInstruction(metaCaseBuilder.build());
-        instructionBuilder.setOrder(1);
-        instructions.add(instructionBuilder.build());
-        instructionBuilder = new InstructionBuilder();
-        WriteActionsCaseBuilder writeCaseBuilder = new WriteActionsCaseBuilder();
-        WriteActionsBuilder writeBuilder = new WriteActionsBuilder();
-        writeBuilder.setAction(Map.of());
-        writeCaseBuilder.setWriteActions(writeBuilder.build());
-        instructionBuilder.setInstruction(writeCaseBuilder.build());
-        instructionBuilder.setOrder(2);
-        instructions.add(instructionBuilder.build());
-        instructionBuilder = new InstructionBuilder();
-        ApplyActionsCaseBuilder applyCaseBuilder = new ApplyActionsCaseBuilder();
-        ApplyActionsBuilder applyBuilder = new ApplyActionsBuilder();
-        applyBuilder.setAction(Map.of());
-        applyCaseBuilder.setApplyActions(applyBuilder.build());
-        instructionBuilder.setInstruction(applyCaseBuilder.build());
-        instructionBuilder.setOrder(3);
-        instructions.add(instructionBuilder.build());
-        instructionBuilder = new InstructionBuilder();
-        ClearActionsCaseBuilder clearCaseBuilder = new ClearActionsCaseBuilder();
-        ClearActionsBuilder clearBuilder = new ClearActionsBuilder();
-        clearBuilder.setAction(Map.of());
-        clearCaseBuilder.setClearActions(clearBuilder.build());
-        instructionBuilder.setInstruction(clearCaseBuilder.build());
-        instructionBuilder.setOrder(4);
-        instructions.add(instructionBuilder.build());
-        instructionBuilder = new InstructionBuilder();
-        MeterCaseBuilder meterCaseBuilder = new MeterCaseBuilder();
-        MeterBuilder meterBuilder = new MeterBuilder();
-        meterBuilder.setMeterId(new MeterId(Uint32.valueOf(5)));
-        meterCaseBuilder.setMeter(meterBuilder.build());
-        instructionBuilder.setInstruction(meterCaseBuilder.build());
-        instructionBuilder.setOrder(5);
-        instructions.add(instructionBuilder.build());
-
-        InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
-        instructionsBuilder.setInstruction(instructions);
-
-        AddFlowInputBuilder flowBuilder = new AddFlowInputBuilder();
-        flowBuilder.setInstructions(instructionsBuilder.build());
-        AddFlowInput flow = flowBuilder.build();
+        AddFlowInput flow = new AddFlowInputBuilder()
+            .setInstructions(new InstructionsBuilder()
+                .setInstruction(BindingMap.ordered(
+                    new InstructionBuilder().setOrder(0).setInstruction(new GoToTableCaseBuilder()
+                        .setGoToTable(new GoToTableBuilder().setTableId(Uint8.ONE).build())
+                        .build())
+                    .build(),
+                    new InstructionBuilder().setOrder(1).setInstruction(new WriteMetadataCaseBuilder()
+                        .setWriteMetadata(new WriteMetadataBuilder()
+                            .setMetadata(Uint64.valueOf(2))
+                            .setMetadataMask(Uint64.valueOf(3))
+                            .build())
+                        .build())
+                    .build(),
+                    new InstructionBuilder().setOrder(2).setInstruction(new WriteActionsCaseBuilder()
+                        .setWriteActions(new WriteActionsBuilder().setAction(Map.of()).build())
+                        .build())
+                    .build(),
+                    new InstructionBuilder().setOrder(3).setInstruction(new ApplyActionsCaseBuilder()
+                        .setApplyActions(new ApplyActionsBuilder().setAction(Map.of()).build())
+                        .build())
+                    .build(),
+                    new InstructionBuilder().setOrder(4).setInstruction(new ClearActionsCaseBuilder()
+                        .setClearActions(new ClearActionsBuilder().setAction(Map.of()).build())
+                        .build())
+                    .build(),
+                    new InstructionBuilder().setOrder(5).setInstruction(new MeterCaseBuilder()
+                        .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.valueOf(5))).build())
+                        .build())
+                    .build()))
+                .build())
+            .build();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         data.setDatapathId(Uint64.valueOf(42));
         List<FlowModInputBuilder> flowMod = convert(flow, data);
 
-        Assert.assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
-        Assert.assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
-        Assert.assertEquals("Wrong instructions size", 6, flowMod.get(0).getInstruction().size());
+        assertEquals("Wrong version", 1, flowMod.get(0).getVersion().intValue());
+        assertEquals("Wrong command", FlowModCommand.OFPFCADD, flowMod.get(0).getCommand());
+        assertEquals("Wrong instructions size", 6, flowMod.get(0).getInstruction().size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions
             .grouping.Instruction instruction = flowMod.get(0).getInstruction().get(0);
-        Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
+        assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         GotoTableCase gotoTableCase = (GotoTableCase) instruction.getInstructionChoice();
-        Assert.assertEquals("Wrong table id", 1, gotoTableCase.getGotoTable().getTableId().intValue());
+        assertEquals("Wrong table id", 1, gotoTableCase.getGotoTable().getTableId().intValue());
         instruction = flowMod.get(0).getInstruction().get(1);
-        Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
+        assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteMetadataCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         WriteMetadataCase writeMetadataCase = (WriteMetadataCase) instruction.getInstructionChoice();
-        Assert.assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 2},
+        assertArrayEquals("Wrong metadata", new byte[]{0, 0, 0, 0, 0, 0, 0, 2},
                 writeMetadataCase.getWriteMetadata().getMetadata());
-        Assert.assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
+        assertArrayEquals("Wrong metadata mask", new byte[]{0, 0, 0, 0, 0, 0, 0, 3},
                 writeMetadataCase.getWriteMetadata().getMetadataMask());
 
         instruction = flowMod.get(0).getInstruction().get(2);
-        Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
+        assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         WriteActionsCase writeActionsCase = (WriteActionsCase) instruction.getInstructionChoice();
-        Assert.assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().nonnullAction().size());
+        assertEquals("Wrong actions size", 0, writeActionsCase.getWriteActions().nonnullAction().size());
         instruction = flowMod.get(0).getInstruction().get(3);
-        Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
+        assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         ApplyActionsCase applyActionsCase =  (ApplyActionsCase) instruction.getInstructionChoice();
-        Assert.assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().nonnullAction().size());
+        assertEquals("Wrong actions size", 0, applyActionsCase.getApplyActions().nonnullAction().size());
         instruction = flowMod.get(0).getInstruction().get(4);
-        Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
+        assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         instruction = flowMod.get(0).getInstruction().get(5);
-        Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
+        assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common"
                 + ".instruction.rev130731.instruction.grouping.instruction.choice.MeterCase",
                 instruction.getInstructionChoice().implementedInterface().getName());
         MeterCase meterCase = (MeterCase) instruction.getInstructionChoice();
-        Assert.assertEquals("Wrong meter id", 5, meterCase.getMeter().getMeterId().intValue());
+        assertEquals("Wrong meter id", 5, meterCase.getMeter().getMeterId().intValue());
     }
 
     @Test
@@ -271,20 +245,26 @@ public class FlowConvertorTest {
                 0);
 
         mockFlow.setMatch(new MatchBuilder().setEthernetMatch(createEthernetMatch()).build());
-        mockFlow.setInstructions(toApplyInstruction(Collections.singletonList(action1)));
+        mockFlow.setInstructions(new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setOrder(0)
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder().setAction(BindingMap.of(action1)).build())
+                    .build())
+                .build()))
+            .build());
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
 
         List<FlowModInputBuilder> flowModInputBuilders = convert(mockFlow, data);
 
-        Assert.assertEquals(2, flowModInputBuilders.size());
-
+        assertEquals(2, flowModInputBuilders.size());
     }
 
     private List<FlowModInputBuilder> convert(final Flow flow, final VersionDatapathIdConvertorData data) {
         Optional<List<FlowModInputBuilder>> flowModOptional = convertorManager.convert(flow, data);
-        Assert.assertTrue("Flow convertor not found", flowModOptional.isPresent());
+        assertTrue("Flow convertor not found", flowModOptional.isPresent());
         return flowModOptional.get();
     }
 
@@ -299,15 +279,6 @@ public class FlowConvertorTest {
         return new EthernetMatchBuilder()
                 .setEthernetType(new EthernetTypeBuilder().setType(new EtherType(Uint32.valueOf(33024))).build())
                 .build();
-    }
-
-    private static Instructions toApplyInstruction(
-            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-                .Action> actions) {
-        return new InstructionsBuilder().setInstruction(Collections.singletonList(new InstructionBuilder().setOrder(0)
-                .setInstruction(new ApplyActionsCaseBuilder()
-                        .setApplyActions(new ApplyActionsBuilder().setAction(actions).build()).build())
-                .build())).build();
     }
 
     private static class MockFlow extends AbstractAugmentable<AddFlowInput> implements AddFlowInput {
