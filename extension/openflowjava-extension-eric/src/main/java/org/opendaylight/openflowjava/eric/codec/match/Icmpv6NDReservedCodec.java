@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdReservedCaseValueBuilder;
 
 public class Icmpv6NDReservedCodec extends AbstractMatchCodec {
+    public static final Icmpv6NDReservedCodec INSTANCE = new Icmpv6NDReservedCodec();
 
     private static final int VALUE_LENGTH = 4;
     public static final MatchEntrySerializerKey<?, ?> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
