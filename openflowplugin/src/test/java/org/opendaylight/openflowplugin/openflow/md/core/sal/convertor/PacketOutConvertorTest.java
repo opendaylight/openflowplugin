@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Co
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -64,25 +65,19 @@ public class PacketOutConvertorTest {
      */
     @Test
     public void toPacketOutInputAllParmNullTest() {
-
-        TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
-
         String nodeId = "0";
         String port = "0";
-
-        NodeRef ref = createNodeRef(nodeId);
         NodeConnectorKey nodeConnKey = PacketOutConvertorTest.createNodeConnKey(nodeId, port);
-        NodeConnectorRef egressConfRef = new NodeConnectorRef(
-                createNodeConnRef(nodeId, nodeConnKey));
+        NodeConnectorRef egressConfRef = new NodeConnectorRef(createNodeConnRef(nodeId, nodeConnKey));
 
-        transmitPacketInputBuilder.setBufferId((Uint32) null);
-        transmitPacketInputBuilder.setConnectionCookie(null);
-        transmitPacketInputBuilder.setNode(ref);
-        transmitPacketInputBuilder.setPayload(null);
-        transmitPacketInputBuilder.setEgress(egressConfRef);
-        transmitPacketInputBuilder.setIngress(null);
-        TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder
-                .build();
+        TransmitPacketInput transmitPacketInput = new TransmitPacketInputBuilder()
+            .setBufferId((Uint32) null)
+            .setConnectionCookie(null)
+            .setNode(createNodeRef(nodeId))
+            .setPayload(null)
+            .setEgress(egressConfRef)
+            .setIngress(null)
+            .build();
 
         Short version = (short) 0x04;
         Long xid = null;
@@ -128,8 +123,6 @@ public class PacketOutConvertorTest {
 
         String nodeId = "node:1";
 
-        NodeRef ref = createNodeRef(nodeId);
-
         String portO = "0xfffffffd";
         NodeConnectorKey egrConKey = PacketOutConvertorTest.createNodeConnKey(nodeId, portO);
         NodeConnectorRef egressConfRef = new NodeConnectorRef(
@@ -140,21 +133,15 @@ public class PacketOutConvertorTest {
         NodeConnectorRef ingressConRef = new NodeConnectorRef(
                 createNodeConnRef(nodeId, ingrConKey));
 
-        String string = new String("sendOutputMsg_TEST");
-        byte[] msg = string.getBytes();
-
-        byte[] payload = msg;
-
-        TransmitPacketInputBuilder transmitPacketInputBuilder = new TransmitPacketInputBuilder();
-        transmitPacketInputBuilder.setAction(actionList);
-        transmitPacketInputBuilder.setBufferId(bufferId);
-        transmitPacketInputBuilder.setConnectionCookie(connCook);
-        transmitPacketInputBuilder.setEgress(egressConfRef);
-        transmitPacketInputBuilder.setIngress(ingressConRef);
-        transmitPacketInputBuilder.setNode(ref);
-        transmitPacketInputBuilder.setPayload(payload);
-
-        final TransmitPacketInput transmitPacketInput = transmitPacketInputBuilder.build();
+        final TransmitPacketInput transmitPacketInput = new TransmitPacketInputBuilder()
+            .setAction(BindingMap.of(ab.build()))
+            .setBufferId(bufferId)
+            .setConnectionCookie(connCook)
+            .setEgress(egressConfRef)
+            .setIngress(ingressConRef)
+            .setNode(createNodeRef(nodeId))
+            .setPayload("sendOutputMsg_TEST".getBytes())
+            .build();
 
         Short version = (short) 0x04;
         byte[] datapathIdByte = new byte[Long.BYTES];
