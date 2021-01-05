@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -72,9 +73,6 @@ public class GroupConvertorTest {
         addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
-        final List<Bucket> bucketList = new ArrayList<>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
-            actionsList = new ArrayList<>();
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
             actionsList1 = new ArrayList<>();
 
@@ -95,8 +93,7 @@ public class GroupConvertorTest {
         actionsB1.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder()
                 .setGroupAction(groupIdaction1).build());
 
-        actionsList.add(actionsB.build());
-        actionsList.add(actionsB1.build());
+        final var actionsList = BindingMap.ordered(actionsB.build(), actionsB1.build());
 
 
         final BucketsBuilder bucketsB = new BucketsBuilder();
@@ -109,8 +106,6 @@ public class GroupConvertorTest {
 
         bucketB.setAction(actionsList);
         final Bucket bucket = bucketB.build();
-
-        bucketList.add(bucket); // List of bucket
 
         final BucketBuilder bucketB1 = new BucketBuilder();
         bucketB1.setWeight(Uint16.valueOf(50));
@@ -141,9 +136,7 @@ public class GroupConvertorTest {
 
         final Bucket bucket1 = bucketB1.build(); // second bucket
 
-        bucketList.add(bucket1);
-
-        bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
+        bucketsB.setBucket(BindingMap.ordered(bucket, bucket1));// List of bucket added to the Buckets
         final Buckets buckets = bucketsB.build();
 
         addGroupBuilder.setBuckets(buckets);
@@ -219,50 +212,30 @@ public class GroupConvertorTest {
 
         int actionOrder = 0;
 
-        final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
+        final BucketBuilder bucketB = new BucketBuilder()
+            .setAction(BindingMap.ordered(
+                // Action1: 005
+                assembleActionBuilder("005", actionOrder++).build(),
+                // Action2: 006
+                assembleActionBuilder("006", actionOrder++).build()
+                // .. and mr.Bond is not coming today
+                ))
+            .withKey(new BucketKey(new BucketId(Uint32.ZERO)));
 
-        addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
+        final BucketBuilder bucketB1 = new BucketBuilder()
+            .setAction(BindingMap.ordered(
+                // Action1
+                assembleCopyTtlInBuilder(actionOrder++).build(),
+                // Action2:
+                assembleSetMplsTtlActionBuilder(actionOrder++).build()))
+            .withKey(new BucketKey(new BucketId(Uint32.ONE)));
 
-        addGroupBuilder.setGroupType(GroupTypes.GroupFf);
-        final List<Bucket> bucketList = new ArrayList<>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
-            actionsList = new ArrayList<>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
-            actionsList1 = new ArrayList<>();
-
-        // Action1: 005
-        actionsList.add(assembleActionBuilder("005", actionOrder++).build());
-        // Action2: 006
-        actionsList.add(assembleActionBuilder("006", actionOrder++).build());
-        // .. and mr.Bond is not coming today
-
-        final BucketsBuilder bucketsB = new BucketsBuilder();
-
-        final BucketBuilder bucketB = new BucketBuilder();
-
-        bucketB.setAction(actionsList).withKey(new BucketKey(new BucketId(Uint32.ZERO)));
-        final Bucket bucket = bucketB.build();
-
-        bucketList.add(bucket); // List of bucket
-
-
-        final BucketBuilder bucketB1 = new BucketBuilder();
-
-        // Action1
-        actionsList1.add(assembleCopyTtlInBuilder(actionOrder++).build());
-        // Action2:
-        actionsList1.add(assembleSetMplsTtlActionBuilder(actionOrder++).build());
-
-        bucketB1.setAction(actionsList1).withKey(new BucketKey(new BucketId(Uint32.ONE)));
-
-        final Bucket bucket1 = bucketB1.build(); // second bucket
-
-        bucketList.add(bucket1);
-
-        bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
-        final Buckets buckets = bucketsB.build();
-
-        addGroupBuilder.setBuckets(buckets);
+        final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder()
+            .setGroupId(new GroupId(Uint32.TEN))
+            .setGroupType(GroupTypes.GroupFf)
+            .setBuckets(new BucketsBuilder()
+                .setBucket(BindingMap.ordered(bucketB.build(), bucketB1.build()))
+                .build());
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
         data.setDatapathId(Uint64.ONE);
@@ -307,86 +280,64 @@ public class GroupConvertorTest {
 
         final int actionOrder = 0;
 
-        final ArrayList<Bucket> bucket = new ArrayList<>();
-
-        bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId(Uint32.valueOf(4)))
-                .setWatchPort(Uint32.TWO)
-                .setWatchGroup(Uint32.ONE)
-                .setAction(ImmutableList.of(new ActionBuilder()
-                        .setOrder(0)
-                        .setAction(new OutputActionCaseBuilder()
-                                .setOutputAction(new OutputActionBuilder()
-                                        .setOutputNodeConnector(new Uri("openflow:1:2"))
-                                        .build())
-                                .build())
-                        .build()))
-                .build());
-
-        bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId(Uint32.valueOf(3)))
-                .setWatchPort(Uint32.valueOf(6))
-                .setWatchGroup(Uint32.ONE)
-                .setAction(ImmutableList.of(new ActionBuilder()
-                        .setOrder(0)
-                        .setAction(new OutputActionCaseBuilder()
-                                .setOutputAction(new OutputActionBuilder()
-                                        .setOutputNodeConnector(new Uri("openflow:1:6"))
-                                        .build())
-                                .build())
-                        .build()))
-                .build());
-
-        bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId(Uint32.TWO))
-                .setWatchPort(Uint32.valueOf(5))
-                .setWatchGroup(Uint32.ONE)
-                .setAction(ImmutableList.of(new ActionBuilder()
-                        .setOrder(0)
-                        .setAction(new OutputActionCaseBuilder()
-                                .setOutputAction(new OutputActionBuilder()
-                                        .setOutputNodeConnector(new Uri("openflow:1:5"))
-                                        .build())
-                                .build())
-                        .build()))
-                .build());
-
-        bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId(Uint32.ONE))
-                .setWatchPort(Uint32.valueOf(4))
-                .setWatchGroup(Uint32.ONE)
-                .setAction(ImmutableList.of(new ActionBuilder()
-                        .setOrder(0)
-                        .setAction(new OutputActionCaseBuilder()
-                                .setOutputAction(new OutputActionBuilder()
-                                        .setOutputNodeConnector(new Uri("openflow:1:4"))
-                                        .build())
-                                .build())
-                        .build()))
-                .build());
-
-        bucket.add(new BucketBuilder()
-                .setBucketId(new BucketId(Uint32.ZERO))
-                .setWatchPort(Uint32.valueOf(3))
-                .setWatchGroup(Uint32.ONE)
-                .setAction(ImmutableList.of(new ActionBuilder()
-                        .setOrder(0)
-                        .setAction(new OutputActionCaseBuilder()
-                                .setOutputAction(new OutputActionBuilder()
-                                        .setOutputNodeConnector(new Uri("openflow:1:3"))
-                                        .build())
-                                .build())
-                        .build()))
-                .build());
+        final var bucket = BindingMap.ordered(new BucketBuilder()
+            .setBucketId(new BucketId(Uint32.valueOf(4)))
+            .setWatchPort(Uint32.TWO)
+            .setWatchGroup(Uint32.ONE)
+            .setAction(BindingMap.of(new ActionBuilder()
+                .setOrder(0)
+                .setAction(new OutputActionCaseBuilder()
+                    .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:2")).build())
+                    .build())
+                .build()))
+            .build(), new BucketBuilder()
+            .setBucketId(new BucketId(Uint32.valueOf(3)))
+            .setWatchPort(Uint32.valueOf(6))
+            .setWatchGroup(Uint32.ONE)
+            .setAction(BindingMap.of(new ActionBuilder()
+                .setOrder(0)
+                .setAction(new OutputActionCaseBuilder()
+                    .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:6")).build())
+                    .build())
+                .build()))
+            .build(), new BucketBuilder()
+            .setBucketId(new BucketId(Uint32.TWO))
+            .setWatchPort(Uint32.valueOf(5))
+            .setWatchGroup(Uint32.ONE)
+            .setAction(BindingMap.of(new ActionBuilder()
+                .setOrder(0)
+                .setAction(new OutputActionCaseBuilder()
+                    .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:5")).build())
+                    .build())
+                .build()))
+            .build(), new BucketBuilder()
+            .setBucketId(new BucketId(Uint32.ONE))
+            .setWatchPort(Uint32.valueOf(4))
+            .setWatchGroup(Uint32.ONE)
+            .setAction(BindingMap.of(new ActionBuilder()
+                .setOrder(0)
+                .setAction(new OutputActionCaseBuilder()
+                    .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:4")).build())
+                    .build())
+                .build()))
+            .build(), new BucketBuilder()
+            .setBucketId(new BucketId(Uint32.ZERO))
+            .setWatchPort(Uint32.valueOf(3))
+            .setWatchGroup(Uint32.ONE)
+            .setAction(BindingMap.of(new ActionBuilder()
+                .setOrder(0)
+                .setAction(new OutputActionCaseBuilder()
+                    .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:3")).build())
+                    .build())
+                .build()))
+            .build());
 
 
         final AddGroupInput input = new AddGroupInputBuilder()
                 .setGroupId(new GroupId(Uint32.ONE))
                 .setGroupName("Foo")
                 .setGroupType(GroupTypes.GroupFf)
-                .setBuckets(new BucketsBuilder()
-                        .setBucket(bucket)
-                        .build())
+                .setBuckets(new BucketsBuilder().setBucket(bucket).build())
                 .build();
 
         VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
@@ -454,16 +405,14 @@ public class GroupConvertorTest {
         addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
-        final List<Bucket> bucketList = new ArrayList<>();
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
-            actionsList = new ArrayList<>();
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
             actionsList1 = new ArrayList<>();
 
-        // Action1
-        actionsList.add(assembleActionBuilder("005", actionOrder++).build());
-        // Action2:
-        actionsList.add(assembleActionBuilder("006", actionOrder++).build());
+        final var actionsList = BindingMap.ordered(
+            // Action1
+            assembleActionBuilder("005", actionOrder++).build(),
+            // Action2:
+            assembleActionBuilder("006", actionOrder++).build());
 
         final BucketsBuilder bucketsB = new BucketsBuilder();
 
@@ -471,8 +420,6 @@ public class GroupConvertorTest {
 
         bucketB.setAction(actionsList).withKey(new BucketKey(new BucketId(Uint32.ZERO)));
         final Bucket bucket = bucketB.build();
-
-        bucketList.add(bucket); // List of bucket
 
         final BucketBuilder bucketB1 = new BucketBuilder();
 
@@ -485,9 +432,8 @@ public class GroupConvertorTest {
 
         final Bucket bucket1 = bucketB1.build(); // second bucket
 
-        bucketList.add(bucket1);
-
-        bucketsB.setBucket(bucketList);// List of bucket added to the Buckets
+        // List of bucket added to the Buckets
+        bucketsB.setBucket(BindingMap.of(bucket, bucket1));
         final Buckets buckets = bucketsB.build();
 
         addGroupBuilder.setBuckets(buckets);
