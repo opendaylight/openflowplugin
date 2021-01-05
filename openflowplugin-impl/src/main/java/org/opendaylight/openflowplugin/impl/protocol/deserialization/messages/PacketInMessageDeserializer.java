@@ -35,11 +35,11 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.PACKET_IN_MESSAGE_MATCH);
 
-    private DeserializerRegistry registry;
+    private DeserializerRegistry registry = null;
 
     @Override
     public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        registry = deserializerRegistry;
+        registry = requireNonNull(deserializerRegistry);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessa
             .setTableId(new TableId(readUint8(message)))
             .setFlowCookie(new FlowCookie(readUint64(message)));
 
-        final OFDeserializer<Match> matchDeserializer = requireNonNull(registry).getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = registry.getDeserializer(MATCH_KEY);
 
         packetInMessageBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(message),
             org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.in.message.Match.class));

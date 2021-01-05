@@ -222,10 +222,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private static void writeFlags(final MultipartRequestFlags flags, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, flags.getOFPMPFREQMORE());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeShort(bitmap);
+        outBuffer.writeShort(ByteBufUtils.bitOf(0, flags.getOFPMPFREQMORE()));
     }
 
     private void serializeTableFeaturesBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
@@ -387,10 +384,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private static void writeTableConfig(final TableConfig tableConfig, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, tableConfig.getOFPTCDEPRECATEDMASK());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.bitOf(0, tableConfig.getOFPTCDEPRECATEDMASK()));
     }
 
     private static void serializeMeterFeaturesBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
@@ -405,11 +399,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private static void writeBandTypes(final MeterBandTypeBitmap bandTypes, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, bandTypes.getOFPMBTDROP());
-        map.put(1, bandTypes.getOFPMBTDSCPREMARK());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.fillBitMask(bandTypes.getOFPMBTDROP(), bandTypes.getOFPMBTDSCPREMARK()));
     }
 
     private static void serializeMeterConfigBody(final MultipartReplyBody body, final ByteBuf outBuffer) {
@@ -449,13 +439,11 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private static void writeMeterFlags(final MeterFlags flags, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, flags.getOFPMFKBPS());
-        map.put(1, flags.getOFPMFPKTPS());
-        map.put(2, flags.getOFPMFBURST());
-        map.put(3, flags.getOFPMFSTATS());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeShort(bitmap);
+        outBuffer.writeShort(ByteBufUtils.fillBitMask(
+            flags.getOFPMFKBPS(),
+            flags.getOFPMFPKTPS(),
+            flags.getOFPMFBURST(),
+            flags.getOFPMFSTATS()));
     }
 
     private static void serializeMeterBody(final MultipartReplyBody body, final ByteBuf outBuffer) {

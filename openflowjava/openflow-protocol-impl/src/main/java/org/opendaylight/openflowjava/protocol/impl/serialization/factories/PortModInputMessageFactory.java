@@ -56,22 +56,23 @@ public class PortModInputMessageFactory implements OFSerializer<PortMod$G> {
     }
 
     private static int createPortFeaturesBitmask(final PortFeatures feature) {
-        return ByteBufUtils.fillBitMask(0, feature.get_10mbHd(),
-                feature.get_10mbFd(),
-                feature.get_100mbHd(),
-                feature.get_100mbFd(),
-                feature.get_1gbHd(),
-                feature.get_1gbFd(),
-                feature.get_10gbFd(),
-                feature.get_40gbFd(),
-                feature.get_100gbFd(),
-                feature.get_1tbFd(),
-                feature.getOther(),
-                feature.getCopper(),
-                feature.getFiber(),
-                feature.getAutoneg(),
-                feature.getPause(),
-                feature.getPauseAsym());
+        return ByteBufUtils.fillBitMask(
+            feature.get_10mbHd(),
+            feature.get_10mbFd(),
+            feature.get_100mbHd(),
+            feature.get_100mbFd(),
+            feature.get_1gbHd(),
+            feature.get_1gbFd(),
+            feature.get_10gbFd(),
+            feature.get_40gbFd(),
+            feature.get_100gbFd(),
+            feature.get_1tbFd(),
+            feature.getOther(),
+            feature.getCopper(),
+            feature.getFiber(),
+            feature.getAutoneg(),
+            feature.getPause(),
+            feature.getPauseAsym());
     }
 
 }
