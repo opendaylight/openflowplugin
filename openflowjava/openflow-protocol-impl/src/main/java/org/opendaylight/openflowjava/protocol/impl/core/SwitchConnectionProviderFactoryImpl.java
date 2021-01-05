@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import com.google.common.base.MoreObjects;
+import static java.util.Objects.requireNonNull;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -84,49 +85,49 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
             return new TlsConfiguration() {
                 @Override
                 public KeystoreType getTlsTruststoreType() {
-                    return MoreObjects.firstNonNull(tlsConfig.getTruststoreType(), null);
+                    return requireNonNull(tlsConfig.getTruststoreType());
                 }
 
                 @Override
                 public String getTlsTruststore() {
-                    return MoreObjects.firstNonNull(tlsConfig.getTruststore(), null);
+                    return requireNonNull(tlsConfig.getTruststore());
                 }
 
                 @Override
                 public KeystoreType getTlsKeystoreType() {
-                    return MoreObjects.firstNonNull(tlsConfig.getKeystoreType(), null);
+                    return requireNonNull(tlsConfig.getKeystoreType());
                 }
 
                 @Override
                 public String getTlsKeystore() {
-                    return MoreObjects.firstNonNull(tlsConfig.getKeystore(), null);
+                    return requireNonNull(tlsConfig.getKeystore());
                 }
 
                 @Override
                 public org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType
                         getTlsKeystorePathType() {
-                    return MoreObjects.firstNonNull(tlsConfig.getKeystorePathType(), null);
+                    return requireNonNull(tlsConfig.getKeystorePathType());
                 }
 
                 @Override
                 public org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType
                         getTlsTruststorePathType() {
-                    return MoreObjects.firstNonNull(tlsConfig.getTruststorePathType(), null);
+                    return requireNonNull(tlsConfig.getTruststorePathType());
                 }
 
                 @Override
                 public String getKeystorePassword() {
-                    return MoreObjects.firstNonNull(tlsConfig.getKeystorePassword(), null);
+                    return requireNonNull(tlsConfig.getKeystorePassword());
                 }
 
                 @Override
                 public String getCertificatePassword() {
-                    return MoreObjects.firstNonNull(tlsConfig.getCertificatePassword(), null);
+                    return requireNonNull(tlsConfig.getCertificatePassword());
                 }
 
                 @Override
                 public String getTruststorePassword() {
-                    return MoreObjects.firstNonNull(tlsConfig.getTruststorePassword(), null);
+                    return requireNonNull(tlsConfig.getTruststorePassword());
                 }
 
                 @Override

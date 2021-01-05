@@ -17,11 +17,6 @@
       <tag>HEAD</tag>
     </scm>
 
-    <properties>
-        <!-- FIXME: Remove this -->
-        <odlparent.modernizer.enforce>false</odlparent.modernizer.enforce>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
