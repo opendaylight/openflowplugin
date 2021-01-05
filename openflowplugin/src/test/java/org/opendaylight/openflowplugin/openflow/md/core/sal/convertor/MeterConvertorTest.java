@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
@@ -23,11 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandI
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Drop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DropBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.DscpRemarkBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.type.band.type.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeaders;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
@@ -43,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -56,78 +53,54 @@ public class MeterConvertorTest {
 
     @Test
     public void testMeterModCommandConvertorwithAllParameters() {
-        final Uint32 burstSize = Uint32.valueOf(10L);
-        final Uint32  dropRate = Uint32.valueOf(20L);
+        final Uint32 burstSize = Uint32.TEN;
+        final Uint32  dropRate = Uint32.valueOf(20);
 
         // / DROP Band
-        MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
-
-        MeterBandType bandFlag = new MeterBandType(true, false, false);
-        meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
-        DropBuilder drop = new DropBuilder();
-        drop.setDropBurstSize(burstSize);
-        drop.setDropRate(dropRate);
-        Drop drp = drop.build();
-        MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder.setBandType(drp);
-        meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
-        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
-
-        final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
+        MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder()
+            .setBandType(new DropBuilder()
+                .setDropBurstSize(burstSize)
+                .setDropRate(dropRate)
+                .build())
+            // _ofpmbtDrop
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(true, false, false)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
 
         // DSCP Mark
         final Uint32 dscpRemarkBurstSize = Uint32.valueOf(11L);
         final Uint32 dscpRemarkRate = Uint32.valueOf(21L);
-        final Uint8 dscpPercLevel = Uint8.valueOf(1);
+        final Uint8 dscpPercLevel = Uint8.ONE;
 
-        MeterBandTypesBuilder meterBandTypesB1 = new MeterBandTypesBuilder();
-        MeterBandType bandFlag1 = new MeterBandType(false, true, false);
+        MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder()
+            .setBandType(new DscpRemarkBuilder()
+                .setDscpRemarkBurstSize(dscpRemarkBurstSize)
+                .setDscpRemarkRate(dscpRemarkRate)
+                .setPrecLevel(dscpPercLevel)
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder()
+                .setFlags(new MeterBandType(false, true, false))
+                .build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
 
-        meterBandTypesB1.setFlags(bandFlag1);
-        DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-        dscp.setDscpRemarkBurstSize(dscpRemarkBurstSize);
-        dscp.setDscpRemarkRate(dscpRemarkRate);
-        dscp.setPrecLevel(dscpPercLevel);
-        DscpRemark dscpRemark = dscp.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder1.setBandType(dscpRemark);
-        meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
-        meterBandHeaderBuilder1.withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
-
-        final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
 
         // Experimental
         final Uint32 expBurstSize = Uint32.valueOf(12L);
         final Uint32 expRate = Uint32.valueOf(22L);
         final Uint32 expExperimenter = Uint32.valueOf(23L);
 
-        MeterBandTypesBuilder meterBandTypesB2 = new MeterBandTypesBuilder();
-        MeterBandType bandFlag2 = new MeterBandType(false, false, true);
-        meterBandTypesB2.setFlags(bandFlag2);
+        MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder()
+            .setBandType(new ExperimenterBuilder()
+                .setExperimenterBurstSize(expBurstSize)
+                .setExperimenterRate(expRate)
+                .setExperimenter(expExperimenter)
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(false, false, true)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
 
-        ExperimenterBuilder exp = new ExperimenterBuilder();
-        exp.setExperimenterBurstSize(expBurstSize);
-        exp.setExperimenterRate(expRate);
-        exp.setExperimenter(expExperimenter);
-        Experimenter experimenter = exp.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder2.setBandType(experimenter);
-        meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
-        meterBandHeaderBuilder2.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
-        MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
-
-        List<MeterBandHeader> meterBandList = new ArrayList<>();
-        meterBandList.add(0, meterBH);
-        meterBandList.add(1, meterBH1);
-        meterBandList.add(2, meterBH2);
-
-        // Constructing List of Bands
-        MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
-        meterBandHeadersBuilder.setMeterBandHeader(meterBandList);
-
-        MeterBandHeaders meterBandHeaders = meterBandHeadersBuilder.build();
+        MeterBandHeaders meterBandHeaders = new MeterBandHeadersBuilder()
+            .setMeterBandHeader(BindingMap.ordered(
+                meterBandHeaderBuilder.build(), meterBandHeaderBuilder1.build(), meterBandHeaderBuilder2.build()))
+            .build();
 
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
@@ -193,77 +166,48 @@ public class MeterConvertorTest {
         final Uint32 burstSize = Uint32.TEN;
         final Uint32 dropRate = Uint32.valueOf(20);
         // / DROP Band
-        MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
 
-        MeterBandType bandFlag = new MeterBandType(true, false, false);
-        meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
-        DropBuilder drop = new DropBuilder();
-        drop.setDropBurstSize(burstSize);
-        drop.setDropRate(dropRate);
-        Drop drp = drop.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder.setBandType(drp);
-        meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
-        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
-
-        final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
+        final MeterBandHeader meterBH = new MeterBandHeaderBuilder()
+            .setBandType(new DropBuilder().setDropBurstSize(burstSize).setDropRate(dropRate).build())
+            // _ofpmbtDrop
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(true, false, false)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)))
+            .build();
 
         // DSCP Mark
         final Uint32 dscpRemarkBurstSize = Uint32.valueOf(11);
         final Uint32 dscpRemarkRate = Uint32.valueOf(21);
         final Uint8 dscpPercLevel = Uint8.ONE;
 
-        MeterBandTypesBuilder meterBandTypesB1 = new MeterBandTypesBuilder();
-        MeterBandType bandFlag1 = new MeterBandType(false, true, false);
-
-        meterBandTypesB1.setFlags(bandFlag1);
-        DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-
-        dscp.setDscpRemarkBurstSize(dscpRemarkBurstSize);
-        dscp.setDscpRemarkRate(dscpRemarkRate);
-        dscp.setPrecLevel(dscpPercLevel);
-        DscpRemark dscpRemark = dscp.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder1.setBandType(dscpRemark);
-        meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
-        meterBandHeaderBuilder1.withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
-
-        final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
+        final MeterBandHeader meterBH1 = new MeterBandHeaderBuilder()
+            .setBandType(new DscpRemarkBuilder()
+                .setDscpRemarkBurstSize(dscpRemarkBurstSize)
+                .setDscpRemarkRate(dscpRemarkRate)
+                .setPrecLevel(dscpPercLevel)
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(false, true, false)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)))
+            .build();
 
         // Experimental
         final Uint32 expBurstSize = Uint32.valueOf(12);
         final Uint32 expRate = Uint32.valueOf(22);
         final Uint32 expExperimenter = Uint32.valueOf(23);
 
-        MeterBandTypesBuilder meterBandTypesB2 = new MeterBandTypesBuilder();
-        MeterBandType bandFlag2 = new MeterBandType(false, false, true);
-        meterBandTypesB2.setFlags(bandFlag2);
-
-        ExperimenterBuilder exp = new ExperimenterBuilder();
-
-        exp.setExperimenterBurstSize(expBurstSize);
-        exp.setExperimenterRate(expRate);
-        exp.setExperimenter(expExperimenter);
-        Experimenter experimenter = exp.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder2.setBandType(experimenter);
-        meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
-        meterBandHeaderBuilder2.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
-        MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
-
-        List<MeterBandHeader> meterBandList = new ArrayList<>();
-        meterBandList.add(0, meterBH);
-        meterBandList.add(1, meterBH1);
-        meterBandList.add(2, meterBH2);
+        MeterBandHeader meterBH2 = new MeterBandHeaderBuilder()
+            .setBandType(new ExperimenterBuilder()
+                .setExperimenterBurstSize(expBurstSize)
+                .setExperimenterRate(expRate)
+                .setExperimenter(expExperimenter)
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(false, false, true)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)))
+            .build();
 
         // Constructing List of Bands
-        MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
-        meterBandHeadersBuilder.setMeterBandHeader(meterBandList);
-
-        MeterBandHeaders meterBandHeaders = meterBandHeadersBuilder.build();
+        MeterBandHeaders meterBandHeaders = new MeterBandHeadersBuilder()
+            .setMeterBandHeader(BindingMap.ordered(meterBH, meterBH1, meterBH2))
+            .build();
 
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
@@ -325,20 +269,15 @@ public class MeterConvertorTest {
 
     @Test
     public void testMeterModCommandConvertorBandDataisNULL() {
-        AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
-
         // NodeKey key = new NodeKey(new NodeId("24"));
         // InstanceIdentifier<Node> path =
         // InstanceIdentifier.builder().node(Nodes.class).node(Node.class,
         // key).build();
 
-        addMeterFromSAL.setMeterId(
-            new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(Uint32.TEN));
-        MeterFlags flagV = new MeterFlags(true, true, true, true);
-        addMeterFromSAL.setFlags(flagV);
-
-        AddMeterInput meterInputCommand = addMeterFromSAL.build();
-        MeterModInputBuilder outMeterModInput = convert(meterInputCommand, new VersionConvertorData((short) 0X4));
+        MeterModInputBuilder outMeterModInput = convert(new AddMeterInputBuilder()
+            .setMeterId(new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(Uint32.TEN))
+            .setFlags(new MeterFlags(true, true, true, true))
+            .build(), new VersionConvertorData((short) 0X4));
 
         assertEquals(MeterModCommand.OFPMCADD, outMeterModInput.getCommand());
         assertTrue(outMeterModInput.getFlags().getOFPMFBURST());
@@ -347,63 +286,39 @@ public class MeterConvertorTest {
 
     @Test
     public void testMeterModCommandConvertorNoValidBandData() {
-
         // / DROP Band
-        MeterBandHeaderBuilder meterBandHeaderBuilder = new MeterBandHeaderBuilder();
-        MeterBandTypesBuilder meterBandTypesB = new MeterBandTypesBuilder();
-
-        MeterBandType bandFlag = new MeterBandType(true, false, false);
-        meterBandTypesB.setFlags(bandFlag);// _ofpmbtDrop
-
-        meterBandHeaderBuilder.setMeterBandTypes(meterBandTypesB.build());
-        meterBandHeaderBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)));
-
-        final MeterBandHeader meterBH = meterBandHeaderBuilder.build();
+        final MeterBandHeader meterBH = new MeterBandHeaderBuilder()
+            // _ofpmbtDrop
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(true, false, false)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.ZERO)))
+            .build();
 
         // DSCP Mark
-        MeterBandTypesBuilder meterBandTypesB1 = new MeterBandTypesBuilder();
-        MeterBandType bandFlag1 = new MeterBandType(false, true, false);
-
-        meterBandTypesB1.setFlags(bandFlag1);
-        DscpRemarkBuilder dscp = new DscpRemarkBuilder();
-        dscp.setDscpRemarkBurstSize(Uint32.valueOf(11));
-        dscp.setDscpRemarkRate(Uint32.valueOf(21));
-        dscp.setPrecLevel(Uint8.ONE);
-        DscpRemark dscpRemark = dscp.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder1 = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder1.setBandType(dscpRemark);
-        meterBandHeaderBuilder1.setMeterBandTypes(meterBandTypesB1.build());
-        meterBandHeaderBuilder1.withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)));
-
-        final MeterBandHeader meterBH1 = meterBandHeaderBuilder1.build();
+        final MeterBandHeader meterBH1 = new MeterBandHeaderBuilder()
+            .setBandType(new DscpRemarkBuilder()
+                .setDscpRemarkBurstSize(Uint32.valueOf(11))
+                .setDscpRemarkRate(Uint32.valueOf(21))
+                .setPrecLevel(Uint8.ONE)
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder().setFlags(new MeterBandType(false, true, false)).build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.ONE)))
+            .build();
 
         // Experimental
-
-        ExperimenterBuilder exp = new ExperimenterBuilder();
-        exp.setExperimenterBurstSize(Uint32.valueOf(12));
-        exp.setExperimenterRate(Uint32.valueOf(22));
-        exp.setExperimenter(Uint32.valueOf(23));
-        Experimenter experimenter = exp.build();
-
-        MeterBandHeaderBuilder meterBandHeaderBuilder2 = new MeterBandHeaderBuilder();
-        meterBandHeaderBuilder2.setBandType(experimenter);
-
-        MeterBandTypesBuilder meterBandTypesB2 = new MeterBandTypesBuilder();
-        meterBandHeaderBuilder2.setMeterBandTypes(meterBandTypesB2.build());
-        meterBandHeaderBuilder2.withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)));
-        MeterBandHeader meterBH2 = meterBandHeaderBuilder2.build();
-
-        List<MeterBandHeader> meterBandList = new ArrayList<>();
-        meterBandList.add(0, meterBH);
-        meterBandList.add(1, meterBH1);
-        meterBandList.add(2, meterBH2);
+        MeterBandHeader meterBH2 = new MeterBandHeaderBuilder()
+            .setBandType(new ExperimenterBuilder()
+                .setExperimenterBurstSize(Uint32.valueOf(12))
+                .setExperimenterRate(Uint32.valueOf(22))
+                .setExperimenter(Uint32.valueOf(23))
+                .build())
+            .setMeterBandTypes(new MeterBandTypesBuilder().build())
+            .withKey(new MeterBandHeaderKey(new BandId(Uint32.TWO)))
+            .build();
 
         // Constructing List of Bands
-        MeterBandHeadersBuilder meterBandHeadersBuilder = new MeterBandHeadersBuilder();
-        meterBandHeadersBuilder.setMeterBandHeader(meterBandList);
-
-        MeterBandHeaders meterBandHeaders = meterBandHeadersBuilder.build();
+        MeterBandHeaders meterBandHeaders = new MeterBandHeadersBuilder()
+            .setMeterBandHeader(BindingMap.ordered(meterBH, meterBH1, meterBH2))
+            .build();
 
         AddMeterInputBuilder addMeterFromSAL = new AddMeterInputBuilder();
 
