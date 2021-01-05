@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.eric;
 
 import java.util.List;
@@ -25,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  * Implementation of EricExtensionCodecRegistrator.
  */
 public class EricExtensionCodecRegistratorImpl implements EricExtensionCodecRegistrator {
-
     private final List<SwitchConnectionProvider> providers;
 
     public EricExtensionCodecRegistratorImpl(List<SwitchConnectionProvider> providers) {
@@ -72,7 +70,6 @@ public class EricExtensionCodecRegistratorImpl implements EricExtensionCodecRegi
 
     @Override
     public void close() {
-        // TODO Auto-generated method stub
+        // No-op
     }
-
 }
