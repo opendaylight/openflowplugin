@@ -15,8 +15,6 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 
 /**
@@ -24,13 +22,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
  *
  * @author michal.polkorab
  */
-public class OF13OutputActionDeserializer extends AbstractActionDeserializer<OutputActionCase> {
+public class OF13OutputActionDeserializer extends AbstractActionCaseDeserializer<OutputActionCase> {
     public OF13OutputActionDeserializer() {
         super(new OutputActionCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
+    protected OutputActionCase deserializeAction(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
         final var action = new OutputActionBuilder()
             .setPort(new PortNumber(readUint32(input)))
@@ -38,8 +36,6 @@ public class OF13OutputActionDeserializer extends AbstractActionDeserializer<Out
             .build();
         input.skipBytes(ActionConstants.OUTPUT_PADDING);
 
-        return new ActionBuilder()
-            .setActionChoice(new OutputActionCaseBuilder().setOutputAction(action).build())
-            .build();
+        return new OutputActionCaseBuilder().setOutputAction(action).build();
     }
 }

@@ -14,29 +14,25 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.vlan.pcp._case.SetVlanPcpActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
  * OF10SetVlanPcpActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF10SetVlanPcpActionDeserializer extends AbstractActionDeserializer<SetVlanPcpCase> {
+public final class OF10SetVlanPcpActionDeserializer extends AbstractActionCaseDeserializer<SetVlanPcpCase> {
     public OF10SetVlanPcpActionDeserializer() {
         super(new SetVlanPcpCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
+    protected SetVlanPcpCase deserializeAction(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        SetVlanPcpCaseBuilder caseBuilder = new SetVlanPcpCaseBuilder();
-        SetVlanPcpActionBuilder actionBuilder = new SetVlanPcpActionBuilder();
-        actionBuilder.setVlanPcp(readUint8(input));
-        caseBuilder.setSetVlanPcpAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+        final var vlanPcp = readUint8(input);
         input.skipBytes(ActionConstants.PADDING_IN_SET_VLAN_PCP_ACTION);
-        return builder.build();
+
+        return new SetVlanPcpCaseBuilder()
+            .setSetVlanPcpAction(new SetVlanPcpActionBuilder().setVlanPcp(vlanPcp).build())
+            .build();
     }
 }

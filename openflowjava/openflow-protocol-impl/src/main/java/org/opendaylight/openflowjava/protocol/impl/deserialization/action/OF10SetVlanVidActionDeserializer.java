@@ -14,27 +14,25 @@ import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanVidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanVidCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.vlan.vid._case.SetVlanVidActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
 /**
  * OF10SetVlanVidActionDeserializer.
  *
  * @author michal.polkorab
  */
-public class OF10SetVlanVidActionDeserializer extends AbstractActionDeserializer<SetVlanVidCase> {
+public final class OF10SetVlanVidActionDeserializer extends AbstractActionCaseDeserializer<SetVlanVidCase> {
     public OF10SetVlanVidActionDeserializer() {
         super(new SetVlanVidCaseBuilder().build());
     }
 
     @Override
-    public Action deserialize(final ByteBuf input) {
+    protected SetVlanVidCase deserializeAction(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        final ActionBuilder builder = new ActionBuilder()
-                .setActionChoice(new SetVlanVidCaseBuilder()
-                    .setSetVlanVidAction(new SetVlanVidActionBuilder().setVlanVid(readUint16(input)).build())
-                    .build());
+        final var vlanVid = readUint16(input);
         input.skipBytes(ActionConstants.PADDING_IN_SET_VLAN_VID_ACTION);
-        return builder.build();
+
+        return new SetVlanVidCaseBuilder()
+            .setSetVlanVidAction(new SetVlanVidActionBuilder().setVlanVid(vlanVid).build())
+            .build();
     }
 }
