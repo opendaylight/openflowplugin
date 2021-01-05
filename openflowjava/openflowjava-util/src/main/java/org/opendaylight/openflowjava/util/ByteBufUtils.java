@@ -140,6 +140,14 @@ public abstract class ByteBufUtils {
         out.setShort(index + EncodeConstants.OFHEADER_LENGTH_INDEX, out.writerIndex() - index);
     }
 
+    public static int bitOf(final int offset, final Boolean set) {
+        return bitOf(offset, Boolean.TRUE.equals(set));
+    }
+
+    public static int bitOf(final int offset, final boolean set) {
+        return set ? 1 << offset : 0;
+    }
+
     /**
      * Fills the bitmask from boolean map where key is bit position.
      *
@@ -176,6 +184,16 @@ public abstract class ByteBufUtils {
         }
 
         return bitmask;
+    }
+
+    /**
+     * Fills the bitmask from a set of bit values, starting at specified offset.
+     *
+     * @param values boolean bit values to fill
+     * @return Filled-in bitmask
+     */
+    public static int fillBitMask(final boolean... values) {
+        return fillBitMask(0, values);
     }
 
     /**

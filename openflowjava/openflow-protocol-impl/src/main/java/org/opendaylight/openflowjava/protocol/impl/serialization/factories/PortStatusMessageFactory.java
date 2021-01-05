@@ -9,8 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -54,13 +52,10 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
     }
 
     private static void writePortConfig(final PortConfig config, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, config.getPortDown());
-        map.put(2, config.getNoRecv());
-        map.put(5, config.getNoFwd());
-        map.put(6, config.getNoPacketIn());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.bitOf(0, config.getPortDown())
+            | ByteBufUtils.bitOf(2, config.getNoRecv())
+            | ByteBufUtils.bitOf(5, config.getNoFwd())
+            | ByteBufUtils.bitOf(6, config.getNoPacketIn()));
     }
 
     private static void writeName(final String name, final ByteBuf outBuffer) {
@@ -82,33 +77,29 @@ public class PortStatusMessageFactory implements OFSerializer<PortStatusMessage>
     }
 
     private static void writePortState(final PortState state, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.getLinkDown());
-        map.put(1, state.getBlocked());
-        map.put(2, state.getLive());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.fillBitMask(
+            state.getLinkDown(),
+            state.getBlocked(),
+            state.getLive()));
     }
 
     private static void writePortFeatures(final PortFeatures features, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, features.get_10mbHd());
-        map.put(1, features.get_10mbFd());
-        map.put(2, features.get_100mbHd());
-        map.put(3, features.get_100mbFd());
-        map.put(4, features.get_1gbHd());
-        map.put(5, features.get_1gbFd());
-        map.put(6, features.get_10gbFd());
-        map.put(7, features.get_40gbFd());
-        map.put(8, features.get_100gbFd());
-        map.put(9, features.get_1tbFd());
-        map.put(10, features.getOther());
-        map.put(11, features.getCopper());
-        map.put(12, features.getFiber());
-        map.put(13, features.getAutoneg());
-        map.put(14, features.getPause());
-        map.put(15, features.getPauseAsym());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.fillBitMask(
+            features.get_10mbHd(),
+            features.get_10mbFd(),
+            features.get_100mbHd(),
+            features.get_100mbFd(),
+            features.get_1gbHd(),
+            features.get_1gbFd(),
+            features.get_10gbFd(),
+            features.get_40gbFd(),
+            features.get_100gbFd(),
+            features.get_1tbFd(),
+            features.getOther(),
+            features.getCopper(),
+            features.getFiber(),
+            features.getAutoneg(),
+            features.getPause(),
+            features.getPauseAsym()));
     }
 }
