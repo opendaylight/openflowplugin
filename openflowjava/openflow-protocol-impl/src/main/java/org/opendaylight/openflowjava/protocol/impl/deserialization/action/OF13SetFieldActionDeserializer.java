@@ -9,7 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
 import static java.util.Objects.requireNonNull;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -20,8 +19,6 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -30,17 +27,16 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
-public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<SetFieldCase>
+public class OF13SetFieldActionDeserializer extends AbstractActionCaseDeserializer<SetFieldCase>
         implements DeserializerRegistryInjector {
-    private DeserializerRegistry registry;
+    private DeserializerRegistry registry = null;
 
     public OF13SetFieldActionDeserializer() {
         super(new SetFieldCaseBuilder().build());
     }
 
     @Override
-    @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public Action deserialize(final ByteBuf input) {
+    public SetFieldCase deserializeAction(final ByteBuf input) {
         final int startIndex = input.readerIndex();
 
         input.skipBytes(2 * Short.BYTES);
@@ -62,15 +58,13 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<S
             input.skipBytes(EncodeConstants.PADDING - paddingRemainder);
         }
 
-        return new ActionBuilder()
-            .setActionChoice(new SetFieldCaseBuilder()
-                .setSetFieldAction(new SetFieldActionBuilder().setMatchEntry(List.of(entry)).build())
-                .build())
+        return new SetFieldCaseBuilder()
+            .setSetFieldAction(new SetFieldActionBuilder().setMatchEntry(List.of(entry)).build())
             .build();
     }
 
     @Override
     public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        this.registry = deserializerRegistry;
+        this.registry = requireNonNull(deserializerRegistry);
     }
 }
