@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import io.netty.buffer.ByteBuf;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 
 /**
@@ -19,12 +20,11 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @param <T> message type
  */
 public interface OFSerializer<T extends DataContainer> extends OFGeneralSerializer {
-
     /**
      * Transforms POJO/DTO into byte message (ByteBuf).
+     *
      * @param input object to be serialized
      * @param outBuffer output buffer
      */
-    void serialize(T input, ByteBuf outBuffer);
-
+    void serialize(@NonNull T input, @NonNull ByteBuf outBuffer);
 }
