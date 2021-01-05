@@ -218,10 +218,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     }
 
     private static void writeFlags(final MultipartRequestFlags flags, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, flags.getOFPMPFREQMORE());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeShort(bitmap);
+        outBuffer.writeShort(ByteBufUtils.bitOf(0, flags.getOFPMPFREQMORE()));
     }
 
     private static void serializeDescBody(final MultipartReplyBody body, final ByteBuf outBuffer) {

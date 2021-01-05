@@ -33,17 +33,15 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
 
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
-        final MultipartReplyGroupFeaturesBuilder builder = new MultipartReplyGroupFeaturesBuilder();
-
-        return builder
+        return new MultipartReplyGroupFeaturesBuilder()
             .setGroupTypesSupported(readGroupTypes(message))
             .setGroupCapabilitiesSupported(readGroupCapabilities(message))
             .setMaxGroups(IntStream.range(0, GROUP_TYPES)
                 .mapToObj(i -> readUint32(message))
-                .collect(Collectors.toList()))
+                .collect(Collectors.toUnmodifiableList()))
             .setActions(IntStream.range(0, GROUP_TYPES)
                 .mapToObj(i -> readUint32(message))
-                .collect(Collectors.toList()))
+                .collect(Collectors.toUnmodifiableList()))
             .build();
     }
 
