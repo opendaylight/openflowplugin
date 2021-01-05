@@ -29,14 +29,14 @@ public class OF13SetNwTtlActionDeserializer extends AbstractActionDeserializer<S
 
     @Override
     public Action deserialize(final ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * Short.BYTES);
-        SetNwTtlCaseBuilder caseBuilder = new SetNwTtlCaseBuilder();
-        SetNwTtlActionBuilder actionBuilder = new SetNwTtlActionBuilder();
-        actionBuilder.setNwTtl(readUint8(input));
-        caseBuilder.setSetNwTtlAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+        final var ttl = readUint8(input);
         input.skipBytes(ActionConstants.SET_NW_TTL_PADDING);
-        return builder.build();
+
+        return new ActionBuilder()
+            .setActionChoice(new SetNwTtlCaseBuilder()
+                .setSetNwTtlAction(new SetNwTtlActionBuilder().setNwTtl(ttl).build())
+                .build())
+            .build();
     }
 }

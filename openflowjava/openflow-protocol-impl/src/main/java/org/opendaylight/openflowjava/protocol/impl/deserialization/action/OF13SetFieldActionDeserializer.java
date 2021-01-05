@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
+import static java.util.Objects.requireNonNull;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -41,14 +41,9 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<S
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
     public Action deserialize(final ByteBuf input) {
-        Objects.requireNonNull(registry);
-
-        final  org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
-            .ActionBuilder builder = new ActionBuilder();
         final int startIndex = input.readerIndex();
+
         input.skipBytes(2 * Short.BYTES);
-        final SetFieldCaseBuilder caseBuilder = new SetFieldCaseBuilder();
-        SetFieldActionBuilder actionBuilder = new SetFieldActionBuilder();
         int oxmClass = input.getUnsignedShort(input.readerIndex());
         // get oxm_field & hasMask byte and extract the field value
         int oxmField = input.getUnsignedByte(input.readerIndex() + Short.BYTES) >>> 1;
@@ -58,17 +53,20 @@ public class OF13SetFieldActionDeserializer extends AbstractActionDeserializer<S
             long expId = input.getUnsignedInt(input.readerIndex() + Short.BYTES + 2 * Byte.BYTES);
             key.setExperimenterId(Uint32.valueOf(expId));
         }
-        OFDeserializer<MatchEntry> matchDeserializer = registry.getDeserializer(key);
-        List<MatchEntry> entry = new ArrayList<>();
-        entry.add(matchDeserializer.deserialize(input));
-        actionBuilder.setMatchEntry(entry);
-        caseBuilder.setSetFieldAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+
+        final OFDeserializer<MatchEntry> matchDeserializer = requireNonNull(registry).getDeserializer(key);
+        final var entry = matchDeserializer.deserialize(input);
+
         int paddingRemainder = (input.readerIndex() - startIndex) % EncodeConstants.PADDING;
         if (paddingRemainder != 0) {
             input.skipBytes(EncodeConstants.PADDING - paddingRemainder);
         }
-        return builder.build();
+
+        return new ActionBuilder()
+            .setActionChoice(new SetFieldCaseBuilder()
+                .setSetFieldAction(new SetFieldActionBuilder().setMatchEntry(List.of(entry)).build())
+                .build())
+            .build();
     }
 
     @Override

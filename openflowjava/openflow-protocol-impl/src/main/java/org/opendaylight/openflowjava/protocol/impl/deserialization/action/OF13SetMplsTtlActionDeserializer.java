@@ -29,14 +29,14 @@ public class OF13SetMplsTtlActionDeserializer extends AbstractActionDeserializer
 
     @Override
     public Action deserialize(final ByteBuf input) {
-        final ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * Short.BYTES);
-        SetMplsTtlCaseBuilder caseBuilder = new SetMplsTtlCaseBuilder();
-        SetMplsTtlActionBuilder actionBuilder = new SetMplsTtlActionBuilder();
-        actionBuilder.setMplsTtl(readUint8(input));
-        caseBuilder.setSetMplsTtlAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+        final var ttl = readUint8(input);
         input.skipBytes(ActionConstants.SET_MPLS_TTL_PADDING);
-        return builder.build();
+
+        return new ActionBuilder()
+            .setActionChoice(new SetMplsTtlCaseBuilder()
+                .setSetMplsTtlAction(new SetMplsTtlActionBuilder().setMplsTtl(ttl).build())
+                .build())
+            .build();
     }
 }

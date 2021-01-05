@@ -31,16 +31,15 @@ public class OF13OutputActionDeserializer extends AbstractActionDeserializer<Out
 
     @Override
     public Action deserialize(final ByteBuf input) {
-        final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
-            .ActionBuilder builder = new ActionBuilder();
         input.skipBytes(2 * Short.BYTES);
-        OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
-        OutputActionBuilder actionBuilder = new OutputActionBuilder();
-        actionBuilder.setPort(new PortNumber(readUint32(input)));
-        actionBuilder.setMaxLength(readUint16(input));
-        caseBuilder.setOutputAction(actionBuilder.build());
-        builder.setActionChoice(caseBuilder.build());
+        final var action = new OutputActionBuilder()
+            .setPort(new PortNumber(readUint32(input)))
+            .setMaxLength(readUint16(input))
+            .build();
         input.skipBytes(ActionConstants.OUTPUT_PADDING);
-        return builder.build();
+
+        return new ActionBuilder()
+            .setActionChoice(new OutputActionCaseBuilder().setOutputAction(action).build())
+            .build();
     }
 }
