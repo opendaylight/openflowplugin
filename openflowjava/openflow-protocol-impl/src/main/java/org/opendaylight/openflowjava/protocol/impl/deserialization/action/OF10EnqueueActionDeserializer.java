@@ -35,12 +35,14 @@ public class OF10EnqueueActionDeserializer extends AbstractActionDeserializer<Ou
     @Override
     public Action deserialize(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        EnqueueActionBuilder actionBuilder = new EnqueueActionBuilder();
-        actionBuilder.setPort(new PortNumber(readUint16(input).toUint32()));
+        final var port = new PortNumber(readUint16(input).toUint32());
         input.skipBytes(ActionConstants.PADDING_IN_ENQUEUE_ACTION);
-        actionBuilder.setQueueId(new QueueId(readUint32(input)));
+        final var queueId = new QueueId(readUint32(input));
+
         return new ActionBuilder()
-                .setActionChoice(new EnqueueCaseBuilder().setEnqueueAction(actionBuilder.build()).build())
+                .setActionChoice(new EnqueueCaseBuilder()
+                    .setEnqueueAction(new EnqueueActionBuilder().setPort(port).setQueueId(queueId).build())
+                    .build())
                 .build();
     }
 }
