@@ -30,6 +30,7 @@ public class Icmpv6NDOptionsTypeCodec extends AbstractMatchCodec {
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF13_VERSION_ID, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
             EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE);
+    public static final Icmpv6NDOptionsTypeCodec INSTANCE = new Icmpv6NDOptionsTypeCodec();
 
     @Override
     public void serialize(MatchEntry input, ByteBuf outBuffer) {
