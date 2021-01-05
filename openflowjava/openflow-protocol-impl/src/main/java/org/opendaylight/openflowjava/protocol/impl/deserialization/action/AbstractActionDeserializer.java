@@ -35,4 +35,11 @@ public abstract class AbstractActionDeserializer<T extends ActionChoice> impleme
         input.skipBytes(2 * Short.BYTES);
         return header;
     }
+
+    @Override
+    public final Action deserialize(final ByteBuf input) {
+        return new ActionBuilder().setActionChoice(deserializeAction(input)).build();
+    }
+
+    protected abstract T deserializeAction(ByteBuf input);
 }
