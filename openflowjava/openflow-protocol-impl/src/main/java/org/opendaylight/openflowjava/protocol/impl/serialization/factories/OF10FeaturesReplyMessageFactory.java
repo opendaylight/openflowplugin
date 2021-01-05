@@ -9,8 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -57,70 +55,71 @@ public class OF10FeaturesReplyMessageFactory implements OFSerializer<GetFeatures
     }
 
     private static void writePortFeature(final PortFeaturesV10 feature, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, feature.get_10mbHd());
-        map.put(1, feature.get_10mbFd());
-        map.put(2, feature.get_100mbHd());
-        map.put(3, feature.get_100mbFd());
-        map.put(4, feature.get_1gbHd());
-        map.put(5, feature.get_1gbFd());
-        map.put(6, feature.get_10gbFd());
-        map.put(7, feature.getCopper());
-        map.put(8, feature.getFiber());
-        map.put(9, feature.getAutoneg());
-        map.put(10, feature.getPause());
-        map.put(11, feature.getPauseAsym());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.fillBitMask(
+            feature.get_10mbHd(),
+            feature.get_10mbFd(),
+            feature.get_100mbHd(),
+            feature.get_100mbFd(),
+            feature.get_1gbHd(),
+            feature.get_1gbFd(),
+            feature.get_10gbFd(),
+            feature.getCopper(),
+            feature.getFiber(),
+            feature.getAutoneg(),
+            feature.getPause(),
+            feature.getPauseAsym()));
     }
 
     private static void writePortState(final PortStateV10 state, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, state.getLinkDown());
-        map.put(1, state.getBlocked());
-        map.put(2, state.getLive());
-        map.put(3, state.getStpListen());
-        map.put(4, state.getStpLearn());
-        map.put(5, state.getStpForward());
-        map.put(6, state.getStpBlock());
-        map.put(7, state.getStpMask());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.fillBitMask(
+            state.getLinkDown(),
+            state.getBlocked(),
+            state.getLive(),
+            state.getStpListen(),
+            state.getStpLearn(),
+            state.getStpForward(),
+            state.getStpBlock(),
+            state.getStpMask()));
     }
 
     private static void writePortConfig(final PortConfigV10 config, final ByteBuf outBuffer) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, config.getPortDown());
-        map.put(1, config.getNoStp());
-        map.put(2, config.getNoRecv());
-        map.put(3, config.getNoRecvStp());
-        map.put(4, config.getNoFlood());
-        map.put(5, config.getNoFwd());
-        map.put(6, config.getNoPacketIn());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        outBuffer.writeInt(bitmap);
+        outBuffer.writeInt(ByteBufUtils.fillBitMask(
+            config.getPortDown(),
+            config.getNoStp(),
+            config.getNoRecv(),
+            config.getNoRecvStp(),
+            config.getNoFlood(),
+            config.getNoFwd(),
+            config.getNoPacketIn()));
     }
 
     private static int createCapabilities(final CapabilitiesV10 capabilities) {
-        Map<Integer, Boolean> map = new HashMap<>();
-        map.put(0, capabilities.getOFPCFLOWSTATS());
-        map.put(1, capabilities.getOFPCTABLESTATS());
-        map.put(2, capabilities.getOFPCPORTSTATS());
-        map.put(3, capabilities.getOFPCSTP());
-        map.put(4, capabilities.getOFPCRESERVED());
-        map.put(5, capabilities.getOFPCIPREASM());
-        map.put(6, capabilities.getOFPCQUEUESTATS());
-        map.put(7, capabilities.getOFPCARPMATCHIP());
-        int bitmap = ByteBufUtils.fillBitMaskFromMap(map);
-        return bitmap;
+        return ByteBufUtils.fillBitMask(
+            capabilities.getOFPCFLOWSTATS(),
+            capabilities.getOFPCTABLESTATS(),
+            capabilities.getOFPCPORTSTATS(),
+            capabilities.getOFPCSTP(),
+            capabilities.getOFPCRESERVED(),
+            capabilities.getOFPCIPREASM(),
+            capabilities.getOFPCQUEUESTATS(),
+            capabilities.getOFPCARPMATCHIP());
     }
 
     private static int createActionsV10(final ActionTypeV10 action) {
-        return ByteBufUtils.fillBitMask(0, action.getOFPATOUTPUT(), action.getOFPATSETVLANVID(),
-                action.getOFPATSETVLANPCP(), action.getOFPATSTRIPVLAN(), action.getOFPATSETDLSRC(),
-                action.getOFPATSETDLDST(), action.getOFPATSETNWSRC(), action.getOFPATSETNWDST(),
-                action.getOFPATSETNWTOS(), action.getOFPATSETTPSRC(), action.getOFPATSETTPDST(),
-                action.getOFPATENQUEUE(), action.getOFPATVENDOR());
+        return ByteBufUtils.fillBitMask(
+            action.getOFPATOUTPUT(),
+            action.getOFPATSETVLANVID(),
+            action.getOFPATSETVLANPCP(),
+            action.getOFPATSTRIPVLAN(),
+            action.getOFPATSETDLSRC(),
+            action.getOFPATSETDLDST(),
+            action.getOFPATSETNWSRC(),
+            action.getOFPATSETNWDST(),
+            action.getOFPATSETNWTOS(),
+            action.getOFPATSETTPSRC(),
+            action.getOFPATSETTPDST(),
+            action.getOFPATENQUEUE(),
+            action.getOFPATVENDOR());
     }
 
     private static void writeName(final String name, final ByteBuf outBuffer) {
