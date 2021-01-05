@@ -23,12 +23,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 public class EchoRequestMessageFactory extends VersionAssignableFactory<EchoRequestMessage> {
     @Override
     public EchoRequestMessage deserialize(final ByteBuf rawMessage) {
-        EchoRequestMessageBuilder builder = new EchoRequestMessageBuilder();
-        builder.setVersion(getVersion());
-        builder.setXid(readUint32(rawMessage));
+        EchoRequestMessageBuilder builder = new EchoRequestMessageBuilder()
+            .setVersion(getVersion())
+            .setXid(readUint32(rawMessage));
         byte[] data = new byte[rawMessage.readableBytes()];
         rawMessage.readBytes(data);
-        builder.setData(data);
-        return builder.build();
+        return builder.setData(data).build();
     }
 }

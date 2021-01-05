@@ -22,20 +22,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  */
 public class ClearActionsInstructionDeserializer implements OFDeserializer<Instruction>,
         HeaderDeserializer<Instruction> {
+    private static final Instruction CLEAR_INSTRUCTION = new InstructionBuilder()
+        .setInstructionChoice(new ClearActionsCaseBuilder().build())
+        .build();
+
     @Override
-    public Instruction deserialize(ByteBuf input) {
-        InstructionBuilder builder =  new InstructionBuilder();
+    public Instruction deserialize(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
         input.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);
-        builder.setInstructionChoice(new ClearActionsCaseBuilder().build());
-        return builder.build();
+        return CLEAR_INSTRUCTION;
     }
 
     @Override
-    public Instruction deserializeHeader(ByteBuf input) {
-        InstructionBuilder builder = new InstructionBuilder();
+    public Instruction deserializeHeader(final ByteBuf input) {
         input.skipBytes(2 * Short.BYTES);
-        builder.setInstructionChoice(new ClearActionsCaseBuilder().build());
-        return builder.build();
+        return CLEAR_INSTRUCTION;
     }
 }

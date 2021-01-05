@@ -37,27 +37,28 @@ public class OF10MatchDeserializer implements OFDeserializer<MatchV10> {
 
     @Override
     public MatchV10 deserialize(final ByteBuf input) {
-        MatchV10Builder builder = new MatchV10Builder();
-        long wildcards = input.readUnsignedInt();
-        builder.setWildcards(createWildcards(wildcards));
-        builder.setNwSrcMask(decodeNwSrcMask(wildcards));
-        builder.setNwDstMask(decodeNwDstMask(wildcards));
-        builder.setInPort(readUint16(input));
-        builder.setDlSrc(ByteBufUtils.readIetfMacAddress(input));
-        builder.setDlDst(ByteBufUtils.readIetfMacAddress(input));
-
-        builder.setDlVlan(readUint16(input));
-        builder.setDlVlanPcp(readUint8(input));
+        final long wildcards = input.readUnsignedInt();
+        MatchV10Builder builder = new MatchV10Builder()
+            .setWildcards(createWildcards(wildcards))
+            .setNwSrcMask(decodeNwSrcMask(wildcards))
+            .setNwDstMask(decodeNwDstMask(wildcards))
+            .setInPort(readUint16(input))
+            .setDlSrc(ByteBufUtils.readIetfMacAddress(input))
+            .setDlDst(ByteBufUtils.readIetfMacAddress(input))
+            .setDlVlan(readUint16(input))
+            .setDlVlanPcp(readUint8(input));
         input.skipBytes(PADDING_IN_MATCH);
-        builder.setDlType(readUint16(input));
-        builder.setNwTos(readUint8(input));
-        builder.setNwProto(readUint8(input));
+        builder
+            .setDlType(readUint16(input))
+            .setNwTos(readUint8(input))
+            .setNwProto(readUint8(input));
         input.skipBytes(PADDING_IN_MATCH_2);
-        builder.setNwSrc(ByteBufUtils.readIetfIpv4Address(input));
-        builder.setNwDst(ByteBufUtils.readIetfIpv4Address(input));
-        builder.setTpSrc(readUint16(input));
-        builder.setTpDst(readUint16(input));
-        return builder.build();
+        return builder
+            .setNwSrc(ByteBufUtils.readIetfIpv4Address(input))
+            .setNwDst(ByteBufUtils.readIetfIpv4Address(input))
+            .setTpSrc(readUint16(input))
+            .setTpDst(readUint16(input))
+            .build();
     }
 
     /**

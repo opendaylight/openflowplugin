@@ -51,7 +51,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public ErrorMessage deserialize(ByteBuf rawMessage) {
+    public ErrorMessage deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         int startIndex = rawMessage.readerIndex();
@@ -79,7 +79,7 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         return builder.build();
     }
 
-    private static void decodeType(ErrorMessageBuilder builder, ErrorType type, int readValue) {
+    private static void decodeType(final ErrorMessageBuilder builder, final ErrorType type, final int readValue) {
         if (type != null) {
             builder.setType(Uint16.valueOf(type.getIntValue()));
             builder.setTypeString(type.name());
@@ -89,8 +89,8 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         }
     }
 
-    private static void decodeCode(ByteBuf rawMessage, ErrorMessageBuilder builder,
-            ErrorType type) {
+    private static void decodeCode(final ByteBuf rawMessage, final ErrorMessageBuilder builder,
+            final ErrorType type) {
         int code = rawMessage.readUnsignedShort();
         if (type != null) {
             switch (type) {
@@ -229,18 +229,16 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         }
     }
 
-    private static void setUnknownCode(ErrorMessageBuilder builder, int readValue) {
-        builder.setCode(Uint16.valueOf(readValue));
-        builder.setCodeString(UNKNOWN_CODE);
+    private static void setUnknownCode(final ErrorMessageBuilder builder, final int readValue) {
+        builder.setCode(Uint16.valueOf(readValue)).setCodeString(UNKNOWN_CODE);
     }
 
-    private static void setCode(ErrorMessageBuilder builder, int code, String codeString) {
-        builder.setCode(Uint16.valueOf(code));
-        builder.setCodeString(codeString);
+    private static void setCode(final ErrorMessageBuilder builder, final int code, final String codeString) {
+        builder.setCode(Uint16.valueOf(code)).setCodeString(codeString);
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         this.registry = deserializerRegistry;
     }
 

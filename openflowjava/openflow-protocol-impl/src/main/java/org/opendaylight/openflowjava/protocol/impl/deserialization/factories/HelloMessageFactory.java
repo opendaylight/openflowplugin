@@ -32,9 +32,9 @@ public class HelloMessageFactory extends VersionAssignableFactory<HelloMessage> 
 
     @Override
     public HelloMessage deserialize(final ByteBuf rawMessage) {
-        HelloMessageBuilder builder = new HelloMessageBuilder();
-        builder.setVersion(getVersion());
-        builder.setXid(readUint32(rawMessage));
+        HelloMessageBuilder builder = new HelloMessageBuilder()
+            .setVersion(getVersion())
+            .setXid(readUint32(rawMessage));
         if (rawMessage.readableBytes() > 0) {
             builder.setElements(readElement(rawMessage));
         }
