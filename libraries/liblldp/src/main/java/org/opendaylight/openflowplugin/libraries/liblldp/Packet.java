@@ -11,6 +11,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Supplier;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,7 @@ public abstract class Packet {
     protected Map<String, byte[]> hdrFieldsMap;
 
     // The class of the encapsulated packet object
-    protected Class<? extends Packet> payloadClass;
+    protected Supplier<Packet> payloadFactory;
 
     public Packet() {
         writeAccess = false;
@@ -125,12 +126,8 @@ public abstract class Packet {
         int payloadStart = startOffset + numBits;
         int payloadSize = data.length * NetUtils.NUM_BITS_IN_A_BYTE - payloadStart;
 
-        if (payloadClass != null) {
-            try {
-                payload = payloadClass.newInstance();
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new PacketException("Error parsing payload for Ethernet packet", e);
-            }
+        if (payloadFactory != null) {
+            payload = payloadFactory.get();
             payload.deserialize(data, payloadStart, payloadSize);
             payload.setParent(this);
         } else {
@@ -142,7 +139,6 @@ public abstract class Packet {
             int stop = start + payloadSize / NetUtils.NUM_BITS_IN_A_BYTE;
             rawPayload = Arrays.copyOfRange(data, start, stop);
         }
-
 
         // Take care of computation that can be done only after deserialization
         postDeserializeCustomOperation(data, payloadStart - getHeaderSize());
@@ -212,7 +208,7 @@ public abstract class Packet {
      * @param myBytes serialized bytes
      * @throws PacketException on failure
      */
-    protected void postSerializeCustomOperation(byte[] myBytes) throws PacketException {
+    protected void postSerializeCustomOperation(final byte[] myBytes) throws PacketException {
         // no op
     }
 
@@ -227,7 +223,7 @@ public abstract class Packet {
      * @param startBitOffset The bit offset from where the byte array corresponding to this Packet starts in the frame
      * @throws PacketException on failure
      */
-    protected void postDeserializeCustomOperation(byte[] data, int startBitOffset) throws PacketException {
+    protected void postDeserializeCustomOperation(final byte[] data, final int startBitOffset) throws PacketException {
         // no op
     }
 

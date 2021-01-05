@@ -5,27 +5,24 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
+import com.google.common.collect.ImmutableMap;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Class that represents the LLDPTLV objects.
  */
 @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
 public class LLDPTLV extends Packet {
-    private static final Logger LOG = LoggerFactory.getLogger(LLDPTLV.class);
     private static final String TYPE = "Type";
     private static final String LENGTH = "Length";
     private static final String VALUE = "Value";
@@ -63,13 +60,10 @@ public class LLDPTLV extends Packet {
         }
     }
 
-    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = new LinkedHashMap<>();
-
-    static {
-        FIELD_COORDINATES.put(TYPE, new MutablePair<>(0, 7));
-        FIELD_COORDINATES.put(LENGTH, new MutablePair<>(7, 9));
-        FIELD_COORDINATES.put(VALUE, new MutablePair<>(16, 0));
-    }
+    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = ImmutableMap.of(
+        TYPE, new MutablePair<>(0, 7),
+        LENGTH, new MutablePair<>(7, 9),
+        VALUE, new MutablePair<>(16, 0));
 
     protected Map<String, byte[]> fieldValues;
 
@@ -174,11 +168,7 @@ public class LLDPTLV extends Packet {
             return false;
         }
         LLDPTLV other = (LLDPTLV) obj;
-        if (fieldValues == null) {
-            if (other.fieldValues != null) {
-                return false;
-            }
-        } else if (!fieldValues.equals(other.fieldValues)) {
+        if (!Objects.equals(fieldValues, other.fieldValues)) {
             return false;
         }
         return true;

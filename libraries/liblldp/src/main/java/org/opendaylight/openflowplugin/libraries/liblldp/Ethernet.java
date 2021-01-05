@@ -5,12 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
+import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -24,27 +24,20 @@ public class Ethernet extends Packet {
 
     // TODO: This has to be outside and it should be possible for osgi
     // to add new coming packet classes
-    private static final Map<Short, Class<? extends Packet>> ETHER_TYPE_CLASS_MAP = new HashMap<>();
+    private static final Map<Short, Supplier<Packet>> ETHER_TYPE_CLASS_MAP = ImmutableMap.of(
+        EtherTypes.LLDP.shortValue(), LLDP::new);
 
-    static {
-        ETHER_TYPE_CLASS_MAP.put(EtherTypes.LLDP.shortValue(), LLDP.class);
-    }
+    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = ImmutableMap.of(
+        DMAC, new ImmutablePair<>(0, 48),
+        SMAC, new ImmutablePair<>(48, 48),
+        ETHT, new ImmutablePair<>(96, 16));
 
-    private static final Map<String, Pair<Integer, Integer>> FIELD_COORDINATES = new LinkedHashMap<>();
-
-    static {
-        FIELD_COORDINATES.put(DMAC, new ImmutablePair<>(0, 48));
-        FIELD_COORDINATES.put(SMAC, new ImmutablePair<>(48, 48));
-        FIELD_COORDINATES.put(ETHT, new ImmutablePair<>(96, 16));
-    }
-
-    private final Map<String, byte[]> fieldValues;
+    private final Map<String, byte[]> fieldValues = new HashMap<>(4);
 
     /**
      * Default constructor that creates and sets the HashMap.
      */
     public Ethernet() {
-        fieldValues = new HashMap<>();
         hdrFieldCoordMap = FIELD_COORDINATES;
         hdrFieldsMap = fieldValues;
     }
@@ -54,7 +47,6 @@ public class Ethernet extends Packet {
      */
     public Ethernet(final boolean writeAccess) {
         super(writeAccess);
-        fieldValues = new HashMap<>();
         hdrFieldCoordMap = FIELD_COORDINATES;
         hdrFieldsMap = fieldValues;
     }
@@ -62,8 +54,7 @@ public class Ethernet extends Packet {
     @Override
     public void setHeaderField(final String headerField, final byte[] readValue) {
         if (headerField.equals(ETHT)) {
-            payloadClass = ETHER_TYPE_CLASS_MAP.get(BitBufferHelper
-                    .getShort(readValue));
+            payloadFactory = ETHER_TYPE_CLASS_MAP.get(BitBufferHelper.getShort(readValue));
         }
         hdrFieldsMap.put(headerField, readValue);
     }

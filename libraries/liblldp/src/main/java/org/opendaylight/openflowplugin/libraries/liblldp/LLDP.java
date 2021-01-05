@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import com.google.common.collect.Iterables;
@@ -34,15 +33,15 @@ public class LLDP extends Packet {
     @SuppressFBWarnings("MS_PKGPROTECT")
     public static final byte[] LLDP_MULTICAST_MAC = { 1, (byte) 0x80, (byte) 0xc2, 0, 0, (byte) 0xe };
 
-    private Map<Byte, LLDPTLV> mandatoryTLVs;
-    private Map<Byte, LLDPTLV> optionalTLVs;
-    private Map<CustomTLVKey, LLDPTLV> customTLVs;
+    private final Map<Byte, LLDPTLV> mandatoryTLVs = new LinkedHashMap<>(LLDP_DEFAULT_TLVS);
+    private final Map<Byte, LLDPTLV> optionalTLVs = new LinkedHashMap<>();
+    private final Map<CustomTLVKey, LLDPTLV> customTLVs = new LinkedHashMap<>();
 
     /**
      * Default constructor that creates the tlvList LinkedHashMap.
      */
     public LLDP() {
-        init();
+
     }
 
     /**
@@ -50,13 +49,6 @@ public class LLDP extends Packet {
      */
     public LLDP(final boolean writeAccess) {
         super(writeAccess);
-        init();
-    }
-
-    private void init() {
-        mandatoryTLVs = new LinkedHashMap<>(LLDP_DEFAULT_TLVS);
-        optionalTLVs = new LinkedHashMap<>();
-        customTLVs = new LinkedHashMap<>();
     }
 
     /**
@@ -65,7 +57,7 @@ public class LLDP extends Packet {
      * @param typeDesc description of the type of TLV
      * @return byte type of TLV
      */
-    private byte getType(final String typeDesc) {
+    private static byte getType(final String typeDesc) {
         switch (typeDesc) {
             case CHASSISID:
                 return LLDPTLV.TLVType.ChassisID.getValue();

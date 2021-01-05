@@ -163,8 +163,8 @@ public abstract class BitBufferHelper {
      *             when the startOffset and numBits parameters are not congruent
      *             with the data buffer size
      */
-    @NonNull
-    public static byte[] getBits(final byte[] data, final int startOffset, final int numBits) throws BufferException {
+    public static byte @NonNull [] getBits(final byte[] data, final int startOffset, final int numBits)
+            throws BufferException {
         int startByteOffset;
         int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         final int extraOffsetBits = startOffset % NetUtils.NUM_BITS_IN_A_BYTE;
@@ -297,7 +297,8 @@ public abstract class BitBufferHelper {
         copyBits(src, dest, count, 0, startOffset);
     }
 
-    private static void copyBits(byte[] src, byte[] dest, int count, int srcBitIndex, int destBitIndex) {
+    private static void copyBits(final byte[] src, final byte[] dest, final int count,
+            int srcBitIndex, int destBitIndex) {
         int bitsRemaining = count;
         while (bitsRemaining > 0) {
             // How many bits can we, and do we need to, write, this time round?
@@ -307,13 +308,13 @@ public abstract class BitBufferHelper {
             }
             int targetByteIndex = destBitIndex / Byte.SIZE;
             int targetBitIndexInByte = destBitIndex % Byte.SIZE;
-            if (targetBitIndexInByte > 0 && (Byte.SIZE - targetBitIndexInByte) < bitsToCopy) {
+            if (targetBitIndexInByte > 0 && Byte.SIZE - targetBitIndexInByte < bitsToCopy) {
                 // We can't write that many bits
                 bitsToCopy = Byte.SIZE - targetBitIndexInByte;
             }
             int sourceByteIndex = srcBitIndex / Byte.SIZE;
             int sourceBitIndexInByte = srcBitIndex % Byte.SIZE;
-            if (sourceBitIndexInByte > 0 && (Byte.SIZE - sourceBitIndexInByte) < bitsToCopy) {
+            if (sourceBitIndexInByte > 0 && Byte.SIZE - sourceBitIndexInByte < bitsToCopy) {
                 // We can't read that many bits
                 bitsToCopy = Byte.SIZE - sourceBitIndexInByte;
             }
