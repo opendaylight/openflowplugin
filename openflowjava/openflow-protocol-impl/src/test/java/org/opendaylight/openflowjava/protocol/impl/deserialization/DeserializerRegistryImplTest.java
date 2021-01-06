@@ -7,7 +7,10 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -50,7 +53,7 @@ public class DeserializerRegistryImplTest {
     @Test(expected = IllegalArgumentException.class)
     public void testRegisterDeserializerNoDeserializer() {
         DeserializerRegistryImpl serReg = new DeserializerRegistryImpl();
-        serReg.registerDeserializer(new MessageCodeKey(OF13, EMPTY_VALUE, Match.class), null);
+        serReg.registerDeserializer(new MessageCodeKey<>(OF13, EMPTY_VALUE, Match.class), null);
     }
 
     /**
@@ -70,10 +73,10 @@ public class DeserializerRegistryImplTest {
     public void testUnRegisterDeserializer() {
         DeserializerRegistryImpl derserReg = new DeserializerRegistryImpl();
         derserReg.init();
-        Assert.assertTrue("Wrong - unregister serializer",derserReg.unregisterDeserializer(
-                new MessageCodeKey(OF13,EMPTY_VALUE, Match.class)));
-        Assert.assertFalse("Wrong - unregister serializer",derserReg.unregisterDeserializer(
-                new MessageCodeKey(OF10,EMPTY_VALUE, Match.class)));
+        assertTrue("Wrong - unregister serializer",derserReg.unregisterDeserializer(
+                new MessageCodeKey<>(OF13,EMPTY_VALUE, Match.class)));
+        assertFalse("Wrong - unregister serializer",derserReg.unregisterDeserializer(
+                new MessageCodeKey<>(OF10,EMPTY_VALUE, Match.class)));
     }
 
     /**
@@ -83,7 +86,7 @@ public class DeserializerRegistryImplTest {
     public void testGetDeserializer() {
         DeserializerRegistryImpl registry = new DeserializerRegistryImpl();
         registry.init();
-        registry.getDeserializer(new MessageCodeKey((short) 5000, EncodeConstants.EMPTY_VALUE, MatchV10.class));
-        Assert.fail();
+        registry.getDeserializer(new MessageCodeKey<>((short) 5000, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+        fail();
     }
 }

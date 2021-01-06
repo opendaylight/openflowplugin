@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -15,7 +16,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
-public final class MatchEntryDeserializerKey extends MessageCodeKey
+public final class MatchEntryDeserializerKey extends MessageCodeKey<MatchEntry>
         implements ExperimenterDeserializerKey {
 
     private final int oxmField;
@@ -46,7 +47,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
+        result = prime * result + Objects.hashCode(experimenterId);
         result = prime * result + oxmField;
         return result;
     }
@@ -56,24 +57,11 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
+        if (!super.equals(obj) || getClass() != obj.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        MatchEntryDeserializerKey other = (MatchEntryDeserializerKey) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
-            return false;
-        }
-        if (oxmField != other.oxmField) {
-            return false;
-        }
-        return true;
+        final MatchEntryDeserializerKey other = (MatchEntryDeserializerKey) obj;
+        return Objects.equals(experimenterId, other.experimenterId) && oxmField == other.oxmField;
     }
 
     @Override
