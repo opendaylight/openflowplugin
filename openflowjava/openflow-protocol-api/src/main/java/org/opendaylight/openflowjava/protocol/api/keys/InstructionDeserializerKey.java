@@ -5,9 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 
 /**
@@ -15,8 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  *
  * @author michal.polkorab
  */
-public class InstructionDeserializerKey extends MessageCodeKey {
-
+public class InstructionDeserializerKey extends MessageCodeKey<Instruction> {
     private final Long experimenterId;
 
     /**
@@ -26,39 +25,24 @@ public class InstructionDeserializerKey extends MessageCodeKey {
      * @param type instruction type
      * @param experimenterId experimenter (vendor) identifier
      */
-    public InstructionDeserializerKey(short version, int type, Long experimenterId) {
+    public InstructionDeserializerKey(final short version, final int type, final Long experimenterId) {
         super(version, type, Instruction.class);
         this.experimenterId = experimenterId;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
-        return result;
+        return 31 * super.hashCode() + Objects.hashCode(experimenterId);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof InstructionDeserializerKey)) {
-            return false;
-        }
-        InstructionDeserializerKey other = (InstructionDeserializerKey) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
-            return false;
-        }
-        return true;
+
+        return super.equals(obj) && obj instanceof InstructionDeserializerKey
+            && Objects.equals(experimenterId, ((InstructionDeserializerKey) obj).experimenterId);
     }
 
     @Override

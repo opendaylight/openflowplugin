@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
@@ -48,7 +47,7 @@ public interface DeserializerExtensionProvider {
      * @param key          used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerDeserializer(MessageCodeKey key,
+    void registerDeserializer(MessageCodeKey<?> key,
                               OFGeneralDeserializer deserializer);
 
     /**
@@ -93,7 +92,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerErrorDeserializer(ExperimenterIdDeserializerKey key,
+    void registerErrorDeserializer(ExperimenterIdDeserializerKey<ErrorMessage> key,
             OFDeserializer<ErrorMessage> deserializer);
 
     /**
@@ -102,8 +101,8 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerExperimenterMessageDeserializer(ExperimenterIdDeserializerKey key,
-                                                 OFDeserializer<? extends ExperimenterDataOfChoice> deserializer);
+    <T extends ExperimenterDataOfChoice> void registerExperimenterMessageDeserializer(
+        ExperimenterIdDeserializerKey<T> key, OFDeserializer<T> deserializer);
 
     /**
      * Registers multipart-reply (stats) message deserializer.
@@ -111,8 +110,8 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMultipartReplyMessageDeserializer(ExperimenterIdDeserializerKey key,
-                                                   OFDeserializer<? extends ExperimenterDataOfChoice> deserializer);
+    <T extends ExperimenterDataOfChoice> void registerMultipartReplyMessageDeserializer(
+        ExperimenterIdDeserializerKey<T> key, OFDeserializer<T> deserializer);
 
     /**
      * Registers multipart-reply table-features message deserializer.
@@ -120,7 +119,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey key,
+    void registerMultipartReplyTFDeserializer(ExperimenterIdDeserializerKey<?> key,
             OFGeneralDeserializer deserializer);
 
     /**
@@ -129,7 +128,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerMeterBandDeserializer(ExperimenterIdDeserializerKey key,
+    void registerMeterBandDeserializer(ExperimenterIdDeserializerKey<MeterBandExperimenterCase> key,
             OFDeserializer<MeterBandExperimenterCase> deserializer);
 
     /**
@@ -138,7 +137,7 @@ public interface DeserializerExtensionProvider {
      * @param key used for deserializer lookup
      * @param deserializer deserializer instance
      */
-    void registerQueuePropertyDeserializer(ExperimenterIdDeserializerKey key,
+    void registerQueuePropertyDeserializer(ExperimenterIdDeserializerKey<QueueProperty> key,
             OFDeserializer<QueueProperty> deserializer);
 
     /**

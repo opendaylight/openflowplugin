@@ -5,8 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -82,10 +80,10 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final String diagStatusIdentifier;
     private final String threadName;
     private TcpConnectionInitializer connectionInitializer;
-    private OpenflowDiagStatusProvider openflowDiagStatusProvider;
+    private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
 
     public SwitchConnectionProviderImpl(
-            @Nullable ConnectionConfiguration connConfig, OpenflowDiagStatusProvider openflowDiagStatusProvider) {
+            @Nullable final ConnectionConfiguration connConfig, final OpenflowDiagStatusProvider openflowDiagStatusProvider) {
         this.connConfig = connConfig;
         String connectionSuffix = createConnectionSuffix(connConfig);
         this.diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
@@ -104,7 +102,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
-    private static String createConnectionSuffix(@Nullable ConnectionConfiguration config) {
+    private static String createConnectionSuffix(@Nullable final ConnectionConfiguration config) {
         if (config != null) {
             return "_" + config.getPort();
         } else {
@@ -139,15 +137,15 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             if (switchConnectionHandler == null) {
                 throw new IllegalStateException("SwitchConnectionHandler is not set");
             }
-            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
+            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<>() {
 
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onFailure(final Throwable throwable) {
                     openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, throwable);
                 }
 
                 @Override
-                public void onSuccess(@Nullable Object nullResult) {
+                public void onSuccess(@Nullable final Object nullResult) {
                     openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.ERROR,
                             threadName + " terminated");
                 }
@@ -252,51 +250,51 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public void registerErrorDeserializer(final ExperimenterIdDeserializerKey key,
+    public void registerErrorDeserializer(final ExperimenterIdDeserializerKey<ErrorMessage> key,
             final OFDeserializer<ErrorMessage> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
-    public void registerExperimenterMessageDeserializer(ExperimenterIdDeserializerKey key,
-            OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+    public <T extends ExperimenterDataOfChoice> void registerExperimenterMessageDeserializer(
+            final ExperimenterIdDeserializerKey<T> key, final OFDeserializer<T> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
-    public void registerMultipartReplyMessageDeserializer(ExperimenterIdDeserializerKey key,
-            OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+    public <T extends ExperimenterDataOfChoice> void registerMultipartReplyMessageDeserializer(
+            final ExperimenterIdDeserializerKey<T> key, final OFDeserializer<T> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
-    public void registerMultipartReplyTFDeserializer(final ExperimenterIdDeserializerKey key,
+    public void registerMultipartReplyTFDeserializer(final ExperimenterIdDeserializerKey<?> key,
             final OFGeneralDeserializer deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
-    public void registerQueuePropertyDeserializer(final ExperimenterIdDeserializerKey key,
+    public void registerQueuePropertyDeserializer(final ExperimenterIdDeserializerKey<QueueProperty> key,
             final OFDeserializer<QueueProperty> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
-    public void registerMeterBandDeserializer(final ExperimenterIdDeserializerKey key,
+    public void registerMeterBandDeserializer(final ExperimenterIdDeserializerKey<MeterBandExperimenterCase> key,
             final OFDeserializer<MeterBandExperimenterCase> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
     public void registerExperimenterMessageSerializer(
-            ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
-            OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+            final ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
+            final OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
     @Override
-    public void registerMultipartRequestSerializer(ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
-                                                   OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+    public void registerMultipartRequestSerializer(final ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
+                                                   final OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
@@ -337,12 +335,12 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public <K> void registerSerializer(MessageTypeKey<K> key, OFGeneralSerializer serializer) {
+    public <K> void registerSerializer(final MessageTypeKey<K> key, final OFGeneralSerializer serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
     @Override
-    public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
+    public void registerDeserializer(final MessageCodeKey key, final OFGeneralDeserializer deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -24,7 +23,7 @@ public final class ExperimenterActionDeserializerKey extends ActionDeserializerK
      * @param version protocol wire version
      * @param experimenterId experimenter / vendor ID
      */
-    public ExperimenterActionDeserializerKey(short version, Long experimenterId) {
+    public ExperimenterActionDeserializerKey(final short version, final Long experimenterId) {
         super(version, EncodeConstants.EXPERIMENTER_VALUE, experimenterId);
     }
 }

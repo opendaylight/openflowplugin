@@ -31,7 +31,7 @@ public class GetAsyncRequestMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 26, GetAsyncInput.class));
+                .getDeserializer(new MessageCodeKey<>(EncodeConstants.OF13_VERSION_ID, 26, GetAsyncInput.class));
 
     }
 

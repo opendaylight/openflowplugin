@@ -49,7 +49,7 @@ public class DeserializationFactory {
         int type = rawMessage.readUnsignedByte();
         Class<?> clazz = messageClassMap.get(new TypeToClassKey(version, type));
         rawMessage.skipBytes(Short.BYTES);
-        OFDeserializer<DataObject> deserializer = registry.getDeserializer(new MessageCodeKey(version, type, clazz));
+        OFDeserializer<DataObject> deserializer = registry.getDeserializer(new MessageCodeKey<>(version, type, clazz));
         dataObject = deserializer.deserialize(rawMessage);
         return dataObject;
     }
