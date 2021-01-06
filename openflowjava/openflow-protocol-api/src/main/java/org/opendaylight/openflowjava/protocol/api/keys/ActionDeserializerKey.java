@@ -5,9 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
@@ -15,8 +15,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  *
  * @author michal.polkorab
  */
-public class ActionDeserializerKey extends MessageCodeKey {
-
+public class ActionDeserializerKey extends MessageCodeKey<Action> {
     private final Long experimenterId;
 
     /**
@@ -26,40 +25,23 @@ public class ActionDeserializerKey extends MessageCodeKey {
      * @param type action type
      * @param experimenterId experimenter / vendor ID
      */
-    public ActionDeserializerKey(short version,
-            int type, Long experimenterId) {
+    public ActionDeserializerKey(final short version, final int type, final Long experimenterId) {
         super(version, type, Action.class);
         this.experimenterId = experimenterId;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + (experimenterId == null ? 0 : experimenterId.hashCode());
-        return result;
+        return 31 * super.hashCode() + Objects.hashCode(experimenterId);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof ActionDeserializerKey)) {
-            return false;
-        }
-        ActionDeserializerKey other = (ActionDeserializerKey) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
-            return false;
-        }
-        return true;
+        return super.equals(obj) && obj instanceof ActionDeserializerKey
+            && Objects.equals(experimenterId, ((ActionDeserializerKey) obj).experimenterId);
     }
 
     @Override

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import java.util.HashMap;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class DeserializerRegistryImpl implements DeserializerRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeserializerRegistryImpl.class);
-    private Map<MessageCodeKey, OFGeneralDeserializer> registry;
+    private Map<MessageCodeKey<?>, OFGeneralDeserializer> registry;
 
     /**
      * Decoder table provisioning.
@@ -47,10 +46,10 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
 
         // register common structure deserializers
         registerDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class),
+                new MessageCodeKey<>(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class),
                 new OF10MatchDeserializer());
         registerDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class),
+                new MessageCodeKey<>(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class),
                 new MatchDeserializer());
 
         // register match entry deserializers
@@ -63,7 +62,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+    public <T extends OFGeneralDeserializer> T getDeserializer(final MessageCodeKey<?> key) {
         OFGeneralDeserializer deserializer = registry.get(key);
         if (deserializer == null) {
             throw new IllegalStateException("Deserializer for key: " + key
@@ -73,7 +72,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
+    public void registerDeserializer(final MessageCodeKey<?> key, final OFGeneralDeserializer deserializer) {
         if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MessageCodeKey or Deserializer is null");
         }
@@ -88,7 +87,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public boolean unregisterDeserializer(MessageCodeKey key) {
+    public boolean unregisterDeserializer(final MessageCodeKey<?> key) {
         if (key == null) {
             throw new IllegalArgumentException("MessageCodeKey is null");
         }

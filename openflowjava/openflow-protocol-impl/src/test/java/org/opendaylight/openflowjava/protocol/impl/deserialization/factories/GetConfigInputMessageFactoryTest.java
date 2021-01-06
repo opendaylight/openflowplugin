@@ -28,7 +28,7 @@ public class GetConfigInputMessageFactoryTest extends DefaultDeserializerFactory
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public GetConfigInputMessageFactoryTest() {
-        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 7, GetConfigInput.class));
+        super(new MessageCodeKey<>(EncodeConstants.OF13_VERSION_ID, 7, GetConfigInput.class));
     }
 
     /**

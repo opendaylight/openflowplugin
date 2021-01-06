@@ -24,9 +24,9 @@ public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
 
     private final DeserializerRegistry registry;
     protected OFDeserializer<T> factory;
-    protected MessageCodeKey messageCodeKey;
+    protected MessageCodeKey<?> messageCodeKey;
 
-    public DefaultDeserializerFactoryTest(final MessageCodeKey key) {
+    public DefaultDeserializerFactoryTest(final MessageCodeKey<T> key) {
         this.registry = new DeserializerRegistryImpl();
         this.registry.init();
         this.messageCodeKey = key;
@@ -42,7 +42,7 @@ public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
         for (short version : versions) {
             ByteBuf bb = buffer.copy();
             OFDeserializer<T> serializer = registry.getDeserializer(
-                    new MessageCodeKey(version, messageCodeKey.getMsgType(), messageCodeKey.getClazz()));
+                    new MessageCodeKey<>(version, messageCodeKey.getMsgType(), messageCodeKey.getClazz()));
             T builtByFactory = BufferHelper.deserialize(serializer, bb);
             BufferHelper.checkHeader((OfHeader) builtByFactory, Uint8.valueOf(version));
         }

@@ -55,7 +55,7 @@ public class FlowModInputMessageFactory implements OFDeserializer<FlowModInput>,
                 .setFlags(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
         rawMessage.skipBytes(PADDING);
         OFDeserializer<Match> matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
+                new MessageCodeKey<>(EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class));
         return builder
             .setMatch(matchDeserializer.deserialize(rawMessage))
             .setInstruction(ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,

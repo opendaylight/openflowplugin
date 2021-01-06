@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yangtools.yang.binding.DataContainer;
@@ -13,48 +12,35 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 /**
  * Key for an experimenter id type deserializer.
  *
+ * @param <T> type of target experimenter object
  * @author michal.polkorab
  */
-public class ExperimenterIdTypeDeserializerKey extends ExperimenterIdDeserializerKey {
-
+public class ExperimenterIdTypeDeserializerKey<T extends DataContainer> extends ExperimenterIdDeserializerKey<T> {
     private final long type;
 
     /**
      * Constructor.
      *
-     * @param <T>            type of target experimenter object
      * @param version        protocol wire version
      * @param experimenterId experimenter / vendor ID
      * @param type           data type according to vendor implementation
      * @param objectClass    class of object to be serialized
      */
-    public <T extends DataContainer> ExperimenterIdTypeDeserializerKey(final short version, final long experimenterId,
-                                                                       final long type, Class<T> objectClass) {
+    public ExperimenterIdTypeDeserializerKey(final short version, final long experimenterId, final long type,
+            final Class<T> objectClass) {
         super(version, experimenterId, objectClass);
         this.type = type;
     }
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + hashCodeOfLong(type);
-        return result;
+        return 31 * super.hashCode() + Long.hashCode(type);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (!(obj instanceof ExperimenterIdTypeDeserializerKey)) {
-            return false;
-        }
-        ExperimenterIdTypeDeserializerKey other = (ExperimenterIdTypeDeserializerKey) obj;
-        if (type != other.type) {
-            return false;
-        }
-        return true;
+    public boolean equals(final Object obj) {
+        return super.equals(obj) && obj instanceof ExperimenterIdTypeDeserializerKey
+            && type == ((ExperimenterIdTypeDeserializerKey<?>) obj).type;
     }
 
     @Override

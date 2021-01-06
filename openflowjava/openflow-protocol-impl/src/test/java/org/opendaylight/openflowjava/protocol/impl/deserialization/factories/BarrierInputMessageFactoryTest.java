@@ -30,7 +30,7 @@ public class BarrierInputMessageFactoryTest extends DefaultDeserializerFactoryTe
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public BarrierInputMessageFactoryTest() {
-        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 20, BarrierInput.class));
+        super(new MessageCodeKey<>(EncodeConstants.OF13_VERSION_ID, 20, BarrierInput.class));
     }
 
     /**
@@ -47,7 +47,7 @@ public class BarrierInputMessageFactoryTest extends DefaultDeserializerFactoryTe
         testHeaderVersions(versions, bb);
 
         // OFP v1.0 need to be tested separately cause of different message type value
-        messageCodeKey = new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 18, BarrierInput.class);
+        messageCodeKey = new MessageCodeKey<>(EncodeConstants.OF10_VERSION_ID, 18, BarrierInput.class);
         testHeaderVersions(Collections.singletonList(EncodeConstants.OF10_VERSION_ID), bb);
     }
 }

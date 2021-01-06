@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -31,7 +30,7 @@ public class EchoReplyMessageFactoryTest extends DefaultDeserializerFactoryTest<
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public EchoReplyMessageFactoryTest() {
-        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 3, EchoOutput.class));
+        super(new MessageCodeKey<>(EncodeConstants.OF13_VERSION_ID, 3, EchoOutput.class));
     }
 
     /**
