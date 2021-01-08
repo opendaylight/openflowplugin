@@ -189,9 +189,9 @@ public class LLDPTLV extends Packet {
      * @return int - size in bits of full TLV
      */
     public int getTLVSize() {
-        return LLDPTLV.FIELD_COORDINATES.get(TYPE).getRight() + // static
-                LLDPTLV.FIELD_COORDINATES.get(LENGTH).getRight() + // static
-                getfieldnumBits(VALUE); // variable
+        return LLDPTLV.FIELD_COORDINATES.get(TYPE).getRight() // static
+                + LLDPTLV.FIELD_COORDINATES.get(LENGTH).getRight() // static
+                + getfieldnumBits(VALUE); // variable
     }
 
     /**
