@@ -33,11 +33,11 @@ public class MultipartReplyMeterFeaturesTest {
      */
     @Test
     public void testMultipartReplyMeterFeatures() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 " + //
-                                              "00 00 00 0A " + // maxMeter
-                                              "00 00 00 06 " + // bandTypes
-                                              "00 00 00 0F " + // capabilities
-                                              "07 08 00 00" // maxBands, maxColor, padding
+        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 " //
+                                              + "00 00 00 0A " // maxMeter
+                                              + "00 00 00 06 " // bandTypes
+                                              + "00 00 00 0F " // capabilities
+                                              + "07 08 00 00" // maxBands, maxColor, padding
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
@@ -59,11 +59,11 @@ public class MultipartReplyMeterFeaturesTest {
      */
     @Test
     public void testMultipartReplyMeterFeatures2() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 " + //
-                                              "00 00 00 09 " + // maxMeter
-                                              "00 00 00 00 " + // bandTypes
-                                              "00 00 00 00 " + // capabilities
-                                              "03 04 00 00" // maxBands, maxColor, padding
+        ByteBuf bb = BufferHelper.buildBuffer("00 0B 00 01 00 00 00 00 " //
+                                              + "00 00 00 09 " // maxMeter
+                                              + "00 00 00 00 " // bandTypes
+                                              + "00 00 00 00 " // capabilities
+                                              + "03 04 00 00" // maxBands, maxColor, padding
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 

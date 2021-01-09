@@ -58,26 +58,26 @@ public class QueueGetConfigReplyMessageFactoryMultiTest {
      */
     @Test
     public void test() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 01 02 03 " + // port
-                "00 00 00 00 " + // padding
-                "00 00 00 01 " + // queueId
-                "00 00 00 01 " + // port
-                "00 20 " + // length
-                "00 00 00 00 00 00 " + // pad
-                "00 02 " + // property
-                "00 10 " + // length
-                "00 00 00 00 " + // pad
-                "00 05 " + // rate
-                "00 00 00 00 00 00 " + // pad
-                "00 00 00 02 " + // queueId
-                "00 00 00 02 " + // port
-                "00 20 " + // length
-                "00 00 00 00 00 00 " + // pad
-                "00 02 " + // property
-                "00 10 " + // length
-                "00 00 00 00 " + // pad
-                "00 05 " + // rate
-                "00 00 00 00 00 00" // pad
+        ByteBuf bb = BufferHelper.buildBuffer("00 01 02 03 " // port
+                + "00 00 00 00 " // padding
+                + "00 00 00 01 " // queueId
+                + "00 00 00 01 " // port
+                + "00 20 " // length
+                + "00 00 00 00 00 00 " // pad
+                + "00 02 " // property
+                + "00 10 " // length
+                + "00 00 00 00 " // pad
+                + "00 05 " // rate
+                + "00 00 00 00 00 00 " // pad
+                + "00 00 00 02 " // queueId
+                + "00 00 00 02 " // port
+                + "00 20 " // length
+                + "00 00 00 00 00 00 " // pad
+                + "00 02 " // property
+                + "00 10 " // length
+                + "00 00 00 00 " // pad
+                + "00 05 " // rate
+                + "00 00 00 00 00 00" // pad
         );
 
         GetQueueConfigOutput builtByFactory = BufferHelper.deserialize(

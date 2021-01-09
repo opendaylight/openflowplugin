@@ -54,23 +54,23 @@ public class MultipartReplyTableFeaturesTest {
      */
     @Test
     public void testMultipartReplyTableFeatures() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 " + //
+        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 " //
                                               // first table feature
-                                              "00 40 01 00 00 00 00 00 " + // length, tableId, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 " + //
-                                              "00 00 00 00 00 00 00 00 00 00 00 00 00 " + // name
-                                              "00 00 00 00 00 00 00 01 " + // metadata match
-                                              "00 00 00 00 00 00 00 02 " + // metadata write
-                                              "00 00 00 00 " + // config
-                                              "00 00 00 2A " + // max entries
+                                              + "00 40 01 00 00 00 00 00 " // length, tableId, padding
+                                              + "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 " //
+                                              + "00 00 00 00 00 00 00 00 00 00 00 00 00 " // name
+                                              + "00 00 00 00 00 00 00 01 " // metadata match
+                                              + "00 00 00 00 00 00 00 02 " // metadata write
+                                              + "00 00 00 00 " // config
+                                              + "00 00 00 2A " // max entries
                                               // second table feature
-                                              "00 40 02 00 00 00 00 00 " + // length, tableId, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00"
-                                              + " 00 00 00 00 00 00 00 00 00 00 00 00 00 " + // name
-                                              "00 00 00 00 00 00 00 03 " + // metadata match
-                                              "00 00 00 00 00 00 00 04 " + // metadata write
-                                              "00 00 00 03 " + // config
-                                              "00 00 00 2B"  // max entries
+                                              + "00 40 02 00 00 00 00 00 " // length, tableId, padding
+                                              + "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 "
+                                              + "00 00 00 00 00 00 00 00 00 00 00 00 00 " // name
+                                              + "00 00 00 00 00 00 00 03 " // metadata match
+                                              + "00 00 00 00 00 00 00 04 " // metadata write
+                                              + "00 00 00 03 " // config
+                                              + "00 00 00 2B"  // max entries
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
@@ -106,28 +106,28 @@ public class MultipartReplyTableFeaturesTest {
      */
     @Test
     public void testMultipartReplyTableFeatures2() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 " + //
-                                              "00 B0 01 00 00 00 00 00 " + // length, tableId, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 " + //
-                                              "00 00 00 00 00 00 00 00 00 00 00 00 00 " + // name
-                                              "00 00 00 00 00 00 00 01 " + // metadata match
-                                              "00 00 00 00 00 00 00 02 " + // metadata write
-                                              "00 00 00 00 " + // config
-                                              "00 00 00 2A " + // max entries
-                                              "00 00 00 04 00 00 00 00 " + //
-                                              "00 01 00 04 00 00 00 00 " + //
-                                              "00 02 00 08 01 02 03 04 " + //
-                                              "00 03 00 07 05 06 07 00 " + //
-                                              "00 04 00 04 00 00 00 00 " + //
-                                              "00 05 00 04 00 00 00 00 " + //
-                                              "00 06 00 04 00 00 00 00 " + //
-                                              "00 07 00 04 00 00 00 00 " + //
-                                              "00 08 00 04 00 00 00 00 " + //
-                                              "00 0A 00 04 00 00 00 00 " + //
-                                              "00 0C 00 04 00 00 00 00 " + //
-                                              "00 0D 00 04 00 00 00 00 " + //
-                                              "00 0E 00 04 00 00 00 00 " + //
-                                              "00 0F 00 04 00 00 00 00"
+        ByteBuf bb = BufferHelper.buildBuffer("00 0C 00 00 00 00 00 00 " //
+                                              + "00 B0 01 00 00 00 00 00 " // length, tableId, padding
+                                              + "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 00 00 00 " //
+                                              + "00 00 00 00 00 00 00 00 00 00 00 00 00 " // name
+                                              + "00 00 00 00 00 00 00 01 " // metadata match
+                                              + "00 00 00 00 00 00 00 02 " // metadata write
+                                              + "00 00 00 00 " // config
+                                              + "00 00 00 2A " // max entries
+                                              + "00 00 00 04 00 00 00 00 "
+                                              + "00 01 00 04 00 00 00 00 "
+                                              + "00 02 00 08 01 02 03 04 "
+                                              + "00 03 00 07 05 06 07 00 "
+                                              + "00 04 00 04 00 00 00 00 "
+                                              + "00 05 00 04 00 00 00 00 "
+                                              + "00 06 00 04 00 00 00 00 "
+                                              + "00 07 00 04 00 00 00 00 "
+                                              + "00 08 00 04 00 00 00 00 "
+                                              + "00 0A 00 04 00 00 00 00 "
+                                              + "00 0C 00 04 00 00 00 00 "
+                                              + "00 0D 00 04 00 00 00 00 "
+                                              + "00 0E 00 04 00 00 00 00 "
+                                              + "00 0F 00 04 00 00 00 00"
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 

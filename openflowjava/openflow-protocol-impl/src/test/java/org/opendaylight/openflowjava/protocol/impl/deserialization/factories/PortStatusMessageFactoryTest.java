@@ -52,21 +52,21 @@ public class PortStatusMessageFactoryTest {
     @Test
     public void test() {
         ByteBuf bb = BufferHelper.buildBuffer(
-                "01 " + //reason
-                "00 00 00 00 00 00 00 " + //padding
-                "00 01 02 03 " + //port no
-                "00 00 00 00 " + //padding in ofp_port1
-                "08 00 27 00 B0 EB " + //mac address
-                "00 00 " + //padding in ofp_port2
-                "73 31 2d 65 74 68 31 00 00 00 00 00 00 00 00 00 " + // port name, String "s1-eth1"
-                "00 00 00 41 " + //port config
-                "00 00 00 05 " + //port state
-                "00 00 00 81 " + //current features
-                "00 00 00 A1 " + //advertised features
-                "00 00 00 B1 " + //supported features
-                "00 00 00 81 " + //peer features
-                "00 00 00 81 " + //curr speed
-                "00 00 00 80"); //max speed
+                "01 " //reason
+                + "00 00 00 00 00 00 00 " //padding
+                + "00 01 02 03 " //port no
+                + "00 00 00 00 " //padding in ofp_port1
+                + "08 00 27 00 B0 EB " //mac address
+                + "00 00 " //padding in ofp_port2
+                + "73 31 2d 65 74 68 31 00 00 00 00 00 00 00 00 00 " // port name, String "s1-eth1"
+                + "00 00 00 41 " //port config
+                + "00 00 00 05 " //port state
+                + "00 00 00 81 " //current features
+                + "00 00 00 A1 " //advertised features
+                + "00 00 00 B1 " //supported features
+                + "00 00 00 81 " //peer features
+                + "00 00 00 81 " //curr speed
+                + "00 00 00 80"); //max speed
 
         PortStatusMessage builtByFactory = BufferHelper.deserialize(statusFactory, bb);
 
@@ -99,15 +99,15 @@ public class PortStatusMessageFactoryTest {
     @Test
     public void testWithDifferentBitmaps() {
         ByteBuf bb = BufferHelper.buildBuffer(
-                "01 00 00 00 00 00 00 00 " + //reason, padding
-                "00 01 02 03 00 00 00 00 " + //port no, padding
-                "08 00 27 00 B0 EB 00 00 " + //mac address, padding
-                "73 31 2d 65 74 68 31 00 00 00 00 00 00 00 00 00 " + // port name, String "s1-eth1"
-                "00 00 00 24 " + //port config
-                "00 00 00 02 " + //port state
-                "00 00 00 81 00 00 00 A1 " + //current + advertised features
-                "00 00 FF FF 00 00 00 00 " + //supported + peer features
-                "00 00 00 81 00 00 00 80"); //curr speed, max speed
+                "01 00 00 00 00 00 00 00 " //reason, padding
+                + "00 01 02 03 00 00 00 00 " //port no, padding
+                + "08 00 27 00 B0 EB 00 00 " //mac address, padding
+                + "73 31 2d 65 74 68 31 00 00 00 00 00 00 00 00 00 " // port name, String "s1-eth1"
+                + "00 00 00 24 " //port config
+                + "00 00 00 02 " //port state
+                + "00 00 00 81 00 00 00 A1 " //current + advertised features
+                + "00 00 FF FF 00 00 00 00 " //supported + peer features
+                + "00 00 00 81 00 00 00 80"); //curr speed, max speed
 
         PortStatusMessage message = BufferHelper.deserialize(statusFactory, bb);
 

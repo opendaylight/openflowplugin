@@ -67,31 +67,31 @@ public class MultipartReplyFlowTest {
      */
     @Test
     public void testMultipartReplyFlowBody() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00 " + //
+        ByteBuf bb = BufferHelper.buildBuffer("00 01 00 01 00 00 00 00 " //
                                               // first flow stat
-                                              "00 48 08 00 " + // length, tableId, padding
-                                              "00 00 00 09 " + //durationSec
-                                              "00 00 00 07 " + //durationNsec
-                                              "00 0C 00 0E 00 0F 00 1F " + //priority, idleTimeout, hardTimeout, flags
-                                              "00 00 00 00 " + //pad_02
-                                              "FF 01 01 01 01 01 01 01 " + //cookie
-                                              "EF 01 01 01 01 01 01 01 " + //packetCount
-                                              "7F 01 01 01 01 01 01 01 " + //byteCount
-                                              "00 01 00 04 00 00 00 00 " + //empty match
-                                              "00 01 00 08 06 00 00 00 " + //
-                                              "00 01 00 08 06 00 00 00 " + //
+                                              + "00 48 08 00 " // length, tableId, padding
+                                              + "00 00 00 09 " //durationSec
+                                              + "00 00 00 07 " //durationNsec
+                                              + "00 0C 00 0E 00 0F 00 1F " //priority, idleTimeout, hardTimeout, flags
+                                              + "00 00 00 00 " //pad_02
+                                              + "FF 01 01 01 01 01 01 01 " //cookie
+                                              + "EF 01 01 01 01 01 01 01 " //packetCount
+                                              + "7F 01 01 01 01 01 01 01 " //byteCount
+                                              + "00 01 00 04 00 00 00 00 " //empty match
+                                              + "00 01 00 08 06 00 00 00 " //
+                                              + "00 01 00 08 06 00 00 00 " //
                                               // second flow stat
-                                              "00 48 08 00 " + // length, tableId, padding
-                                              "00 00 00 09 " + //durationSec
-                                              "00 00 00 07 " + //durationNsec
-                                              "00 0C 00 0E 00 0F 00 00 " + // priority, idleTimeout, hardTimeout, flags
-                                              "00 00 00 00 " + //pad_02
-                                              "FF 01 01 01 01 01 01 01 " + //cookie
-                                              "EF 01 01 01 01 01 01 01 " + //packetCount
-                                              "7F 01 01 01 01 01 01 01 " + //byteCount
-                                              "00 01 00 04 00 00 00 00 " + //empty match
-                                              "00 01 00 08 06 00 00 00 " + //
-                                              "00 01 00 08 06 00 00 00");
+                                              + "00 48 08 00 " // length, tableId, padding
+                                              + "00 00 00 09 " //durationSec
+                                              + "00 00 00 07 " //durationNsec
+                                              + "00 0C 00 0E 00 0F 00 00 " // priority, idleTimeout, hardTimeout, flags
+                                              + "00 00 00 00 " //pad_02
+                                              + "FF 01 01 01 01 01 01 01 " //cookie
+                                              + "EF 01 01 01 01 01 01 01 " //packetCount
+                                              + "7F 01 01 01 01 01 01 01 " //byteCount
+                                              + "00 01 00 04 00 00 00 00 " //empty match
+                                              + "00 01 00 08 06 00 00 00 " //
+                                              + "00 01 00 08 06 00 00 00");
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
