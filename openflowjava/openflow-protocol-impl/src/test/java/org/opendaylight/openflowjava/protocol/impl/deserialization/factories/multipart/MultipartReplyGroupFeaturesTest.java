@@ -33,17 +33,17 @@ public class MultipartReplyGroupFeaturesTest {
      */
     @Test
     public void testMultipartReplyGroupFeatures() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 08 00 01 00 00 00 00 " + //
-                                              "00 00 00 0F " + // types
-                                              "00 00 00 0F " + // capabilities
-                                              "00 00 00 01 " + // max groups
-                                              "00 00 00 02 " + // max groups
-                                              "00 00 00 03 " + // max groups
-                                              "00 00 00 04 " + // max groups
-                                              "0F FF 98 01 " + // actions bitmap (all actions included)
-                                              "00 00 00 00 " + // actions bitmap (no actions included)
-                                              "00 00 00 00 " + // actions bitmap (no actions included)
-                                              "00 00 00 00"// actions bitmap (no actions included)
+        ByteBuf bb = BufferHelper.buildBuffer("00 08 00 01 00 00 00 00 " //
+                                              + "00 00 00 0F " // types
+                                              + "00 00 00 0F " // capabilities
+                                              + "00 00 00 01 " // max groups
+                                              + "00 00 00 02 " // max groups
+                                              + "00 00 00 03 " // max groups
+                                              + "00 00 00 04 " // max groups
+                                              + "0F FF 98 01 " // actions bitmap (all actions included)
+                                              + "00 00 00 00 " // actions bitmap (no actions included)
+                                              + "00 00 00 00 " // actions bitmap (no actions included)
+                                              + "00 00 00 00" // actions bitmap (no actions included)
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
@@ -79,17 +79,17 @@ public class MultipartReplyGroupFeaturesTest {
      */
     @Test
     public void testMultipartReplyGroupFeatures2() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 08 00 01 00 00 00 00 " + //
-                                              "00 00 00 00 " + // types
-                                              "00 00 00 00 " + // capabilities
-                                              "00 00 00 01 " + // max groups
-                                              "00 00 00 02 " + // max groups
-                                              "00 00 00 03 " + // max groups
-                                              "00 00 00 04 " + // max groups
-                                              "00 00 00 00 " + // actions bitmap (all actions included)
-                                              "00 00 00 00 " + // actions bitmap (no actions included)
-                                              "00 00 00 00 " + // actions bitmap (no actions included)
-                                              "00 00 00 00"// actions bitmap (no actions included)
+        ByteBuf bb = BufferHelper.buildBuffer("00 08 00 01 00 00 00 00 " //
+                                              + "00 00 00 00 " // types
+                                              + "00 00 00 00 " // capabilities
+                                              + "00 00 00 01 " // max groups
+                                              + "00 00 00 02 " // max groups
+                                              + "00 00 00 03 " // max groups
+                                              + "00 00 00 04 " // max groups
+                                              + "00 00 00 00 " // actions bitmap (all actions included)
+                                              + "00 00 00 00 " // actions bitmap (no actions included)
+                                              + "00 00 00 00 " // actions bitmap (no actions included)
+                                              + "00 00 00 00" // actions bitmap (no actions included)
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 

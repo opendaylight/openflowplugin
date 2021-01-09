@@ -51,31 +51,31 @@ public class MultipartReplyPortDescTest {
      */
     @Test
     public void testMultipartReplyPortDesc() {
-        ByteBuf bb = BufferHelper.buildBuffer("00 0D 00 00 00 00 00 00 " + //
+        ByteBuf bb = BufferHelper.buildBuffer("00 0D 00 00 00 00 00 00 " //
                                               // first port desc
-                                              "00 01 02 03 00 00 00 00 " + // portNo, padding
-                                              "08 00 27 00 B0 EB 00 00 " + // mac address, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 " + // name
-                                              "00 00 00 65 " + //port config
-                                              "00 00 00 07 " + //port state
-                                              "00 00 00 81 " + //current features
-                                              "00 00 FF FF " + //advertised features
-                                              "00 00 C1 89 " + //supported features
-                                              "00 00 C5 8D " + //peer features
-                                              "00 00 00 81 " + //curr speed
-                                              "00 00 00 80 " + //max speed
+                                              + "00 01 02 03 00 00 00 00 " // portNo, padding
+                                              + "08 00 27 00 B0 EB 00 00 " // mac address, padding
+                                              + "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 " // name
+                                              + "00 00 00 65 " //port config
+                                              + "00 00 00 07 " //port state
+                                              + "00 00 00 81 " //current features
+                                              + "00 00 FF FF " //advertised features
+                                              + "00 00 C1 89 " //supported features
+                                              + "00 00 C5 8D " //peer features
+                                              + "00 00 00 81 " //curr speed
+                                              + "00 00 00 80 " //max speed
                                               // second port desc
-                                              "00 00 00 01 00 00 00 00 " + // portNo, padding
-                                              "08 00 27 00 B0 EB 00 00 " + // mac address, padding
-                                              "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 " + // name
-                                              "00 00 00 00 " + //port config
-                                              "00 00 00 00 " + //port state
-                                              "00 00 00 00 " + //current features
-                                              "00 00 00 00 " + //advertised features
-                                              "00 00 00 00 " + //supported features
-                                              "00 00 00 00 " + //peer features
-                                              "00 00 00 05 " + //curr speed
-                                              "00 00 00 06" //max speed
+                                              + "00 00 00 01 00 00 00 00 " // portNo, padding
+                                              + "08 00 27 00 B0 EB 00 00 " // mac address, padding
+                                              + "4F 70 65 6E 64 61 79 6C 69 67 68 74 00 00 00 00 " // name
+                                              + "00 00 00 00 " //port config
+                                              + "00 00 00 00 " //port state
+                                              + "00 00 00 00 " //current features
+                                              + "00 00 00 00 " //advertised features
+                                              + "00 00 00 00 " //supported features
+                                              + "00 00 00 00 " //peer features
+                                              + "00 00 00 05 " //curr speed
+                                              + "00 00 00 06" //max speed
                                               );
         MultipartReplyMessage builtByFactory = BufferHelper.deserialize(factory, bb);
 
