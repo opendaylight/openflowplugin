@@ -11,11 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import junit.framework.TestCase;
@@ -28,8 +23,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCache;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -78,7 +71,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class SalFlowServiceImplTest extends TestCase {
 
     private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(444);
@@ -93,25 +86,6 @@ public class SalFlowServiceImplTest extends TestCase {
             = NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
 
     private final NodeRef noderef = new NodeRef(NODE_II);
-    private static final String KEY = "0";
-    private static FlowGroupCache flowcache =
-            new FlowGroupCache("0","mock class", FlowGroupStatus.ADDED, LocalDateTime.MAX);
-
-    private static Queue<FlowGroupCache> caches() {
-        Queue<FlowGroupCache> cache = new LinkedList<>();
-        cache.add(flowcache);
-        return cache;
-    }
-
-    private static final Queue<FlowGroupCache> CACHE = caches();
-
-    private static Map<String, Queue<FlowGroupCache>> createMap() {
-        Map<String,Queue<FlowGroupCache>> myMap = new HashMap<>();
-        myMap.put(KEY, CACHE);
-        return myMap;
-    }
-
-    private static final Map<String, Queue<FlowGroupCache>> MYMAP = createMap();
 
     @Mock
     private RequestContextStack mockedRequestContextStack;
@@ -159,7 +133,6 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
-        when(flowGroupCacheManager.getAllNodesFlowGroupCache()).thenReturn(MYMAP);
     }
 
     private SalFlowServiceImpl mockSalFlowService(final short version) {
