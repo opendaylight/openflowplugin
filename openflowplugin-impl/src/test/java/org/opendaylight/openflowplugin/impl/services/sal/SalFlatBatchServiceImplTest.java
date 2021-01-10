@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -159,7 +158,7 @@ public class SalFlatBatchServiceImplTest {
 
         ProcessFlatBatchInput batchInput = new ProcessFlatBatchInputBuilder()
                 .setNode(NODE_REF)
-                .setBatch(Lists.newArrayList(
+                .setBatch(BindingMap.ordered(
                         createFlowAddBatch(0, "f1"),
                         createFlowRemoveBatch(1, "f2"),
                         createFlowUpdateBatch(2, "f3"),
@@ -204,7 +203,7 @@ public class SalFlatBatchServiceImplTest {
         int idx = 0;
         ProcessFlatBatchInput batchInput = new ProcessFlatBatchInputBuilder()
                 .setNode(NODE_REF)
-                .setBatch(Lists.newArrayList(
+                .setBatch(BindingMap.ordered(
                         createFlowAddBatch(idx++, "f1", 2),
                         createFlowRemoveBatch(idx++, "f2"),
                         createFlowUpdateBatch(idx++, "f3"),
@@ -290,7 +289,7 @@ public class SalFlatBatchServiceImplTest {
         Mockito.when(salFlowsBatchService.removeFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<RemoveFlowsBatchOutput>failed()
                         .withResult(new RemoveFlowsBatchOutputBuilder()
-                                .setBatchFailedFlowsOutput(Lists.newArrayList(
+                                .setBatchFailedFlowsOutput(BindingMap.ordered(
                                         new BatchFailedFlowsOutputBuilder()
                                                 .setBatchOrder(Uint16.ONE)
                                                 .setFlowId(new FlowId("123"))
@@ -337,14 +336,6 @@ public class SalFlatBatchServiceImplTest {
             map.put(key, new FlatBatchAddFlowBuilder().withKey(key).setFlowId(new FlowId(flowIdValue + i)).build());
         }
         return map;
-    }
-
-    private static <T> List<T> repeatInList(final T item, final int amount) {
-        final List<T> list = new ArrayList<>();
-        for (int i = 0; i < amount; i++) {
-            list.add(item);
-        }
-        return list;
     }
 
     private static Batch createFlowRemoveBatch(final int batchOrder, final String flowIdValue) {
@@ -514,7 +505,7 @@ public class SalFlatBatchServiceImplTest {
 
     private static ProcessFlatBatchOutput createFlatBatchOutput(final BatchFailure... batchFailures) {
         return new ProcessFlatBatchOutputBuilder()
-                .setBatchFailure(Lists.newArrayList(batchFailures))
+                .setBatchFailure(BindingMap.ordered(batchFailures))
                 .build();
     }
 
@@ -575,7 +566,7 @@ public class SalFlatBatchServiceImplTest {
                 .thenReturn(RpcResultBuilder
                         .<AddFlowsBatchOutput>failed()
                         .withResult(new AddFlowsBatchOutputBuilder()
-                                .setBatchFailedFlowsOutput(Lists.newArrayList(
+                                .setBatchFailedFlowsOutput(BindingMap.ordered(
                                         new BatchFailedFlowsOutputBuilder()
                                                 .setBatchOrder(Uint16.ZERO)
                                                 .setFlowId(new FlowId("f1"))

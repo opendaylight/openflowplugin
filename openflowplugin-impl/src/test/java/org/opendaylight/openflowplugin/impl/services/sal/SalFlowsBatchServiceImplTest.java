@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -62,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -125,7 +125,7 @@ public class SalFlowsBatchServiceImplTest {
         final RemoveFlowsBatchInput input = new RemoveFlowsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchRemoveFlows(Lists.newArrayList(batchFlow1, batchFlow2))
+                .setBatchRemoveFlows(BindingMap.ordered(batchFlow1, batchFlow2))
                 .build();
 
         final Future<RpcResult<RemoveFlowsBatchOutput>> resultFuture = salFlowsBatchService.removeFlowsBatch(input);
@@ -160,7 +160,7 @@ public class SalFlowsBatchServiceImplTest {
         final RemoveFlowsBatchInput input = new RemoveFlowsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchRemoveFlows(Lists.newArrayList(batchFlow1, batchFlow2))
+                .setBatchRemoveFlows(BindingMap.ordered(batchFlow1, batchFlow2))
                 .build();
 
         final Future<RpcResult<RemoveFlowsBatchOutput>> resultFuture = salFlowsBatchService.removeFlowsBatch(input);
@@ -221,7 +221,7 @@ public class SalFlowsBatchServiceImplTest {
         final AddFlowsBatchInput input = new AddFlowsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchAddFlows(Lists.newArrayList(
+                .setBatchAddFlows(BindingMap.ordered(
                         createEmptyBatchAddFlow("ut-dummy-flow1", 42),
                         createEmptyBatchAddFlow("ut-dummy-flow2", 43)))
                 .build();
@@ -252,7 +252,7 @@ public class SalFlowsBatchServiceImplTest {
         final AddFlowsBatchInput input = new AddFlowsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchAddFlows(Lists.newArrayList(
+                .setBatchAddFlows(BindingMap.ordered(
                         createEmptyBatchAddFlow(FLOW_ID_VALUE_1, 42),
                         createEmptyBatchAddFlow(FLOW_ID_VALUE_2, 43)))
                 .build();
@@ -287,7 +287,7 @@ public class SalFlowsBatchServiceImplTest {
         final UpdateFlowsBatchInput input = new UpdateFlowsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchUpdateFlows(Lists.newArrayList(
+                .setBatchUpdateFlows(BindingMap.ordered(
                         createEmptyBatchUpdateFlow(FLOW_ID_VALUE_1, 42),
                         createEmptyBatchUpdateFlow(FLOW_ID_VALUE_2, 44)))
                 .build();
@@ -320,7 +320,7 @@ public class SalFlowsBatchServiceImplTest {
         final UpdateFlowsBatchInput input = new UpdateFlowsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchUpdateFlows(Lists.newArrayList(
+                .setBatchUpdateFlows(BindingMap.ordered(
                         createEmptyBatchUpdateFlow(FLOW_ID_VALUE_1, 42),
                         createEmptyBatchUpdateFlow(FLOW_ID_VALUE_2, 44)))
                 .build();

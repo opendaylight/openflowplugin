@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
@@ -61,6 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.batch.failure.batch.item.id.choice.FlatBatchFailureFlowIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -279,76 +281,80 @@ public class FlatBatchUtilTest {
                 .build();
     }
 
-    private static List<FlatBatchAddGroup> repeatFlatBatchAddGroupIntoList(final int size) {
-        final List<FlatBatchAddGroup> list = new ArrayList<>();
+    private static Map<FlatBatchAddGroupKey, FlatBatchAddGroup> repeatFlatBatchAddGroupIntoList(final int size) {
+        final var list = BindingMap.<FlatBatchAddGroupKey, FlatBatchAddGroup>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchAddGroupBuilder().withKey(new FlatBatchAddGroupKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchUpdateGroup> repeatFlatBatchUpdateGroupIntoList(final int size) {
-        final List<FlatBatchUpdateGroup> list = new ArrayList<>();
+    private static Map<FlatBatchUpdateGroupKey, FlatBatchUpdateGroup> repeatFlatBatchUpdateGroupIntoList(
+            final int size) {
+        final var list = BindingMap.<FlatBatchUpdateGroupKey, FlatBatchUpdateGroup>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchUpdateGroupBuilder().withKey(new FlatBatchUpdateGroupKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchRemoveGroup> repeatFlatBatchRemoveGroupIntoList(final int size) {
-        final List<FlatBatchRemoveGroup> list = new ArrayList<>();
+    private static Map<FlatBatchRemoveGroupKey, FlatBatchRemoveGroup> repeatFlatBatchRemoveGroupIntoList(
+            final int size) {
+        final var list = BindingMap.<FlatBatchRemoveGroupKey, FlatBatchRemoveGroup>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchRemoveGroupBuilder().withKey(new FlatBatchRemoveGroupKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchAddFlow> repeatFlatBatchAddFlowIntoList(final int size) {
-        final List<FlatBatchAddFlow> list = new ArrayList<>();
+    private static Map<FlatBatchAddFlowKey, FlatBatchAddFlow> repeatFlatBatchAddFlowIntoList(final int size) {
+        final var list = BindingMap.<FlatBatchAddFlowKey, FlatBatchAddFlow>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchAddFlowBuilder().withKey(new FlatBatchAddFlowKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchUpdateFlow> repeatFlatBatchUpdateFlowIntoList(final int size) {
-        final List<FlatBatchUpdateFlow> list = new ArrayList<>();
+    private static Map<FlatBatchUpdateFlowKey, FlatBatchUpdateFlow> repeatFlatBatchUpdateFlowIntoList(final int size) {
+        final var list = BindingMap.<FlatBatchUpdateFlowKey, FlatBatchUpdateFlow>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchUpdateFlowBuilder().withKey(new FlatBatchUpdateFlowKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchRemoveFlow> repeatFlatBatchRemoveFlowIntoList(final int size) {
-        final List<FlatBatchRemoveFlow> list = new ArrayList<>();
+    private static Map<FlatBatchRemoveFlowKey, FlatBatchRemoveFlow> repeatFlatBatchRemoveFlowIntoList(final int size) {
+        final var list = BindingMap.<FlatBatchRemoveFlowKey, FlatBatchRemoveFlow>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchRemoveFlowBuilder().withKey(new FlatBatchRemoveFlowKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchAddMeter> repeatFlatBatchAddMeterIntoList(final int size) {
-        final List<FlatBatchAddMeter> list = new ArrayList<>();
+    private static Map<FlatBatchAddMeterKey, FlatBatchAddMeter> repeatFlatBatchAddMeterIntoList(final int size) {
+        final var list = BindingMap.<FlatBatchAddMeterKey, FlatBatchAddMeter>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchAddMeterBuilder().withKey(new FlatBatchAddMeterKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchUpdateMeter> repeatFlatBatchUpdateMeterIntoList(final int size) {
-        final List<FlatBatchUpdateMeter> list = new ArrayList<>();
+    private static Map<FlatBatchUpdateMeterKey, FlatBatchUpdateMeter> repeatFlatBatchUpdateMeterIntoList(
+            final int size) {
+        final var list = BindingMap.<FlatBatchUpdateMeterKey, FlatBatchUpdateMeter>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchUpdateMeterBuilder().withKey(new FlatBatchUpdateMeterKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
-    private static List<FlatBatchRemoveMeter> repeatFlatBatchRemoveMeterIntoList(final int size) {
-        final List<FlatBatchRemoveMeter> list = new ArrayList<>();
+    private static Map<FlatBatchRemoveMeterKey, FlatBatchRemoveMeter> repeatFlatBatchRemoveMeterIntoList(
+            final int size) {
+        final var list = BindingMap.<FlatBatchRemoveMeterKey, FlatBatchRemoveMeter>orderedBuilder(size);
         for (int i = 0; i < size; i++) {
             list.add(new FlatBatchRemoveMeterBuilder().withKey(new FlatBatchRemoveMeterKey(Uint16.valueOf(i))).build());
         }
-        return list;
+        return list.build();
     }
 
     @Test
@@ -369,10 +375,10 @@ public class FlatBatchUtilTest {
                 .build();
 
         final ProcessFlatBatchOutput output
-                = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure)).build();
+                = new ProcessFlatBatchOutputBuilder().setBatchFailure(BindingMap.of(batchFailure)).build();
 
         final ProcessFlatBatchOutput output_1
-                = new ProcessFlatBatchOutputBuilder().setBatchFailure(Lists.newArrayList(batchFailure_1)).build();
+                = new ProcessFlatBatchOutputBuilder().setBatchFailure(BindingMap.of(batchFailure_1)).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResultFailed = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
                 .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")

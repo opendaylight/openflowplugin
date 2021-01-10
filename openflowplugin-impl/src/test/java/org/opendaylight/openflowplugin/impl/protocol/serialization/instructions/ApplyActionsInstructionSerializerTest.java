@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collections;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
@@ -25,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSerializerTest {
     @Test
@@ -34,7 +34,7 @@ public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSe
 
         final Instruction instruction = new ApplyActionsCaseBuilder()
                 .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(Collections.singletonList(new ActionBuilder()
+                        .setAction(BindingMap.of(new ActionBuilder()
                                 .setOrder(order)
                                 .withKey(new ActionKey(order))
                                 .setAction(new SetNwSrcActionCaseBuilder()

@@ -63,6 +63,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMetersBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -183,7 +184,7 @@ public class SalMetersBatchServiceImplTest {
         final AddMetersBatchInput input = new AddMetersBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchAddMeters(Lists.newArrayList(
+                .setBatchAddMeters(BindingMap.ordered(
                         createEmptyBatchAddMeter(42L),
                         createEmptyBatchAddMeter(43L)))
                 .build();
@@ -213,7 +214,7 @@ public class SalMetersBatchServiceImplTest {
         final AddMetersBatchInput input = new AddMetersBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchAddMeters(Lists.newArrayList(
+                .setBatchAddMeters(BindingMap.ordered(
                         createEmptyBatchAddMeter(42L),
                         createEmptyBatchAddMeter(43L)))
                 .build();
@@ -248,7 +249,7 @@ public class SalMetersBatchServiceImplTest {
         final RemoveMetersBatchInput input = new RemoveMetersBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchRemoveMeters(Lists.newArrayList(
+                .setBatchRemoveMeters(BindingMap.ordered(
                         createEmptyBatchRemoveMeter(42L),
                         createEmptyBatchRemoveMeter(43L)))
                 .build();
@@ -279,7 +280,7 @@ public class SalMetersBatchServiceImplTest {
         final RemoveMetersBatchInput input = new RemoveMetersBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchRemoveMeters(Lists.newArrayList(
+                .setBatchRemoveMeters(BindingMap.ordered(
                         createEmptyBatchRemoveMeter(42L),
                         createEmptyBatchRemoveMeter(43L)))
                 .build();

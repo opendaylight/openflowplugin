@@ -236,7 +236,7 @@ public class GroupUtilTest {
     private static RpcResult<AddGroupsBatchOutput> createAddGroupsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(Collections.emptyList())
+                        .setBatchFailedGroupsOutput(Collections.emptyMap())
                         .build())
                 .build();
     }
