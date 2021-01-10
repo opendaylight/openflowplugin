@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -78,7 +79,7 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
     );
 
     private static final Buckets BUCKETS = new BucketsBuilder()
-            .setBucket(Collections.singletonList(new BucketBuilder()
+            .setBucket(BindingMap.of(new BucketBuilder()
                     .setBucketId(BUCKET_ID)
                     .withKey(BUCKET_KEY)
                     .setWatchGroup(BUCKET_WATCH_GROUP)

@@ -61,6 +61,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -182,7 +183,7 @@ public class SalGroupsBatchServiceImplTest {
         final AddGroupsBatchInput input = new AddGroupsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchAddGroups(Lists.newArrayList(
+                .setBatchAddGroups(BindingMap.ordered(
                         createEmptyBatchAddGroup(42L),
                         createEmptyBatchAddGroup(43L)))
                 .build();
@@ -212,7 +213,7 @@ public class SalGroupsBatchServiceImplTest {
         final AddGroupsBatchInput input = new AddGroupsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchAddGroups(Lists.newArrayList(
+                .setBatchAddGroups(BindingMap.ordered(
                         createEmptyBatchAddGroup(42L),
                         createEmptyBatchAddGroup(43L)))
                 .build();
@@ -247,7 +248,7 @@ public class SalGroupsBatchServiceImplTest {
         final RemoveGroupsBatchInput input = new RemoveGroupsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchRemoveGroups(Lists.newArrayList(
+                .setBatchRemoveGroups(BindingMap.ordered(
                         createEmptyBatchRemoveGroup(42L),
                         createEmptyBatchRemoveGroup(43L)))
                 .build();
@@ -278,7 +279,7 @@ public class SalGroupsBatchServiceImplTest {
         final RemoveGroupsBatchInput input = new RemoveGroupsBatchInputBuilder()
                 .setNode(NODE_REF)
                 .setBarrierAfter(true)
-                .setBatchRemoveGroups(Lists.newArrayList(
+                .setBatchRemoveGroups(BindingMap.ordered(
                         createEmptyBatchRemoveGroup(42L),
                         createEmptyBatchRemoveGroup(43L)))
                 .build();

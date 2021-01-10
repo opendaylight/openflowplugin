@@ -231,7 +231,7 @@ public class FlowUtilTest {
     private static RpcResult<AddFlowsBatchOutput> createAddFlowsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(Collections.emptyList())
+                        .setBatchFailedFlowsOutput(Collections.emptyMap())
                         .build())
                 .build();
     }

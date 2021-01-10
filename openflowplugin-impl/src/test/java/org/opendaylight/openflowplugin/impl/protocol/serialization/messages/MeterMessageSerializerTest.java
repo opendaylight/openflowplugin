@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.util.Arrays;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -73,7 +73,7 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
             .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setMeterName(METER_NAME)
             .setMeterBandHeaders(new MeterBandHeadersBuilder()
-                    .setMeterBandHeader(Arrays.asList(
+                    .setMeterBandHeader(BindingMap.ordered(
                             new MeterBandHeaderBuilder()
                                     .setMeterBandTypes(new MeterBandTypesBuilder()
                                             .setFlags(new org.opendaylight.yang.gen.v1.urn.opendaylight

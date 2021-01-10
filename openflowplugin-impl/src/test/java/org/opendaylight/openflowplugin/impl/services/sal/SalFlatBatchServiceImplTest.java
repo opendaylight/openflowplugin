@@ -290,7 +290,7 @@ public class SalFlatBatchServiceImplTest {
         Mockito.when(salFlowsBatchService.removeFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<RemoveFlowsBatchOutput>failed()
                         .withResult(new RemoveFlowsBatchOutputBuilder()
-                                .setBatchFailedFlowsOutput(Lists.newArrayList(
+                                .setBatchFailedFlowsOutput(BindingMap.ordered(
                                         new BatchFailedFlowsOutputBuilder()
                                                 .setBatchOrder(Uint16.ONE)
                                                 .setFlowId(new FlowId("123"))
@@ -514,7 +514,7 @@ public class SalFlatBatchServiceImplTest {
 
     private static ProcessFlatBatchOutput createFlatBatchOutput(final BatchFailure... batchFailures) {
         return new ProcessFlatBatchOutputBuilder()
-                .setBatchFailure(Lists.newArrayList(batchFailures))
+                .setBatchFailure(BindingMap.ordered(batchFailures))
                 .build();
     }
 
@@ -575,7 +575,7 @@ public class SalFlatBatchServiceImplTest {
                 .thenReturn(RpcResultBuilder
                         .<AddFlowsBatchOutput>failed()
                         .withResult(new AddFlowsBatchOutputBuilder()
-                                .setBatchFailedFlowsOutput(Lists.newArrayList(
+                                .setBatchFailedFlowsOutput(BindingMap.ordered(
                                         new BatchFailedFlowsOutputBuilder()
                                                 .setBatchOrder(Uint16.ZERO)
                                                 .setFlowId(new FlowId("f1"))

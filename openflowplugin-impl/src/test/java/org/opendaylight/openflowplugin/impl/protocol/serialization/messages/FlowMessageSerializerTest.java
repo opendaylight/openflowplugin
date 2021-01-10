@@ -12,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.util.Arrays;
-import java.util.Collections;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -46,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -91,13 +90,13 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
     private static final Uint16 TP_SRC_PORT = Uint16.valueOf(22);
     private static final Uint16 TP_DST_PORT = Uint16.valueOf(23);
     private static final Instructions INSTRUCTIONS = new InstructionsBuilder()
-            .setInstruction(Arrays.asList(
+            .setInstruction(BindingMap.ordered(
                     new InstructionBuilder()
                             .setOrder(0)
                             .withKey(new InstructionKey(0))
                             .setInstruction(new ApplyActionsCaseBuilder()
                                     .setApplyActions(new ApplyActionsBuilder()
-                                            .setAction(Collections.singletonList(new ActionBuilder()
+                                            .setAction(BindingMap.of(new ActionBuilder()
                                                     .setOrder(0)
                                                     .withKey(new ActionKey(0))
                                                     .setAction(new SetVlanIdActionCaseBuilder()
@@ -114,7 +113,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
                             .withKey(new InstructionKey(2))
                             .setInstruction(new ApplyActionsCaseBuilder()
                                     .setApplyActions(new ApplyActionsBuilder()
-                                            .setAction(Collections.singletonList(new ActionBuilder()
+                                            .setAction(BindingMap.of(new ActionBuilder()
                                                     .setOrder(1)
                                                     .withKey(new ActionKey(1))
                                                     .setAction(new SetTpDstActionCaseBuilder()
@@ -132,7 +131,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
                             .withKey(new InstructionKey(1))
                             .setInstruction(new ApplyActionsCaseBuilder()
                                     .setApplyActions(new ApplyActionsBuilder()
-                                            .setAction(Collections.singletonList(new ActionBuilder()
+                                            .setAction(BindingMap.of(new ActionBuilder()
                                                     .setOrder(2)
                                                     .withKey(new ActionKey(2))
                                                     .setAction(new SetTpSrcActionCaseBuilder()

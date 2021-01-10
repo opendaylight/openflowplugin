@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -50,7 +51,7 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
                     .build())
             .build();
     private static final MultipartRequestTableFeatures BODY = new MultipartRequestTableFeaturesBuilder()
-            .setTableFeatures(Collections.singletonList(new TableFeaturesBuilder()
+            .setTableFeatures(BindingMap.ordered(new TableFeaturesBuilder()
                     .setTableId(TABLE_ID)
                     .setName(NAME)
                     .setMetadataMatch(METADATA_MATCH)
@@ -58,7 +59,7 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
                     .setConfig(new TableConfig(IS_DEPRECATED_MASK))
                     .setMaxEntries(MAX_ENTRIES)
                     .setTableProperties(new TablePropertiesBuilder()
-                            .setTableFeatureProperties(Collections.singletonList(new TableFeaturePropertiesBuilder()
+                            .setTableFeatureProperties(BindingMap.of(new TableFeaturePropertiesBuilder()
                                     .setOrder(0)
                                     .withKey(new TableFeaturePropertiesKey(0))
                                     .setTableFeaturePropType(NEXT_TABLE)
