@@ -35,6 +35,7 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.impl.device.history.FlowGroupInfoHistoryAppender;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -73,14 +74,16 @@ public class DeviceFlowRegistryImplTest {
     private DataBroker dataBroker;
     @Mock
     private ReadTransaction readOnlyTransaction;
+    @Mock
+    private FlowGroupInfoHistoryAppender history;
 
     @Before
     public void setUp() {
         nodeInstanceIdentifier =
                 InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
-        deviceFlowRegistry =
-                new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier);
+        deviceFlowRegistry = new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier,
+            history);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
         key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
         descriptor = FlowDescriptorFactory.create(Uint8.valueOf(key.getTableId()), new FlowId("ut:1"));
