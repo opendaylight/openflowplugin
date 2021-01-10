@@ -7,12 +7,16 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Queue;
+import org.eclipse.jdt.annotation.NonNull;
 
 public interface FlowGroupCacheManager {
 
     Map<String, ReconciliationState> getReconciliationStates();
 
-    Map<String, Queue<FlowGroupCache>> getAllNodesFlowGroupCache();
+    Map<String, Collection<FlowGroupInfo>> getAllNodesFlowGroupCache();
+
+    void appendFlowGroup(@NonNull String nodeId, @NonNull String id, @NonNull String description,
+        @NonNull FlowGroupStatus status);
 }

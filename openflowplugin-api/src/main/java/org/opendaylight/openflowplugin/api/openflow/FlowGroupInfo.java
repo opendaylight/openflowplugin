@@ -7,20 +7,25 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
+import static java.util.Objects.requireNonNull;
+
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.opendaylight.yangtools.concepts.Immutable;
 
-public class FlowGroupCache {
-    private final String id;
-    private final String description;
+@NonNullByDefault
+public final class FlowGroupInfo implements Immutable {
+    private final Instant time = Instant.now();
     private final FlowGroupStatus status;
-    private final LocalDateTime time;
+    private final String description;
+    private final String id;
 
-    public FlowGroupCache(String id, String description, FlowGroupStatus status,
-                          LocalDateTime time) {
-        this.id = id;
-        this.description = description;
-        this.status = status;
-        this.time = time;
+    FlowGroupInfo(final String id, final String description, final FlowGroupStatus status) {
+        this.id = requireNonNull(id);
+        this.description = requireNonNull(description);
+        this.status = requireNonNull(status);
     }
 
     public String getId() {
@@ -36,6 +41,6 @@ public class FlowGroupCache {
     }
 
     public LocalDateTime getTime() {
-        return time;
+        return LocalDateTime.ofInstant(time, ZoneOffset.UTC);
     }
 }
