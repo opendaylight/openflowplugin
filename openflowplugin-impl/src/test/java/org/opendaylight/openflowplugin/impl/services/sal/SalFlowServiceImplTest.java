@@ -142,8 +142,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager,
-                flowGroupCacheManager);
+        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test

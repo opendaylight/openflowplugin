@@ -56,8 +56,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager,
-                flowGroupCacheManager);
+        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test

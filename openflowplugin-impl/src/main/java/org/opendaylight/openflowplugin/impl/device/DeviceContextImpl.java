@@ -582,7 +582,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
 
-        hashedWheelTimer.newTimeout((timerTask) -> {
+        hashedWheelTimer.newTimeout(timerTask -> {
             if (!listenableFuture.isDone() && !listenableFuture.isCancelled()) {
                 listenableFuture.cancel(true);
             }
@@ -601,7 +601,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.contextChainMastershipWatcher = newWatcher;
     }
 
-    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
@@ -746,14 +745,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         private final ContextChainMastershipWatcher contextChainMastershipWatcher;
 
         DeviceFlowRegistryCallback(
-                ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
-                ContextChainMastershipWatcher contextChainMastershipWatcher) {
+                final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
+                final ContextChainMastershipWatcher contextChainMastershipWatcher) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
             this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         }
 
         @Override
-        public void onSuccess(List<Optional<FlowCapableNode>> result) {
+        public void onSuccess(final List<Optional<FlowCapableNode>> result) {
             if (LOG.isDebugEnabled()) {
                 // Count all flows we read from datastore for debugging purposes.
                 // This number do not always represent how many flows were actually added
@@ -776,7 +775,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             if (deviceFlowRegistryFill.isCancelled()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);

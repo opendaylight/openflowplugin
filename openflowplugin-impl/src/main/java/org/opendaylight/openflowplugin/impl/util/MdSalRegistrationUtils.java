@@ -98,13 +98,13 @@ public final class MdSalRegistrationUtils {
 
         // create service instances
         final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext,
-                convertorExecutor, flowGroupCacheManager);
+                convertorExecutor);
         final FlowCapableTransactionServiceImpl flowCapableTransactionService =
                 new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
         final SalAsyncConfigServiceImpl salAsyncConfigService =
                 new SalAsyncConfigServiceImpl(rpcContext, deviceContext);
         final SalGroupServiceImpl salGroupService =
-                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor, flowGroupCacheManager);
+                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
         final SalMeterServiceImpl salMeterService =
                 new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
 
