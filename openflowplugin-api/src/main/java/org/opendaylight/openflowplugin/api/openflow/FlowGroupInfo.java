@@ -22,7 +22,7 @@ public final class FlowGroupInfo implements Immutable {
     private final String description;
     private final String id;
 
-    FlowGroupInfo(final String id, final String description, final FlowGroupStatus status) {
+    public FlowGroupInfo(final String id, final String description, final FlowGroupStatus status) {
         this.id = requireNonNull(id);
         this.description = requireNonNull(description);
         this.status = requireNonNull(status);

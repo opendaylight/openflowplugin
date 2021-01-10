@@ -42,10 +42,20 @@ public class FlowGroupCacheManagerImpl implements FlowGroupCacheManager {
     }
 
     @Override
+    public ReconciliationState getReconciliationState(final String nodeId) {
+        return reconciliationStates.get(nodeId);
+    }
+
+    @Override
+    // FIXME: we really want to split out the 'nodeId' lookup and provide an internal interface for the plugin to
+    //        contribute directly to the queue.
     public void appendFlowGroup(final String nodeId, final String id, final String description,
             final FlowGroupStatus status) {
         final Queue<FlowGroupInfo> queue = flowGroups.computeIfAbsent(nodeId,
+            // FIXME: synchronized queue relies on locking -- and most of the time all we access it from the same(-ish)
+            //        context. We should be able to do better.
             key -> Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE)));
         queue.add(new FlowGroupInfo(id, description, status));
     }
+
 }

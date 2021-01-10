@@ -15,11 +15,9 @@ import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.R
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -68,10 +66,10 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final FrmReconciliationService frmReconciliationService;
     private final AlarmAgent alarmAgent;
     private final NodeListener nodeListener;
-    private final int threadPoolSize = 10;
-    private final Map<String, ReconciliationState> reconciliationStates;
+    private final FlowGroupCacheManager fgcm;
 
-    private ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
+    // FIXME: what is the design and purpose of this executor?
+    private ExecutorService executor = Executors.newWorkStealingPool(10);
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
                                      final AlarmAgent alarmAgent, final NodeListener nodeListener,
@@ -80,7 +78,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
         this.nodeListener = requireNonNull(nodeListener, "NodeListener cannot be null!");
-        reconciliationStates = flowGroupCacheManager.getReconciliationStates();
+        this.fgcm = requireNonNull(flowGroupCacheManager);
     }
 
     @Override
@@ -118,7 +116,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             }
             List<Uint64> inprogressNodes = new ArrayList<>();
             nodesToReconcile.parallelStream().forEach(nodeId -> {
-                ReconciliationState state = getReconciliationState(nodeId);
+                ReconciliationState state = fgcm.getReconciliationState(nodeId.toString());
                 if (state != null && state.getState().equals(STARTED)) {
                     inprogressNodes.add(Uint64.valueOf(nodeId));
                 } else {
@@ -138,10 +136,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
             return buildErrorResponse("Error executing command reconcile. "
                     + "No node information is found for reconciliation");
         }
-    }
-
-    private ReconciliationState getReconciliationState(final Long nodeId) {
-        return reconciliationStates.get(nodeId.toString());
     }
 
     private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(final String msg) {
@@ -173,8 +167,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                     .setNodeId(nodeId).setNode(new NodeRef(InstanceIdentifier.builder(Nodes.class)
                             .child(Node.class, nodeKey).build())).build();
             updateReconciliationState(STARTED);
-            Future<RpcResult<ReconcileNodeOutput>> reconOutput = frmReconciliationService
-                    .reconcileNode(reconInput);
+            Future<RpcResult<ReconcileNodeOutput>> reconOutput = frmReconciliationService.reconcileNode(reconInput);
             try {
                 RpcResult<ReconcileNodeOutput> rpcResult = reconOutput.get();
                 if (rpcResult.isSuccessful()) {
@@ -243,8 +236,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         }
 
         private void updateReconciliationState(final ReconciliationState.ReconciliationStatus status) {
-            ReconciliationState state = new ReconciliationState(status, LocalDateTime.now());
-            reconciliationStates.put(nodeId.toString(),state);
+            fgcm.put(nodeId.toString(), new ReconciliationState(status));
         }
     }
 }

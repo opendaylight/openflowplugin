@@ -7,14 +7,13 @@
  */
 package org.opendaylight.openflowplugin.api.openflow;
 
+import static java.util.Objects.requireNonNull;
+
 import java.time.LocalDateTime;
-import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.jdt.annotation.NonNull;
 
+// FIXME: this should be a proper JMX type
 public class ReconciliationState {
-    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationState.class);
-
     public enum ReconciliationStatus {
         STARTED,
         COMPLETED,
@@ -24,22 +23,23 @@ public class ReconciliationState {
     private ReconciliationStatus status;
     private LocalDateTime time;
 
-    public ReconciliationState(@Nullable ReconciliationStatus status, LocalDateTime time) {
-        this.status = status;
-        this.time = time;
+    public ReconciliationState(final @NonNull ReconciliationStatus status) {
+        this.status = requireNonNull(status);
+        this.time = LocalDateTime.now();
     }
 
     public ReconciliationStatus getState() {
         return status;
     }
 
-    public void setState(ReconciliationStatus staTus, LocalDateTime timing) {
-        this.status = staTus;
-        this.time = timing;
+    public void setStatus(final ReconciliationStatus status) {
+        this.status = status;
+        this.time = LocalDateTime.now();
     }
 
     @Override
     public String toString() {
+        // FIXME: expose String formatting separately
         return String.format("%-25s %-25s", this.status, this.time);
     }
 }

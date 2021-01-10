@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -136,13 +135,15 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     private final ResultState resultState;
     private final Map<DeviceInfo, ListenableFuture<Boolean>> futureMap = new ConcurrentHashMap<>();
 
+    // FIXME: what is the purpose of this executor?
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
     private final SalBundleService salBundleService;
 
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
-    private final Map<String, ReconciliationState> reconciliationStates;
+
+    private final FlowGroupCacheManager fgcm;
 
     public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
                                       final String serviceName, final int priority, final ResultState resultState,
@@ -152,8 +153,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         this.serviceName = serviceName;
         this.priority = priority;
         this.resultState = resultState;
+        this.fgcm = flowGroupCacheManager;
         salBundleService = requireNonNull(manager.getSalBundleService(), "salBundleService can not be null!");
-        reconciliationStates = flowGroupCacheManager.getReconciliationStates();
     }
 
     @Override
@@ -187,7 +188,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public void flowNodeDisconnected(final InstanceIdentifier<FlowCapableNode> disconnectedNode) {
         String node = disconnectedNode.firstKeyOf(Node.class).getId().getValue();
         BigInteger dpnId = getDpnIdFromNodeName(node);
-        reconciliationStates.remove(dpnId.toString());
+        fgcm.remove(dpnId.toString());
     }
 
     private class BundleBasedReconciliationTask implements Callable<Boolean> {
@@ -212,10 +213,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             if (flowNode.isPresent()) {
-                ReconciliationState reconciliationState = new ReconciliationState(
-                        STARTED, LocalDateTime.now());
                 //put the dpn info into the map
-                reconciliationStates.put(dpnId.toString(), reconciliationState);
+                ReconciliationState reconciliationState = fgcm.put(dpnId.toString(), new ReconciliationState(STARTED));
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
                 final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
@@ -295,18 +294,18 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 try {
                     RpcResult<ControlBundleOutput> bundleFuture = commitBundleFuture.get();
                     if (bundleFuture != null && bundleFuture.isSuccessful()) {
-                        reconciliationState.setState(COMPLETED, LocalDateTime.now());
+                        reconciliationState.setStatus(COMPLETED);
                         LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
                         OF_EVENT_LOG.debug("Bundle Reconciliation Finish, Node: {}", dpnId);
                         return true;
                     } else {
-                        reconciliationState.setState(FAILED, LocalDateTime.now());
+                        reconciliationState.setStatus(FAILED);
                         LOG.error("commit bundle failed for device {} with error {}", dpnId,
                                 commitBundleFuture.get().getErrors());
                         return false;
                     }
                 } catch (InterruptedException | ExecutionException e) {
-                    reconciliationState.setState(FAILED, LocalDateTime.now());
+                    reconciliationState.setStatus(FAILED);
                     LOG.error("Error while doing bundle based reconciliation for device ID:{}", dpnId, e);
                     return false;
                 } finally {
@@ -380,10 +379,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 /* Tables - have to be pushed before groups */
                 // CHECK if while pushing the update, updateTableInput can be null to emulate a
                 // table add
-                ReconciliationState reconciliationState = new ReconciliationState(
-                        STARTED, LocalDateTime.now());
                 //put the dpn info into the map
-                reconciliationStates.put(dpnId.toString(), reconciliationState);
+                ReconciliationState reconciliationState = fgcm.put(dpnId.toString(), new ReconciliationState(STARTED));
                 LOG.debug("Triggering reconciliation for node {} with state: {}", dpnId, STARTED);
                 Collection<TableFeatures> tableList = flowNode.get().nonnullTableFeatures().values();
                 for (TableFeatures tableFeaturesItem : tableList) {
@@ -521,7 +518,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         provider.getFlowCommiter().add(flowIdent, flow, nodeIdentity);
                     }
                 }
-                reconciliationState.setState(COMPLETED, LocalDateTime.now());
+                reconciliationState.setStatus(COMPLETED);
                 OF_EVENT_LOG.debug("Reconciliation Finish, Node: {}, flow count: {}", dpnId, flowCount);
             }
             return true;
@@ -542,7 +539,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             ListenableFuture<?> future = JdkFutureAdapters
                     .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
 
-            Futures.addCallback(future, new FutureCallback<Object>() {
+            Futures.addCallback(future, new FutureCallback<>() {
                 @Override
                 public void onSuccess(final Object result) {
                     if (LOG.isTraceEnabled()) {
@@ -765,7 +762,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private static void handleStaleEntityDeletionResultFuture(final FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
+        submitFuture.addCallback(new FutureCallback<>() {
             @Override
             public void onSuccess(final Object result) {
                 LOG.debug("Stale entity removal success");
