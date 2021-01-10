@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -34,6 +33,7 @@ import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.OFConstants;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -48,7 +48,6 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainState;
-import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceInitializationContext;
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
@@ -62,6 +61,7 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
 import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
+import org.opendaylight.openflowplugin.impl.device.history.FlowGroupInfoHistoryImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
@@ -77,6 +77,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.servic
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
@@ -105,7 +106,9 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper, DeviceInitializationContext {
+public class DeviceContextImpl implements DeviceContext, ExtensionConverterProviderKeeper {
+    // FIXME: make this configurable and expose a different implementation at least for OSGi when this is switched off
+    private static final int FLOWGROUP_CACHE_SIZE = 10000;
 
     private static final Logger LOG = LoggerFactory.getLogger(DeviceContextImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
@@ -157,6 +160,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     private DeviceMeterRegistry deviceMeterRegistry;
     private ExtensionConverterProvider extensionConverterProvider;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
+    private FlowGroupInfoHistoryImpl history;
     private final NotificationManager<String, Runnable> queuedNotificationManager;
     private final boolean isStatisticsPollingOn;
 
@@ -172,7 +176,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final boolean isFlowRemovedNotificationOn,
                       final boolean switchFeaturesMandatory,
                       final ContextChainHolder contextChainHolder,
-                      final NotificationManager queuedNotificationManager,
+                      final NotificationManager<String, Runnable> queuedNotificationManager,
                       final boolean isStatisticsPollingOn) {
         this.primaryConnectionContext = primaryConnectionContext;
         this.deviceInfo = primaryConnectionContext.getDeviceInfo();
@@ -582,7 +586,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 ? transactionChainManager.deactivateTransactionManager()
                 : Futures.immediateFuture(null);
 
-        hashedWheelTimer.newTimeout((timerTask) -> {
+        hashedWheelTimer.newTimeout(timerTask -> {
             if (!listenableFuture.isDone() && !listenableFuture.isCancelled()) {
                 listenableFuture.cancel(true);
             }
@@ -601,7 +605,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         this.contextChainMastershipWatcher = newWatcher;
     }
 
-    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
@@ -706,13 +709,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     @VisibleForTesting
     void lazyTransactionManagerInitialization() {
         if (!this.initialized.get()) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Transaction chain manager for node {} created", deviceInfo);
-            }
-            this.transactionChainManager = new TransactionChainManager(dataBroker, deviceInfo.getNodeId().getValue());
+            LOG.debug("Transaction chain manager for node {} created", deviceInfo);
+            final NodeId nodeId = deviceInfo.getNodeId();
+            this.transactionChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());
+            this.history = new FlowGroupInfoHistoryImpl(FLOWGROUP_CACHE_SIZE);
             this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker,
-                    deviceInfo.getNodeInstanceIdentifier());
-            this.deviceGroupRegistry = new DeviceGroupRegistryImpl();
+                    deviceInfo.getNodeInstanceIdentifier(), history);
+            this.deviceGroupRegistry = new DeviceGroupRegistryImpl(history);
             this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
         }
 
@@ -720,7 +723,6 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         initialized.set(true);
     }
 
-    @Nullable
     @Override
     public <T> RequestContext<T> createRequestContext() {
         final Long xid = deviceInfo.reserveXidForDeviceMessage();
@@ -741,19 +743,24 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         hasState.set(true);
     }
 
+    @Override
+    public FlowGroupInfoHistory getFlowGroupInfoHistory() {
+        return history;
+    }
+
     private class DeviceFlowRegistryCallback implements FutureCallback<List<Optional<FlowCapableNode>>> {
         private final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill;
         private final ContextChainMastershipWatcher contextChainMastershipWatcher;
 
         DeviceFlowRegistryCallback(
-                ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
-                ContextChainMastershipWatcher contextChainMastershipWatcher) {
+                final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill,
+                final ContextChainMastershipWatcher contextChainMastershipWatcher) {
             this.deviceFlowRegistryFill = deviceFlowRegistryFill;
             this.contextChainMastershipWatcher = contextChainMastershipWatcher;
         }
 
         @Override
-        public void onSuccess(List<Optional<FlowCapableNode>> result) {
+        public void onSuccess(final List<Optional<FlowCapableNode>> result) {
             if (LOG.isDebugEnabled()) {
                 // Count all flows we read from datastore for debugging purposes.
                 // This number do not always represent how many flows were actually added
@@ -776,7 +783,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
         }
 
         @Override
-        public void onFailure(Throwable throwable) {
+        public void onFailure(final Throwable throwable) {
             if (deviceFlowRegistryFill.isCancelled()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Cancelled filling flow registry with flows for node: {}", deviceInfo);
@@ -790,5 +797,4 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                     false);
         }
     }
-
 }

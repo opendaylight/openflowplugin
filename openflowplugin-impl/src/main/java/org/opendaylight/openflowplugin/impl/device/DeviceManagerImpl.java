@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.util.HashedWheelTimer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -21,6 +24,7 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.OutboundQueueProvider;
@@ -50,7 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProviderKeeper {
-
     private static final Logger LOG = LoggerFactory.getLogger(DeviceManagerImpl.class);
     private static final int SPY_RATE = 10;
 
@@ -241,5 +244,31 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             LOG.info("Publishing node added notification for {}", id);
             notificationPublishService.offerNotification(builder.build());
         }
+    }
+
+    @Override
+    public Map<NodeId, FlowGroupInfoHistory> getAllFlowGroupHistories() {
+        final Map<NodeId, FlowGroupInfoHistory> ret = new HashMap<>();
+        for (Entry<DeviceInfo, DeviceContext> entry : deviceContexts.entrySet()) {
+            final FlowGroupInfoHistory history = entry.getValue().getFlowGroupInfoHistory();
+            if (history != null) {
+                ret.putIfAbsent(entry.getKey().getNodeId(), history);
+            }
+        }
+        return ret;
+    }
+
+    @Override
+    public FlowGroupInfoHistory getFlowGroupHistory(final NodeId nodeId) {
+        // We may have duplicate contexts for a node, hence the need to iterate
+        for (Entry<DeviceInfo, DeviceContext> entry : deviceContexts.entrySet()) {
+            if (nodeId.equals(entry.getKey().getNodeId())) {
+                final FlowGroupInfoHistory history = entry.getValue().getFlowGroupInfoHistory();
+                if (history != null) {
+                    return history;
+                }
+            }
+        }
+        return null;
     }
 }

@@ -20,8 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -30,11 +28,8 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
@@ -74,24 +69,14 @@ public class RpcManagerImplTest {
     private NotificationPublishService notificationPublishService;
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
-    @Mock
-    private FlowGroupCacheManager flowGroupCacheManager;
-
-    private final NodeId nodeId = new NodeId("openflow-junit:1");
 
     @Before
     public void setUp() {
-        final NodeKey nodeKey = new NodeKey(nodeId);
         rpcManager = new RpcManagerImpl(new OpenflowProviderConfigBuilder()
                 .setRpcRequestsQuota(new NonZeroUint16Type(QUOTA_VALUE))
                 .setIsStatisticsRpcEnabled(false)
                 .build(),
-                rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService,
-                flowGroupCacheManager);
-
-        FeaturesReply features = new GetFeaturesOutputBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3)
-                .build();
+                rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
 
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
