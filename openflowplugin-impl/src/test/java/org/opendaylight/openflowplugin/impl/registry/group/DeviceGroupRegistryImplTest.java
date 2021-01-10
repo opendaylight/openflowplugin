@@ -7,10 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.registry.group;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.impl.services.cache.FlowGroupInfoHistoryAppender;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -25,7 +28,7 @@ public class DeviceGroupRegistryImplTest {
 
     @Before
     public void setUp() {
-        deviceGroupRegistry = new DeviceGroupRegistryImpl();
+        deviceGroupRegistry = new DeviceGroupRegistryImpl(mock(FlowGroupInfoHistoryAppender.class));
         groupId = new GroupId(Uint32.valueOf(42));
         groupId2 = new GroupId(Uint32.valueOf(84));
         Assert.assertEquals(0, deviceGroupRegistry.getAllGroupIds().size());
