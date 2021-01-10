@@ -7,8 +7,11 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import com.google.common.annotations.Beta;
 import java.util.List;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
@@ -112,5 +115,8 @@ public interface DeviceContext extends
      * @return true if statistics polling is enabled.
      */
     boolean isStatisticsPollingOn();
+
+    @Beta
+    @Nullable FlowGroupInfoHistory getFlowGroupInfoHistory();
 }
 

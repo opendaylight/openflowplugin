@@ -24,7 +24,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
@@ -48,8 +47,6 @@ public class RpcContextImplTest {
     private static final int MAX_REQUESTS = 5;
     private RpcContextImpl rpcContext;
 
-    @Mock
-    private FlowGroupCacheManager flowGroupCacheManager;
     @Mock
     private RpcProviderService rpcProviderRegistry;
     @Mock
@@ -90,7 +87,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true, flowGroupCacheManager);
+                notificationPublishService, true);
 
         when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
                 .thenReturn(routedRpcReg);
@@ -104,7 +101,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true, flowGroupCacheManager)) {
+                notificationPublishService, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
         }
@@ -118,7 +115,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true, flowGroupCacheManager)) {
+                notificationPublishService, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNull(requestContext);
         }
@@ -132,7 +129,7 @@ public class RpcContextImplTest {
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
-                notificationPublishService, true, flowGroupCacheManager)) {
+                notificationPublishService, true)) {
             final RequestContext<?> requestContext = rpcContext.createRequestContext();
             assertNotNull(requestContext);
             requestContext.close();

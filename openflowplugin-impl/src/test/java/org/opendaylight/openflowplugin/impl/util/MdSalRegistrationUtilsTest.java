@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -19,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -62,7 +60,6 @@ public class MdSalRegistrationUtilsTest {
     private NotificationPublishService notificationPublishService;
 
     private ConvertorManager convertorManager;
-    private FlowGroupCacheManager flowGroupCacheManager;
 
     @Before
     public void setUp() {
@@ -78,8 +75,7 @@ public class MdSalRegistrationUtilsTest {
         MdSalRegistrationUtils.registerServices(mockedRpcContext,
                                                 mockedDeviceContext,
                                                 extensionConverterProvider,
-                                                convertorManager,
-                                                flowGroupCacheManager);
+                                                convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(), any(RpcService.class));
     }

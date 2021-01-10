@@ -31,7 +31,6 @@ import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvid
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -82,9 +81,6 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     MastershipChangeServiceManager mastershipChangeServiceManager;
 
-    @Mock
-    FlowGroupCacheManager flowGroupCacheManager;
-
     private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.ONE;
     private static final Uint16 THREAD_POOL_MAX_THREADS = Uint16.valueOf(32000);
     private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
@@ -128,8 +124,7 @@ public class OpenFlowPluginProviderImplTest {
                 entityOwnershipService,
                 mastershipChangeServiceManager,
                 ofPluginDiagstatusProvider,
-                systemReadyMonitor,
-                flowGroupCacheManager);
+                systemReadyMonitor);
 
         provider.initialize();
         // Calling the onSystemBootReady() callback
