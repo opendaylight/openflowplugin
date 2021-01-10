@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -29,9 +31,12 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfo;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
+import org.opendaylight.openflowplugin.impl.services.cache.FlowGroupInfoHistoryAppender;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -44,25 +49,25 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/*
- * this class is marked to be thread safe
- */
 public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceFlowRegistryImpl.class);
     private static final String ALIEN_SYSTEM_FLOW_ID = "#UF$TABLE*";
     private static final AtomicInteger UNACCOUNTED_FLOWS_COUNTER = new AtomicInteger(0);
 
-    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
-    private final DataBroker dataBroker;
-    private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
+    // FIXME: improve locking here
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
+    private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
+    private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
+    private final FlowGroupInfoHistoryAppender history;
     private final Consumer<Flow> flowConsumer;
+    private final DataBroker dataBroker;
 
-    public DeviceFlowRegistryImpl(final short version,
-                                  final DataBroker dataBroker,
-                                  final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
-        this.dataBroker = dataBroker;
-        this.instanceIdentifier = instanceIdentifier;
+    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker,
+            final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier,
+            final FlowGroupInfoHistoryAppender history) {
+        this.dataBroker = requireNonNull(dataBroker);
+        this.instanceIdentifier = requireNonNull(instanceIdentifier);
+        this.history = requireNonNull(history);
 
         // Specifies what to do with flow read from data store
         flowConsumer = flow -> {
@@ -215,6 +220,16 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     @Override
+    public void appendHistoryFlow(final FlowId id, final Uint8 tableId, final FlowGroupStatus status) {
+        history.appendFlowGroupInfo(FlowGroupInfo.ofFlow(id, tableId, status));
+    }
+
+    @Override
+    public void clearFlowRegistry() {
+        flowRegistry.clear();
+    }
+
+    @Override
     public void close() {
         final Iterator<ListenableFuture<List<Optional<FlowCapableNode>>>> iterator = lastFillFutures.iterator();
 
@@ -279,10 +294,5 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @VisibleForTesting
     Map<FlowRegistryKey, FlowDescriptor> getAllFlowDescriptors() {
         return flowRegistry;
-    }
-
-    @Override
-    public void clearFlowRegistry() {
-        flowRegistry.clear();
     }
 }

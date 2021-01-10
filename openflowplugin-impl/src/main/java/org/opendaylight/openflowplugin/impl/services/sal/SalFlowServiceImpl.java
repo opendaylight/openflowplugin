@@ -28,7 +28,6 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowSe
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
-import org.opendaylight.openflowplugin.impl.util.PathUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -44,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -94,14 +92,13 @@ public class SalFlowServiceImpl implements SalFlowService {
         final FlowRegistryKey flowRegistryKey =
                 FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
         final ListenableFuture<RpcResult<AddFlowOutput>> future;
-        NodeId nodeId = PathUtil.extractNodeId(input.getNode());
         if (flowAddMessage.canUseSingleLayerSerialization()) {
             future = flowAddMessage.handleServiceCall(input);
-            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey, nodeId),
+            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey),
                     MoreExecutors.directExecutor());
         } else {
             future = flowAdd.processFlowModInputBuilders(flowAdd.toFlowModInputs(input));
-            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey, nodeId),
+            Futures.addCallback(future, new AddFlowCallback(input, flowRegistryKey),
                     MoreExecutors.directExecutor());
 
         }
@@ -111,14 +108,13 @@ public class SalFlowServiceImpl implements SalFlowService {
     @Override
     public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(final RemoveFlowInput input) {
         final ListenableFuture<RpcResult<RemoveFlowOutput>> future;
-        NodeId nodeId = PathUtil.extractNodeId(input.getNode());
         if (flowRemoveMessage.canUseSingleLayerSerialization()) {
             future = flowRemoveMessage.handleServiceCall(input);
-            Futures.addCallback(future, new RemoveFlowCallback(input, nodeId), MoreExecutors.directExecutor());
+            Futures.addCallback(future, new RemoveFlowCallback(input), MoreExecutors.directExecutor());
 
         } else {
             future = flowRemove.processFlowModInputBuilders(flowRemove.toFlowModInputs(input));
-            Futures.addCallback(future, new RemoveFlowCallback(input, nodeId), MoreExecutors.directExecutor());
+            Futures.addCallback(future, new RemoveFlowCallback(input), MoreExecutors.directExecutor());
         }
 
         return future;
@@ -128,7 +124,6 @@ public class SalFlowServiceImpl implements SalFlowService {
     public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
         final UpdatedFlow updated = input.getUpdatedFlow();
         final OriginalFlow original = input.getOriginalFlow();
-        final NodeId nodeId = PathUtil.extractNodeId(input.getNode());
         final List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
         final List<FlowModInputBuilder> ofFlowModInputs;
 
@@ -197,21 +192,17 @@ public class SalFlowServiceImpl implements SalFlowService {
             future = flowUpdate.processFlowModInputBuilders(allFlowMods);
         }
 
-        Futures.addCallback(future, new UpdateFlowCallback(input, nodeId), MoreExecutors.directExecutor());
+        Futures.addCallback(future, new UpdateFlowCallback(input), MoreExecutors.directExecutor());
         return future;
     }
 
     private final class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> {
         private final AddFlowInput input;
         private final FlowRegistryKey flowRegistryKey;
-        private final NodeId nodeId;
 
-        private AddFlowCallback(final AddFlowInput input,
-                                final FlowRegistryKey flowRegistryKey,
-                                final NodeId nodeId) {
+        private AddFlowCallback(final AddFlowInput input, final FlowRegistryKey flowRegistryKey) {
             this.input = input;
             this.flowRegistryKey = flowRegistryKey;
-            this.nodeId = nodeId;
         }
 
         @Override
@@ -224,18 +215,21 @@ public class SalFlowServiceImpl implements SalFlowService {
                 return;
             }
 
+            final DeviceFlowRegistry flowRegistry = deviceContext.getDeviceFlowRegistry();
             final FlowDescriptor flowDescriptor;
             final FlowRef flowRef = input.getFlowRef();
             if (flowRef != null) {
                 final Uint8 tableId = input.getTableId();
                 final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
-                provider.appendFlow(nodeId, flowId, tableId, FlowGroupStatus.ADDED);
-
                 flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
-                deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
+
+                // FIXME: this looks like an atomic operation
+                flowRegistry.appendHistoryFlow(flowId, tableId, FlowGroupStatus.ADDED);
+                flowRegistry.storeDescriptor(flowRegistryKey, flowDescriptor);
             } else {
-                deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
-                flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+                // FIXME: this looks like an atomic operation
+                flowRegistry.store(flowRegistryKey);
+                flowDescriptor = flowRegistry.retrieveDescriptor(flowRegistryKey);
             }
 
             if (LOG.isDebugEnabled()) {
@@ -251,11 +245,9 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     private final class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOutput>> {
         private final RemoveFlowInput input;
-        private final NodeId nodeId;
 
-        private RemoveFlowCallback(final RemoveFlowInput input, final NodeId nodeId) {
+        private RemoveFlowCallback(final RemoveFlowInput input) {
             this.input = input;
-            this.nodeId = nodeId;
         }
 
         @Override
@@ -264,18 +256,20 @@ public class SalFlowServiceImpl implements SalFlowService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow remove finished without error for flow={}", input);
                 }
+                final DeviceFlowRegistry flowRegistry = deviceContext.getDeviceFlowRegistry();
                 if (input.getTableId() != null && !input.getTableId().equals(OFPTT_ALL)) {
+                    // FIXME:
                     FlowRegistryKey flowRegistryKey =
                             FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
-                    deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
+                    flowRegistry.addMark(flowRegistryKey);
 
                     final FlowRef flowRef = input.getFlowRef();
                     if (flowRef != null) {
                         final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
-                        provider.appendFlow(nodeId, flowId, input.getTableId(), FlowGroupStatus.REMOVED);
+                        flowRegistry.appendHistoryFlow(flowId, input.getTableId(), FlowGroupStatus.REMOVED);
                     }
                 } else {
-                    deviceContext.getDeviceFlowRegistry().clearFlowRegistry();
+                    flowRegistry.clearFlowRegistry();
                 }
             } else {
                 if (LOG.isDebugEnabled()) {
@@ -293,11 +287,9 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     private final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
         private final UpdateFlowInput input;
-        private final NodeId nodeId;
 
-        private UpdateFlowCallback(final UpdateFlowInput input, final NodeId nodeId) {
+        private UpdateFlowCallback(final UpdateFlowInput input) {
             this.input = input;
-            this.nodeId = nodeId;
         }
 
         @Override
@@ -317,7 +309,8 @@ public class SalFlowServiceImpl implements SalFlowService {
             if (flowRef != null) {
                 final Uint8 tableId = updated.getTableId();
                 final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
-                provider.appendFlow(nodeId, flowId, tableId, FlowGroupStatus.MODIFIED);
+                // FIXME: this does not look right, we probably want better integration
+                deviceFlowRegistry.appendHistoryFlow(flowId, tableId, FlowGroupStatus.MODIFIED);
 
                 updatedFlowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
             } else if (isUpdate) {
