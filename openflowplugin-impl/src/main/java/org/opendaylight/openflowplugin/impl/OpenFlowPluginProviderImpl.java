@@ -18,6 +18,7 @@ import io.netty.util.Timer;
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -50,6 +51,8 @@ import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusP
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
 import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -82,15 +85,18 @@ import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConve
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = { OpenFlowPluginProvider.class, OpenFlowPluginExtensionRegistratorProvider.class })
+@Service(classes = { OpenFlowPluginProvider.class, OpenFlowPluginExtensionRegistratorProvider.class,
+                     FlowGroupInfoHistories.class })
 public class OpenFlowPluginProviderImpl implements
         OpenFlowPluginProvider,
         OpenFlowPluginExtensionRegistratorProvider,
+        FlowGroupInfoHistories,
         SystemReadyListener {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
@@ -300,6 +306,16 @@ public class OpenFlowPluginProviderImpl implements
     @Override
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
+    }
+
+    @Override
+    public Map<NodeId, FlowGroupInfoHistory> getAllFlowGroupHistories() {
+        return deviceManager.getAllFlowGroupHistories();
+    }
+
+    @Override
+    public FlowGroupInfoHistory getFlowGroupHistory(final NodeId nodeId) {
+        return deviceManager.getFlowGroupHistory(nodeId);
     }
 
     @Override

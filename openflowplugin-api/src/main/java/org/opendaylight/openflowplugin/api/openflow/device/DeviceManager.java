@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder;
@@ -22,9 +23,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  * registering transaction chain for each DeviceContext. Each device
  * has its own device context managed by this manager.
  */
-public interface DeviceManager extends
-        OFPManager,
-        TranslatorLibrarian {
+public interface DeviceManager extends OFPManager, TranslatorLibrarian, FlowGroupInfoHistories {
 
     /**
      * invoked after all services injected.

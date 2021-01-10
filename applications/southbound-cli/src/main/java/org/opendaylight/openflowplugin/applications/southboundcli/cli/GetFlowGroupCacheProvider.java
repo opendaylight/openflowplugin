@@ -14,23 +14,29 @@ import java.time.ZoneOffset;
 import java.util.Collection;
 import java.util.Formatter;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfo;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 @Command(scope = "openflow", name = "getflownodecache", description = "Print all flow/group cache")
 public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
+    // FIXME: use String.repeat(), this does look arbitrary
+    private static final String LINE_SEPARATOR =
+        "--------------------------------------------------------------------------------------------------------------"
+        + "------------------------------";
 
     @Option(name = "-d", description = "Node Id")
     String dpnId;
 
-    private final FlowGroupCacheManager flowGroupCacheManager;
+    private final FlowGroupInfoHistories histories;
 
-    public GetFlowGroupCacheProvider(final FlowGroupCacheManager flowGroupCacheManager) {
-        this.flowGroupCacheManager = flowGroupCacheManager;
+    public GetFlowGroupCacheProvider(final FlowGroupInfoHistories histories) {
+        this.histories = histories;
     }
 
     @Override
@@ -42,12 +48,13 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         }
 
         final String nodeId = OPENFLOW_PREFIX + dpnId;
-        Collection<FlowGroupInfo> flowGroupCacheList = flowGroupCacheManager.getFlowGroupCache(new NodeId(nodeId));
-        if (flowGroupCacheList == null) {
+        final FlowGroupInfoHistory history = histories.getFlowGroupHistory(new NodeId(nodeId));
+        if (history == null) {
             session.getConsole().println("No node available for this NodeID");
             return null;
         }
-        if (flowGroupCacheList.isEmpty()) {
+        final Collection<FlowGroupInfo> entries = history.readEntries();
+        if (entries.isEmpty()) {
             session.getConsole().println("No flow/group is programmed yet for the the node " + nodeId);
             return null;
         }
@@ -55,13 +62,13 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         StringBuilder sb = new StringBuilder();
         Formatter fmt = new Formatter(sb);
         System.out.println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
-            flowGroupCacheList.size()));
+            entries.size()));
         System.out.println(getLocalNodeHeaderOutput());
-        System.out.println(getLineSeparator());
+        System.out.println(LINE_SEPARATOR);
 
-        for (FlowGroupInfo cache : flowGroupCacheList) {
-            System.out.println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", cache.getDescription(), "",
-                cache.getStatus(), "", getTime(cache), "", cache.getId()).toString());
+        for (FlowGroupInfo entry : entries) {
+            System.out.println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", entry.getDescription(), "",
+                entry.getStatus(), "", getTime(entry), "", entry.getId()).toString());
             sb.setLength(0);
         }
         fmt.close();
@@ -74,8 +81,8 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private void printAllNodes() {
-        final Map<NodeId, Collection<FlowGroupInfo>> allGroupInfos = flowGroupCacheManager.getAllNodesFlowGroupCache();
-        if (allGroupInfos.isEmpty()) {
+        final Map<NodeId, FlowGroupInfoHistory> allHistories = histories.getAllFlowGroupHistories();
+        if (allHistories.isEmpty()) {
             session.getConsole().println("No flow/group is programmed yet");
             return;
         }
@@ -83,19 +90,15 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         StringBuilder sb = new StringBuilder();
         Formatter fmt = new Formatter(sb);
         System.out.println(getAllLocalNodesHeaderOutput());
-        System.out.println(getLineSeparator());
-        for (Map.Entry<NodeId, Collection<FlowGroupInfo>> cacheEntry : allGroupInfos.entrySet()) {
+        System.out.println(LINE_SEPARATOR);
+        for (Entry<NodeId, FlowGroupInfoHistory> entry : allHistories.entrySet()) {
             // FIXME: just seek/substring
-            String[] temp = cacheEntry.getKey().getValue().split(":");
+            String[] temp = entry.getKey().getValue().split(":");
             String node = temp[1];
-            Collection<FlowGroupInfo> flowGroupCacheList = cacheEntry.getValue();
-            synchronized (flowGroupCacheList) {
-                for (FlowGroupInfo cache : flowGroupCacheList) {
-                    System.out.println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
-                        cache.getDescription(), "", cache.getStatus(), "", getTime(cache), "",
-                        cache.getId()).toString());
-                    sb.setLength(0);
-                }
+            for (FlowGroupInfo info : entry.getValue().readEntries()) {
+                System.out.println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
+                    info.getDescription(), "", info.getStatus(), "", getTime(info), "", info.getId()).toString());
+                sb.setLength(0);
             }
         }
         fmt.close();
@@ -115,10 +118,5 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
                 "DpnId", "", "TableId", "", "Status", "", "Time", "", "Flow/Group Id").toString();
         formatter.close();
         return header;
-    }
-
-    private static String getLineSeparator() {
-        return "---------------------------------------------------------------------------------------------"
-                + "-----------------------------------------------";
     }
 }

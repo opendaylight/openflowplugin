@@ -7,13 +7,17 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.registry.flow;
 
+import com.google.common.annotations.Beta;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Registry for mapping composite-key of flow ({@link FlowRegistryKey}) from device view
@@ -30,4 +34,6 @@ public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey
 
     void clearFlowRegistry();
 
+    @Beta
+    void appendHistoryFlow(@NonNull FlowId id, Uint8 tableId, @NonNull FlowGroupStatus status);
 }

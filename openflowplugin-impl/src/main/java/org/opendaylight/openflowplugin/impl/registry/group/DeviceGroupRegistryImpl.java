@@ -5,24 +5,31 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.registry.group;
+
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfo;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
+import org.opendaylight.openflowplugin.impl.device.history.FlowGroupInfoHistoryAppender;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 
-/*
- * this class is marked to be thread safe
- */
 public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
-
+    // FIXME: clean up locking here
     private final List<GroupId> groupIds = Collections.synchronizedList(new ArrayList<>());
     private final List<GroupId> marks = Collections.synchronizedList(new ArrayList<>());
+    private final FlowGroupInfoHistoryAppender history;
+
+    public DeviceGroupRegistryImpl(final FlowGroupInfoHistoryAppender history) {
+        this.history = requireNonNull(history);
+    }
 
     @Override
     public void store(final GroupId groupId) {
@@ -58,6 +65,11 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     }
 
     @Override
+    public void appendHistoryGroup(final GroupId id, final GroupTypes type, final FlowGroupStatus status) {
+        history.appendFlowGroupInfo(new GroupInfo(status, id, type));
+    }
+
+    @Override
     public void close() {
         groupIds.clear();
         marks.clear();
@@ -66,5 +78,27 @@ public class DeviceGroupRegistryImpl implements DeviceGroupRegistry {
     @VisibleForTesting
     List<GroupId> getAllGroupIds() {
         return groupIds;
+    }
+
+    private static final class GroupInfo extends FlowGroupInfo {
+        private final GroupTypes type;
+        private final GroupId id;
+
+        GroupInfo(final FlowGroupStatus status, final GroupId id, final GroupTypes type) {
+            super(status);
+            this.id = requireNonNull(id);
+            this.type = requireNonNull(type);
+        }
+
+        @Override
+        public String getId() {
+            // FIXME: GroupId.toString() is not pretty, can we do something else?
+            return id.toString();
+        }
+
+        @Override
+        public String getDescription() {
+            return type.getName();
+        }
     }
 }

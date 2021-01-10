@@ -34,6 +34,7 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorData;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.DeviceContextImpl;
+import org.opendaylight.openflowplugin.impl.device.history.FlowGroupInfoHistoryAppender;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -96,6 +97,8 @@ public abstract class ServiceMocking {
     @Mock
     protected ConverterMessageToOFJava<ExperimenterMessageOfChoice, DataContainer,
         ConvertorData> mockedExtensionConverter;
+    @Mock
+    protected FlowGroupInfoHistoryAppender historyAppender;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -125,7 +128,8 @@ public abstract class ServiceMocking {
         lenient().when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         lenient().when(mockedDeviceContext.getDeviceFlowRegistry())
-                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION.toJava(), dataBroker, DUMMY_NODE_II));
+                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION.toJava(), dataBroker, DUMMY_NODE_II,
+                    historyAppender));
         lenient().when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         lenient().when(mockedDeviceContext.getMultiMsgCollector(any())).thenReturn(multiMessageCollector);
