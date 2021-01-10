@@ -9,16 +9,17 @@ package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.OPENFLOW_PREFIX;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Collection;
 import java.util.Formatter;
-import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCache;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfo;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
 @Command(scope = "openflow", name = "getflownodecache", description = "Print all flow/group cache")
 public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
@@ -32,65 +33,72 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
         this.flowGroupCacheManager = flowGroupCacheManager;
     }
 
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     protected Object doExecute() throws Exception {
-        String nodeId = OPENFLOW_PREFIX + dpnId;
-        List<String> result = new ArrayList<>();
-
         if (dpnId == null) {
-            Map<String, Queue<FlowGroupCache>> flowGroupCacheListForAllNodes = flowGroupCacheManager
-                    .getAllNodesFlowGroupCache();
-            if (!flowGroupCacheListForAllNodes.isEmpty()) {
-                StringBuilder stringBuilder = new StringBuilder();
-                Formatter formatter = new Formatter(stringBuilder);
-                result.add(getAllLocalNodesHeaderOutput());
-                result.add(getLineSeparator());
-                for (Map.Entry<String, Queue<FlowGroupCache>> cacheEntry : flowGroupCacheListForAllNodes.entrySet()) {
-                    String[] temp = cacheEntry.getKey().split(":");
-                    String node = temp[1];
-                    Queue<FlowGroupCache> flowGroupCacheList = cacheEntry.getValue();
-                    synchronized (flowGroupCacheList) {
-                        for (FlowGroupCache cache : flowGroupCacheList) {
-                            result.add(formatter.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s",
-                                    node, "", cache.getDescription(), "", cache.getStatus(), "",
-                                    cache.getTime(), "", cache.getId()).toString());
-                            stringBuilder.setLength(0);
-                        }
-                    }
+            printAllNodes();
+            return null;
+        }
+
+        final String nodeId = OPENFLOW_PREFIX + dpnId;
+        Collection<FlowGroupInfo> flowGroupCacheList = flowGroupCacheManager.getAllNodesFlowGroupCache().get(nodeId);
+        if (flowGroupCacheList == null) {
+            session.getConsole().println("No node available for this NodeID");
+            return null;
+        }
+        if (flowGroupCacheList.isEmpty()) {
+            session.getConsole().println("No flow/group is programmed yet for the the node " + nodeId);
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        Formatter fmt = new Formatter(sb);
+        System.out.println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
+            flowGroupCacheList.size()));
+        System.out.println(getLocalNodeHeaderOutput());
+        System.out.println(getLineSeparator());
+
+        for (FlowGroupInfo cache : flowGroupCacheList) {
+            System.out.println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", cache.getDescription(), "",
+                cache.getStatus(), "", getTime(cache), "", cache.getId()).toString());
+            sb.setLength(0);
+        }
+        fmt.close();
+        return null;
+    }
+
+    private static LocalDateTime getTime(final FlowGroupInfo info) {
+        return LocalDateTime.ofInstant(info.getInstantUTC(), ZoneOffset.UTC);
+    }
+
+    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
+    private void printAllNodes() {
+        final Map<NodeId, Collection<FlowGroupInfo>> allGroupInfos = flowGroupCacheManager.getAllNodesFlowGroupCache();
+        if (allGroupInfos.isEmpty()) {
+            session.getConsole().println("No flow/group is programmed yet");
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        Formatter fmt = new Formatter(sb);
+        System.out.println(getAllLocalNodesHeaderOutput());
+        System.out.println(getLineSeparator());
+        for (Map.Entry<NodeId, Collection<FlowGroupInfo>> cacheEntry : allGroupInfos.entrySet()) {
+            // FIXME: just seek/substring
+            String[] temp = cacheEntry.getKey().getValue().split(":");
+            String node = temp[1];
+            Collection<FlowGroupInfo> flowGroupCacheList = cacheEntry.getValue();
+            synchronized (flowGroupCacheList) {
+                for (FlowGroupInfo cache : flowGroupCacheList) {
+                    System.out.println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
+                        cache.getDescription(), "", cache.getStatus(), "", getTime(cache), "",
+                        cache.getId()).toString());
+                    sb.setLength(0);
                 }
-                formatter.close();
-                result.stream().forEach(p -> System.out.println(p));
-            } else {
-                session.getConsole().println("No flow/group is programmed yet");
-            }
-        } else {
-            if (!flowGroupCacheManager.getAllNodesFlowGroupCache().containsKey(nodeId)) {
-                session.getConsole().println("No node available for this NodeID");
-                return null;
-            }
-            Queue<FlowGroupCache> flowGroupCacheList = flowGroupCacheManager.getAllNodesFlowGroupCache()
-                    .get(nodeId);
-            if (!flowGroupCacheList.isEmpty()) {
-                StringBuilder stringBuilder = new StringBuilder();
-                Formatter formatter = new Formatter(stringBuilder);
-                result.add(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
-                        flowGroupCacheList.size()));
-                result.add(getLocalNodeHeaderOutput());
-                result.add(getLineSeparator());
-                for (FlowGroupCache cache : flowGroupCacheList) {
-                    result.add(formatter.format("%-10s %1s %-8s %1s %-23s %1s %-60s",
-                            cache.getDescription(), "", cache.getStatus(), "",
-                            cache.getTime(), "", cache.getId()).toString());
-                    stringBuilder.setLength(0);
-                }
-                formatter.close();
-                result.stream().forEach(p -> System.out.println(p));
-            } else {
-                session.getConsole().println("No flow/group is programmed yet for the the node " + nodeId);
             }
         }
-        return null;
+        fmt.close();
     }
 
     private static String getLocalNodeHeaderOutput() {
