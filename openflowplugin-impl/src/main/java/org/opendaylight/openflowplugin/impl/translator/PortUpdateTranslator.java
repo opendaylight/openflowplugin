@@ -44,8 +44,7 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeatures()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getState()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeatures()));
-            builder.setQueue(Collections
-                    .emptyList());
+            builder.setQueue(Collections.emptyMap());
         }
         if (input instanceof PortStatusMessage) {
             if (((PortStatusMessage) input).getReason() != null) {

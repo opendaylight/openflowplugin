@@ -14,6 +14,7 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -59,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -332,8 +334,8 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     }
 
     @SuppressWarnings("checkstyle:LineLength")
-    private List<Action> readActions(final ByteBuf message, final int length) {
-        final List<Action> actions = new ArrayList<>();
+    private Map<ActionKey, Action> readActions(final ByteBuf message, final int length) {
+        final var actions = BindingMap.<ActionKey, Action>orderedBuilder();
         final int startIndex = message.readerIndex();
         int offset = 0;
 
@@ -348,11 +350,13 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
+                LOG.debug("Failed to build action", e);
+                // FIXME: what are we guarding here?
                 message.skipBytes(2 * Short.BYTES);
             }
         }
 
-        return actions;
+        return actions.build();
     }
 
     @Override

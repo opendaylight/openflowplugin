@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -27,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestTableCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table._case.MultipartRequestTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Empty;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -82,27 +83,25 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
     }
 
     @Override
-    public GetFlowTablesStatisticsOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetFlowTablesStatisticsOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetFlowTablesStatisticsOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public FlowTableStatisticsUpdate transformToNotification(List<MultipartReply> mpReplyList,
-                                                             TransactionId emulatedTxId) {
+    public FlowTableStatisticsUpdate transformToNotification(final List<MultipartReply> mpReplyList,
+                                                             final TransactionId emulatedTxId) {
         FlowTableStatisticsUpdateBuilder notification = new FlowTableStatisticsUpdateBuilder();
         notification.setId(getDeviceInfo().getNodeId());
         notification.setMoreReplies(Boolean.FALSE);
         notification.setTransactionId(emulatedTxId);
 
-        final List<FlowTableAndStatisticsMap> salFlowStats = new ArrayList<>();
-        notification.setFlowTableAndStatisticsMap(salFlowStats);
+        final var salFlowStats = BindingMap.<FlowTableAndStatisticsMapKey, FlowTableAndStatisticsMap>orderedBuilder();
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyTableCase caseBody = (MultipartReplyTableCase) mpReply.getMultipartReplyBody();
             MultipartReplyTable replyBody = caseBody.getMultipartReplyTable();
-            List<TableStats> swTablesStats = replyBody.getTableStats();
 
             //TODO: Duplicate code: look at MultiReplyTranslatorUtil method translateTable
-            for (TableStats swTableStats : swTablesStats) {
+            for (TableStats swTableStats : replyBody.nonnullTableStats()) {
                 FlowTableAndStatisticsMapBuilder statisticsBuilder = new FlowTableAndStatisticsMapBuilder();
                 statisticsBuilder.setActiveFlows(new Counter32(swTableStats.getActiveCount()));
                 statisticsBuilder.setPacketsLookedUp(new Counter64(swTableStats.getLookupCount()));
@@ -112,6 +111,6 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
             }
         }
 
-        return notification.build();
+        return notification.setFlowTableAndStatisticsMap(salFlowStats.build()).build();
     }
 }

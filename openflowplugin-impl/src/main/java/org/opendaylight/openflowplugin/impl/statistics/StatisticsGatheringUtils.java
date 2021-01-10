@@ -185,7 +185,7 @@ public final class StatisticsGatheringUtils {
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
                         for (final Table tableData : flowCapNodeOpt.get().nonnullTable().values()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Collections.emptyList()).build();
+                            final Table table = new TableBuilder(tableData).setFlow(Collections.emptyMap()).build();
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
                                 .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
