@@ -7,19 +7,14 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.collect.EvictingQueue;
-import com.google.common.collect.Queues;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCache;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -48,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -59,6 +55,8 @@ import org.slf4j.LoggerFactory;
 
 public class SalFlowServiceImpl implements SalFlowService {
     private static final Logger LOG = LoggerFactory.getLogger(SalFlowServiceImpl.class);
+    private static final Uint8 OFPTT_ALL = Uint8.MAX_VALUE;
+
     private final MultiLayerFlowService<UpdateFlowOutput> flowUpdate;
     private final MultiLayerFlowService<AddFlowOutput> flowAdd;
     private final MultiLayerFlowService<RemoveFlowOutput> flowRemove;
@@ -66,10 +64,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     private final SingleLayerFlowService<UpdateFlowOutput> flowUpdateMessage;
     private final SingleLayerFlowService<RemoveFlowOutput> flowRemoveMessage;
     private final DeviceContext deviceContext;
-    private static final Uint8 OFPTT_ALL = Uint8.MAX_VALUE;
     private final FlowGroupCacheManager provider;
-    public static final int FLOWGROUP_CACHE_SIZE = 10000;
-
 
     public SalFlowServiceImpl(final RequestContextStack requestContextStack,
                               final DeviceContext deviceContext,
@@ -133,7 +128,7 @@ public class SalFlowServiceImpl implements SalFlowService {
     public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(final UpdateFlowInput input) {
         final UpdatedFlow updated = input.getUpdatedFlow();
         final OriginalFlow original = input.getOriginalFlow();
-        String nodeId =  PathUtil.extractNodeId(input.getNode()).getValue();
+        final NodeId nodeId = PathUtil.extractNodeId(input.getNode());
         final List<FlowModInputBuilder> allFlowMods = new ArrayList<>();
         final List<FlowModInputBuilder> ofFlowModInputs;
 
@@ -150,7 +145,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                 Futures.addCallback(listListenableFuture, new FutureCallback<List<RpcResult<UpdateFlowOutput>>>() {
                     @Override
                     public void onSuccess(final List<RpcResult<UpdateFlowOutput>> results) {
-                        final ArrayList<RpcError> errors = new ArrayList();
+                        final ArrayList<RpcError> errors = new ArrayList<>();
                         for (RpcResult<UpdateFlowOutput> flowModResult : results) {
                             if (flowModResult == null) {
                                 errors.add(RpcResultBuilder.newError(
@@ -221,35 +216,30 @@ public class SalFlowServiceImpl implements SalFlowService {
 
         @Override
         public void onSuccess(final RpcResult<AddFlowOutput> rpcResult) {
-            if (rpcResult.isSuccessful()) {
-                final FlowDescriptor flowDescriptor;
-                final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
-                FlowGroupCache cache = new FlowGroupCache(flowId.getValue(), input.getTableId().toString(),
-                        FlowGroupStatus.ADDED, LocalDateTime.now());
-                if (provider.getAllNodesFlowGroupCache().containsKey(nodeId.getValue())) {
-                    provider.getAllNodesFlowGroupCache().get(nodeId.getValue()).add(cache);
-                } else {
-                    Queue<FlowGroupCache> flowGroupCacheList =
-                            Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
-                    flowGroupCacheList.add(cache);
-                    provider.getAllNodesFlowGroupCache().put(nodeId.getValue(), flowGroupCacheList);
-                }
-                if (input.getFlowRef() != null) {
-                    flowDescriptor = FlowDescriptorFactory.create(input.getTableId(), flowId);
-                    deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
-                } else {
-                    deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
-                    flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
-                }
-
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
-                }
-            } else {
+            if (!rpcResult.isSuccessful()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Flow add failed for flow={}, errors={}", input,
                             ErrorUtil.errorsToString(rpcResult.getErrors()));
                 }
+                return;
+            }
+
+            final FlowDescriptor flowDescriptor;
+            final FlowRef flowRef = input.getFlowRef();
+            if (flowRef != null) {
+                final Uint8 tableId = input.getTableId();
+                final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
+                provider.appendFlow(nodeId, flowId, tableId, FlowGroupStatus.ADDED);
+
+                flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
+                deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegistryKey, flowDescriptor);
+            } else {
+                deviceContext.getDeviceFlowRegistry().store(flowRegistryKey);
+                flowDescriptor = deviceContext.getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey);
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Flow add with id={} finished without error", flowDescriptor.getFlowId().getValue());
             }
         }
 
@@ -278,17 +268,11 @@ public class SalFlowServiceImpl implements SalFlowService {
                     FlowRegistryKey flowRegistryKey =
                             FlowRegistryKeyFactory.create(deviceContext.getDeviceInfo().getVersion(), input);
                     deviceContext.getDeviceFlowRegistry().addMark(flowRegistryKey);
-                    final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
-                    FlowGroupCache cache = new FlowGroupCache(flowId.getValue(),
-                            input.getTableId().toString(), FlowGroupStatus.REMOVED,
-                            LocalDateTime.now());
-                    if (provider.getAllNodesFlowGroupCache().containsKey(nodeId.getValue())) {
-                        provider.getAllNodesFlowGroupCache().get(nodeId.getValue()).add(cache);
-                    } else {
-                        Queue<FlowGroupCache> flowGroupCacheList =
-                                Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
-                        flowGroupCacheList.add(cache);
-                        provider.getAllNodesFlowGroupCache().put(nodeId.getValue(), flowGroupCacheList);
+
+                    final FlowRef flowRef = input.getFlowRef();
+                    if (flowRef != null) {
+                        final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
+                        provider.appendFlow(nodeId, flowId, input.getTableId(), FlowGroupStatus.REMOVED);
                     }
                 } else {
                     deviceContext.getDeviceFlowRegistry().clearFlowRegistry();
@@ -309,9 +293,9 @@ public class SalFlowServiceImpl implements SalFlowService {
 
     private final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOutput>> {
         private final UpdateFlowInput input;
-        private final String nodeId;
+        private final NodeId nodeId;
 
-        private UpdateFlowCallback(UpdateFlowInput input,  String nodeId) {
+        private UpdateFlowCallback(final UpdateFlowInput input, final NodeId nodeId) {
             this.input = input;
             this.nodeId = nodeId;
         }
@@ -319,7 +303,6 @@ public class SalFlowServiceImpl implements SalFlowService {
         @Override
         public void onSuccess(final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult) {
             final DeviceFlowRegistry deviceFlowRegistry = deviceContext.getDeviceFlowRegistry();
-            final FlowId flowId = input.getFlowRef().getValue().firstKeyOf(Flow.class).getId();
             final UpdatedFlow updated = input.getUpdatedFlow();
             final OriginalFlow original = input.getOriginalFlow();
             final FlowRegistryKey origFlowRegistryKey =
@@ -330,29 +313,18 @@ public class SalFlowServiceImpl implements SalFlowService {
 
             final boolean isUpdate = origFlowDescriptor != null;
             final FlowDescriptor updatedFlowDescriptor;
-            FlowGroupCache cache = new FlowGroupCache(flowId.getValue(), updated.getTableId().toString(),
-                    FlowGroupStatus.MODIFIED,
-                    LocalDateTime.now());
-            if (provider.getAllNodesFlowGroupCache().containsKey(nodeId)) {
-                provider.getAllNodesFlowGroupCache().get(nodeId).add(cache);
-            } else {
-                Queue<FlowGroupCache> flowGroupCacheList =
-                        Queues.synchronizedQueue(EvictingQueue.create(FLOWGROUP_CACHE_SIZE));
-                flowGroupCacheList.add(cache);
-                provider.getAllNodesFlowGroupCache().put(nodeId, flowGroupCacheList);
-            }
+            final FlowRef flowRef = input.getFlowRef();
+            if (flowRef != null) {
+                final Uint8 tableId = updated.getTableId();
+                final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
+                provider.appendFlow(nodeId, flowId, tableId, FlowGroupStatus.MODIFIED);
 
-            if (input.getFlowRef() != null) {
-                updatedFlowDescriptor =
-                        FlowDescriptorFactory.create(updated.getTableId(),
-                                                     input.getFlowRef().getValue().firstKeyOf(Flow.class).getId());
+                updatedFlowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
+            } else if (isUpdate) {
+                updatedFlowDescriptor = origFlowDescriptor;
             } else {
-                if (isUpdate) {
-                    updatedFlowDescriptor = origFlowDescriptor;
-                } else {
-                    deviceFlowRegistry.store(updatedFlowRegistryKey);
-                    updatedFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(updatedFlowRegistryKey);
-                }
+                deviceFlowRegistry.store(updatedFlowRegistryKey);
+                updatedFlowDescriptor = deviceFlowRegistry.retrieveDescriptor(updatedFlowRegistryKey);
             }
 
             if (isUpdate) {
