@@ -246,7 +246,6 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             @Override
             protected void removeRegistration() {
                 outputManager.close();
-                channel.pipeline().remove(outputManager);
                 outputManager = null;
             }
         };
