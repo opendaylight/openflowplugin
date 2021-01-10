@@ -18,7 +18,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
-import org.opendaylight.openflowplugin.impl.util.PathUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -29,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,13 +78,13 @@ public class SalGroupServiceImpl implements SalGroupService {
             addGroupMessage.canUseSingleLayerSerialization()
             ? addGroupMessage.handleServiceCall(input)
             : addGroup.handleServiceCall(input);
-        NodeId nodeId = PathUtil.extractNodeId(input.getNode());
         Futures.addCallback(resultFuture, new FutureCallback<RpcResult<AddGroupOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddGroupOutput> result) {
                 if (result.isSuccessful()) {
                     LOG.debug("adding group successful {}", input.getGroupId());
-                    provider.appendGroup(nodeId, input.getGroupId(), input.getGroupType(), FlowGroupStatus.ADDED);
+                    deviceContext.getDeviceGroupRegistry().appendHistoryGroup(input.getGroupId(), input.getGroupType(),
+                        FlowGroupStatus.ADDED);
                 } else {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group add with id={} failed, errors={}", input.getGroupId().getValue(),
@@ -118,7 +116,7 @@ public class SalGroupServiceImpl implements SalGroupService {
             public void onSuccess(final RpcResult<UpdateGroupOutput> result) {
                 if (result.isSuccessful()) {
                     UpdatedGroup updatedGroup = input.getUpdatedGroup();
-                    provider.appendGroup(PathUtil.extractNodeId(input.getNode()),
+                    deviceContext.getDeviceGroupRegistry().appendHistoryGroup(
                         updatedGroup.getGroupId(), updatedGroup.getGroupType(), FlowGroupStatus.MODIFIED);
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group update with original id={} finished without error",
@@ -153,7 +151,7 @@ public class SalGroupServiceImpl implements SalGroupService {
                 if (result.isSuccessful()) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("Group remove with id={} finished without error", input.getGroupId().getValue());
-                        provider.appendGroup(PathUtil.extractNodeId(input.getNode()), input.getGroupId(),
+                        deviceContext.getDeviceGroupRegistry().appendHistoryGroup(input.getGroupId(),
                             input.getGroupType(), FlowGroupStatus.REMOVED);
                     }
                 } else {
