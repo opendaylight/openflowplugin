@@ -16,6 +16,24 @@
       "revId": "96b410058999a87e8257159cb7796d054a3fef9f",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
       "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "d047a01d_c6fabaf0",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/services/sal/SalFlowServiceImpl.java",
+        "patchSetId": 6
+      },
+      "lineNbr": 233,
+      "author": {
+        "id": 8826
+      },
+      "writtenOn": "2021-01-10T14:09:08Z",
+      "side": 1,
+      "message": "Thx Robert for the remind. Now I remove the part which is handled in OPNFLWPLUG-1106. Would u pls review the remaining part again. Below is the change reason:\nCHANNEL_OUTBOUND_QUEUE_MANAGER pipeline needs to keep for not missing channelInactive event.\nThis event is triggered after removeRegistration when controller actively closes the connection because of down network. Unacked barrier flows will fail with info \"Device disconnected\" in the callback.\n\nU can also see it in the code review description.",
+      "parentUuid": "c98784c5_a1617c47",
+      "revId": "96b410058999a87e8257159cb7796d054a3fef9f",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
     }
   ]
 }
