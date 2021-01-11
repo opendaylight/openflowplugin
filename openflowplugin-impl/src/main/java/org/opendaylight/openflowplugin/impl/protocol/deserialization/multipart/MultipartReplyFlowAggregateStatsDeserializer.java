@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -19,18 +21,13 @@ public class MultipartReplyFlowAggregateStatsDeserializer implements OFDeseriali
     private static final byte PADDING_IN_AGGREGATE_HEADER = 4;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
-        final byte[] packetCount = new byte[Long.BYTES];
-        message.readBytes(packetCount);
-        final byte[] byteCount = new byte[Long.BYTES];
-        message.readBytes(byteCount);
-
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyFlowAggregateStatsBuilder builder = new MultipartReplyFlowAggregateStatsBuilder()
-            .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
-            .setByteCount(new Counter64(new BigInteger(1, byteCount)))
-            .setFlowCount(new Counter32(message.readUnsignedInt()));
-
+            .setPacketCount(new Counter64(readUint64(message)))
+            .setByteCount(new Counter64(readUint64(message)))
+            .setFlowCount(new Counter32(readUint32(message)));
         message.skipBytes(PADDING_IN_AGGREGATE_HEADER);
+
         return builder.build();
     }
 }

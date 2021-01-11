@@ -9,13 +9,11 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -38,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, DeserializerRegistryInjector {
 
@@ -54,8 +53,8 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
         final FlowMessageBuilder builder = new FlowMessageBuilder()
             .setVersion(EncodeConstants.OF_VERSION_1_3)
             .setXid(readUint32(message))
-            .setCookie(new FlowCookie(BigInteger.valueOf(message.readLong())))
-            .setCookieMask(new FlowCookie(BigInteger.valueOf(message.readLong())))
+            .setCookie(new FlowCookie(readUint64(message)))
+            .setCookieMask(new FlowCookie(readUint64(message)))
             .setTableId(readUint8(message))
             .setCommand(FlowModCommand.forValue(message.readUnsignedByte()))
             .setIdleTimeout(readUint16(message))
@@ -74,8 +73,9 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
         final int length = message.readableBytes();
 
         if (length > 0) {
-            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-                .Instruction> instructions = new ArrayList<>();
+            final var instructions = BindingMap.<InstructionKey,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
+                    orderedBuilder();
             final int startIndex = message.readerIndex();
             int offset = 0;
 
@@ -108,7 +108,6 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                 }
 
                 instructions.add(new InstructionBuilder()
-                        .withKey(new InstructionKey(offset))
                         .setOrder(offset)
                         .setInstruction(deserializer.deserialize(message))
                         .build());
@@ -117,7 +116,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
             }
 
             builder.setInstructions(new InstructionsBuilder()
-                    .setInstruction(instructions)
+                    .setInstruction(instructions.build())
                     .build());
         }
 

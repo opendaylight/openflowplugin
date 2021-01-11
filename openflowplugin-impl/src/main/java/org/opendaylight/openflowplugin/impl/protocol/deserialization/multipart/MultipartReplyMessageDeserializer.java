@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
@@ -18,7 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
-
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyMessageDeserializer implements OFDeserializer<MultipartReply>, DeserializerRegistryInjector {
 
@@ -27,8 +28,8 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
     private DeserializerRegistry registry;
 
     @Override
-    public MultipartReply deserialize(ByteBuf message) {
-        final long xid = message.readUnsignedInt();
+    public MultipartReply deserialize(final ByteBuf message) {
+        final Uint32 xid = readUint32(message);
         final int type = message.readUnsignedShort();
         final boolean reqMore = (message.readUnsignedShort() & 0x01) != 0;
         message.skipBytes(PADDING_IN_MULTIPART_REPLY_HEADER);
@@ -46,7 +47,7 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 

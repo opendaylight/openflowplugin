@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -31,13 +30,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.add.meters.batch.input.BatchAddMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.add.meters.batch.input.BatchAddMetersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMetersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMetersBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -57,13 +55,11 @@ public final class FlatBatchMeterAdapters {
      * .opendaylight.meters.service.rev160316.SalMetersBatchService#addMetersBatch(AddMetersBatchInput)}
      */
     public static AddMetersBatchInput adaptFlatBatchAddMeter(final BatchPlanStep planStep, final NodeRef node) {
-        final List<BatchAddMeters> batchMeters = new ArrayList<>();
-        for (FlatBatchAddMeter batchAddMeter : planStep.<FlatBatchAddMeter>getTaskBag()) {
-            final BatchAddMeters addMeters = new BatchAddMetersBuilder(batchAddMeter)
-                    .setMeterId(batchAddMeter.getMeterId())
-                    .build();
-            batchMeters.add(addMeters);
-        }
+        final var batchMeters = planStep.<FlatBatchAddMeter>getTaskBag().stream()
+            .map(batchAddMeter -> new BatchAddMetersBuilder(batchAddMeter)
+                .setMeterId(batchAddMeter.getMeterId())
+                .build())
+            .collect(BindingMap.toOrderedMap());
 
         return new AddMetersBatchInputBuilder()
                 .setBarrierAfter(planStep.isBarrierAfter())
@@ -80,13 +76,11 @@ public final class FlatBatchMeterAdapters {
      * .opendaylight.meters.service.rev160316.SalMetersBatchService#removeMetersBatch(RemoveMetersBatchInput)}
      */
     public static RemoveMetersBatchInput adaptFlatBatchRemoveMeter(final BatchPlanStep planStep, final NodeRef node) {
-        final List<BatchRemoveMeters> batchMeters = new ArrayList<>();
-        for (FlatBatchRemoveMeter batchRemoveMeter : planStep.<FlatBatchRemoveMeter>getTaskBag()) {
-            final BatchRemoveMeters removeMeters = new BatchRemoveMetersBuilder(batchRemoveMeter)
-                    .setMeterId(batchRemoveMeter.getMeterId())
-                    .build();
-            batchMeters.add(removeMeters);
-        }
+        final var batchMeters = planStep.<FlatBatchRemoveMeter>getTaskBag().stream()
+            .map(batchRemoveMeter -> new BatchRemoveMetersBuilder(batchRemoveMeter)
+                .setMeterId(batchRemoveMeter.getMeterId())
+                .build())
+            .collect(BindingMap.toOrderedMap());
 
         return new RemoveMetersBatchInputBuilder()
                 .setBarrierAfter(planStep.isBarrierAfter())

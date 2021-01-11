@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -27,21 +29,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.m
 public class MultipartReplyMeterFeaturesDeserializer implements OFDeserializer<MultipartReplyBody> {
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         return new MultipartReplyMeterFeaturesBuilder()
-                .setMaxMeter(new Counter32(message.readUnsignedInt()))
+                .setMaxMeter(new Counter32(readUint32(message)))
                 .setMeterBandSupported(readMeterBands(message))
                 .setMeterCapabilitiesSupported(readMeterCapabilities(message))
-                .setMaxBands(message.readUnsignedByte())
-                .setMaxColor(message.readUnsignedByte())
+                .setMaxBands(readUint8(message))
+                .setMaxColor(readUint8(message))
                 .build();
     }
 
-    private static List<Class<? extends MeterBand>> readMeterBands(ByteBuf message) {
+    private static List<Class<? extends MeterBand>> readMeterBands(final ByteBuf message) {
         final List<Class<? extends MeterBand>> bandTypes = new ArrayList<>();
         final long typesMask = message.readUnsignedInt();
-        final boolean mbtDrop = (typesMask & (1)) != 0;
-        final boolean mbtDscpRemark = (typesMask & (1 << 1)) != 0;
+        final boolean mbtDrop = (typesMask & 1) != 0;
+        final boolean mbtDscpRemark = (typesMask & 1 << 1) != 0;
 
         if (mbtDrop) {
             bandTypes.add(MeterBandDrop.class);
@@ -53,14 +55,14 @@ public class MultipartReplyMeterFeaturesDeserializer implements OFDeserializer<M
         return bandTypes;
     }
 
-    private static List<Class<? extends MeterCapability>> readMeterCapabilities(ByteBuf message) {
+    private static List<Class<? extends MeterCapability>> readMeterCapabilities(final ByteBuf message) {
         final List<Class<? extends MeterCapability>> meterCapabilities = new ArrayList<>();
         final long capabilitiesMask = message.readUnsignedInt();
 
-        final boolean mfKbps = (capabilitiesMask & (1)) != 0;
-        final boolean mfPktps = (capabilitiesMask & (1 << 1)) != 0;
-        final boolean mfBurst = (capabilitiesMask & (1 << 2)) != 0;
-        final boolean mfStats = (capabilitiesMask & (1 << 3)) != 0;
+        final boolean mfKbps = (capabilitiesMask & 1) != 0;
+        final boolean mfPktps = (capabilitiesMask & 1 << 1) != 0;
+        final boolean mfBurst = (capabilitiesMask & 1 << 2) != 0;
+        final boolean mfStats = (capabilitiesMask & 1 << 3) != 0;
 
         if (mfKbps) {
             meterCapabilities.add(MeterKbps.class);

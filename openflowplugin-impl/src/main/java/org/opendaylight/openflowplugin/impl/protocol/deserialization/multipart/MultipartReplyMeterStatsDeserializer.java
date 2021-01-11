@@ -7,10 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -26,6 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
     private static final byte PADDING_IN_METER_STATS_HEADER = 6;
@@ -33,49 +34,36 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
     private static final byte METER_BAND_STATS_LENGTH = 16;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
-        final MultipartReplyMeterStatsBuilder builder = new MultipartReplyMeterStatsBuilder();
-        final List<MeterStats> items = new ArrayList<>();
+    public MultipartReplyBody deserialize(final ByteBuf message) {
+        final var items = BindingMap.<MeterStatsKey, MeterStats> orderedBuilder();
 
         while (message.readableBytes() > 0) {
             final MeterStatsBuilder itemBuilder = new MeterStatsBuilder()
-                .setMeterId(new MeterId(message.readUnsignedInt()));
+                .setMeterId(new MeterId(readUint32(message)));
 
             final int itemLength = message.readUnsignedShort();
             message.skipBytes(PADDING_IN_METER_STATS_HEADER);
 
             itemBuilder
-                .withKey(new MeterStatsKey(itemBuilder.getMeterId()))
-                .setFlowCount(new Counter32(message.readUnsignedInt()));
-
-            final byte[] packetCount = new byte[Long.BYTES];
-            message.readBytes(packetCount);
-            final byte[] byteCount = new byte[Long.BYTES];
-            message.readBytes(byteCount);
+                .setFlowCount(new Counter32(readUint32(message)));
 
             itemBuilder
-                .setPacketInCount(new Counter64(new BigInteger(1, packetCount)))
-                .setByteInCount(new Counter64(new BigInteger(1, byteCount)))
+                .setPacketInCount(new Counter64(readUint64(message)))
+                .setByteInCount(new Counter64(readUint64(message)))
                 .setDuration(new DurationBuilder()
-                        .setSecond(new Counter32(message.readUnsignedInt()))
-                        .setNanosecond(new Counter32(message.readUnsignedInt()))
+                        .setSecond(new Counter32(readUint32(message)))
+                        .setNanosecond(new Counter32(readUint32(message)))
                         .build());
 
-            final List<BandStat> subItems = new ArrayList<>();
+            final var subItems = BindingMap.<BandStatKey, BandStat> orderedBuilder();
             int actualLength = METER_BODY_LENGTH;
             long bandKey = 0;
 
             while (actualLength < itemLength) {
-                final byte[] packetCountB = new byte[Long.BYTES];
-                message.readBytes(packetCountB);
-                final byte[] byteCountB = new byte[Long.BYTES];
-                message.readBytes(byteCountB);
-
                 subItems.add(new BandStatBuilder()
                     .setBandId(new BandId(bandKey))
-                    .withKey(new BandStatKey(new BandId(bandKey)))
-                    .setPacketBandCount(new Counter64(new BigInteger(1, packetCountB)))
-                    .setByteBandCount(new Counter64(new BigInteger(1, byteCountB)))
+                    .setPacketBandCount(new Counter64(readUint64(message)))
+                    .setByteBandCount(new Counter64(readUint64(message)))
                     .build());
 
                 bandKey++;
@@ -84,13 +72,11 @@ public class MultipartReplyMeterStatsDeserializer implements OFDeserializer<Mult
 
             items.add(itemBuilder
                     .setMeterBandStats(new MeterBandStatsBuilder()
-                        .setBandStat(subItems)
+                        .setBandStat(subItems.build())
                         .build())
                     .build());
         }
 
-        return builder
-            .setMeterStats(items)
-            .build();
+        return new MultipartReplyMeterStatsBuilder().setMeterStats(items.build()).build();
     }
 }

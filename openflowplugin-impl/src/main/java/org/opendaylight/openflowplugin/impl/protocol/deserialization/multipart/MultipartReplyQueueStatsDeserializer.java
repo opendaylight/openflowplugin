@@ -5,11 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -24,12 +25,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
 
 public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyQueueStatsBuilder builder = new MultipartReplyQueueStatsBuilder();
         final List<QueueIdAndStatisticsMap> items = new ArrayList<>();
 
@@ -37,25 +37,16 @@ public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<Mult
             final long port = message.readUnsignedInt();
             final NodeConnectorId nodeConnectorId = new NodeConnectorId(OpenflowPortsUtil
                     .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port));
-            final QueueId queueId = new QueueId(message.readUnsignedInt());
-
-            final byte[] txBytes = new byte[Long.BYTES];
-            message.readBytes(txBytes);
-            final byte[] txPackets = new byte[Long.BYTES];
-            message.readBytes(txPackets);
-            final byte[] txErrors = new byte[Long.BYTES];
-            message.readBytes(txErrors);
 
             items.add(new QueueIdAndStatisticsMapBuilder()
-                .withKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
                 .setNodeConnectorId(nodeConnectorId)
-                .setQueueId(queueId)
-                .setTransmittedBytes(new Counter64(new BigInteger(1, txBytes)))
-                .setTransmittedPackets(new Counter64(new BigInteger(1, txPackets)))
-                .setTransmissionErrors(new Counter64(new BigInteger(1, txErrors)))
+                .setQueueId(new QueueId(readUint32(message)))
+                .setTransmittedBytes(new Counter64(readUint64(message)))
+                .setTransmittedPackets(new Counter64(readUint64(message)))
+                .setTransmissionErrors(new Counter64(readUint64(message)))
                 .setDuration(new DurationBuilder()
-                    .setSecond(new Counter32(message.readUnsignedInt()))
-                    .setNanosecond(new Counter32(message.readUnsignedInt()))
+                    .setSecond(new Counter32(readUint32(message)))
+                    .setNanosecond(new Counter32(readUint32(message)))
                     .build())
                 .build());
         }

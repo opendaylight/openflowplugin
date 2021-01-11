@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.batch;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -15,6 +14,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.group._case.FlatBatchAddGroup;
@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.group._case.FlatBatchUpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.batch.failure.batch.item.id.choice.FlatBatchFailureGroupIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchInputBuilder;
@@ -30,16 +31,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.Re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.add.groups.batch.input.BatchAddGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.add.groups.batch.input.BatchAddGroupsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.remove.groups.batch.input.BatchRemoveGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.remove.groups.batch.input.BatchRemoveGroupsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.update.groups.batch.input.BatchUpdateGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.update.groups.batch.input.BatchUpdateGroupsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Transform between FlatBatch API and group batch API.
@@ -57,13 +57,11 @@ public final class FlatBatchGroupAdapters {
      * .opendaylight.groups.service.rev160315.SalGroupsBatchService#addGroupsBatch(AddGroupsBatchInput)}
      */
     public static AddGroupsBatchInput adaptFlatBatchAddGroup(final BatchPlanStep planStep, final NodeRef node) {
-        final List<BatchAddGroups> batchGroups = new ArrayList<>();
-        for (FlatBatchAddGroup batchAddGroup : planStep.<FlatBatchAddGroup>getTaskBag()) {
-            final BatchAddGroups addGroups = new BatchAddGroupsBuilder(batchAddGroup)
+        final var batchGroups = planStep.<FlatBatchAddGroup>getTaskBag().stream()
+            .map(batchAddGroup -> new BatchAddGroupsBuilder(batchAddGroup)
                     .setGroupId(batchAddGroup.getGroupId())
-                    .build();
-            batchGroups.add(addGroups);
-        }
+                    .build())
+            .collect(BindingMap.toOrderedMap());
 
         return new AddGroupsBatchInputBuilder()
                 .setBarrierAfter(planStep.isBarrierAfter())
@@ -80,13 +78,11 @@ public final class FlatBatchGroupAdapters {
      * .opendaylight.groups.service.rev160315.SalGroupsBatchService#removeGroupsBatch(RemoveGroupsBatchInput)}
      */
     public static RemoveGroupsBatchInput adaptFlatBatchRemoveGroup(final BatchPlanStep planStep, final NodeRef node) {
-        final List<BatchRemoveGroups> batchGroups = new ArrayList<>();
-        for (FlatBatchRemoveGroup batchRemoveGroup : planStep.<FlatBatchRemoveGroup>getTaskBag()) {
-            final BatchRemoveGroups removeGroups = new BatchRemoveGroupsBuilder(batchRemoveGroup)
-                    .setGroupId(batchRemoveGroup.getGroupId())
-                    .build();
-            batchGroups.add(removeGroups);
-        }
+        final var batchGroups = planStep.<FlatBatchRemoveGroup>getTaskBag().stream()
+            .map(batchRemoveGroup -> new BatchRemoveGroupsBuilder(batchRemoveGroup)
+                .setGroupId(batchRemoveGroup.getGroupId())
+                .build())
+            .collect(BindingMap.toOrderedMap());
 
         return new RemoveGroupsBatchInputBuilder()
                 .setBarrierAfter(planStep.isBarrierAfter())
@@ -125,32 +121,25 @@ public final class FlatBatchGroupAdapters {
     @VisibleForTesting
     static <T extends BatchGroupOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchGroupResult(final int stepOffset) {
-        return input -> {
-            List<BatchFailure> batchFailures = wrapBatchGroupFailuresForFlat(input, stepOffset);
-            ProcessFlatBatchOutputBuilder outputBuilder =
-                    new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
-            return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
-                                   .withRpcErrors(input.getErrors())
-                                   .withResult(outputBuilder.build())
-                                   .build();
-        };
+        return input -> RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
+            .withRpcErrors(input.getErrors())
+            .withResult(new ProcessFlatBatchOutputBuilder()
+                .setBatchFailure(wrapBatchGroupFailuresForFlat(input, stepOffset))
+                .build())
+            .build();
     }
 
-    private static <T extends BatchGroupOutputListGrouping> List<BatchFailure> wrapBatchGroupFailuresForFlat(
-            final RpcResult<T> input, final int stepOffset) {
-        final List<BatchFailure> batchFailures = new ArrayList<>();
-        if (input.getResult().getBatchFailedGroupsOutput() != null) {
-            for (BatchFailedGroupsOutput stepOutput : input.getResult().nonnullBatchFailedGroupsOutput().values()) {
-                final BatchFailure batchFailure = new BatchFailureBuilder()
-                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
-                        .setBatchItemIdChoice(new FlatBatchFailureGroupIdCaseBuilder()
-                                .setGroupId(stepOutput.getGroupId())
-                                .build())
-                        .build();
-                batchFailures.add(batchFailure);
-            }
-        }
-        return batchFailures;
+    private static <T extends BatchGroupOutputListGrouping>
+            Map<BatchFailureKey, BatchFailure> wrapBatchGroupFailuresForFlat(final RpcResult<T> input,
+                final int stepOffset) {
+        return input.getResult().nonnullBatchFailedGroupsOutput().values().stream()
+            .map(stepOutput -> new BatchFailureBuilder()
+                .setBatchOrder(Uint16.valueOf(stepOffset + stepOutput.getBatchOrder().toJava()))
+                .setBatchItemIdChoice(new FlatBatchFailureGroupIdCaseBuilder()
+                    .setGroupId(stepOutput.getGroupId())
+                    .build())
+                .build())
+            .collect(BindingMap.toOrderedMap());
     }
 
     /**

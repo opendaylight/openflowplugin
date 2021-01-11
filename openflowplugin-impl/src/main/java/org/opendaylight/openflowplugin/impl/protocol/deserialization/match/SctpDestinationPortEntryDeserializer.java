@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -16,18 +18,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class SctpDestinationPortEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         processHeader(message);
-        final int port = message.readUnsignedShort();
+        final PortNumber port = new PortNumber(readUint16(message));
 
         if (builder.getLayer4Match() == null) {
-            builder.setLayer4Match(new SctpMatchBuilder()
-                    .setSctpDestinationPort(new PortNumber(port))
-                    .build());
+            builder.setLayer4Match(new SctpMatchBuilder().setSctpDestinationPort(port).build());
         } else if (builder.getLayer4Match() instanceof SctpMatch
             && ((SctpMatch) builder.getLayer4Match()).getSctpDestinationPort() == null) {
             builder.setLayer4Match(new SctpMatchBuilder((SctpMatch) builder.getLayer4Match())
-                    .setSctpDestinationPort(new PortNumber(port))
+                    .setSctpDestinationPort(port)
                     .build());
         } else {
             throwErrorOnMalformed(builder, "layer4Match", "sctpDestinationPort");

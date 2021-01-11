@@ -5,8 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
@@ -33,14 +35,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
-
-    private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyMeterConfigDeserializer.class);
-
     private static final byte METER_CONFIG_LENGTH = 8;
     private static final int OFPMBTDROP = 1;
     private static final int OFPMBTDSCP = 2;
@@ -51,7 +48,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
     private DeserializerRegistry registry;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyMeterConfigBuilder builder = new MultipartReplyMeterConfigBuilder();
         final List<MeterConfigStats> items = new ArrayList<>();
 
@@ -60,7 +57,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
 
             final MeterConfigStatsBuilder itemBuilder = new MeterConfigStatsBuilder()
                     .setFlags(readMeterFlags(message))
-                    .setMeterId(new MeterId(message.readUnsignedInt()));
+                    .setMeterId(new MeterId(readUint32(message)));
 
             final List<MeterBandHeader> subItems = new ArrayList<>();
             int actualLength = METER_CONFIG_LENGTH;
@@ -79,8 +76,8 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                                         .setFlags(new MeterBandType(true, false, false))
                                         .build())
                                 .setBandType(new DropBuilder()
-                                        .setDropRate(message.readUnsignedInt())
-                                        .setDropBurstSize(message.readUnsignedInt())
+                                        .setDropRate(readUint32(message))
+                                        .setDropBurstSize(readUint32(message))
                                         .build());
                         message.skipBytes(PADDING_IN_METER_BAND_DROP_HEADER);
                         break;
@@ -91,9 +88,9 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                                         .setFlags(new MeterBandType(false, true, false))
                                         .build())
                                 .setBandType(new DscpRemarkBuilder()
-                                        .setDscpRemarkRate(message.readUnsignedInt())
-                                        .setDscpRemarkBurstSize(message.readUnsignedInt())
-                                        .setPrecLevel(message.readUnsignedByte())
+                                        .setDscpRemarkRate(readUint32(message))
+                                        .setDscpRemarkBurstSize(readUint32(message))
+                                        .setPrecLevel(readUint8(message))
                                         .build());
                         message.skipBytes(PADDING_IN_METER_BAND_DSCP_HEADER);
                         break;
@@ -133,17 +130,17 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                 .build();
     }
 
-    private static MeterFlags readMeterFlags(ByteBuf message) {
+    private static MeterFlags readMeterFlags(final ByteBuf message) {
         int input = message.readUnsignedShort();
-        final Boolean mfKbps = (input & (1)) != 0;
-        final Boolean mfPktps = (input & (1 << 1)) != 0;
-        final Boolean mfBurst = (input & (1 << 2)) != 0;
-        final Boolean mfStats = (input & (1 << 3)) != 0;
+        final Boolean mfKbps = (input & 1) != 0;
+        final Boolean mfPktps = (input & 1 << 1) != 0;
+        final Boolean mfBurst = (input & 1 << 2) != 0;
+        final Boolean mfStats = (input & 1 << 3) != 0;
         return new MeterFlags(mfBurst, mfKbps, mfPktps, mfStats);
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 }

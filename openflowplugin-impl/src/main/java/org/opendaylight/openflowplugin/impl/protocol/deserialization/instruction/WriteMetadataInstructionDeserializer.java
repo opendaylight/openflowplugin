@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
@@ -16,25 +17,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 
 public class WriteMetadataInstructionDeserializer extends AbstractInstructionDeserializer {
     @Override
-    public Instruction deserialize(ByteBuf message) {
+    public Instruction deserialize(final ByteBuf message) {
         processHeader(message);
         message.skipBytes(InstructionConstants.PADDING_IN_WRITE_METADATA);
 
-        final byte[] meta = new byte[Long.BYTES];
-        message.readBytes(meta);
-        final byte[] metaMask = new byte[Long.BYTES];
-        message.readBytes(metaMask);
-
         return new WriteMetadataCaseBuilder()
                 .setWriteMetadata(new WriteMetadataBuilder()
-                        .setMetadata(new BigInteger(1, meta))
-                        .setMetadataMask(new BigInteger(1, metaMask))
+                        .setMetadata(readUint64(message))
+                        .setMetadataMask(readUint64(message))
                         .build())
                 .build();
     }
 
     @Override
-    public Instruction deserializeHeader(ByteBuf message) {
+    public Instruction deserializeHeader(final ByteBuf message) {
         processHeader(message);
         return new WriteMetadataCaseBuilder().build();
     }
