@@ -130,6 +130,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.f
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -421,7 +422,7 @@ public class StatisticsGatheringUtilsTest {
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(Uint8.ZERO);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
+        flowNodeBuilder.setTable(BindingMap.of(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         doReturn(FluentFutures.immediateFluentFuture(flowNodeOpt)).when(readTx)
             .read(LogicalDatastoreType.OPERATIONAL, nodePath);
@@ -538,7 +539,7 @@ public class StatisticsGatheringUtilsTest {
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(Uint8.ZERO);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
+        flowNodeBuilder.setTable(BindingMap.of(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         doReturn(FluentFutures.immediateFluentFuture(flowNodeOpt)).when(readTx)
             .read(LogicalDatastoreType.OPERATIONAL, nodePath);

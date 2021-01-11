@@ -66,6 +66,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStatsBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -223,7 +224,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(tableId);
-        flowNodeBuilder.setTable(Collections.singletonList(tableDataBld.build()));
+        flowNodeBuilder.setTable(BindingMap.of(tableDataBld.build()));
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
 
         multipartRequestOnTheFlyCallback.onSuccess(mpReplyMessage.build());

@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures.matchfield;
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
@@ -57,187 +55,62 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDs
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.match.MatchSetfieldBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MatchFieldSerializerTest extends AbstractTablePropertySerializerTest {
     @Test
     public void testSerialize() {
         final Match property = new MatchBuilder()
-                .setMatchSetfield(new MatchSetfieldBuilder()
-                        .setSetFieldMatch(ImmutableList
-                                .<SetFieldMatch>builder()
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpOp.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpSha.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpSpa.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpTha.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpTpa.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(EthDst.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(EthSrc.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(EthType.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Icmpv4Code.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Icmpv4Type.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Icmpv6Code.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Icmpv6Type.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(InPhyPort.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(InPort.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(IpDscp.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(IpEcn.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(IpProto.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv4Dst.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv4Src.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6Dst.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6Exthdr.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6Flabel.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6NdSll.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6NdTarget.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6NdTll.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Ipv6Src.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(Metadata.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(MplsBos.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(MplsLabel.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(MplsTc.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(PbbIsid.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(SctpDst.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(SctpSrc.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(TcpDst.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(TcpFlags.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(TcpSrc.class)
-                                        .setHasMask(true)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(TunnelId.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(UdpDst.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(UdpSrc.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(VlanPcp.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(VlanVid.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
+            .setMatchSetfield(new MatchSetfieldBuilder()
+                .setSetFieldMatch(BindingMap.ordered(
+                    new SetFieldMatchBuilder().setMatchType(ArpOp.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(ArpSha.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(ArpSpa.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(ArpTha.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(ArpTpa.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(EthDst.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(EthSrc.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(EthType.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Icmpv4Code.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Icmpv4Type.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Icmpv6Code.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Icmpv6Type.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(InPhyPort.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(InPort.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(IpDscp.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(IpEcn.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(IpProto.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv4Dst.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv4Src.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6Dst.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6Exthdr.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6Flabel.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6NdSll.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6NdTarget.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6NdTll.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Ipv6Src.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(Metadata.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(MplsBos.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(MplsLabel.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(MplsTc.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(PbbIsid.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(SctpDst.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(SctpSrc.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(TcpDst.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(TcpFlags.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(TcpSrc.class).setHasMask(true).build(),
+                    new SetFieldMatchBuilder().setMatchType(TunnelId.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(UdpDst.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(UdpSrc.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(VlanPcp.class).setHasMask(false).build(),
+                    new SetFieldMatchBuilder().setMatchType(VlanVid.class).setHasMask(false).build()))
+                .build())
+            .build();
 
         assertProperty(property, out -> {
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
