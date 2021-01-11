@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -13,8 +12,6 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.util.Collections;
-import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -23,7 +20,6 @@ import org.opendaylight.openflowplugin.impl.protocol.serialization.AbstractSeria
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
@@ -32,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.BucketKey;
@@ -64,42 +59,38 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
     private static final ActionKey ACTION_KEY = new ActionKey(ACTION_ORDER);
     private static final Ipv4Prefix IPV4_PREFIX = new Ipv4Prefix("192.168.76.0/32");
 
-    private static final List<Action> ACTIONS = Collections.singletonList(
-            new ActionBuilder()
+    private static final GroupMessage MESSAGE = new GroupMessageBuilder()
+        .setBarrier(BARRIER)
+        .setBuckets(new BucketsBuilder()
+            .setBucket(BindingMap.of(new BucketBuilder()
+                .setBucketId(BUCKET_ID)
+                .withKey(BUCKET_KEY)
+                .setWatchGroup(BUCKET_WATCH_GROUP)
+                .setWatchPort(BUCKET_WATCH_PORT)
+                .setWeight(BUCKET_WEIGHT)
+                .setAction(BindingMap.of(
+                    new ActionBuilder()
                     .setAction(new SetNwSrcActionCaseBuilder()
-                            .setSetNwSrcAction(new SetNwSrcActionBuilder()
-                                    .setAddress(new Ipv4Builder()
-                                            .setIpv4Address(new Ipv4Prefix(IPV4_PREFIX))
-                                            .build())
-                                    .build())
+                        .setSetNwSrcAction(new SetNwSrcActionBuilder()
+                            .setAddress(new Ipv4Builder()
+                                .setIpv4Address(new Ipv4Prefix(IPV4_PREFIX))
+                                .build())
                             .build())
+                        .build())
                     .setOrder(ACTION_ORDER)
                     .withKey(ACTION_KEY)
                     .build()
-    );
-
-    private static final Buckets BUCKETS = new BucketsBuilder()
-            .setBucket(BindingMap.of(new BucketBuilder()
-                    .setBucketId(BUCKET_ID)
-                    .withKey(BUCKET_KEY)
-                    .setWatchGroup(BUCKET_WATCH_GROUP)
-                    .setWatchPort(BUCKET_WATCH_PORT)
-                    .setWeight(BUCKET_WEIGHT)
-                    .setAction(ACTIONS)
-                    .build()))
-            .build();
-
-    private static final GroupMessage MESSAGE = new GroupMessageBuilder()
-            .setBarrier(BARRIER)
-            .setBuckets(BUCKETS)
-            .setCommand(COMMAND)
-            .setContainerName(CONTAINER_NAME)
-            .setGroupId(GROUP_ID)
-            .setGroupName(GROUP_NAME)
-            .setGroupType(GROUP_TYPE)
-            .setVersion(VERSION)
-            .setXid(XID)
-            .build();
+                    ))
+                .build()))
+            .build())
+        .setCommand(COMMAND)
+        .setContainerName(CONTAINER_NAME)
+        .setGroupId(GROUP_ID)
+        .setGroupName(GROUP_NAME)
+        .setGroupType(GROUP_TYPE)
+        .setVersion(VERSION)
+        .setXid(XID)
+        .build();
 
     private GroupMessageSerializer serializer;
 
