@@ -7,17 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class IpDscpEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         processHeader(message);
-        final short dscp = message.readUnsignedByte();
+        final Uint8 dscp = readUint8(message);
 
         if (builder.getIpMatch() == null) {
             builder.setIpMatch(new IpMatchBuilder()

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
@@ -15,17 +17,18 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class OutputActionDeserializer extends AbstractActionDeserializer {
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         processHeader(message);
 
         final Uri portUri = OpenflowPortsUtil
                 .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, message.readUnsignedInt());
 
-        final int maxLength = message.readUnsignedShort();
+        final Uint16 maxLength = readUint16(message);
         message.skipBytes(ActionConstants.OUTPUT_PADDING);
 
         return new OutputActionCaseBuilder()
@@ -37,9 +40,8 @@ public class OutputActionDeserializer extends AbstractActionDeserializer {
     }
 
     @Override
-    public Action deserializeHeader(ByteBuf message) {
+    public Action deserializeHeader(final ByteBuf message) {
         processHeader(message);
         return new OutputActionCaseBuilder().build();
     }
-
 }

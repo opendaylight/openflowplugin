@@ -40,9 +40,9 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
     private final AtomicLong compatibilityXidSeed;
     private final OpenflowVersion ofVersion;
 
-    public AbstractCompatibleStatService(RequestContextStack requestContextStack,
-                                         DeviceContext deviceContext,
-                                         AtomicLong compatibilityXidSeed) {
+    public AbstractCompatibleStatService(final RequestContextStack requestContextStack,
+                                         final DeviceContext deviceContext,
+                                         final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext);
         this.compatibilityXidSeed = compatibilityXidSeed;
         ofVersion = OpenflowVersion.get(getVersion());
@@ -65,7 +65,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
         // hook notification publishing
         Futures.addCallback(rpcResultListenableFuture, new FutureCallback<RpcResult<List<MultipartReply>>>() {
             @Override
-            public void onSuccess(RpcResult<List<MultipartReply>> result) {
+            public void onSuccess(final RpcResult<List<MultipartReply>> result) {
                 if (result != null && result.isSuccessful()) {
                     // transform rpc result (raw multipart) to notification
                     final N flowNotification = transformToNotification(result.getResult(), emulatedTxId);
@@ -77,7 +77,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.debug("compatibility callback crashed - NOT emitting notification: {}",
                         input.getClass().getSimpleName(), throwable);
             }

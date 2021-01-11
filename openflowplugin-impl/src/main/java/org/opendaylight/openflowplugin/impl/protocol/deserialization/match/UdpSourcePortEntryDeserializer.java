@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -16,24 +18,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 public class UdpSourcePortEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         boolean hasMask = processHeader(message);
-        final int port = message.readUnsignedShort();
-        final int portMask = hasMask ? message.readUnsignedShort() : 0;
+        final PortNumber port = new PortNumber(readUint16(message));
 
         if (builder.getLayer4Match() == null) {
             UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder()
-                    .setUdpSourcePort(new PortNumber(port));
+                    .setUdpSourcePort(port);
             if (hasMask) {
-                udpMatchBuilder.setUdpSourcePortMask(new PortNumber(portMask));
+                udpMatchBuilder.setUdpSourcePortMask(new PortNumber(readUint16(message)));
             }
             builder.setLayer4Match(udpMatchBuilder.build());
         } else if (builder.getLayer4Match() instanceof UdpMatch
                 && ((UdpMatch) builder.getLayer4Match()).getUdpSourcePort() == null) {
             UdpMatchBuilder udpMatchBuilder = new UdpMatchBuilder((UdpMatch) builder.getLayer4Match())
-                    .setUdpSourcePort(new PortNumber(port));
+                    .setUdpSourcePort(port);
             if (hasMask) {
-                udpMatchBuilder.setUdpSourcePortMask(new PortNumber(portMask));
+                udpMatchBuilder.setUdpSourcePortMask(new PortNumber(readUint16(message)));
             }
             builder.setLayer4Match(udpMatchBuilder.build());
         } else {

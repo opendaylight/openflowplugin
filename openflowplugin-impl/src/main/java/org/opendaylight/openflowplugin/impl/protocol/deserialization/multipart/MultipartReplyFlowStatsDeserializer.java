@@ -5,12 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -36,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
@@ -49,7 +53,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     private DeserializerRegistry registry;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyFlowStatsBuilder builder = new MultipartReplyFlowStatsBuilder();
         final List<FlowAndStatisticsMapList> items = new ArrayList<>();
 
@@ -58,33 +62,26 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
             final int itemLength = message.readUnsignedShort();
             final ByteBuf itemMessage = message.readSlice(itemLength - Short.BYTES);
 
-            itemBuilder.setTableId(itemMessage.readUnsignedByte());
+            itemBuilder.setTableId(readUint8(itemMessage));
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_01);
 
             itemBuilder
                     .setDuration(new DurationBuilder()
-                            .setSecond(new Counter32(itemMessage.readUnsignedInt()))
-                            .setNanosecond(new Counter32(itemMessage.readUnsignedInt()))
+                            .setSecond(new Counter32(readUint32(itemMessage)))
+                            .setNanosecond(new Counter32(readUint32(itemMessage)))
                             .build())
-                    .setPriority(itemMessage.readUnsignedShort())
-                    .setIdleTimeout(itemMessage.readUnsignedShort())
-                    .setHardTimeout(itemMessage.readUnsignedShort())
+                    .setPriority(readUint16(itemMessage))
+                    .setIdleTimeout(readUint16(itemMessage))
+                    .setHardTimeout(readUint16(itemMessage))
                     .setFlags(createFlowModFlagsFromBitmap(itemMessage.readUnsignedShort()));
 
             itemMessage.skipBytes(PADDING_IN_FLOW_STATS_HEADER_02);
 
-            final byte[] cookie = new byte[Long.BYTES];
-            itemMessage.readBytes(cookie);
-            final byte[] packetCount = new byte[Long.BYTES];
-            itemMessage.readBytes(packetCount);
-            final byte[] byteCount = new byte[Long.BYTES];
-            itemMessage.readBytes(byteCount);
-
             itemBuilder
-                    .setCookie(new FlowCookie(new BigInteger(1, cookie)))
+                    .setCookie(new FlowCookie(readUint64(itemMessage)))
                     .setCookieMask(new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK))
-                    .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
-                    .setByteCount(new Counter64(new BigInteger(1, byteCount)));
+                    .setPacketCount(new Counter64(readUint64(itemMessage)))
+                    .setByteCount(new Counter64(readUint64(itemMessage)));
 
             final OFDeserializer<Match> matchDeserializer =
                     Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
@@ -94,14 +91,14 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
             final int length = itemMessage.readableBytes();
 
             if (length > 0) {
-                final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-                        .Instruction> instructions = new ArrayList<>();
+                final var instructions = BindingMap.<InstructionKey,
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
+                        orderedBuilder();
                 final int startIndex = itemMessage.readerIndex();
                 int offset = 0;
 
                 while (itemMessage.readerIndex() - startIndex < length) {
                     instructions.add(new InstructionBuilder()
-                            .withKey(new InstructionKey(offset))
                             .setOrder(offset)
                             .setInstruction(InstructionUtil
                                     .readInstruction(EncodeConstants.OF13_VERSION_ID, itemMessage, registry))
@@ -110,9 +107,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     offset++;
                 }
 
-                itemBuilder.setInstructions(new InstructionsBuilder()
-                        .setInstruction(instructions)
-                        .build());
+                itemBuilder.setInstructions(new InstructionsBuilder().setInstruction(instructions.build()).build());
             }
 
             items.add(itemBuilder.build());
@@ -123,7 +118,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                 .build();
     }
 
-    private static FlowModFlags createFlowModFlagsFromBitmap(int input) {
+    private static FlowModFlags createFlowModFlagsFromBitmap(final int input) {
         final Boolean ofp_FF_SendFlowRem = (input & 1) != 0;
         final Boolean ofp_FF_CheckOverlap = (input & 1 << 1) != 0;
         final Boolean ofp_FF_ResetCounts = (input & 1 << 2) != 0;
@@ -134,7 +129,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 

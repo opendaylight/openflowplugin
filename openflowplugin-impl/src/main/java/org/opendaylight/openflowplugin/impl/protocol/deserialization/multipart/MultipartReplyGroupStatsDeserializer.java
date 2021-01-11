@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -21,11 +23,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
     private static final byte PADDING_IN_GROUP_HEADER_01 = 2;
@@ -34,7 +35,7 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
     private static final byte BUCKET_COUNTER_LENGTH = 16;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyGroupStatsBuilder builder = new MultipartReplyGroupStatsBuilder();
         final List<GroupStats> items = new ArrayList<>();
 
@@ -43,40 +44,28 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
             message.skipBytes(PADDING_IN_GROUP_HEADER_01);
 
             final GroupStatsBuilder itemBuilder = new GroupStatsBuilder()
-                .setGroupId(new GroupId(message.readUnsignedInt()))
-                .setRefCount(new Counter32(message.readUnsignedInt()));
+                .setGroupId(new GroupId(readUint32(message)))
+                .setRefCount(new Counter32(readUint32(message)));
 
             message.skipBytes(PADDING_IN_GROUP_HEADER_02);
 
-            final byte[] packetCountg = new byte[Long.BYTES];
-            message.readBytes(packetCountg);
-            final byte[] byteCountg = new byte[Long.BYTES];
-            message.readBytes(byteCountg);
-
             itemBuilder
-                .withKey(new GroupStatsKey(itemBuilder.getGroupId()))
-                .setPacketCount(new Counter64(new BigInteger(1, packetCountg)))
-                .setByteCount(new Counter64(new BigInteger(1, byteCountg)))
+                .setPacketCount(new Counter64(readUint64(message)))
+                .setByteCount(new Counter64(readUint64(message)))
                 .setDuration(new DurationBuilder()
-                        .setSecond(new Counter32(message.readUnsignedInt()))
-                        .setNanosecond(new Counter32(message.readUnsignedInt()))
+                        .setSecond(new Counter32(readUint32(message)))
+                        .setNanosecond(new Counter32(readUint32(message)))
                         .build());
 
             final List<BucketCounter> subItems = new ArrayList<>();
             int actualLength = GROUP_BODY_LENGTH;
-            long bucketKey = 0;
+            int bucketKey = 0;
 
             while (actualLength < itemLength) {
-                final byte[] packetCount = new byte[Long.BYTES];
-                message.readBytes(packetCount);
-                final byte[] byteCount = new byte[Long.BYTES];
-                message.readBytes(byteCount);
-
                 subItems.add(new BucketCounterBuilder()
-                    .setBucketId(new BucketId(bucketKey))
-                    .withKey(new BucketCounterKey(new BucketId(bucketKey)))
-                    .setPacketCount(new Counter64(new BigInteger(1, packetCount)))
-                    .setByteCount(new Counter64(new BigInteger(1, byteCount)))
+                    .setBucketId(new BucketId(Uint32.valueOf(bucketKey)))
+                    .setPacketCount(new Counter64(readUint64(message)))
+                    .setByteCount(new Counter64(readUint64(message)))
                     .build());
 
                 bucketKey++;

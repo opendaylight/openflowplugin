@@ -7,16 +7,19 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv4MatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class Icmpv4CodeEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         processHeader(message);
-        final short code = message.readUnsignedByte();
+        final Uint8 code = readUint8(message);
 
         if (builder.getIcmpv4Match() == null) {
             builder.setIcmpv4Match(new Icmpv4MatchBuilder()
