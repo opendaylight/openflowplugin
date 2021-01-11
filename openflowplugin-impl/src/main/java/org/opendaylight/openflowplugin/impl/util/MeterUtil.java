@@ -39,6 +39,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Provides meter util methods.
@@ -181,8 +182,8 @@ public final class MeterUtil {
         private final int sizeOfInputBatch;
 
         CumulativeFunction(
-                Iterable<? extends org.opendaylight.yang.gen.v1.urn
-                        .opendaylight.meter.types.rev130918.Meter> inputBatchMeters, int sizeOfInputBatch) {
+                final Iterable<? extends org.opendaylight.yang.gen.v1.urn
+                        .opendaylight.meter.types.rev130918.Meter> inputBatchMeters, final int sizeOfInputBatch) {
             this.inputBatchMeters = inputBatchMeters;
             this.sizeOfInputBatch = sizeOfInputBatch;
         }
@@ -205,7 +206,7 @@ public final class MeterUtil {
 
                     if (!meterModOutput.isSuccessful()) {
                         batchMeters.add(new BatchFailedMetersOutputBuilder()
-                                .setBatchOrder(batchOrder)
+                                .setBatchOrder(Uint16.valueOf(batchOrder))
                                 .setMeterId(meterId)
                                 .build());
                         meterErrors.addAll(meterModOutput.getErrors());

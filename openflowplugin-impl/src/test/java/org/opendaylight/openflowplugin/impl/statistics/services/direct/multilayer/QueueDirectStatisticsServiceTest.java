@@ -80,6 +80,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(queue.getQueueStats()).thenReturn(queueStats);
+        when(queue.nonnullQueueStats()).thenCallRealMethod();
         when(queueCase.getMultipartReplyQueue()).thenReturn(queue);
         when(reply.getMultipartReplyBody()).thenReturn(queueCase);
 

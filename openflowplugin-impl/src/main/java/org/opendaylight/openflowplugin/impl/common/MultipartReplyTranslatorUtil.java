@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowAggregateStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.multipart.reply.multipart.reply.body.MultipartReplyFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.multipart.reply.multipart.reply.body.MultipartReplyFlowTableStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.multipart.reply.multipart.reply.body.MultipartReplyFlowTableStatsBuilder;
@@ -101,20 +101,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.features._case.MultipartReplyMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.MultipartReplyPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.port.stats._case.multipart.reply.port.stats.PortStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.MultipartReplyQueue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.queue._case.multipart.reply.queue.QueueStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.MultipartReplyTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.reply.multipart.reply.body.MultipartReplyPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -216,7 +212,7 @@ public final class MultipartReplyTranslatorUtil {
             .convert(multipartReplyTableFeatures, new VersionConvertorData(version));
 
         return Optional.of(new MultipartReplyTableFeaturesBuilder()
-            .setTableFeatures(tableFeaturesList.orElse(List.of()))
+            .setTableFeatures(tableFeaturesList.map(BindingMap::ordered).orElse(Map.of()))
             .build());
     }
 
@@ -319,7 +315,7 @@ public final class MultipartReplyTranslatorUtil {
             replyBody.getGroupStats(), data);
 
         return Optional.of(new MultipartReplyGroupStatsBuilder()
-            .setGroupStats(groupStatsList.orElse(List.of()))
+            .setGroupStats(groupStatsList.map(BindingMap::ordered).orElse(Map.of()))
             .build());
     }
 
@@ -337,7 +333,7 @@ public final class MultipartReplyTranslatorUtil {
             replyBody.getGroupDesc(), data);
 
         return Optional.of(new MultipartReplyGroupDescBuilder()
-            .setGroupDescStats(groupDescStatsList.orElse(List.of()))
+            .setGroupDescStats(groupDescStatsList.map(BindingMap::ordered).orElse(Map.of()))
             .build());
     }
 
@@ -394,7 +390,7 @@ public final class MultipartReplyTranslatorUtil {
                 meterStatsList = convertorExecutor.convert(replyBody.getMeterStats(), data);
 
         return Optional.of(new MultipartReplyMeterStatsBuilder()
-            .setMeterStats(meterStatsList.orElse(List.of()))
+            .setMeterStats(meterStatsList.map(BindingMap::ordered).orElse(Map.of()))
             .build());
     }
 
@@ -411,7 +407,7 @@ public final class MultipartReplyTranslatorUtil {
                 = convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
         return Optional.of(new MultipartReplyMeterConfigBuilder()
-            .setMeterConfigStats(meterConfigStatsList.orElse(List.of()))
+            .setMeterConfigStats(meterConfigStatsList.map(BindingMap::ordered).orElse(Map.of()))
             .build());
     }
 
@@ -452,19 +448,16 @@ public final class MultipartReplyTranslatorUtil {
     }
 
     private static MultipartReplyFlowTableStats translateTable(final MultipartReply msg) {
-        MultipartReplyTableCase caseBody = (MultipartReplyTableCase) msg.getMultipartReplyBody();
-        MultipartReplyTable replyBody = caseBody.getMultipartReplyTable();
-
-        List<FlowTableAndStatisticsMap> salFlowStats = new ArrayList<>();
-        //TODO: Duplicate code: look at OpendaylightFlowTableStatisticsServiceImpl method transformToNotification
-        for (TableStats swTableStats : replyBody.nonnullTableStats()) {
-            salFlowStats.add(new FlowTableAndStatisticsMapBuilder()
+        final var salFlowStats = ((MultipartReplyTableCase) msg.getMultipartReplyBody()).getMultipartReplyTable()
+            .nonnullTableStats().stream()
+            //TODO: Duplicate code: look at OpendaylightFlowTableStatisticsServiceImpl method transformToNotification
+            .map(swTableStats -> new FlowTableAndStatisticsMapBuilder()
                 .setActiveFlows(new Counter32(swTableStats.getActiveCount()))
                 .setPacketsLookedUp(new Counter64(swTableStats.getLookupCount()))
                 .setPacketsMatched(new Counter64(swTableStats.getMatchedCount()))
                 .setTableId(new TableId(swTableStats.getTableId()))
-                .build());
-        }
+                .build())
+            .collect(BindingMap.toOrderedMap());
 
         return new MultipartReplyFlowTableStatsBuilder()
             .setFlowTableAndStatisticsMap(salFlowStats)
@@ -474,12 +467,9 @@ public final class MultipartReplyTranslatorUtil {
     private static MultipartReplyQueueStats translateQueue(final MultipartReply msg,
                                                            final OpenflowVersion ofVersion,
                                                            final Uint64 datapathId) {
-        MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) msg.getMultipartReplyBody();
-        MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
-
-        List<QueueIdAndStatisticsMap> statsMap = new ArrayList<>();
-        for (QueueStats queueStats : replyBody.nonnullQueueStats()) {
-            statsMap.add(new QueueIdAndStatisticsMapBuilder()
+        final var statsMap = ((MultipartReplyQueueCase) msg.getMultipartReplyBody()).getMultipartReplyQueue()
+            .nonnullQueueStats().stream()
+            .map(queueStats -> new QueueIdAndStatisticsMapBuilder()
                 .setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(datapathId,
                     queueStats.getPortNo(), ofVersion))
                 .setQueueId(new QueueId(queueStats.getQueueId()))
@@ -490,8 +480,8 @@ public final class MultipartReplyTranslatorUtil {
                     .setSecond(new Counter32(queueStats.getDurationSec()))
                     .setNanosecond(new Counter32(queueStats.getDurationNsec()))
                     .build())
-                .build());
-        }
+                .build())
+            .collect(BindingMap.toOrderedMap());
 
         return new MultipartReplyQueueStatsBuilder()
             .setQueueIdAndStatisticsMap(statsMap)

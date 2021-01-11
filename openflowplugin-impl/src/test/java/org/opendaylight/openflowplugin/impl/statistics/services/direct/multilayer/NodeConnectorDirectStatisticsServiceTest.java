@@ -74,6 +74,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         final List<MultipartReply> input = Collections.singletonList(reply);
 
         when(nodeConnector.getPortStats()).thenReturn(nodeConnectorStats);
+        when(nodeConnector.nonnullPortStats()).thenCallRealMethod();
         when(nodeConnectorCase.getMultipartReplyPortStats()).thenReturn(nodeConnector);
         when(reply.getMultipartReplyBody()).thenReturn(nodeConnectorCase);
 
@@ -91,7 +92,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         when(nodeConnectorStat.getTxErrors()).thenReturn(Uint64.ONE);
 
         final GetNodeConnectorStatisticsOutput output = service.buildReply(input, true);
-        assertTrue(output.getNodeConnectorStatisticsAndPortNumberMap().size() > 0);
+        assertTrue(output.nonnullNodeConnectorStatisticsAndPortNumberMap().size() > 0);
 
         final NodeConnectorStatisticsAndPortNumberMap stats =
                 output.nonnullNodeConnectorStatisticsAndPortNumberMap().values().iterator().next();

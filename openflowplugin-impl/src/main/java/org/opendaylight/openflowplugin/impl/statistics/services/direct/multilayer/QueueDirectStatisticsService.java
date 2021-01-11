@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -37,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsService<MultipartReply> {
 
@@ -48,39 +48,41 @@ public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsS
     }
 
     @Override
-    protected GetQueueStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
-        final List<QueueIdAndStatisticsMap> queueIdAndStatisticsMap = new ArrayList<>();
+    protected GetQueueStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
+        if (!success) {
+            return new GetQueueStatisticsOutputBuilder().build();
+        }
 
-        if (success) {
-            for (final MultipartReply mpReply : input) {
-                final MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) mpReply.getMultipartReplyBody();
-                final MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
+        final var queueIdAndStatisticsMap =
+            BindingMap.<QueueIdAndStatisticsMapKey, QueueIdAndStatisticsMap>orderedBuilder();
 
-                for (final QueueStats queueStats : replyBody.getQueueStats()) {
-                    final DurationBuilder durationBuilder = new DurationBuilder()
-                        .setSecond(new Counter32(queueStats.getDurationSec()))
-                        .setNanosecond(new Counter32(queueStats.getDurationNsec()));
+        for (final MultipartReply mpReply : input) {
+            final MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) mpReply.getMultipartReplyBody();
+            final MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
 
-                    final QueueId queueId = new QueueId(queueStats.getQueueId());
-                    final NodeConnectorId nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                        getDatapathId(), queueStats.getPortNo(), getOfVersion());
+            for (final QueueStats queueStats : replyBody.nonnullQueueStats()) {
+                final DurationBuilder durationBuilder = new DurationBuilder()
+                    .setSecond(new Counter32(queueStats.getDurationSec()))
+                    .setNanosecond(new Counter32(queueStats.getDurationNsec()));
 
-                    final QueueIdAndStatisticsMapBuilder statsBuilder = new QueueIdAndStatisticsMapBuilder()
-                        .withKey(new QueueIdAndStatisticsMapKey(nodeConnectorId, queueId))
-                        .setNodeConnectorId(nodeConnectorId)
-                        .setTransmissionErrors(new Counter64(queueStats.getTxErrors()))
-                        .setTransmittedBytes(new Counter64(queueStats.getTxBytes()))
-                        .setTransmittedPackets(new Counter64(queueStats.getTxPackets()))
-                        .setQueueId(queueId)
-                        .setDuration(durationBuilder.build());
+                final QueueId queueId = new QueueId(queueStats.getQueueId());
+                final NodeConnectorId nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
+                    getDatapathId(), queueStats.getPortNo(), getOfVersion());
 
-                    queueIdAndStatisticsMap.add(statsBuilder.build());
-                }
+                final QueueIdAndStatisticsMapBuilder statsBuilder = new QueueIdAndStatisticsMapBuilder()
+                    .setNodeConnectorId(nodeConnectorId)
+                    .setQueueId(queueId)
+                    .setTransmissionErrors(new Counter64(queueStats.getTxErrors()))
+                    .setTransmittedBytes(new Counter64(queueStats.getTxBytes()))
+                    .setTransmittedPackets(new Counter64(queueStats.getTxPackets()))
+                    .setDuration(durationBuilder.build());
+
+                queueIdAndStatisticsMap.add(statsBuilder.build());
             }
         }
 
         return new GetQueueStatisticsOutputBuilder()
-            .setQueueIdAndStatisticsMap(queueIdAndStatisticsMap)
+            .setQueueIdAndStatisticsMap(queueIdAndStatisticsMap.build())
             .build();
     }
 

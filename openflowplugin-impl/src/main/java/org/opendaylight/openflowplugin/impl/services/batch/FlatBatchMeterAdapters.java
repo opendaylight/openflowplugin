@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.up
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
  * Transform between FlatBatch API and meter batch API.
@@ -136,7 +137,7 @@ public final class FlatBatchMeterAdapters {
         if (input.getResult().getBatchFailedMetersOutput() != null) {
             for (BatchFailedMetersOutput stepOutput : input.getResult().nonnullBatchFailedMetersOutput().values()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
-                        .setBatchOrder(stepOffset + stepOutput.getBatchOrder().toJava())
+                        .setBatchOrder(Uint16.valueOf(stepOffset + stepOutput.getBatchOrder().toJava()))
                         .setBatchItemIdChoice(new FlatBatchFailureMeterIdCaseBuilder()
                                 .setMeterId(stepOutput.getMeterId())
                                 .build())

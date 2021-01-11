@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -24,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsService<MultipartReply> {
 
@@ -45,22 +45,23 @@ public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsS
     }
 
     @Override
-    protected GetGroupStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
-        final List<GroupStats> groupStats = new ArrayList<>();
+    protected GetGroupStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
+        if (!success) {
+            return new GetGroupStatisticsOutputBuilder().build();
+        }
 
-        if (success) {
-            for (final MultipartReply mpReply : input) {
-                final MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
-                final MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
-                final Optional<List<GroupStats>> groupStatsList = getConvertorExecutor().convert(
-                    replyBody.getGroupStats(), data);
+        final var groupStats = BindingMap.<GroupStatsKey, GroupStats>orderedBuilder();
+        for (final MultipartReply mpReply : input) {
+            final MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
+            final MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
+            final Optional<List<GroupStats>> groupStatsList = getConvertorExecutor().convert(
+                replyBody.getGroupStats(), data);
 
-                groupStatsList.ifPresent(groupStats::addAll);
-            }
+            groupStatsList.ifPresent(groupStats::addAll);
         }
 
         return new GetGroupStatisticsOutputBuilder()
-            .setGroupStats(groupStats)
+            .setGroupStats(groupStats.build())
             .build();
     }
 
