@@ -7,18 +7,21 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetMplsTtlActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.mpls.ttl.action._case.SetMplsTtlActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SetMplsTtlActionDeserializer extends AbstractActionDeserializer {
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         processHeader(message);
-        final short mplsTtl = message.readUnsignedByte();
+        final Uint8 mplsTtl = readUint8(message);
         message.skipBytes(ActionConstants.SET_MPLS_TTL_PADDING);
 
         return new SetMplsTtlActionCaseBuilder()
@@ -29,7 +32,7 @@ public class SetMplsTtlActionDeserializer extends AbstractActionDeserializer {
     }
 
     @Override
-    public Action deserializeHeader(ByteBuf message) {
+    public Action deserializeHeader(final ByteBuf message) {
         processHeader(message);
         return new SetMplsTtlActionCaseBuilder().build();
     }

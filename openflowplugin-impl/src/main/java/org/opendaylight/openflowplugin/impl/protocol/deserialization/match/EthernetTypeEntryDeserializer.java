@@ -7,30 +7,31 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 
 public class EthernetTypeEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         processHeader(message);
-        final int type = message.readUnsignedShort();
+        final EthernetType etherType = new EthernetTypeBuilder()
+            .setType(new EtherType(readUint8(message).toUint32()))
+            .build();
 
         if (builder.getEthernetMatch() == null) {
             builder.setEthernetMatch(new EthernetMatchBuilder()
-                    .setEthernetType(new EthernetTypeBuilder()
-                            .setType(new EtherType(Long.valueOf(type)))
-                            .build())
+                    .setEthernetType(etherType)
                     .build());
         } else if (builder.getEthernetMatch().getEthernetType() == null) {
             builder.setEthernetMatch(new EthernetMatchBuilder(builder.getEthernetMatch())
-                    .setEthernetType(new EthernetTypeBuilder()
-                            .setType(new EtherType(Long.valueOf(type)))
-                            .build())
+                    .setEthernetType(etherType)
                     .build());
         } else {
             throwErrorOnMalformed(builder, "ethernetMatch", "ethernetType");

@@ -27,6 +27,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.Instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
@@ -307,11 +308,8 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         return tableIds;
     }
 
-    private List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-            .Instruction> readInstructions(final ByteBuf message, final int length) {
-
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
-                .Instruction> instructions = new ArrayList<>();
+    private Map<InstructionKey, Instruction> readInstructions(final ByteBuf message, final int length) {
+        final var instructions = BindingMap.<InstructionKey, Instruction>orderedBuilder();
         final int startIndex = message.readerIndex();
         int offset = 0;
 
@@ -330,7 +328,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             }
         }
 
-        return instructions;
+        return instructions.build();
     }
 
     @SuppressWarnings("checkstyle:LineLength")

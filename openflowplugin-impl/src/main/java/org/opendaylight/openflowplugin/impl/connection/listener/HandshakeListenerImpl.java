@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         connectionContext.handshakeSuccessful();
 
         // fire barrier in order to sweep all handshake and posthandshake messages before continue
-        final ListenableFuture<RpcResult<BarrierOutput>> barrier = fireBarrier(version, 0L);
+        final ListenableFuture<RpcResult<BarrierOutput>> barrier = fireBarrier(version, Uint32.ZERO);
         Futures.addCallback(barrier, addBarrierCallback(), MoreExecutors.directExecutor());
     }
 
@@ -97,7 +98,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         };
     }
 
-    private ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final long xid) {
+    private ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final Uint32 xid) {
         final BarrierInput barrierInput = new BarrierInputBuilder()
                 .setXid(xid)
                 .setVersion(version)

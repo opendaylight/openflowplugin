@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.math.BigInteger;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -60,7 +59,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
         roleRequestInputBuilder.setRole(toOFJavaRole(OfpRole.NOCHANGE));
         roleRequestInputBuilder.setVersion(version);
-        roleRequestInputBuilder.setGenerationId(BigInteger.ZERO);
+        roleRequestInputBuilder.setGenerationId(Uint64.ZERO);
 
         final SettableFuture<Uint64> finalFuture = SettableFuture.create();
         final ListenableFuture<RpcResult<RoleRequestOutput>> genIdListenableFuture =

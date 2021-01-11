@@ -7,10 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
+
 import io.netty.buffer.ByteBuf;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -20,38 +21,31 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.multipart.reply.multipart.reply.body.MultipartReplyFlowTableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MultipartReplyFlowTableStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
     private static final byte PADDING_IN_TABLE_HEADER = 3;
 
     @Override
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyFlowTableStatsBuilder builder = new MultipartReplyFlowTableStatsBuilder();
-        final List<FlowTableAndStatisticsMap> items = new ArrayList<>();
+        final var items = BindingMap.<FlowTableAndStatisticsMapKey, FlowTableAndStatisticsMap>orderedBuilder();
 
         while (message.readableBytes() > 0) {
             final FlowTableAndStatisticsMapBuilder itemBuilder = new FlowTableAndStatisticsMapBuilder()
-                .setTableId(new TableId(message.readUnsignedByte()));
+                .setTableId(new TableId(readUint8(message)));
 
             message.skipBytes(PADDING_IN_TABLE_HEADER);
 
-            itemBuilder
-                .withKey(new FlowTableAndStatisticsMapKey(itemBuilder.getTableId()))
-                .setActiveFlows(new Counter32(message.readUnsignedInt()));
-
-            final byte[] packetsLooked = new byte[Long.BYTES];
-            message.readBytes(packetsLooked);
-            final byte[] packetsMatched = new byte[Long.BYTES];
-            message.readBytes(packetsMatched);
-
             items.add(itemBuilder
-                .setPacketsLookedUp(new Counter64(new BigInteger(1, packetsLooked)))
-                .setPacketsMatched(new Counter64(new BigInteger(1, packetsMatched)))
+                .setActiveFlows(new Counter32(readUint32(message)))
+                .setPacketsLookedUp(new Counter64(readUint64(message)))
+                .setPacketsMatched(new Counter64(readUint64(message)))
                 .build());
         }
 
         return builder
-            .setFlowTableAndStatisticsMap(items)
+            .setFlowTableAndStatisticsMap(items.build())
             .build();
     }
 }

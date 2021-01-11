@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -52,8 +55,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                     .setGroupType(GroupTypes.forValue(message.readUnsignedByte()));
 
             message.skipBytes(PADDING_IN_GROUP_DESC_HEADER);
-            itemBuilder.setGroupId(new GroupId(message.readUnsignedInt()));
-            itemBuilder.withKey(new GroupDescStatsKey(itemBuilder.getGroupId()));
+            itemBuilder.setGroupId(new GroupId(readUint32(message)));
 
             final var subItems = BindingMap.<BucketKey, Bucket>orderedBuilder();
             int actualLength = GROUP_DESC_HEADER_LENGTH;
@@ -64,10 +66,9 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
 
                 final BucketBuilder bucketBuilder = new BucketBuilder()
                         .setBucketId(new BucketId(bucketKey))
-                        .withKey(new BucketKey(new BucketId(bucketKey)))
-                        .setWeight(message.readUnsignedShort())
-                        .setWatchPort(message.readUnsignedInt())
-                        .setWatchGroup(message.readUnsignedInt());
+                        .setWeight(readUint16(message))
+                        .setWatchPort(readUint32(message))
+                        .setWatchGroup(readUint32(message));
 
                 message.skipBytes(PADDING_IN_BUCKETS_HEADER);
                 final var actions = BindingMap.<ActionKey, Action>orderedBuilder();
