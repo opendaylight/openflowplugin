@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -135,7 +135,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
 
         SetField setField = new SetFieldBuilder()
                 .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                    .setExtensionList(Collections.singletonList(extListBld.build())).build())
+                    .setExtensionList(BindingMap.of(extListBld.build())).build())
                 .build();
 
         assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
