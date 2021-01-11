@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMissBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplySetfieldBuilder;
@@ -278,22 +279,21 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             .build();
     }
 
-    private static List<SetFieldMatch> readMatchFields(final ByteBuf message, final int length) {
-        final List<SetFieldMatch> matchFields = new ArrayList<>();
+    private static Map<SetFieldMatchKey, SetFieldMatch> readMatchFields(final ByteBuf message, final int length) {
+        final var matchFields = BindingMap.<SetFieldMatchKey, SetFieldMatch>orderedBuilder();
 
         final int startIndex = message.readerIndex();
 
         while (message.readerIndex() - startIndex < length) {
-            MATCH_FIELD_DESERIALIZER
-                    .deserialize(message)
-                    .map(matchFields::add)
-                    .orElseGet(() -> {
-                        message.skipBytes(2 * Short.BYTES);
-                        return Boolean.FALSE;
-                    });
+            final var field = MATCH_FIELD_DESERIALIZER.deserialize(message);
+            if (field.isPresent()) {
+                matchFields.add(field.orElseThrow());
+            } else {
+                message.skipBytes(2 * Short.BYTES);
+            }
         }
 
-        return matchFields;
+        return matchFields.build();
     }
 
     private static List<Uint8> readNextTableIds(final ByteBuf message, final int length) {

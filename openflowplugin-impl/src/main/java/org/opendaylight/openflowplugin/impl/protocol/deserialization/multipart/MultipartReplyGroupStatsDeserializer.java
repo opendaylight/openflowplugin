@@ -11,8 +11,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
@@ -23,9 +21,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.buckets.BucketCounterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
@@ -36,8 +37,7 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
 
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
-        final MultipartReplyGroupStatsBuilder builder = new MultipartReplyGroupStatsBuilder();
-        final List<GroupStats> items = new ArrayList<>();
+        final var items = BindingMap.<GroupStatsKey, GroupStats>orderedBuilder();
 
         while (message.readableBytes() > 0) {
             final int itemLength = message.readUnsignedShort();
@@ -57,30 +57,29 @@ public class MultipartReplyGroupStatsDeserializer implements OFDeserializer<Mult
                         .setNanosecond(new Counter32(readUint32(message)))
                         .build());
 
-            final List<BucketCounter> subItems = new ArrayList<>();
+            final var subItems = BindingMap.<BucketCounterKey, BucketCounter>orderedBuilder();
             int actualLength = GROUP_BODY_LENGTH;
             int bucketKey = 0;
 
             while (actualLength < itemLength) {
                 subItems.add(new BucketCounterBuilder()
-                    .setBucketId(new BucketId(Uint32.valueOf(bucketKey)))
+                    .setBucketId(new BucketId(Uint32.valueOf(bucketKey++)))
                     .setPacketCount(new Counter64(readUint64(message)))
                     .setByteCount(new Counter64(readUint64(message)))
                     .build());
 
-                bucketKey++;
                 actualLength += BUCKET_COUNTER_LENGTH;
             }
 
             items.add(itemBuilder
                     .setBuckets(new BucketsBuilder()
-                        .setBucketCounter(subItems)
+                        .setBucketCounter(subItems.build())
                         .build())
                     .build());
         }
 
-        return builder
-            .setGroupStats(items)
+        return new MultipartReplyGroupStatsBuilder()
+            .setGroupStats(items.build())
             .build();
     }
 }

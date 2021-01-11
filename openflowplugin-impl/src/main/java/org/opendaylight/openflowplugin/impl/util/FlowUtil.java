@@ -41,6 +41,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowUtil {
@@ -225,7 +226,7 @@ public final class FlowUtil {
                     if (!flowModOutput.isSuccessful()) {
                         batchFlows.add(new BatchFailedFlowsOutputBuilder()
                                 .setFlowId(flowId)
-                                .setBatchOrder(batchOrder)
+                                .setBatchOrder(Uint16.valueOf(batchOrder))
                                 .build());
                         flowErrors.addAll(flowModOutput.getErrors());
                     }

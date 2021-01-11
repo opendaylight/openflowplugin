@@ -11,8 +11,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil;
@@ -25,13 +23,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<MultipartReplyBody> {
 
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
-        final MultipartReplyQueueStatsBuilder builder = new MultipartReplyQueueStatsBuilder();
-        final List<QueueIdAndStatisticsMap> items = new ArrayList<>();
+        final var items = BindingMap.<QueueIdAndStatisticsMapKey, QueueIdAndStatisticsMap>orderedBuilder();
 
         while (message.readableBytes() > 0) {
             final long port = message.readUnsignedInt();
@@ -51,9 +50,8 @@ public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<Mult
                 .build());
         }
 
-        return builder
-            .setQueueIdAndStatisticsMap(items)
+        return new MultipartReplyQueueStatsBuilder()
+            .setQueueIdAndStatisticsMap(items.build())
             .build();
     }
-
 }

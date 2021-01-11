@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -24,9 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsService<MultipartReply> {
-
     public QueueDirectStatisticsService(final RequestContextStack requestContextStack,
                                         final DeviceContext deviceContext,
                                         final ConvertorExecutor convertorExecutor,
@@ -35,14 +33,15 @@ public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsS
     }
 
     @Override
-    protected GetQueueStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
-        return  new GetQueueStatisticsOutputBuilder()
-            .setQueueIdAndStatisticsMap(input
-                .stream()
-                .flatMap(multipartReply -> ((MultipartReplyQueueStats) multipartReply.getMultipartReplyBody())
-                    .nonnullQueueIdAndStatisticsMap().values()
-                    .stream())
-                .collect(Collectors.toList()))
+    protected GetQueueStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
+        final var map = input.stream()
+            .flatMap(multipartReply -> ((MultipartReplyQueueStats) multipartReply.getMultipartReplyBody())
+                .nonnullQueueIdAndStatisticsMap().values()
+                .stream())
+            .collect(BindingMap.toOrderedMap());
+
+        return new GetQueueStatisticsOutputBuilder()
+            .setQueueIdAndStatisticsMap(map)
             .build();
     }
 
@@ -58,5 +57,4 @@ public class QueueDirectStatisticsService extends AbstractQueueDirectStatisticsS
                 .build())
             .build();
     }
-
 }

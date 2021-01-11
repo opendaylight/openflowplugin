@@ -39,6 +39,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -236,7 +237,7 @@ public final class GroupUtil {
                     if (!groupModOutput.isSuccessful()) {
                         batchGroups.add(new BatchFailedGroupsOutputBuilder()
                                 .setGroupId(groupId)
-                                .setBatchOrder(batchOrder)
+                                .setBatchOrder(Uint16.valueOf(batchOrder))
                                 .build());
                         groupErrors.addAll(groupModOutput.getErrors());
                     }
