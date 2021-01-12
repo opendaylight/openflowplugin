@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.m
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
@@ -68,7 +69,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
 
         final MultipartReply reply = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyPortStatsBuilder()
-                        .setNodeConnectorStatisticsAndPortNumberMap(Collections.singletonList(portStat))
+                        .setNodeConnectorStatisticsAndPortNumberMap(BindingMap.of(portStat))
                         .build())
                 .build();
 

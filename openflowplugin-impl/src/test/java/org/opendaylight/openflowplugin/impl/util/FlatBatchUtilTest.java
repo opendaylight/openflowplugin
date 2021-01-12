@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.collect.Lists;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -388,7 +387,7 @@ public class FlatBatchUtilTest {
                 .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
                 .withResult(output_1).build();
         final RpcResult<ProcessFlatBatchOutput> rpcResultSuccess = RpcResultBuilder.<ProcessFlatBatchOutput>success()
-                .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(new ArrayList<>())).build();
+                .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(Map.of())).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult1
                 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultSuccess));

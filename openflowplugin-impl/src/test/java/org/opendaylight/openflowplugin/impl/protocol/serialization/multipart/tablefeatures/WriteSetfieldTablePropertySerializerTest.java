@@ -9,33 +9,28 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.ta
 
 import static org.junit.Assert.assertEquals;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class WriteSetfieldTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
     @Test
     public void testSerialize() {
         final WriteSetfield property = new WriteSetfieldBuilder()
-                .setWriteSetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
-                        .prop.type.table.feature.prop.type.write.setfield
-                        .WriteSetfieldBuilder()
-                        .setSetFieldMatch(ImmutableList
-                                .<SetFieldMatch>builder()
-                                .add(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpOp.class)
-                                        .setHasMask(false)
-                                        .build())
-                                .build())
-                        .build())
-                .build();
+            .setWriteSetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
+                .prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder()
+                    .setSetFieldMatch(BindingMap.of(new SetFieldMatchBuilder()
+                        .setMatchType(ArpOp.class)
+                        .setHasMask(false)
+                        .build()))
+                    .build())
+            .build();
 
         assertProperty(property, out -> {
             assertEquals(out.readUnsignedShort(), OxmMatchConstants.OPENFLOW_BASIC_CLASS);
