@@ -5,10 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -24,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.statistics.reply.MeterStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter._case.MultipartReplyMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter._case.MultipartRequestMeterBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsService<MultipartReply> {
 
@@ -45,8 +45,8 @@ public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsS
     }
 
     @Override
-    protected GetMeterStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
-        final List<MeterStats> meterStats = new ArrayList<>();
+    protected GetMeterStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
+        final var meterStats = BindingMap.<MeterStatsKey, MeterStats>orderedBuilder();
 
         if (success) {
             for (final MultipartReply mpReply : input) {
@@ -59,7 +59,7 @@ public class MeterDirectStatisticsService extends AbstractMeterDirectStatisticsS
         }
 
         return new GetMeterStatisticsOutputBuilder()
-            .setMeterStats(meterStats)
+            .setMeterStats(meterStats.build())
             .build();
     }
 

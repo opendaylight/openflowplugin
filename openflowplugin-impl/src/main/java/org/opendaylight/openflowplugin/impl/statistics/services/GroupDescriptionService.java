@@ -7,14 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -29,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupDescStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
@@ -37,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.MultipartReplyGroupDesc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupDescCaseBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 final class GroupDescriptionService
         extends AbstractCompatibleStatService<GetGroupDescriptionInput,
@@ -46,10 +43,10 @@ final class GroupDescriptionService
             new MultipartRequestGroupDescCaseBuilder().build();
     private final ConvertorExecutor convertorExecutor;
 
-    GroupDescriptionService(RequestContextStack requestContextStack,
-                            DeviceContext deviceContext,
-                            AtomicLong compatibilityXidSeed,
-                            ConvertorExecutor convertorExecutor) {
+    GroupDescriptionService(final RequestContextStack requestContextStack,
+                            final DeviceContext deviceContext,
+                            final AtomicLong compatibilityXidSeed,
+                            final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
@@ -63,40 +60,30 @@ final class GroupDescriptionService
     }
 
     @Override
-    public GetGroupDescriptionOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetGroupDescriptionOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetGroupDescriptionOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public GroupDescStatsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        GroupDescStatsUpdatedBuilder notification = new GroupDescStatsUpdatedBuilder();
-        notification.setId(getDeviceInfo().getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification.setGroupDescStats(new ArrayList<>());
+    public GroupDescStatsUpdated transformToNotification(final List<MultipartReply> result,
+            final TransactionId emulatedTxId) {
         final VersionConvertorData data = new VersionConvertorData(getVersion());
 
+        final var stats = BindingMap.<GroupDescStatsKey, GroupDescStats>orderedBuilder();
         for (MultipartReply mpReply : result) {
             MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
             final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
-            groupDescStatsList.ifPresent(groupDescStats -> {
-                if (notification.getGroupDescStats() == null) {
-                    List<GroupDescStats> stats = Lists.newArrayList(groupDescStats);
-                    notification.setGroupDescStats(stats);
-                } else {
-                    Set<GroupDescStats> stats = new HashSet<>(notification.getGroupDescStats().values());
-                    stats.addAll(groupDescStats);
-                    notification.setGroupDescStats(stats.stream().collect(Collectors.toList()));
-                }
-            });
-
-
+            groupDescStatsList.ifPresent(stats::addAll);
         }
 
-        return notification.build();
+        return new GroupDescStatsUpdatedBuilder()
+            .setId(getDeviceInfo().getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setGroupDescStats(stats.build())
+            .build();
     }
 }

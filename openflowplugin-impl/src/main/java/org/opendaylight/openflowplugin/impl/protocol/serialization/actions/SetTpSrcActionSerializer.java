@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.Icmpv6MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
     @Override
@@ -31,13 +32,13 @@ public class SetTpSrcActionSerializer extends AbstractSetFieldActionSerializer {
             switch (proto) {
                 case ICMP: {
                     builder.setIcmpv4Match(new Icmpv4MatchBuilder()
-                            .setIcmpv4Type((short) (0xFF & port.getValue().toJava()))
+                            .setIcmpv4Type(Uint8.valueOf(0xFF & port.getValue().toJava()))
                             .build());
                     break;
                 }
                 case ICMPV6: {
                     builder.setIcmpv6Match(new Icmpv6MatchBuilder()
-                            .setIcmpv6Type((short) (0xFF & port.getValue().toJava()))
+                            .setIcmpv6Type(Uint8.valueOf(0xFF & port.getValue().toJava()))
                             .build());
                     break;
                 }

@@ -9,12 +9,7 @@
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -32,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Pulled out port stats to notification transformation.
@@ -55,56 +51,27 @@ public final class NodeConnectorStatisticsToNotificationTransformer {
                                                                         final DeviceInfo deviceInfo,
                                                                         final OpenflowVersion ofVersion,
                                                                         final TransactionId emulatedTxId) {
-
-        NodeConnectorStatisticsUpdateBuilder notification = new NodeConnectorStatisticsUpdateBuilder();
-        notification.setId(deviceInfo.getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification
-                .setNodeConnectorStatisticsAndPortNumberMap(new ArrayList<>());
+        final var stats = BindingMap.<NodeConnectorStatisticsAndPortNumberMapKey,
+            NodeConnectorStatisticsAndPortNumberMap>orderedBuilder();
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
 
             MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
             for (PortStats portStats : replyBody.getPortStats()) {
-                NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
-                        processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats);
-                if (notification.getNodeConnectorStatisticsAndPortNumberMap() != null) {
-                    Set<NodeConnectorStatisticsAndPortNumberMap> stats
-                            = new HashSet<>(notification.getNodeConnectorStatisticsAndPortNumberMap().values());
-                    stats.add(statsBuilder.build());
-                    notification.setNodeConnectorStatisticsAndPortNumberMap(
-                            stats.stream().collect(Collectors.toList()));
-                } else {
-                    notification.setNodeConnectorStatisticsAndPortNumberMap(Lists.newArrayList(statsBuilder.build()));
-                }
+                stats.add(processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats).build());
             }
         }
-        return notification.build();
+        return new NodeConnectorStatisticsUpdateBuilder()
+            .setId(deviceInfo.getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setNodeConnectorStatisticsAndPortNumberMap(stats.build())
+            .build();
     }
 
     @VisibleForTesting
-    static NodeConnectorStatisticsAndPortNumberMapBuilder processSingleNodeConnectorStats(DeviceInfo deviceInfo,
-                                                                                          OpenflowVersion ofVersion,
-                                                                                          PortStats portStats) {
-        NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
-                new NodeConnectorStatisticsAndPortNumberMapBuilder();
-        statsBuilder.setNodeConnectorId(
-                InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                        deviceInfo.getDatapathId(),
-                        portStats.getPortNo(), ofVersion));
-
-        BytesBuilder bytesBuilder = new BytesBuilder();
-        bytesBuilder.setReceived(portStats.getRxBytes());
-        bytesBuilder.setTransmitted(portStats.getTxBytes());
-        statsBuilder.setBytes(bytesBuilder.build());
-
-        PacketsBuilder packetsBuilder = new PacketsBuilder();
-        packetsBuilder.setReceived(portStats.getRxPackets());
-        packetsBuilder.setTransmitted(portStats.getTxPackets());
-        statsBuilder.setPackets(packetsBuilder.build());
-
+    static NodeConnectorStatisticsAndPortNumberMapBuilder processSingleNodeConnectorStats(final DeviceInfo deviceInfo,
+            final OpenflowVersion ofVersion, final PortStats portStats) {
         DurationBuilder durationBuilder = new DurationBuilder();
         if (portStats.getDurationSec() != null) {
             durationBuilder.setSecond(new Counter32(portStats.getDurationSec()));
@@ -112,16 +79,25 @@ public final class NodeConnectorStatisticsToNotificationTransformer {
         if (portStats.getDurationNsec() != null) {
             durationBuilder.setNanosecond(new Counter32(portStats.getDurationNsec()));
         }
-        statsBuilder.setDuration(durationBuilder.build());
-        statsBuilder.setCollisionCount(portStats.getCollisions());
-        statsBuilder.withKey(new NodeConnectorStatisticsAndPortNumberMapKey(statsBuilder.getNodeConnectorId()));
-        statsBuilder.setReceiveCrcError(portStats.getRxCrcErr());
-        statsBuilder.setReceiveDrops(portStats.getRxDropped());
-        statsBuilder.setReceiveErrors(portStats.getRxErrors());
-        statsBuilder.setReceiveFrameError(portStats.getRxFrameErr());
-        statsBuilder.setReceiveOverRunError(portStats.getRxOverErr());
-        statsBuilder.setTransmitDrops(portStats.getTxDropped());
-        statsBuilder.setTransmitErrors(portStats.getTxErrors());
-        return statsBuilder;
+
+        return new NodeConnectorStatisticsAndPortNumberMapBuilder()
+            .setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(deviceInfo.getDatapathId(),
+                portStats.getPortNo(), ofVersion))
+            .setBytes(new BytesBuilder()
+                .setReceived(portStats.getRxBytes())
+                .setTransmitted(portStats.getTxBytes())
+                .build())
+            .setPackets(new PacketsBuilder()
+                .setReceived(portStats.getRxPackets())
+                .setTransmitted(portStats.getTxPackets()).build())
+            .setDuration(durationBuilder.build())
+            .setCollisionCount(portStats.getCollisions())
+            .setReceiveCrcError(portStats.getRxCrcErr())
+            .setReceiveDrops(portStats.getRxDropped())
+            .setReceiveErrors(portStats.getRxErrors())
+            .setReceiveFrameError(portStats.getRxFrameErr())
+            .setReceiveOverRunError(portStats.getRxOverErr())
+            .setTransmitDrops(portStats.getTxDropped())
+            .setTransmitErrors(portStats.getTxErrors());
     }
 }

@@ -12,10 +12,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         final boolean hasMask = processHeader(message);
         final VlanIdBuilder vlanIdBuilder = new VlanIdBuilder();
         final int vlanVidValue = message.readUnsignedShort();
@@ -23,13 +24,13 @@ public class VlanVidEntryDeserializer extends AbstractMatchEntryDeserializer {
         if (hasMask) {
             message.skipBytes(Short.BYTES); // Skip mask
             vlanIdBuilder
-                    .setVlanId(new VlanId(0))
+                    .setVlanId(new VlanId(Uint16.ZERO))
                     .setVlanIdPresent(true);
         } else {
             final boolean vidPresent = (vlanVidValue & 1 << 12) != 0;
 
             vlanIdBuilder
-                    .setVlanId(new VlanId(vidPresent ? vlanVidValue & (1 << 12) - 1 : vlanVidValue))
+                    .setVlanId(new VlanId(Uint16.valueOf(vidPresent ? vlanVidValue & (1 << 12) - 1 : vlanVidValue)))
                     .setVlanIdPresent(vidPresent);
         }
 

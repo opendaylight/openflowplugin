@@ -8,12 +8,7 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -30,6 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapKey;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Pulled out queue stats to notification transformation.
@@ -53,47 +50,30 @@ public final class QueueStatisticsToNotificationTransformer {
                                                                 final DeviceInfo deviceInfo,
                                                                 final OpenflowVersion ofVersion,
                                                                 final TransactionId emulatedTxId) {
-
-        QueueStatisticsUpdateBuilder notification = new QueueStatisticsUpdateBuilder();
-        notification.setId(deviceInfo.getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification.setQueueIdAndStatisticsMap(new ArrayList<>());
+        final var stats = BindingMap.<QueueIdAndStatisticsMapKey, QueueIdAndStatisticsMap>orderedBuilder();
         for (MultipartReply mpReply : mpReplyList) {
-
             MultipartReplyQueueCase caseBody = (MultipartReplyQueueCase) mpReply.getMultipartReplyBody();
             MultipartReplyQueue replyBody = caseBody.getMultipartReplyQueue();
 
             for (QueueStats queueStats : replyBody.getQueueStats()) {
-
-                QueueIdAndStatisticsMapBuilder statsBuilder =
-                        new QueueIdAndStatisticsMapBuilder();
-                statsBuilder.setNodeConnectorId(
-                        InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
-                                deviceInfo.getDatapathId(),
-                                queueStats.getPortNo(), ofVersion));
-                statsBuilder.setTransmissionErrors(new Counter64(queueStats.getTxErrors()));
-                statsBuilder.setTransmittedBytes(new Counter64(queueStats.getTxBytes()));
-                statsBuilder.setTransmittedPackets(new Counter64(queueStats.getTxPackets()));
-
-                DurationBuilder durationBuilder = new DurationBuilder();
-                durationBuilder.setSecond(new Counter32(queueStats.getDurationSec()));
-                durationBuilder.setNanosecond(new Counter32(queueStats.getDurationNsec()));
-                statsBuilder.setDuration(durationBuilder.build());
-
-                statsBuilder.setQueueId(new QueueId(queueStats.getQueueId()));
-
-                if (notification.getQueueIdAndStatisticsMap() == null) {
-                    notification.setQueueIdAndStatisticsMap(Lists.newArrayList(statsBuilder.build()));
-                } else {
-                    Set<QueueIdAndStatisticsMap> stats
-                            = new HashSet<>(notification.getQueueIdAndStatisticsMap().values());
-                    stats.add(statsBuilder.build());
-                    notification.setQueueIdAndStatisticsMap(stats.stream().collect(Collectors.toList()));
-                }
+                stats.add(new QueueIdAndStatisticsMapBuilder()
+                    .setNodeConnectorId(InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
+                            deviceInfo.getDatapathId(), queueStats.getPortNo(), ofVersion))
+                    .setTransmissionErrors(new Counter64(queueStats.getTxErrors()))
+                    .setTransmittedBytes(new Counter64(queueStats.getTxBytes()))
+                    .setTransmittedPackets(new Counter64(queueStats.getTxPackets()))
+                    .setDuration(new DurationBuilder()
+                        .setSecond(new Counter32(queueStats.getDurationSec()))
+                        .setNanosecond(new Counter32(queueStats.getDurationNsec())).build())
+                    .setQueueId(new QueueId(queueStats.getQueueId()))
+                    .build());
             }
         }
-        return notification.build();
+        return new QueueStatisticsUpdateBuilder()
+            .setId(deviceInfo.getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setQueueIdAndStatisticsMap(stats.build())
+            .build();
     }
 }

@@ -82,17 +82,16 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyTableFeaturesBuilder builder = new MultipartReplyTableFeaturesBuilder();
-        final List<TableFeatures> items = new ArrayList<>();
+        final var items = BindingMap.<TableFeaturesKey, TableFeatures>orderedBuilder();
 
         while (message.readableBytes() > 0) {
             final int itemLength = message.readUnsignedShort();
-            final TableFeaturesBuilder itemBuilder = new TableFeaturesBuilder()
-                    .setTableId(readUint8(message));
+            final Uint8 tableId = readUint8(message);
 
             message.skipBytes(PADDING_IN_MULTIPART_REPLY_TABLE_FEATURES);
 
-            items.add(itemBuilder
-                    .withKey(new TableFeaturesKey(itemBuilder.getTableId()))
+            items.add(new TableFeaturesBuilder()
+                    .setTableId(tableId)
                     .setName(ByteBufUtils.decodeNullTerminatedString(message, MAX_TABLE_NAME_LENGTH))
                     .setMetadataMatch(readUint64(message))
                     .setMetadataWrite(readUint64(message))
@@ -104,7 +103,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         }
 
         return builder
-                .setTableFeatures(items)
+                .setTableFeatures(items.build())
                 .build();
     }
 
@@ -116,7 +115,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     }
 
     private TableProperties readTableProperties(final ByteBuf message, final int length) {
-        final List<TableFeatureProperties> items = new ArrayList<>();
+        final var items = BindingMap.<TableFeaturePropertiesKey, TableFeatureProperties>orderedBuilder();
         int tableFeaturesLength = length;
         int order = 0;
         while (tableFeaturesLength > 0) {
@@ -127,8 +126,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             tableFeaturesLength -= propertyLength;
             final int commonPropertyLength = propertyLength - COMMON_PROPERTY_LENGTH;
             final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder()
-                .setOrder(order)
-                .withKey(new TableFeaturePropertiesKey(order));
+                .setOrder(order++);
 
             switch (propType) {
                 case OFPTFPTINSTRUCTIONS:
@@ -270,12 +268,11 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             }
 
             items.add(propBuilder.build());
-            order++;
         }
 
 
         return new TablePropertiesBuilder()
-            .setTableFeatureProperties(items)
+            .setTableFeatureProperties(items.build())
             .build();
     }
 
@@ -316,7 +313,6 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while (message.readerIndex() - startIndex < length) {
             try {
                 instructions.add(new InstructionBuilder()
-                        .withKey(new InstructionKey(offset))
                         .setOrder(offset)
                         .setInstruction(InstructionUtil
                                 .readInstructionHeader(EncodeConstants.OF13_VERSION_ID, message, registry))
@@ -324,6 +320,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
 
                 offset++;
             } catch (ClassCastException | IllegalStateException e) {
+                // FIXME: what are we guarding here?
                 message.skipBytes(2 * Short.BYTES);
             }
         }
@@ -331,7 +328,6 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         return instructions.build();
     }
 
-    @SuppressWarnings("checkstyle:LineLength")
     private Map<ActionKey, Action> readActions(final ByteBuf message, final int length) {
         final var actions = BindingMap.<ActionKey, Action>orderedBuilder();
         final int startIndex = message.readerIndex();
@@ -340,7 +336,6 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         while (message.readerIndex() - startIndex < length) {
             try {
                 actions.add(new ActionBuilder()
-                        .withKey(new ActionKey(offset))
                         .setOrder(offset)
                         .setAction(ActionUtil.readActionHeader(EncodeConstants.OF13_VERSION_ID, message, registry,
                                 ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS))

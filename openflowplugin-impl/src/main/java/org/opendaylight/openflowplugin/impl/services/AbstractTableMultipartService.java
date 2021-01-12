@@ -5,10 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services;
 
-import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Future;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -18,6 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.TableUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public abstract class AbstractTableMultipartService<T extends OfHeader>
@@ -35,17 +36,11 @@ public abstract class AbstractTableMultipartService<T extends OfHeader>
     /**
      * Stores table features to operational datastore.
      */
-    protected void storeStatistics(List<org.opendaylight.yang.gen.v1.urn
-            .opendaylight.table.types.rev131026.table.features.TableFeatures> result) {
+    protected void storeStatistics(final Map<TableFeaturesKey, TableFeatures> result) {
         multipartWriterProvider
             .lookup(MultipartType.OFPMPTABLEFEATURES)
             .ifPresent(writer -> {
-                writer.write(
-                    new TableUpdatedBuilder()
-                        .setTableFeatures(result)
-                        .build(),
-                    false);
-
+                writer.write(new TableUpdatedBuilder().setTableFeatures(result).build(), false);
                 getTxFacade().submitTransaction();
             });
     }
@@ -56,5 +51,4 @@ public abstract class AbstractTableMultipartService<T extends OfHeader>
      * @return experimenter output
      */
     public abstract Future<RpcResult<UpdateTableOutput>> handleAndReply(UpdateTableInput input);
-
 }

@@ -105,6 +105,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.reply.multipart.reply.body.MultipartReplyPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.queue.id.and.statistics.map.QueueIdAndStatisticsMapBuilder;
@@ -265,7 +266,8 @@ public final class MultipartReplyTranslatorUtil {
         MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) msg.getMultipartReplyBody();
         MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
 
-        List<NodeConnectorStatisticsAndPortNumberMap> statsMap = new ArrayList<>();
+        final var statsMap = BindingMap.<NodeConnectorStatisticsAndPortNumberMapKey,
+            NodeConnectorStatisticsAndPortNumberMap>orderedBuilder();
         for (PortStats portStats : replyBody.nonnullPortStats()) {
             final DurationBuilder durationBuilder = new DurationBuilder();
             if (portStats.getDurationSec() != null) {
@@ -299,7 +301,7 @@ public final class MultipartReplyTranslatorUtil {
         }
 
         return new MultipartReplyPortStatsBuilder()
-            .setNodeConnectorStatisticsAndPortNumberMap(statsMap)
+            .setNodeConnectorStatisticsAndPortNumberMap(statsMap.build())
             .build();
     }
 
