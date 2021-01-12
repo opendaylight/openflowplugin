@@ -8,13 +8,8 @@
 
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
@@ -22,9 +17,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GroupStatisticsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply.GroupStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroup;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 /**
  * Pulled out group stats to notification transformation.
@@ -47,32 +44,22 @@ public final class GroupStatisticsToNotificationTransformer {
                                                                  final DeviceInfo deviceInfo,
                                                                  final TransactionId emulatedTxId,
                                                                  final ConvertorExecutor convertorExecutor) {
-
         VersionConvertorData data = new VersionConvertorData(deviceInfo.getVersion());
-        GroupStatisticsUpdatedBuilder notification = new GroupStatisticsUpdatedBuilder();
-        notification.setId(deviceInfo.getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification.setGroupStats(new ArrayList<>());
-
+        final var stats = BindingMap.<GroupStatsKey, GroupStats>orderedBuilder();
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyGroupCase caseBody = (MultipartReplyGroupCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroup replyBody = caseBody.getMultipartReplyGroup();
             final Optional<List<GroupStats>> groupStatsList = convertorExecutor.convert(
                     replyBody.getGroupStats(), data);
 
-            groupStatsList.ifPresent(groupStats -> {
-                if (notification.getGroupStats() == null) {
-                    List<GroupStats> stats = Lists.newArrayList(groupStats);
-                    notification.setGroupStats(stats);
-                } else {
-                    Set<GroupStats> stats = new HashSet<>(notification.getGroupStats().values());
-                    stats.addAll(groupStats);
-                    notification.setGroupStats(stats.stream().collect(Collectors.toList()));
-                }
-            });
+            groupStatsList.ifPresent(stats::addAll);
         }
-        return notification.build();
+
+        return new GroupStatisticsUpdatedBuilder()
+            .setId(deviceInfo.getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setGroupStats(stats.build())
+            .build();
     }
 }

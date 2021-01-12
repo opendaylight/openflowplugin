@@ -7,14 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -30,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.MeterConfigStatsUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -41,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 final class AllMeterConfigStatsService
         extends AbstractCompatibleStatService<GetAllMeterConfigStatisticsInput,
@@ -64,10 +61,10 @@ final class AllMeterConfigStatsService
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
 
-    AllMeterConfigStatsService(RequestContextStack requestContextStack,
-                                      DeviceContext deviceContext,
-                                      AtomicLong compatibilityXidSeed,
-                                      ConvertorExecutor convertorExecutor) {
+    AllMeterConfigStatsService(final RequestContextStack requestContextStack,
+                                      final DeviceContext deviceContext,
+                                      final AtomicLong compatibilityXidSeed,
+                                      final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
         data = new VersionConvertorData(getVersion());
@@ -82,36 +79,27 @@ final class AllMeterConfigStatsService
     }
 
     @Override
-    public GetAllMeterConfigStatisticsOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetAllMeterConfigStatisticsOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetAllMeterConfigStatisticsOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public MeterConfigStatsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
-        message.setId(getDeviceInfo().getNodeId());
-        message.setMoreReplies(Boolean.FALSE);
-        message.setTransactionId(emulatedTxId);
-
-        message.setMeterConfigStats(new ArrayList<>());
+    public MeterConfigStatsUpdated transformToNotification(final List<MultipartReply> result, final TransactionId emulatedTxId) {
+        final var stats = BindingMap.<MeterConfigStatsKey, MeterConfigStats>orderedBuilder();
         for (MultipartReply mpReply : result) {
             MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
 
             final Optional<List<MeterConfigStats>> meterConfigStatsList =
                     convertorExecutor.convert(replyBody.getMeterConfig(), data);
-
-            meterConfigStatsList.ifPresent(meterConfigStats -> {
-                if (message.getMeterConfigStats() == null) {
-                    message.setMeterConfigStats(Lists.newArrayList(meterConfigStats));
-                } else {
-                    Set<MeterConfigStats> stats = new HashSet<>(message.getMeterConfigStats().values());
-                    stats.addAll(meterConfigStats);
-                    message.setMeterConfigStats(stats.stream().collect(Collectors.toList()));
-                }
-            });
+            meterConfigStatsList.ifPresent(stats::addAll);
         }
 
-        return message.build();
+        return new MeterConfigStatsUpdatedBuilder()
+            .setId(getDeviceInfo().getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setMeterConfigStats(stats.build())
+            .build();
     }
 }

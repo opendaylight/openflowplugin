@@ -12,8 +12,6 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -36,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
@@ -51,7 +50,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyMeterConfigBuilder builder = new MultipartReplyMeterConfigBuilder();
-        final List<MeterConfigStats> items = new ArrayList<>();
+        final var items = BindingMap.<MeterConfigStatsKey, MeterConfigStats>orderedBuilder();
 
         while (message.readableBytes() > 0) {
             final int itemLength = message.readUnsignedShort();
@@ -60,7 +59,7 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                     .setFlags(readMeterFlags(message))
                     .setMeterId(new MeterId(readUint32(message)));
 
-            final List<MeterBandHeader> subItems = new ArrayList<>();
+            final var subItems = BindingMap.<MeterBandHeaderKey, MeterBandHeader>orderedBuilder();
             int actualLength = METER_CONFIG_LENGTH;
             long bandKey = 0;
 
@@ -121,13 +120,13 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
             items.add(itemBuilder
                     .withKey(new MeterConfigStatsKey(itemBuilder.getMeterId()))
                     .setMeterBandHeaders(new MeterBandHeadersBuilder()
-                            .setMeterBandHeader(subItems)
+                            .setMeterBandHeader(subItems.build())
                             .build())
                     .build());
         }
 
         return builder
-                .setMeterConfigStats(items)
+                .setMeterConfigStats(items.build())
                 .build();
     }
 

@@ -13,9 +13,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -130,12 +131,13 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
         return finalFuture;
     }
 
-    protected List<org.opendaylight.yang.gen.v1.urn
-            .opendaylight.table.types.rev131026.table.features.TableFeatures> convertToSalTableFeatures(
-            final List<MultipartReply> multipartReplies) {
-        final List<org.opendaylight.yang.gen.v1.urn
-                .opendaylight.table.types.rev131026.table.features.TableFeatures> salTableFeaturesAll =
-                new ArrayList<>();
+    protected Map<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey,
+                  org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures>
+                        convertToSalTableFeatures(final List<MultipartReply> multipartReplies) {
+        final var salTableFeaturesAll = BindingMap.<
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures>
+                orderedBuilder();
         for (final MultipartReply multipartReply : multipartReplies) {
             if (multipartReply.getType().equals(MultipartType.OFPMPTABLEFEATURES)) {
                 final MultipartReplyBody multipartReplyBody = multipartReply.getMultipartReplyBody();
@@ -155,6 +157,6 @@ public class MultiLayerTableMultipartService extends AbstractTableMultipartServi
             }
         }
 
-        return salTableFeaturesAll;
+        return salTableFeaturesAll.build();
     }
 }

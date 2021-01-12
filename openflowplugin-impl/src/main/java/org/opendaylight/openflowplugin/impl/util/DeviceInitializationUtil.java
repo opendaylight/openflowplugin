@@ -32,6 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBu
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,13 +76,14 @@ public final class DeviceInitializationUtil {
         }
 
         for (int i = 0; i < nrOfTables; i++) {
+            final Uint8 tableId = Uint8.valueOf(i);
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
                     deviceInfo
                             .getNodeInstanceIdentifier()
                             .augmentation(FlowCapableNode.class)
-                            .child(Table.class, new TableKey((short) i)),
+                            .child(Table.class, new TableKey(tableId)),
                     new TableBuilder()
-                            .setId((short) i)
+                            .setId(tableId)
                             .addAugmentation(new FlowTableStatisticsDataBuilder().build())
                             .build());
         }
@@ -121,7 +124,7 @@ public final class DeviceInitializationUtil {
         }
         final int port = address.getPort();
         LOG.info("Port number of the node {} is: {}", node, port);
-        return new PortNumber(port);
+        return new PortNumber(Uint16.valueOf(port));
     }
 
     /**

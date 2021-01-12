@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -15,21 +14,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class StripVlanActionSerializer extends AbstractSetFieldActionSerializer {
 
     @Override
-    protected SetFieldCase buildAction(Action input) {
+    protected SetFieldCase buildAction(final Action input) {
         return new SetFieldCaseBuilder()
-                .setSetField(new SetFieldBuilder()
-                        .setVlanMatch(new VlanMatchBuilder()
-                                .setVlanId(new VlanIdBuilder()
-                                        .setVlanIdPresent(true)
-                                        .setVlanId(new VlanId(0x0000))
-                                        .build())
-                                .build())
+            .setSetField(new SetFieldBuilder()
+                .setVlanMatch(new VlanMatchBuilder()
+                    .setVlanId(new VlanIdBuilder()
+                        .setVlanIdPresent(true)
+                        .setVlanId(new VlanId(Uint16.ZERO))
                         .build())
-                .build();
+                    .build())
+                .build())
+            .build();
     }
-
 }

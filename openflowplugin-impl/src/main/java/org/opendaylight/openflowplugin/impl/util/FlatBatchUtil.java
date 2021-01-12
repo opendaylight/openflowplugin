@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchPlanStep;
 import org.opendaylight.openflowplugin.impl.services.batch.BatchStepType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -221,9 +222,7 @@ public final class FlatBatchUtil {
             final boolean status) {
         return RpcResultBuilder.<ProcessFlatBatchOutput>status(status)
                                .withRpcErrors(new ArrayList<>())
-                               .withResult(new ProcessFlatBatchOutputBuilder()
-                                       .setBatchFailure(new ArrayList<>())
-                                       .build())
+                               .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(Map.of()).build())
                                .buildFuture();
     }
 }

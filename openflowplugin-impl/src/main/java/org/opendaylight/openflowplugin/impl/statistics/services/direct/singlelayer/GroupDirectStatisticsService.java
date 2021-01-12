@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -24,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequestBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsService<MultipartReply> {
 
@@ -35,14 +34,14 @@ public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsS
     }
 
     @Override
-    protected GetGroupStatisticsOutput buildReply(List<MultipartReply> input, boolean success) {
+    protected GetGroupStatisticsOutput buildReply(final List<MultipartReply> input, final boolean success) {
+        final var map = input.stream()
+            .flatMap(multipartReply -> ((MultipartReplyGroupStats) multipartReply.getMultipartReplyBody())
+                .nonnullGroupStats().values().stream())
+            .collect(BindingMap.toOrderedMap());
+
         return new GetGroupStatisticsOutputBuilder()
-            .setGroupStats(input
-                .stream()
-                .flatMap(multipartReply -> ((MultipartReplyGroupStats) multipartReply.getMultipartReplyBody())
-                    .nonnullGroupStats().values()
-                    .stream())
-                .collect(Collectors.toList()))
+            .setGroupStats(map)
             .build();
     }
 
