@@ -5,16 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -53,29 +48,21 @@ public final class MeterStatisticsToNotificationTransformer {
                                                                  final ConvertorExecutor convertorExecutor) {
 
         VersionConvertorData data = new VersionConvertorData(deviceInfo.getVersion());
-        MeterStatisticsUpdatedBuilder notification = new MeterStatisticsUpdatedBuilder();
-        notification.setId(deviceInfo.getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification.setMeterStats(new ArrayList<>());
+        List<MeterStats> stats = new ArrayList<>();
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyMeterCase caseBody = (MultipartReplyMeterCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeter replyBody = caseBody.getMultipartReplyMeter();
             final Optional<List<MeterStats>> meterStatsList =
                     convertorExecutor.convert(replyBody.getMeterStats(), data);
 
-            meterStatsList.ifPresent(meterStats -> {
-                if (notification.getMeterStats() == null) {
-                    notification.setMeterStats(Lists.newArrayList(meterStats));
-                } else {
-                    Set<MeterStats> stats = new HashSet<>(notification.getMeterStats().values());
-                    stats.addAll(meterStats);
-                    notification.setMeterStats(stats.stream().collect(Collectors.toList()));
-                }
-            });
+            meterStatsList.ifPresent(stats::addAll);
         }
 
-        return notification.build();
+        return new MeterStatisticsUpdatedBuilder()
+            .setId(deviceInfo.getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setMeterStats(stats)
+            .build();
     }
 }

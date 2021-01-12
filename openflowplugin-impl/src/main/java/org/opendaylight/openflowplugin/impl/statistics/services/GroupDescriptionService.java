@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -69,34 +65,22 @@ final class GroupDescriptionService
 
     @Override
     public GroupDescStatsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        GroupDescStatsUpdatedBuilder notification = new GroupDescStatsUpdatedBuilder();
-        notification.setId(getDeviceInfo().getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification.setGroupDescStats(new ArrayList<>());
         final VersionConvertorData data = new VersionConvertorData(getVersion());
-
+        final List<GroupDescStats> stats = new ArrayList<>();
         for (MultipartReply mpReply : result) {
             MultipartReplyGroupDescCase caseBody = (MultipartReplyGroupDescCase) mpReply.getMultipartReplyBody();
             MultipartReplyGroupDesc replyBody = caseBody.getMultipartReplyGroupDesc();
             final Optional<List<GroupDescStats>> groupDescStatsList = convertorExecutor.convert(
                     replyBody.getGroupDesc(), data);
 
-            groupDescStatsList.ifPresent(groupDescStats -> {
-                if (notification.getGroupDescStats() == null) {
-                    List<GroupDescStats> stats = Lists.newArrayList(groupDescStats);
-                    notification.setGroupDescStats(stats);
-                } else {
-                    Set<GroupDescStats> stats = new HashSet<>(notification.getGroupDescStats().values());
-                    stats.addAll(groupDescStats);
-                    notification.setGroupDescStats(stats.stream().collect(Collectors.toList()));
-                }
-            });
-
-
+            groupDescStatsList.ifPresent(stats::addAll);
         }
 
-        return notification.build();
+        return new GroupDescStatsUpdatedBuilder()
+            .setId(getDeviceInfo().getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setGroupDescStats(stats)
+            .build();
     }
 }

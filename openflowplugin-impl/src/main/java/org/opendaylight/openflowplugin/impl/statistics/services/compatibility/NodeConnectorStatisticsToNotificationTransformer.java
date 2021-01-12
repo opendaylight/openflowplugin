@@ -5,16 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
@@ -55,33 +50,21 @@ public final class NodeConnectorStatisticsToNotificationTransformer {
                                                                         final DeviceInfo deviceInfo,
                                                                         final OpenflowVersion ofVersion,
                                                                         final TransactionId emulatedTxId) {
-
-        NodeConnectorStatisticsUpdateBuilder notification = new NodeConnectorStatisticsUpdateBuilder();
-        notification.setId(deviceInfo.getNodeId());
-        notification.setMoreReplies(Boolean.FALSE);
-        notification.setTransactionId(emulatedTxId);
-
-        notification
-                .setNodeConnectorStatisticsAndPortNumberMap(new ArrayList<>());
+        List<NodeConnectorStatisticsAndPortNumberMap> stats = new ArrayList<>();
         for (MultipartReply mpReply : mpReplyList) {
             MultipartReplyPortStatsCase caseBody = (MultipartReplyPortStatsCase) mpReply.getMultipartReplyBody();
 
             MultipartReplyPortStats replyBody = caseBody.getMultipartReplyPortStats();
             for (PortStats portStats : replyBody.getPortStats()) {
-                NodeConnectorStatisticsAndPortNumberMapBuilder statsBuilder =
-                        processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats);
-                if (notification.getNodeConnectorStatisticsAndPortNumberMap() != null) {
-                    Set<NodeConnectorStatisticsAndPortNumberMap> stats
-                            = new HashSet<>(notification.getNodeConnectorStatisticsAndPortNumberMap().values());
-                    stats.add(statsBuilder.build());
-                    notification.setNodeConnectorStatisticsAndPortNumberMap(
-                            stats.stream().collect(Collectors.toList()));
-                } else {
-                    notification.setNodeConnectorStatisticsAndPortNumberMap(Lists.newArrayList(statsBuilder.build()));
-                }
+                stats.add(processSingleNodeConnectorStats(deviceInfo, ofVersion, portStats).build());
             }
         }
-        return notification.build();
+        return new NodeConnectorStatisticsUpdateBuilder()
+            .setId(deviceInfo.getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setNodeConnectorStatisticsAndPortNumberMap(stats)
+            .build();
     }
 
     @VisibleForTesting

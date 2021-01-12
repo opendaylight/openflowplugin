@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
-import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 import org.opendaylight.openflowjava.protocol.api.util.BinContent;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -88,12 +84,7 @@ final class AllMeterConfigStatsService
 
     @Override
     public MeterConfigStatsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        MeterConfigStatsUpdatedBuilder message = new MeterConfigStatsUpdatedBuilder();
-        message.setId(getDeviceInfo().getNodeId());
-        message.setMoreReplies(Boolean.FALSE);
-        message.setTransactionId(emulatedTxId);
-
-        message.setMeterConfigStats(new ArrayList<>());
+        final List<MeterConfigStats> stats = new ArrayList<>();
         for (MultipartReply mpReply : result) {
             MultipartReplyMeterConfigCase caseBody = (MultipartReplyMeterConfigCase) mpReply.getMultipartReplyBody();
             MultipartReplyMeterConfig replyBody = caseBody.getMultipartReplyMeterConfig();
@@ -101,17 +92,14 @@ final class AllMeterConfigStatsService
             final Optional<List<MeterConfigStats>> meterConfigStatsList =
                     convertorExecutor.convert(replyBody.getMeterConfig(), data);
 
-            meterConfigStatsList.ifPresent(meterConfigStats -> {
-                if (message.getMeterConfigStats() == null) {
-                    message.setMeterConfigStats(Lists.newArrayList(meterConfigStats));
-                } else {
-                    Set<MeterConfigStats> stats = new HashSet<>(message.getMeterConfigStats().values());
-                    stats.addAll(meterConfigStats);
-                    message.setMeterConfigStats(stats.stream().collect(Collectors.toList()));
-                }
-            });
+            meterConfigStatsList.ifPresent(stats::addAll);
         }
 
-        return message.build();
+        return new MeterConfigStatsUpdatedBuilder()
+            .setId(getDeviceInfo().getNodeId())
+            .setMoreReplies(Boolean.FALSE)
+            .setTransactionId(emulatedTxId)
+            .setMeterConfigStats(stats)
+            .build();
     }
 }
