@@ -14,15 +14,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}.model</groupId>
             <artifactId>model-flow-service</artifactId>
         </dependency>

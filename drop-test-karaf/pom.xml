@@ -15,10 +15,6 @@
     </scm>
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>test-common</artifactId>
         </dependency>
