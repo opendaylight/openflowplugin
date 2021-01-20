@@ -14,6 +14,7 @@
         <developerConnection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</developerConnection>
     </scm>
     <dependencies>
+        <!-- FIXME: Javadoc does not like this missing -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
