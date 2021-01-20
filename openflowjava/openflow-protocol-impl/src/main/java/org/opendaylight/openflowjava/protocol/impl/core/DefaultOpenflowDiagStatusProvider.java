@@ -11,38 +11,48 @@ import static org.opendaylight.infrautils.diagstatus.ServiceState.ERROR;
 import static org.opendaylight.infrautils.diagstatus.ServiceState.OPERATIONAL;
 import static org.opendaylight.infrautils.diagstatus.ServiceState.STARTING;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
+import org.opendaylight.infrautils.diagstatus.ServiceRegistration;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = OpenflowDiagStatusProvider.class)
-public class OpenflowDiagStatusProviderImpl implements OpenflowDiagStatusProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowDiagStatusProviderImpl.class);
+public final class DefaultOpenflowDiagStatusProvider implements OpenflowDiagStatusProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultOpenflowDiagStatusProvider.class);
     private static final String OPENFLOW_SERVICE = "OPENFLOW";
     private static final String OPENFLOW_SERVER_6633 = "OPENFLOW_SERVER_6633";
     private static final String OPENFLOW_SERVER_6653 = "OPENFLOW_SERVER_6653";
     private static final String OPENFLOW_SERVICE_AGGREGATE = OPENFLOW_SERVICE;
 
-    private final DiagStatusService diagStatusService;
-    private volatile Map<String, ServiceState> statusMap = new HashMap<>(Map.of(
+    private final ConcurrentMap<String, ServiceState> statusMap = new ConcurrentHashMap<>(Map.of(
         OPENFLOW_SERVICE, STARTING,
         OPENFLOW_SERVER_6633, STARTING,
         OPENFLOW_SERVER_6653, STARTING));
+    private final DiagStatusService diagStatusService;
+
+    private ServiceRegistration reg;
 
     @Inject
-    public OpenflowDiagStatusProviderImpl(final @Reference DiagStatusService diagStatusService) {
+    public DefaultOpenflowDiagStatusProvider(final DiagStatusService diagStatusService) {
         this.diagStatusService = diagStatusService;
-        diagStatusService.register(OPENFLOW_SERVICE_AGGREGATE);
+        reg = diagStatusService.register(OPENFLOW_SERVICE_AGGREGATE);
+    }
+
+    @PreDestroy
+    public void close() {
+        if (reg != null) {
+            reg.unregister();
+            reg = null;
+        }
     }
 
     @Override
@@ -73,8 +83,7 @@ public class OpenflowDiagStatusProviderImpl implements OpenflowDiagStatusProvide
     }
 
     public void reportStatus() {
-        boolean state = statusMap.values().stream().allMatch(serviceState -> serviceState.equals(OPERATIONAL));
-        if (state) {
+        if (statusMap.values().stream().allMatch(OPERATIONAL::equals)) {
             reportStatus(OPERATIONAL);
         }
     }

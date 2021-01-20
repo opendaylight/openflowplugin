@@ -12,8 +12,9 @@ import static java.util.Objects.requireNonNull;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Service;
+import org.kohsuke.MetaInfServices;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
@@ -26,19 +27,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.T
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Threads;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Tls;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * Implementation of the SwitchConnectionProviderFactory interface.
  */
+@MetaInfServices
 @Singleton
-@Service(classes = SwitchConnectionProviderFactory.class)
+@Component(immediate = true)
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
+    @Inject
+    public SwitchConnectionProviderFactoryImpl() {
+        // Exposed for DI
+    }
 
     @Override
     public SwitchConnectionProvider newInstance(final SwitchConnectionConfig config,
-                                                final OpenflowDiagStatusProvider openflowPluginDiagStatusProvider) {
-        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config),
-                openflowPluginDiagStatusProvider);
+                                                final OpenflowDiagStatusProvider diagStatus) {
+        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config), diagStatus);
     }
 
     private static class ConnectionConfigurationImpl implements ConnectionConfiguration {
