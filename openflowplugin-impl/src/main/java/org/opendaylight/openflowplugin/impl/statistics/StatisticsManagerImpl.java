@@ -7,12 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import static java.util.Objects.requireNonNull;
-
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -44,22 +43,22 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
 
     private final OpenflowProviderConfig config;
     private final ConvertorExecutor converterExecutor;
-    private final Executor executor;
     private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
     private final Semaphore workModeGuard = new Semaphore(1, true);
     private final ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    private final ListeningExecutorService executorService;
     private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
     public StatisticsManagerImpl(@NonNull final OpenflowProviderConfig config,
                                  @NonNull final RpcProviderService rpcProviderRegistry,
                                  final ConvertorExecutor convertorExecutor,
-                                 @NonNull final Executor executor) {
+                                 @NonNull final ListeningExecutorService executorService) {
         this.config = config;
         this.converterExecutor = convertorExecutor;
-        this.controlServiceRegistration = requireNonNull(rpcProviderRegistry
+        this.controlServiceRegistration = Preconditions.checkNotNull(rpcProviderRegistry
                 .registerRpcImplementation(StatisticsManagerControlService.class, this));
-        this.executor = executor;
+        this.executorService = executorService;
     }
 
     @Override
@@ -110,7 +109,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                 deviceContext,
                 converterExecutor,
                 statisticsWriterProvider,
-                executor,
+                executorService,
                 config,
                 !isStatisticsFullyDisabled && config.getIsStatisticsPollingOn(),
                 useReconciliationFramework);

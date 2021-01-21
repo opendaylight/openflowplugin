@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -16,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -70,10 +70,10 @@ public final class StatisticsGatheringUtils {
             final StatisticsGatherer<T> statisticsGatheringService, final DeviceInfo deviceInfo,
             final MultipartType type, final TxFacade txFacade, final DeviceRegistry registry,
             final ConvertorExecutor convertorExecutor, final MultipartWriterProvider statisticsWriterProvider,
-            final Executor executor) {
-        return Futures.transform(statisticsGatheringService.getStatisticsOfType(
+            final ListeningExecutorService executorService) {
+        return Futures.transformAsync(statisticsGatheringService.getStatisticsOfType(
             new EventIdentifier(QUEUE2_REQCTX + type.toString(), deviceInfo.getNodeId().toString()), type),
-            rpcResult -> {
+            rpcResult -> executorService.submit(() -> {
                 final boolean rpcResultIsNull = rpcResult == null;
 
                 if (!rpcResultIsNull && rpcResult.isSuccessful()) {
@@ -85,8 +85,8 @@ public final class StatisticsGatheringUtils {
                         final List<DataContainer> allMultipartData = rpcResult.getResult().stream()
                                 .map(reply -> MultipartReplyTranslatorUtil
                                                     .translate(reply, deviceInfo, convertorExecutor, null))
-                                .filter(Optional::isPresent).map(Optional::get)
-                                .collect(Collectors.toList());
+                                .filter(java.util.Optional::isPresent).map(java.util.Optional::get)
+                                            .collect(Collectors.toList());
 
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
                                         statisticsWriterProvider);
@@ -98,7 +98,7 @@ public final class StatisticsGatheringUtils {
                                 rpcResultIsNull ? "" : rpcResult.getErrors());
                 }
                 return false;
-            }, executor);
+            }), MoreExecutors.directExecutor());
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")

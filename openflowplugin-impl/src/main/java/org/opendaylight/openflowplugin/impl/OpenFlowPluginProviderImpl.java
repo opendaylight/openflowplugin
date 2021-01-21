@@ -11,6 +11,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
@@ -128,7 +129,7 @@ public class OpenFlowPluginProviderImpl implements
     private StatisticsManager statisticsManager;
     private RoleManager roleManager;
     private ConnectionManager connectionManager;
-    private ExecutorService executorService;
+    private ListeningExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
     private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
     private final SystemReadyMonitor systemReadyMonitor;
@@ -242,11 +243,11 @@ public class OpenFlowPluginProviderImpl implements
         // Creates a thread pool that creates new threads as needed, but will reuse previously
         // constructed threads when they are available.
         // Threads that have not been used for x seconds are terminated and removed from the cache.
-        executorService = new ThreadPoolLoggingExecutor(
+        executorService = MoreExecutors.listeningDecorator(new ThreadPoolLoggingExecutor(
                 config.getThreadPoolMinThreads().toJava(),
                 config.getThreadPoolMaxThreads().getValue().toJava(),
                 config.getThreadPoolTimeout().toJava(),
-                TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME);
+                TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME));
 
         deviceManager = new DeviceManagerImpl(
                 config,

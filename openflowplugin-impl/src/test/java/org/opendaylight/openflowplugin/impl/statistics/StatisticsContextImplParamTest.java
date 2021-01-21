@@ -94,7 +94,7 @@ public class StatisticsContextImplParamTest extends StatisticsContextImpMockInit
         final StatisticsContextImpl<MultipartReply> statisticsContext = new StatisticsContextImpl<>(
                 mockedDeviceContext, convertorManager,
                 MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext),
-                MoreExecutors.directExecutor(),
+                MoreExecutors.newDirectExecutorService(),
                 config,
                 true,
                 false);

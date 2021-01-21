@@ -21,7 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -78,7 +78,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
-    private final Executor executor;
+    private final ExecutorService executorService;
     private final OwnershipChangeListener ownershipChangeListener;
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder().setDaemon(true)
             .setNameFormat("node-cleaner-%d").setUncaughtExceptionHandler((thread, throwable) -> {
@@ -93,13 +93,13 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private StatisticsManager statisticsManager;
     private RoleManager roleManager;
 
-    public ContextChainHolderImpl(final Executor executor,
+    public ContextChainHolderImpl(final ExecutorService executorService,
                                   final ClusterSingletonServiceProvider singletonServiceProvider,
                                   final EntityOwnershipService entityOwnershipService,
                                   final OwnershipChangeListener ownershipChangeListener,
                                   final OpenflowProviderConfig config) {
         this.singletonServiceProvider = singletonServiceProvider;
-        this.executor = executor;
+        this.executorService = executorService;
         this.ownershipChangeListener = ownershipChangeListener;
         this.ownershipChangeListener.setMasterChecker(this);
         this.entityOwnershipService = entityOwnershipService;
@@ -145,7 +145,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         roleContext.registerMastershipWatcher(this);
         LOG.debug("Role" + CONTEXT_CREATED_FOR_CONNECTION, deviceInfo);
 
-        final ContextChain contextChain = new ContextChainImpl(this, connectionContext, executor);
+        final ContextChain contextChain = new ContextChainImpl(this, connectionContext, executorService);
         contextChain.registerDeviceRemovedHandler(deviceManager);
         contextChain.registerDeviceRemovedHandler(rpcManager);
         contextChain.registerDeviceRemovedHandler(statisticsManager);

@@ -7,13 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
-import static java.util.Objects.requireNonNull;
-
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Objects;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
@@ -48,15 +47,15 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     @VisibleForTesting
     static final long MAX_ECHO_REPLY_TIMEOUT = 2000;
     private final long echoReplyTimeout;
-    private final Executor executor;
+    private final ExecutorService executorService;
     private final NotificationPublishService notificationPublishService;
 
     public SystemNotificationsListenerImpl(@NonNull final ConnectionContext connectionContext,
                                            final long echoReplyTimeout,
-                                           @NonNull final Executor executor,
+                                           @NonNull final ExecutorService executorService,
                                            @NonNull final NotificationPublishService notificationPublishService) {
-        this.executor = requireNonNull(executor);
-        this.connectionContext = requireNonNull(connectionContext);
+        this.executorService = executorService;
+        this.connectionContext = Preconditions.checkNotNull(connectionContext);
         this.echoReplyTimeout = echoReplyTimeout;
         this.notificationPublishService = notificationPublishService;
     }
@@ -71,7 +70,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onSwitchIdleEvent(final SwitchIdleEvent notification) {
-        executor.execute(this::executeOnSwitchIdleEvent);
+        executorService.execute(this::executeOnSwitchIdleEvent);
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -140,7 +139,7 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     }
 
     @Override
-    public void onSslConnectionError(final SslConnectionError notification) {
+    public void onSslConnectionError(SslConnectionError notification) {
         IpAddress ip = null;
         if (connectionContext.getConnectionAdapter() != null
                 && connectionContext.getConnectionAdapter().getRemoteAddress() != null
