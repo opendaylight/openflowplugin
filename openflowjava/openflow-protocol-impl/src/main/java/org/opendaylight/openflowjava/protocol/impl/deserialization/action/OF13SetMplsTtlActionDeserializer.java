@@ -10,19 +10,31 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.kohsuke.MetaInfServices;
+import org.opendaylight.openflowjava.protocol.api.extensibility.ActionDeserializer;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetMplsTtlCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetMplsTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.mpls.ttl._case.SetMplsTtlActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * OF13SetMplsTtlActionDeserializer.
  *
  * @author michal.polkorab
  */
-public final class OF13SetMplsTtlActionDeserializer extends AbstractActionCaseDeserializer<SetMplsTtlCase> {
+@Singleton
+@Component(service = ActionDeserializer.OFProvider.class)
+@MetaInfServices(value = ActionDeserializer.OFProvider.class)
+public final class OF13SetMplsTtlActionDeserializer extends AbstractSimpleActionCaseDeserializer<SetMplsTtlCase> {
+    @Inject
     public OF13SetMplsTtlActionDeserializer() {
-        super(new SetMplsTtlCaseBuilder().build());
+        super(new SetMplsTtlCaseBuilder().build(),EncodeConstants.OF_VERSION_1_3,
+            Uint16.valueOf(ActionConstants.SET_MPLS_TTL_CODE));
     }
 
     @Override

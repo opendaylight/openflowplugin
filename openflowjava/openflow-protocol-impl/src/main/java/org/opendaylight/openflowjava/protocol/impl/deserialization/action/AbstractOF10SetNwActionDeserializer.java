@@ -12,10 +12,14 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
-abstract class AbstractOF10SetNwActionDeserializer<T extends ActionChoice> extends AbstractActionCaseDeserializer<T> {
-    AbstractOF10SetNwActionDeserializer(final @NonNull T emptyChoice) {
-        super(emptyChoice);
+abstract class AbstractOF10SetNwActionDeserializer<T extends ActionChoice>
+        extends AbstractSimpleActionCaseDeserializer<T> {
+    AbstractOF10SetNwActionDeserializer(final @NonNull T emptyChoice, final @NonNull Uint8 version,
+            final @NonNull Uint16 type) {
+        super(emptyChoice, version, type);
     }
 
     @Override

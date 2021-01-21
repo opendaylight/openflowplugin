@@ -11,8 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.ActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
@@ -22,8 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  *
  * @author michal.polkorab
  */
-public abstract class AbstractActionDeserializer<T extends ActionChoice> implements OFDeserializer<Action>,
-        HeaderDeserializer<Action> {
+public abstract class AbstractActionDeserializer<T extends ActionChoice> implements ActionDeserializer {
     private final @NonNull Action header;
 
     protected AbstractActionDeserializer(final @NonNull T emptyChoice) {
