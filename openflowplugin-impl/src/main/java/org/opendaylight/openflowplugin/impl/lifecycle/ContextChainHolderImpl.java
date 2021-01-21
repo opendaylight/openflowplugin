@@ -268,13 +268,15 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
         final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
-        final ContextChain contextChain = contextChainMap.get(deviceInfo);
-        if (contextChain != null) {
-            if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
-                LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
-            } else {
-                LOG.info("Device {} disconnected.", deviceInfo);
-                destroyContextChain(deviceInfo);
+        if (deviceInfo != null) {
+            final ContextChain contextChain = contextChainMap.get(deviceInfo);
+            if (contextChain != null) {
+                if (contextChain.auxiliaryConnectionDropped(connectionContext)) {
+                    LOG.info("Auxiliary connection from device {} disconnected.", deviceInfo);
+                } else {
+                    LOG.info("Device {} disconnected.", deviceInfo);
+                    destroyContextChain(deviceInfo);
+                }
             }
         }
     }
