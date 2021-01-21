@@ -55,15 +55,13 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
 
         // register match entry deserializers
         MatchEntryDeserializerInitializer.registerMatchEntryDeserializers(this);
-        // register action deserializers
-        ActionDeserializerInitializer.registerDeserializers(this);
         // register instruction deserializers
         InstructionDeserializerInitializer.registerDeserializers(this);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends OFGeneralDeserializer> T getDeserializer(MessageCodeKey key) {
+    public <T extends OFGeneralDeserializer> T getDeserializer(final MessageCodeKey key) {
         OFGeneralDeserializer deserializer = registry.get(key);
         if (deserializer == null) {
             throw new IllegalStateException("Deserializer for key: " + key
@@ -73,7 +71,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
+    public void registerDeserializer(final MessageCodeKey key, final OFGeneralDeserializer deserializer) {
         if (key == null || deserializer == null) {
             throw new IllegalArgumentException("MessageCodeKey or Deserializer is null");
         }
@@ -88,7 +86,7 @@ public class DeserializerRegistryImpl implements DeserializerRegistry {
     }
 
     @Override
-    public boolean unregisterDeserializer(MessageCodeKey key) {
+    public boolean unregisterDeserializer(final MessageCodeKey key) {
         if (key == null) {
             throw new IllegalArgumentException("MessageCodeKey is null");
         }

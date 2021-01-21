@@ -11,8 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderDeserializer;
-import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
+import org.opendaylight.openflowjava.protocol.api.extensibility.MatchEntryDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OpenflowBasicClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
@@ -24,8 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  *
  * @author michal.polkorab
  */
-public abstract class AbstractOxmMatchEntryDeserializer
-        implements HeaderDeserializer<MatchEntry>, OFDeserializer<MatchEntry> {
+public abstract class AbstractOxmMatchEntryDeserializer implements MatchEntryDeserializer {
     private final @NonNull Class<? extends OxmClassBase> oxmClass;
     private final @NonNull Class<? extends MatchField> oxmField;
 
