@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -63,11 +64,7 @@ public final class MatchEntryDeserializerKey extends MessageCodeKey
             return false;
         }
         MatchEntryDeserializerKey other = (MatchEntryDeserializerKey) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
+        if (!Objects.equals(experimenterId, other.experimenterId)) {
             return false;
         }
         if (oxmField != other.oxmField) {

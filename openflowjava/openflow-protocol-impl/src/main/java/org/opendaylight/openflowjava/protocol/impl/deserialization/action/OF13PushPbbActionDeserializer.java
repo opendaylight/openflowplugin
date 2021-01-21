@@ -7,19 +7,32 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.kohsuke.MetaInfServices;
+import org.opendaylight.openflowjava.protocol.api.extensibility.ActionDeserializer;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushPbbCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.push.pbb._case.PushPbbActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * OF13PushPbbActionDeserializer.
  *
  * @author michal.polkorab
  */
+@Singleton
+@Component(service = ActionDeserializer.OFProvider.class)
+@MetaInfServices(value = ActionDeserializer.OFProvider.class)
 public final class OF13PushPbbActionDeserializer extends AbstractEtherTypeActionDeserializer<PushPbbCase> {
+    @Inject
     public OF13PushPbbActionDeserializer() {
-        super(new PushPbbCaseBuilder().build());
+        super(new PushPbbCaseBuilder().build(), EncodeConstants.OF_VERSION_1_3,
+            Uint16.valueOf(ActionConstants.PUSH_PBB_CODE));
     }
 
     @Override

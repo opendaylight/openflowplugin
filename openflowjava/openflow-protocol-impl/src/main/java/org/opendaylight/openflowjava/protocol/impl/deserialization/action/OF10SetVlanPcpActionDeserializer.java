@@ -10,19 +10,31 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.kohsuke.MetaInfServices;
+import org.opendaylight.openflowjava.protocol.api.extensibility.ActionDeserializer;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetVlanPcpCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.vlan.pcp._case.SetVlanPcpActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * OF10SetVlanPcpActionDeserializer.
  *
  * @author michal.polkorab
  */
-public final class OF10SetVlanPcpActionDeserializer extends AbstractActionCaseDeserializer<SetVlanPcpCase> {
+@Singleton
+@Component(service = ActionDeserializer.OFProvider.class)
+@MetaInfServices(value = ActionDeserializer.OFProvider.class)
+public final class OF10SetVlanPcpActionDeserializer extends AbstractSimpleActionCaseDeserializer<SetVlanPcpCase> {
+    @Inject
     public OF10SetVlanPcpActionDeserializer() {
-        super(new SetVlanPcpCaseBuilder().build());
+        super(new SetVlanPcpCaseBuilder().build(), EncodeConstants.OF_VERSION_1_0,
+            Uint16.valueOf(ActionConstants.SET_VLAN_PCP_CODE));
     }
 
     @Override
