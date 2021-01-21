@@ -10,18 +10,31 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
 import io.netty.buffer.ByteBuf;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import org.kohsuke.MetaInfServices;
+import org.opendaylight.openflowjava.protocol.api.extensibility.ActionDeserializer;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.queue._case.SetQueueActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.osgi.service.component.annotations.Component;
 
 /**
  * OF13SetQueueActionDeserializer.
  *
  * @author michal.polkorab
  */
-public final class OF13SetQueueActionDeserializer extends AbstractActionCaseDeserializer<SetQueueCase> {
+@Singleton
+@Component(service = ActionDeserializer.OFProvider.class)
+@MetaInfServices(value = ActionDeserializer.OFProvider.class)
+public final class OF13SetQueueActionDeserializer extends AbstractSimpleActionCaseDeserializer<SetQueueCase> {
+    @Inject
     public OF13SetQueueActionDeserializer() {
-        super(new SetQueueCaseBuilder().build());
+        super(new SetQueueCaseBuilder().build(), EncodeConstants.OF_VERSION_1_3,
+            Uint16.valueOf(ActionConstants.SET_QUEUE_CODE));
     }
 
     @Override

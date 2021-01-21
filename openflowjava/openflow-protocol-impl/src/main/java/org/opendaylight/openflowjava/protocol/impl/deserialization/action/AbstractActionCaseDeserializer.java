@@ -7,16 +7,14 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.deserialization.action;
 
-import com.google.common.annotations.Beta;
 import io.netty.buffer.ByteBuf;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 
-@Beta
-public abstract class AbstractActionCaseDeserializer<T extends ActionChoice> extends AbstractActionDeserializer<T> {
-    protected AbstractActionCaseDeserializer(final @NonNull T emptyChoice) {
+abstract class AbstractActionCaseDeserializer<T extends ActionChoice> extends AbstractActionDeserializer<T> {
+    AbstractActionCaseDeserializer(final @NonNull T emptyChoice) {
         super(emptyChoice);
     }
 
