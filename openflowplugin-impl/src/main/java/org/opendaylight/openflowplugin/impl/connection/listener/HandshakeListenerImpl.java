@@ -70,10 +70,8 @@ public class HandshakeListenerImpl implements HandshakeListener {
             @Override
             @SuppressWarnings("checkstyle:IllegalCatch")
             public void onSuccess(final RpcResult<BarrierOutput> result) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}",
-                            connectionContext.getDeviceInfo());
-                }
+                LOG.debug("succeeded by getting sweep barrier after post-handshake for device {}",
+                    connectionContext.deviceInfo());
                 try {
                     ConnectionStatus connectionStatusResult = deviceConnectedHandler.deviceConnected(connectionContext);
                     if (connectionStatusResult != ConnectionStatus.MAY_CONTINUE) {
@@ -92,7 +90,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("failed to get sweep barrier after post-handshake for device {}",
-                        connectionContext.getDeviceInfo(), throwable);
+                        connectionContext.deviceInfo(), throwable);
                 connectionContext.closeConnection(false);
             }
         };

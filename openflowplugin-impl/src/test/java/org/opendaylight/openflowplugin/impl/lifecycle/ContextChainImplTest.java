@@ -62,7 +62,7 @@ public class ContextChainImplTest {
         Mockito.when(deviceContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(rpcContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
         Mockito.when(statisticsContext.closeServiceInstance()).thenReturn(Futures.immediateFuture(null));
-        Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(connectionContext.deviceInfo()).thenReturn(deviceInfo);
         Mockito.when(clusterSingletonServiceProvider.registerClusterSingletonService(Mockito.any()))
                 .thenReturn(clusterSingletonServiceRegistration);
 

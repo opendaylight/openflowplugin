@@ -8,7 +8,12 @@
 
 package org.opendaylight.openflowplugin.api.openflow.connection;
 
+import static com.google.common.base.Verify.verifyNotNull;
+
+import com.google.common.base.VerifyException;
 import java.util.List;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -62,7 +67,7 @@ public interface ConnectionContext {
     void setNodeId(NodeId nodeId);
 
     /**
-     * Method returns identifier of device whic connection represents this context.
+     * Method returns identifier of device which connection represents this context.
      * @return {@link org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId}
      */
     NodeId getNodeId();
@@ -145,10 +150,22 @@ public interface ConnectionContext {
     void changeStateToWorking();
 
     /**
-     * Create and return basic device info.
-     * @return created device info
+     * Return basic device info, if available. Information may be unavailable simply because handshake has not completed
+     * yet.
+     *
+     * @return created device info, or null if unavailable
      */
-    DeviceInfo getDeviceInfo();
+    @Nullable DeviceInfo deviceInfo();
+
+    /**
+     * Return basic device info.
+     *
+     * @return basic device info
+     * @throws VerifyException if device info is not available
+     */
+    default @NonNull DeviceInfo getDeviceInfo() {
+        return verifyNotNull(deviceInfo(), "%s has no device information available", this);
+    }
 
     /**
      * This method creates a basic device information.

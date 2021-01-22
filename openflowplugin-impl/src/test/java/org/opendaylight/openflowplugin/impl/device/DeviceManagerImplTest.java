@@ -111,7 +111,7 @@ public class DeviceManagerImplTest {
     public void setUp() {
         when(mockConnectionContext.getFeatures()).thenReturn(mockFeatures);
         when(mockConnectionContext.getConnectionAdapter()).thenReturn(mockedConnectionAdapter);
-        when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
+        when(mockConnectionContext.deviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_IDENTIFIER);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
 

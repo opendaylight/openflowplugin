@@ -213,7 +213,7 @@ public class DeviceContextImplTest {
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
         Mockito.lenient().when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
-        Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(connectionContext.deviceInfo()).thenReturn(deviceInfo);
         final FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
         lenient().when(connectionContext.getFeatures()).thenReturn(mockedFeaturesReply);
         lenient().when(connectionContext.getFeatures().getCapabilities()).thenReturn(mock(Capabilities.class));

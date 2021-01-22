@@ -166,7 +166,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public ConnectionStatus deviceConnected(final ConnectionContext connectionContext) {
-        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+        // TODO: getDeviceInfo() ?
+        final DeviceInfo deviceInfo = connectionContext.deviceInfo();
         final ContextChain contextChain = contextChainMap.get(deviceInfo);
         final FeaturesReply featuresReply = connectionContext.getFeatures();
         final Uint8 auxiliaryId = featuresReply != null ? featuresReply.getAuxiliaryId() : null;
@@ -268,7 +269,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
 
     @Override
     public void onDeviceDisconnected(final ConnectionContext connectionContext) {
-        final DeviceInfo deviceInfo = connectionContext.getDeviceInfo();
+        final DeviceInfo deviceInfo = connectionContext.deviceInfo();
         if (deviceInfo != null) {
             final ContextChain contextChain = contextChainMap.get(deviceInfo);
             if (contextChain != null) {

@@ -12,6 +12,7 @@ import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -46,7 +47,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private OutboundQueueProvider outboundQueueProvider;
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
     private HandshakeContext handshakeContext;
-    private DeviceInfo deviceInfo;
+    private @Nullable DeviceInfo deviceInfo;
     private final List<PortStatusMessage> portStatusMessages = new ArrayList<>();
     private final DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
@@ -74,7 +75,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void setOutboundQueueProvider(final OutboundQueueProvider outboundQueueProvider) {
         this.outboundQueueProvider = outboundQueueProvider;
-        ((DeviceInfoImpl)this.deviceInfo).setOutboundQueueProvider(this.outboundQueueProvider);
+        ((DeviceInfoImpl) getDeviceInfo()).setOutboundQueueProvider(this.outboundQueueProvider);
     }
 
     @Override
@@ -239,7 +240,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     }
 
     @Override
-    public DeviceInfo getDeviceInfo() {
+    public DeviceInfo deviceInfo() {
         return this.deviceInfo;
     }
 

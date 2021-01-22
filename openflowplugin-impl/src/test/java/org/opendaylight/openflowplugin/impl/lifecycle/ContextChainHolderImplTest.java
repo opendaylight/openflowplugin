@@ -96,7 +96,7 @@ public class ContextChainHolderImplTest {
 
     @Before
     public void setUp() throws Exception {
-        Mockito.when(connectionContext.getDeviceInfo()).thenReturn(deviceInfo);
+        Mockito.when(connectionContext.deviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceManager.createContext(connectionContext)).thenReturn(deviceContext);
         Mockito.when(rpcManager.createContext(deviceContext)).thenReturn(rpcContext);
         Mockito.when(roleManager.createContext(deviceContext)).thenReturn(roleContext);
