@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -74,8 +75,8 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
     private static final String ASYNC_SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.AsyncServiceCloseEntityType";
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final String SEPARATOR = ":";
-    private final Map<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
-    private final Map<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
     private final EntityOwnershipListenerRegistration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final Executor executor;
