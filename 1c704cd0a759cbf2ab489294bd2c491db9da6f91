@@ -1,0 +1,123 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7e1e83d3_45ffc89c",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "I think getDeviceInfo() can be used here. This callback is added in onHandshakeSuccessful().",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "5aa106dd_46aa157a",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/connection/listener/HandshakeListenerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "Similarly, getDeviceInfo() can be used here.",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "771b6fc9_600f2f77",
+        "filename": "openflowplugin-impl/src/main/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "getDeviceInfo() makes sense to me.",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "66f49ab5_a921b31c",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceContextImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "This should be getDeviceInfo() because the method is used by DeviceContextImpl.",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "c550c78e_ad2d8bef",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/device/DeviceManagerImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "This should be getDeviceInfo() because the method is used by DeviceManagerImpl.",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "b5f384f0_27f33c1a",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainHolderImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "Need another one for getDeviceInfo() because both functions are used by ContextChainHolderImpl.",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "ac9f15a7_b9b992fd",
+        "filename": "openflowplugin-impl/src/test/java/org/opendaylight/openflowplugin/impl/lifecycle/ContextChainImplTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2021-01-23T02:06:51Z",
+      "side": 1,
+      "message": "This should be getDeviceInfo() because the method is used by ContextChainImpl.",
+      "revId": "1c704cd0a759cbf2ab489294bd2c491db9da6f91",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81",
+      "unresolved": true
+    }
+  ]
+}
