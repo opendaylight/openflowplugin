@@ -14,13 +14,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * Common interface for SwitchFeatures builders for different OF versions.
  */
 public interface BuildSwitchFeatures {
-
     /**
      * Getter.
+     *
      * @param features
-     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
+     *        {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return {@link org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures}
      */
     SwitchFeatures build(GetFeaturesOutput features);
-
 }

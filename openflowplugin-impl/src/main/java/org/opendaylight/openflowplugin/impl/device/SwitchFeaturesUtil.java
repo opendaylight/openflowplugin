@@ -19,10 +19,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class SwitchFeaturesUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
+    private static SwitchFeaturesUtil INSTANCE = new SwitchFeaturesUtil();
 
-    private static SwitchFeaturesUtil instance = new SwitchFeaturesUtil();
     private final Map<Short, BuildSwitchFeatures> swFeaturesBuilders;
 
     private SwitchFeaturesUtil() {
@@ -37,14 +36,14 @@ public final class SwitchFeaturesUtil {
      * @return instance
      */
     public static SwitchFeaturesUtil getInstance() {
-        return instance;
+        return INSTANCE;
     }
 
     /**
      * Returns the features of the switch.
      *
      * @param features
-     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
+     *        {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
      */
     public SwitchFeatures buildSwitchFeatures(final GetFeaturesOutput features) {
