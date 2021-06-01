@@ -113,6 +113,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply.multipart.reply.body.MultipartReplyTableFeaturesBuilder;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -201,7 +202,7 @@ public final class MultipartReplyTranslatorUtil {
 
     private static Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.reply
             .multipart.reply.body.MultipartReplyTableFeatures> translateTableFeatures(final MultipartReply msg,
-                    final short version, final ConvertorExecutor convertorExecutor) {
+                    final Uint8 version, final ConvertorExecutor convertorExecutor) {
         if (convertorExecutor == null) {
             return Optional.empty();
         }

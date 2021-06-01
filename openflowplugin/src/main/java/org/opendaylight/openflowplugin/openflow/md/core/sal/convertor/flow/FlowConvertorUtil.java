@@ -8,14 +8,16 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -34,21 +36,19 @@ public final class FlowConvertorUtil {
      * @param actionList the action list
      * @return the list
      */
-    public static List<Action> wrapActionList(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types
-            .rev131112.action.Action> actionList) {
-        List<Action> actions = new ArrayList<>();
+    public static Map<ActionKey, Action> wrapActionList(
+            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> actionList) {
+        final Builder<ActionKey, Action> builder = BindingMap.orderedBuilder(actionList.size());
 
         int actionKey = 0;
         for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action : actionList) {
-            ActionBuilder wrappedAction = new ActionBuilder();
-            wrappedAction.setAction(action);
-            wrappedAction.withKey(new ActionKey(actionKey));
-            wrappedAction.setOrder(actionKey);
-            actions.add(wrappedAction.build());
-            actionKey++;
+            builder.add(new ActionBuilder()
+                .setAction(action)
+                .setOrder(actionKey++)
+                .build());
         }
 
-        return actions;
+        return builder.build();
     }
 
     /**

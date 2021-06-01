@@ -55,7 +55,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.n
 import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
-import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultipartReplyTranslatorTest {
 
@@ -295,7 +294,7 @@ public class MultipartReplyTranslatorTest {
                                                final MultipartType multipartType) {
         ConnectionContext mockedConnectionContext = mock(ConnectionContext.class);
         FeaturesReply mockedFeaturesReply = mock(FeaturesReply.class);
-        when(mockedFeaturesReply.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        when(mockedFeaturesReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(mockedFeaturesReply.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
         DeviceInfo deviceInfo = mock(DeviceInfo.class);

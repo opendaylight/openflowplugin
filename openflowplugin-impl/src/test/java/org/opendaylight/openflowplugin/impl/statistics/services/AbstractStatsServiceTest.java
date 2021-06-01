@@ -38,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
-import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by mirehak on 7/23/15.
@@ -91,9 +90,9 @@ public abstract class AbstractStatsServiceTest {
         Mockito.lenient().when(deviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
         Mockito.lenient().when(connectionContext.getFeatures()).thenReturn(features);
         Mockito.lenient().when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
-        Mockito.lenient().when(features.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        Mockito.lenient().when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.lenient().when(getFeaturesOutput.getDatapathId()).thenReturn(Uint64.valueOf(123L));
-        Mockito.lenient().when(getFeaturesOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        Mockito.lenient().when(getFeaturesOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
 
         setUp();
     }

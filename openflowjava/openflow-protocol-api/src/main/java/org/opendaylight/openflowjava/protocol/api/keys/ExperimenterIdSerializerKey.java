@@ -5,10 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an experimenter id serializer.
@@ -19,7 +22,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 public class ExperimenterIdSerializerKey<T extends DataContainer> extends MessageTypeKey<T>
         implements ExperimenterSerializerKey {
 
-    private final long experimenterId;
+    private final Uint32 experimenterId;
 
     /**
      * Constructor.
@@ -28,26 +31,26 @@ public class ExperimenterIdSerializerKey<T extends DataContainer> extends Messag
      * @param experimenterId experimenter / vendor ID
      * @param objectClass class of object to be serialized
      */
-    public ExperimenterIdSerializerKey(short msgVersion,
-                                       long experimenterId, Class<T> objectClass) {
+    public ExperimenterIdSerializerKey(final Uint8 msgVersion,
+                                       final Uint32 experimenterId, final Class<T> objectClass) {
         super(msgVersion, objectClass);
-        this.experimenterId = experimenterId;
+        this.experimenterId = requireNonNull(experimenterId);
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + hashCodeOfLong(experimenterId);
+        result = prime * result + experimenterId.hashCode();
         return result;
     }
 
-    protected int hashCodeOfLong(long longValue) {
+    protected int hashCodeOfLong(final long longValue) {
         return (int) (longValue ^ longValue >>> 32);
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

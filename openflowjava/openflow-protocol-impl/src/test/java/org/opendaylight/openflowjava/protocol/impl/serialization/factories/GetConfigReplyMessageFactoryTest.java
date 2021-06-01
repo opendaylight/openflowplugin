@@ -36,7 +36,7 @@ public class GetConfigReplyMessageFactoryTest {
     public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetConfigOutput.class));
+        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GetConfigOutput.class));
     }
 
     @Test

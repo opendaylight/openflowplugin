@@ -26,7 +26,7 @@ public class OutputActionDeserializer extends AbstractActionDeserializer {
         processHeader(message);
 
         final Uri portUri = OpenflowPortsUtil
-                .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, message.readUnsignedInt());
+                .getProtocolAgnosticPortUri(EncodeConstants.OF_VERSION_1_3, message.readUnsignedInt());
 
         final Uint16 maxLength = readUint16(message);
         message.skipBytes(ActionConstants.OUTPUT_PADDING);

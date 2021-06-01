@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
@@ -59,9 +58,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
             final FutureCallback<OfHeader> callback = (FutureCallback<OfHeader>) invocation.getArguments()[2];
             callback.onSuccess(null);
             return null;
-        })
-                .when(mockedOutboundQueue).commitEntry(
-                anyLong(), ArgumentMatchers.any(), ArgumentMatchers.any());
+        }).when(mockedOutboundQueue).commitEntry(any(Uint32.class), any(), any());
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
@@ -75,7 +72,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     RpcResultBuilder.<List<MultipartReply>>failed().build();
             handleResultFuture.set(rpcResult);
             return null;
-        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.any());
+        }).when(multiMessageCollector).endCollecting(any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
@@ -90,7 +87,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     .build();
             handleResultFuture.set(rpcResult);
             return null;
-        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.any());
+        }).when(multiMessageCollector).endCollecting(any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
@@ -118,7 +115,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
                     .build();
             handleResultFuture.set(rpcResult);
             return null;
-        }).when(multiMessageCollector).endCollecting(ArgumentMatchers.any());
+        }).when(multiMessageCollector).endCollecting(any());
 
         final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);

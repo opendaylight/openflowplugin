@@ -129,7 +129,7 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
 
         // Deserialize and check everything
         final MultipartReply message = (MultipartReply) getFactory()
-                .deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+                .deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
 
         final MultipartReplyFlowStats reply = (MultipartReplyFlowStats) message.getMultipartReplyBody();
 

@@ -13,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Serializes messages.
@@ -21,10 +22,9 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @author timotej.kubas
  */
 public class SerializationFactory {
-
     private final SerializerRegistry registry;
 
-    public SerializationFactory(SerializerRegistry registry) {
+    public SerializationFactory(final SerializerRegistry registry) {
         this.registry = registry;
     }
 
@@ -35,7 +35,7 @@ public class SerializationFactory {
      * @param out ByteBuf for storing and sending transformed message
      * @param message POJO message
      */
-    public void messageToBuffer(short version, ByteBuf out, DataObject message) {
+    public void messageToBuffer(final Uint8 version, final ByteBuf out, final DataObject message) {
         OFSerializer<DataObject> serializer = registry.getSerializer(
                 new MessageTypeKey<>(version, message.implementedInterface()));
         serializer.serialize(message, out);

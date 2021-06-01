@@ -37,7 +37,7 @@ public class PacketInMessageFactory implements OFDeserializer<PacketInMessage>,
 
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;
     private static final MessageCodeKey MATCH_KEY = new MessageCodeKey(
-            EncodeConstants.OF13_VERSION_ID, EncodeConstants.EMPTY_VALUE, Match.class);
+            EncodeConstants.OF_VERSION_1_3, EncodeConstants.EMPTY_VALUE, Match.class);
     private DeserializerRegistry registry;
 
     @Override

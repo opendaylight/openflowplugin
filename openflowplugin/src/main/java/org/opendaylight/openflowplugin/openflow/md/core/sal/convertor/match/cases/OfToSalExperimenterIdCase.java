@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -19,7 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.TcpFlagsMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainer;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase, MatchBuilder,
         MatchResponseConvertorData> {
@@ -28,8 +27,8 @@ public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull ExperimenterIdCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(final ExperimenterIdCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
 
         if (data.getOxmMatchField().equals(TcpFlags.class)) {
@@ -37,14 +36,12 @@ public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase,
             final TcpFlagsContainer tcpFlagsContainer = source.augmentation(TcpFlagsContainer.class);
 
             if (tcpFlagsContainer != null) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-                        .approved.extensions.rev160802.oxm.container.match.entry
-                        .value.experimenter.id._case.TcpFlags tcpFlags = tcpFlagsContainer.getTcpFlags();
+                final var tcpFlags = tcpFlagsContainer.getTcpFlags();
 
                 tcpFlagsMatchBuilder.setTcpFlags(tcpFlags.getFlags());
                 byte[] mask = tcpFlags.getMask();
                 if (mask != null) {
-                    tcpFlagsMatchBuilder.setTcpFlagsMask(ByteUtil.bytesToUnsignedShort(mask));
+                    tcpFlagsMatchBuilder.setTcpFlagsMask(Uint16.valueOf(ByteUtil.bytesToUnsignedShort(mask)));
                 }
 
                 matchBuilder.setTcpFlagsMatch(tcpFlagsMatchBuilder.build());

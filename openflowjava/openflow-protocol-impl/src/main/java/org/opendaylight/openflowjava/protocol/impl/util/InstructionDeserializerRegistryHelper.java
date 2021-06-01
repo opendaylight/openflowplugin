@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper class for registering instruction deserializers.
@@ -17,8 +20,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionDeserializerKe
  * @author michal.polkorab
  */
 public class InstructionDeserializerRegistryHelper {
-
-    private final short version;
+    private final Uint8 version;
     private final DeserializerRegistry registry;
 
     /**
@@ -27,8 +29,8 @@ public class InstructionDeserializerRegistryHelper {
      * @param version wire protocol version
      * @param deserializerRegistry registry to be filled with message deserializers
      */
-    public InstructionDeserializerRegistryHelper(short version, DeserializerRegistry deserializerRegistry) {
-        this.version = version;
+    public InstructionDeserializerRegistryHelper(final Uint8 version, final DeserializerRegistry deserializerRegistry) {
+        this.version = requireNonNull(version);
         this.registry = deserializerRegistry;
     }
 
@@ -38,8 +40,7 @@ public class InstructionDeserializerRegistryHelper {
      * @param code code / value to distinguish between deserializers
      * @param deserializer deserializer instance
      */
-    public void registerDeserializer(int code, OFGeneralDeserializer deserializer) {
-        registry.registerDeserializer(new InstructionDeserializerKey(version, code,
-                null), deserializer);
+    public void registerDeserializer(final int code, final OFGeneralDeserializer deserializer) {
+        registry.registerDeserializer(new InstructionDeserializerKey(version, code, null), deserializer);
     }
 }

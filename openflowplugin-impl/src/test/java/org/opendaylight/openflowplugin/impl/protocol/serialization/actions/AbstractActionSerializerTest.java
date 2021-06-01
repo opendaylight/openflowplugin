@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -24,10 +23,10 @@ public abstract class AbstractActionSerializerTest extends AbstractSerializerTes
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, getClazz()));
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, getClazz()));
     }
 
-    protected void assertAction(Action action, final Consumer<ByteBuf> assertBody) {
+    protected void assertAction(final Action action, final Consumer<ByteBuf> assertBody) {
         // Header serialization
         final ByteBuf bufferHeader = UnpooledByteBufAllocator.DEFAULT.buffer();
         serializer.serializeHeader(action, bufferHeader);

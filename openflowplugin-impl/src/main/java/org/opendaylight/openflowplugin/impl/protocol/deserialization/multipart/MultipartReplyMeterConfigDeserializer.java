@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
@@ -97,11 +98,12 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
 
                     case OFPMBTEXPERIMENTER:
                         // TODO: Finish meter band experimenter deserialization
-                        final long expId = message.getUnsignedInt(message.readerIndex() + 2 * Integer.BYTES);
+                        final Uint32 expId =
+                            Uint32.fromIntBits(message.getInt(message.readerIndex() + 2 * Integer.BYTES));
                         message.readerIndex(itemStartIndex);
 
                         final OFDeserializer<Experimenter> deserializer = registry.getDeserializer(
-                                new ExperimenterIdDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId,
+                                new ExperimenterIdDeserializerKey(EncodeConstants.OF_VERSION_1_3, expId,
                                         Experimenter.class));
 
                         subItemBuilder
@@ -114,7 +116,8 @@ public class MultipartReplyMeterConfigDeserializer implements OFDeserializer<Mul
                         // no operation
 
                 }
-                subItems.add(subItemBuilder.withKey(new MeterBandHeaderKey(new BandId(bandKey++))).build());
+                subItems.add(subItemBuilder.withKey(new MeterBandHeaderKey(new BandId(Uint32.valueOf(bandKey++))))
+                    .build());
             }
 
             items.add(itemBuilder

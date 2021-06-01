@@ -26,7 +26,7 @@ public class ActionResponseConvertorData extends ConvertorData {
      *
      * @param version the version
      */
-    public ActionResponseConvertorData(final short version) {
+    public ActionResponseConvertorData(final Uint8 version) {
         super(version);
     }
 

@@ -19,6 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.impl.util.DefaultDeserializerFactoryTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.GetConfigReplyMessageFactory}.
@@ -31,7 +32,7 @@ public class GetConfigReplyMessageFactoryTest extends DefaultDeserializerFactory
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public GetConfigReplyMessageFactoryTest() {
-        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 8, GetConfigOutput.class));
+        super(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 8, GetConfigOutput.class));
     }
 
     /**
@@ -39,11 +40,11 @@ public class GetConfigReplyMessageFactoryTest extends DefaultDeserializerFactory
      */
     @Test
     public void testVersions() {
-        List<Byte> versions = new ArrayList<>(Arrays.asList(
-                EncodeConstants.OF10_VERSION_ID,
-                EncodeConstants.OF13_VERSION_ID,
-                EncodeConstants.OF14_VERSION_ID,
-                EncodeConstants.OF15_VERSION_ID
+        List<Uint8> versions = new ArrayList<>(Arrays.asList(
+                EncodeConstants.OF_VERSION_1_0,
+                EncodeConstants.OF_VERSION_1_3,
+                EncodeConstants.OF_VERSION_1_4,
+                EncodeConstants.OF_VERSION_1_5
         ));
         ByteBuf bb = BufferHelper.buildBuffer("00 01 00 03");
         testHeaderVersions(versions, bb);
@@ -59,5 +60,4 @@ public class GetConfigReplyMessageFactoryTest extends DefaultDeserializerFactory
         Assert.assertEquals("Wrong switchConfigFlag", 0x01, builtByFactory.getFlags().getIntValue());
         Assert.assertEquals("Wrong missSendLen", 0x03, builtByFactory.getMissSendLen().intValue());
     }
-
 }

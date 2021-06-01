@@ -32,7 +32,7 @@ public class MatchDeserializer implements OFDeserializer<Match>,
     private DeserializerRegistry registry;
 
     @Override
-    public Match deserialize(ByteBuf input) {
+    public Match deserialize(final ByteBuf input) {
         if (input.readableBytes() > 0) {
             MatchBuilder builder = new MatchBuilder();
             int type = input.readUnsignedShort();
@@ -47,8 +47,7 @@ public class MatchDeserializer implements OFDeserializer<Match>,
                 default:
                     break;
             }
-            CodeKeyMaker keyMaker = CodeKeyMakerFactory
-                    .createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+            CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF_VERSION_1_3);
             List<MatchEntry> entries = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,
                     length - 2 * Short.BYTES, input, keyMaker, registry);
             builder.setMatchEntry(entries);
@@ -62,7 +61,7 @@ public class MatchDeserializer implements OFDeserializer<Match>,
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         this.registry = deserializerRegistry;
     }
 }

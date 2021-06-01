@@ -19,6 +19,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.BufferHelper;
 import org.opendaylight.openflowjava.protocol.impl.util.DefaultDeserializerFactoryTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.SetConfigInputMessageFactory}.
@@ -30,7 +31,7 @@ public class SetConfigInputMessageFactoryTest extends DefaultDeserializerFactory
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public SetConfigInputMessageFactoryTest() {
-        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 9, SetConfigInput.class));
+        super(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 9, SetConfigInput.class));
     }
 
     /**
@@ -38,11 +39,11 @@ public class SetConfigInputMessageFactoryTest extends DefaultDeserializerFactory
      */
     @Test
     public void testVersions() {
-        List<Byte> versions = new ArrayList<>(Arrays.asList(
-                EncodeConstants.OF10_VERSION_ID,
-                EncodeConstants.OF13_VERSION_ID,
-                EncodeConstants.OF14_VERSION_ID,
-                EncodeConstants.OF15_VERSION_ID
+        List<Uint8> versions = new ArrayList<>(Arrays.asList(
+                EncodeConstants.OF_VERSION_1_0,
+                EncodeConstants.OF_VERSION_1_3,
+                EncodeConstants.OF_VERSION_1_4,
+                EncodeConstants.OF_VERSION_1_5
         ));
         ByteBuf bb = BufferHelper.buildBuffer("00 02 " + "00 0a");
         testHeaderVersions(versions, bb);

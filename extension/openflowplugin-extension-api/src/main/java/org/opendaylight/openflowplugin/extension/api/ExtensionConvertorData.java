@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class ExtensionConvertorData extends ConvertorData {
     private Uint32 xid;
@@ -22,7 +23,7 @@ public class ExtensionConvertorData extends ConvertorData {
      *
      * @param version the version
      */
-    public ExtensionConvertorData(final short version) {
+    public ExtensionConvertorData(final Uint8 version) {
         super(version);
     }
 

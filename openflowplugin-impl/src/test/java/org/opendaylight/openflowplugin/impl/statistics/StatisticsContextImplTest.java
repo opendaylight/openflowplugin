@@ -44,7 +44,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImplTest.class);
 
-    private static final Long TEST_XID = 55L;
+    private static final Uint32 TEST_XID = Uint32.valueOf(55);
     private StatisticsContextImpl<MultipartReply> statisticsContext;
     private ConvertorManager convertorManager;
     @Mock
@@ -85,7 +85,7 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void testCreateRequestContext() {
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         assertNotNull(requestContext);
-        assertEquals(Uint32.valueOf(TEST_XID), requestContext.getXid().getValue());
+        assertEquals(TEST_XID, requestContext.getXid().getValue());
         Assert.assertFalse(requestContext.getFuture().isDone());
     }
 

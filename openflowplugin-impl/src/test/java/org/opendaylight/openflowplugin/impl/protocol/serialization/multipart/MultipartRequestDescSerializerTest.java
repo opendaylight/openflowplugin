@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -27,7 +26,7 @@ public class MultipartRequestDescSerializerTest extends AbstractSerializerTest {
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID,
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3,
                 MultipartRequestDesc.class)) ;
     }
 
@@ -37,5 +36,4 @@ public class MultipartRequestDescSerializerTest extends AbstractSerializerTest {
         serializer.serialize(BODY, out);
         assertEquals(out.readableBytes(), 0);
     }
-
 }

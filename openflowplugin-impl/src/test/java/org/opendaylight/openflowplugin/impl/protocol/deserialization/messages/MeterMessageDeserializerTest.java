@@ -76,7 +76,7 @@ public class MeterMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.writeByte(DSCP_PREC);
         buffer.writeZero(PADDING_IN_METER_BAND_DSCP_HEADER);
 
-        final MeterMessage message = (MeterMessage)getFactory().deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+        final MeterMessage message = (MeterMessage)getFactory().deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(message.getXid().intValue(), XID);
         assertEquals(message.getCommand().getIntValue(), COMMAND.getIntValue());

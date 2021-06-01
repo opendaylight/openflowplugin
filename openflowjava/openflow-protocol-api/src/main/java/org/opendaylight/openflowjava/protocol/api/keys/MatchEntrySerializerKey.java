@@ -7,10 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for a match entry serializer.
@@ -34,7 +36,7 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
      * @param oxmClass oxm_class (see specification)
      * @param oxmField oxm_field (see specification)
      */
-    public MatchEntrySerializerKey(final short msgVersion, final Class<C> oxmClass, final Class<F> oxmField) {
+    public MatchEntrySerializerKey(final Uint8 msgVersion, final Class<C> oxmClass, final Class<F> oxmField) {
         super(msgVersion, MatchEntry.class);
         this.oxmClass = oxmClass;
         this.oxmField = oxmField;
@@ -71,25 +73,13 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
             return false;
         }
         MatchEntrySerializerKey<?, ?> other = (MatchEntrySerializerKey<?, ?>) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
+        if (!Objects.equals(experimenterId, other.experimenterId)) {
             return false;
         }
-        if (oxmClass == null) {
-            if (other.oxmClass != null) {
-                return false;
-            }
-        } else if (!oxmClass.equals(other.oxmClass)) {
+        if (!Objects.equals(oxmClass, other.oxmClass)) {
             return false;
         }
-        if (oxmField == null) {
-            if (other.oxmField != null) {
-                return false;
-            }
-        } else if (!oxmField.equals(other.oxmField)) {
+        if (!Objects.equals(oxmField, other.oxmField)) {
             return false;
         }
         return true;

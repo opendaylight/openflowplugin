@@ -44,7 +44,7 @@ public class MatchNormalizationUtilTest {
         final long port = 10;
 
         final MatchBuilder matchBuilder = MatchNormalizationUtil.normalizeInPortMatch(new MatchBuilder()
-                .setInPort(new NodeConnectorId("openflow:1:" + port)), EncodeConstants.OF13_VERSION_ID);
+                .setInPort(new NodeConnectorId("openflow:1:" + port)), EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(String.valueOf(port), matchBuilder.getInPort().getValue());
     }
@@ -54,7 +54,7 @@ public class MatchNormalizationUtilTest {
         final long port = 10;
 
         final MatchBuilder matchBuilder = MatchNormalizationUtil.normalizeInPhyPortMatch(new MatchBuilder()
-                .setInPhyPort(new NodeConnectorId("openflow:1:" + port)), EncodeConstants.OF13_VERSION_ID);
+                .setInPhyPort(new NodeConnectorId("openflow:1:" + port)), EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(String.valueOf(port), matchBuilder.getInPhyPort().getValue());
     }

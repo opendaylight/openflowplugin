@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -40,7 +39,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         queueFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 21, GetQueueConfigOutput.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 21, GetQueueConfigOutput.class));
     }
 
     /**

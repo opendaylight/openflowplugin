@@ -58,7 +58,7 @@ public class OF10StatsRequestInputFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         multipartFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, MultipartRequestInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, MultipartRequestInput.class));
     }
 
     /**

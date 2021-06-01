@@ -28,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -57,6 +56,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.request.multipart.request.body.MultipartRequestExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * openflowplugin-impl
@@ -83,8 +84,8 @@ public final class MultipartRequestInputFactory {
      * @param canUseSingleLayer can use single layer serialization
      * @return multipart request
      */
-    public static OfHeader makeMultipartRequest(final long xid,
-                                                final short version,
+    public static OfHeader makeMultipartRequest(final Uint32 xid,
+                                                final Uint8 version,
                                                 @NonNull final MultipartType type,
                                                 final boolean canUseSingleLayer) {
         return canUseSingleLayer
@@ -130,8 +131,8 @@ public final class MultipartRequestInputFactory {
         }
     }
 
-    private static MultipartRequestBody makeDefaultMultiLayerBody(@NonNull final MultipartType type,
-                                                                  final short version) {
+    private static MultipartRequestBody makeDefaultMultiLayerBody(final @NonNull MultipartType type,
+                                                                  final Uint8 version) {
         switch (type) {
             case OFPMPDESC:
                 return new MultipartRequestDescCaseBuilder().build();
@@ -145,16 +146,12 @@ public final class MultipartRequestInputFactory {
                 multipartRequestFlowBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
                 multipartRequestFlowBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
-                switch (version) {
-                    case OFConstants.OFP_VERSION_1_0:
-                        MatchV10Builder matchV10Builder = MatchUtil.createEmptyV10Match();
-                        multipartRequestFlowBuilder.setMatchV10(matchV10Builder.build());
-                        break;
-                    case OFConstants.OFP_VERSION_1_3:
-                        multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown version " + version);
+                if (OFConstants.OFP_VERSION_1_0.equals(version)) {
+                    multipartRequestFlowBuilder.setMatchV10(MatchUtil.createEmptyV10Match().build());
+                } else if (OFConstants.OFP_VERSION_1_3.equals(version)) {
+                    multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+                } else {
+                    throw new IllegalArgumentException("Unknown version " + version);
                 }
 
                 multipartRequestFlowCaseBuilder.setMultipartRequestFlow(multipartRequestFlowBuilder.build());

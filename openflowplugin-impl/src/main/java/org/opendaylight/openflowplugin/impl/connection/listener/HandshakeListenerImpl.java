@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +50,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
     }
 
     @Override
-    public void onHandshakeSuccessful(final GetFeaturesOutput featureOutput, final Short version) {
+    public void onHandshakeSuccessful(final GetFeaturesOutput featureOutput, final Uint8 version) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         }
@@ -98,7 +99,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
         };
     }
 
-    private ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Short version, final Uint32 xid) {
+    private ListenableFuture<RpcResult<BarrierOutput>> fireBarrier(final Uint8 version, final Uint32 xid) {
         final BarrierInput barrierInput = new BarrierInputBuilder()
                 .setXid(xid)
                 .setVersion(version)

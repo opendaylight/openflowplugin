@@ -49,7 +49,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, GetFeaturesOutput.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, GetFeaturesOutput.class));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
         return ports;
     }
 
-    private static PortConfigV10 createPortConfig(long input) {
+    private static PortConfigV10 createPortConfig(final long input) {
         final Boolean _portDown = (input & 1 << 0) > 0;
         final Boolean _noStp = (input & 1 << 1) > 0;
         final Boolean _noRecv = (input & 1 << 2) > 0;
@@ -127,7 +127,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
         return new PortConfigV10(_noFlood, _noFwd, _noPacketIn, _noRecv, _noRecvStp, _noStp, _portDown);
     }
 
-    private static PortFeaturesV10 createPortFeatures(long input) {
+    private static PortFeaturesV10 createPortFeatures(final long input) {
         final Boolean _10mbHd = (input & 1 << 0) > 0;
         final Boolean _10mbFd = (input & 1 << 1) > 0;
         final Boolean _100mbHd = (input & 1 << 2) > 0;
@@ -144,7 +144,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
                 _fiber, _pause, _pauseAsym);
     }
 
-    private static PortStateV10 createPortState(long input) {
+    private static PortStateV10 createPortState(final long input) {
         final Boolean _linkDown = (input & 1 << 0) > 0;
         final Boolean _blocked = (input & 1 << 1) > 0;
         final Boolean _live = (input & 1 << 2) > 0;
@@ -157,7 +157,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static CapabilitiesV10 createCapabilities(long input) {
+    private static CapabilitiesV10 createCapabilities(final long input) {
         final Boolean _oFPCFLOWSTATS = (input & 1 << 0) > 0;
         final Boolean _oFPCTABLESTATS = (input & 1 << 1) > 0;
         final Boolean _oFPCPORTSTATS = (input & 1 << 2) > 0;
@@ -171,7 +171,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static ActionTypeV10 createActionsV10(long input) {
+    private static ActionTypeV10 createActionsV10(final long input) {
         final Boolean _oFPATOUTPUT = (input & 1 << 0) > 0;
         final Boolean _oFPATSETVLANVID = (input & 1 << 1) > 0;
         final Boolean _oFPATSETVLANPCP = (input & 1 << 2) > 0;
@@ -188,6 +188,5 @@ public class OF10FeaturesReplyMessageFactoryTest {
         return new ActionTypeV10(_oFPATENQUEUE, _oFPATOUTPUT, _oFPATSETDLDST, _oFPATSETDLSRC, _oFPATSETNWDST,
                 _oFPATSETNWSRC, _oFPATSETNWTOS, _oFPATSETTPDST, _oFPATSETTPSRC, _oFPATSETVLANPCP, _oFPATSETVLANVID,
                 _oFPATSTRIPVLAN, _oFPATVENDOR);
-
     }
 }

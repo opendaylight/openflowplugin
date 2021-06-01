@@ -35,14 +35,14 @@ public class VendorMessageFactory implements OFDeserializer<ExperimenterMessage>
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public ExperimenterMessage deserialize(ByteBuf message) {
+    public ExperimenterMessage deserialize(final ByteBuf message) {
         Objects.requireNonNull(deserializerRegistry);
 
         final Uint32 xid = readUint32(message);
         final Uint32 expId = readUint32(message);
         OFDeserializer<ExperimenterDataOfChoice> deserializer = deserializerRegistry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createVendorMessageDeserializerKey(
-                        EncodeConstants.OF10_VERSION_ID, expId.toJava()));
+                        EncodeConstants.OF_VERSION_1_0, expId));
         final ExperimenterDataOfChoice vendorData = deserializer.deserialize(message);
 
         final ExperimenterMessageBuilder messageBld = new ExperimenterMessageBuilder()
@@ -54,7 +54,7 @@ public class VendorMessageFactory implements OFDeserializer<ExperimenterMessage>
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry registry) {
         this.deserializerRegistry = registry;
     }
 }

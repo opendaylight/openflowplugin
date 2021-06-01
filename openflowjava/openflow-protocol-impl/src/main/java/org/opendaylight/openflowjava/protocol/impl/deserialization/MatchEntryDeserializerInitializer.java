@@ -68,10 +68,10 @@ public final class MatchEntryDeserializerInitializer {
      * Registers match entry deserializers.
      * @param registry registry to be filled with deserializers
      */
-    public static void registerMatchEntryDeserializers(DeserializerRegistry registry) {
+    public static void registerMatchEntryDeserializers(final DeserializerRegistry registry) {
         // register OpenflowBasicClass match entry deserializers
         MatchEntryDeserializerRegistryHelper helper =
-                new MatchEntryDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID,
+                new MatchEntryDeserializerRegistryHelper(EncodeConstants.OF_VERSION_1_3,
                         OxmMatchConstants.OPENFLOW_BASIC_CLASS, registry);
         helper.register(OxmMatchConstants.IN_PORT, new OxmInPortDeserializer());
         helper.register(OxmMatchConstants.IN_PHY_PORT, new OxmInPhyPortDeserializer());

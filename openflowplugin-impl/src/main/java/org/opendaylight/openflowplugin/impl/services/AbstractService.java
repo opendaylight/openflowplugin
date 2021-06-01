@@ -32,14 +32,16 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractService<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
 
-    private final short version;
+    private final Uint8 version;
     private final Uint64 datapathId;
     private final RequestContextStack requestContextStack;
     private final DeviceContext deviceContext;
@@ -68,7 +70,7 @@ public abstract class AbstractService<I, O> {
         this.eventIdentifier = eventIdentifier;
     }
 
-    public short getVersion() {
+    public Uint8 getVersion() {
         return version;
     }
 
@@ -156,8 +158,7 @@ public abstract class AbstractService<I, O> {
             final OutboundQueue outboundQueue =
                     getDeviceContext().getPrimaryConnectionContext().getOutboundQueueProvider();
 
-            // FIXME: reconcile uint32 vs. Long overflows
-            final Long queueXid = xid.getValue().toJava();
+            final Uint32 queueXid = xid.getValue();
             if (isComplete != null) {
                 outboundQueue.commitEntry(queueXid, request, createCallback(requestContext, requestType), isComplete);
             } else {

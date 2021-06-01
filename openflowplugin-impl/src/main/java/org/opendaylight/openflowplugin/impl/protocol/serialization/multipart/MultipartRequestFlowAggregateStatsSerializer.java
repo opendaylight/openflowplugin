@@ -43,7 +43,7 @@ public class MultipartRequestFlowAggregateStatsSerializer implements OFSerialize
                 new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
 
         Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class))
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Match.class))
                 .serialize(stats.getMatch(), byteBuf);
     }
 

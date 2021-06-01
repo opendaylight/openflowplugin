@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an action serializer.
@@ -30,7 +32,7 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
      * @param actionType type of action
      * @param experimenterId experimenter / vendor ID
      */
-    public ActionSerializerKey(final short msgVersion, final Class<T> actionType, final Uint32 experimenterId) {
+    public ActionSerializerKey(final Uint8 msgVersion, final Class<T> actionType, final Uint32 experimenterId) {
         super(msgVersion, Action.class);
         this.actionType = actionType;
         this.experimenterId = experimenterId;
@@ -57,18 +59,10 @@ public class ActionSerializerKey<T extends ActionChoice> extends MessageTypeKey<
             return false;
         }
         ActionSerializerKey<?> other = (ActionSerializerKey<?>) obj;
-        if (actionType == null) {
-            if (other.actionType != null) {
-                return false;
-            }
-        } else if (!actionType.equals(other.actionType)) {
+        if (!Objects.equals(actionType, other.actionType)) {
             return false;
         }
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
+        if (!Objects.equals(experimenterId, other.experimenterId)) {
             return false;
         }
         return true;

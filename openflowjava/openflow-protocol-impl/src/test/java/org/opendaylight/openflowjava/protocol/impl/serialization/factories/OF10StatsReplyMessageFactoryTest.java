@@ -78,7 +78,7 @@ public class OF10StatsReplyMessageFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, MultipartReplyMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, MultipartReplyMessage.class));
     }
 
     @Test
@@ -388,12 +388,12 @@ public class OF10StatsReplyMessageFactoryTest {
         return list;
     }
 
-    private static MultipartRequestFlags createMultipartRequestFlags(int input) {
+    private static MultipartRequestFlags createMultipartRequestFlags(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         return new MultipartRequestFlags(one);
     }
 
-    private static MultipartReplyDescCase decodeDescBody(ByteBuf output) {
+    private static MultipartReplyDescCase decodeDescBody(final ByteBuf output) {
         final MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         byte[] mfrDesc = new byte[256];

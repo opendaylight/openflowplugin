@@ -14,13 +14,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatisticsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.node.meter.statistics.MeterStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.node.meter.statistics.MeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStatisticsReply;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class MeterStatsMultipartWriter extends AbstractMultipartWriter<MeterStatisticsReply> {
-
     public MeterStatsMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
         super(txFacade, instanceIdentifier);
     }
@@ -42,5 +41,4 @@ public class MeterStatsMultipartWriter extends AbstractMultipartWriter<MeterStat
                 new MeterStatisticsBuilder(stat).build(),
                 withParents));
     }
-
 }

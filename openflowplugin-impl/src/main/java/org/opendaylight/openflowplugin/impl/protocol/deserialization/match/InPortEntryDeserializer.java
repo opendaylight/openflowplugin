@@ -16,13 +16,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 public class InPortEntryDeserializer extends AbstractMatchEntryDeserializer {
 
     @Override
-    public void deserializeEntry(ByteBuf message, MatchBuilder builder) {
+    public void deserializeEntry(final ByteBuf message, final MatchBuilder builder) {
         processHeader(message);
         final long port = message.readUnsignedInt();
 
         if (builder.getInPort() == null) {
             builder.setInPort(new NodeConnectorId(OpenflowPortsUtil.getProtocolAgnosticPortUri(EncodeConstants
-                    .OF13_VERSION_ID, port)));
+                    .OF_VERSION_1_3, port)));
         } else {
             throwErrorOnMalformed(builder, "inPort");
         }

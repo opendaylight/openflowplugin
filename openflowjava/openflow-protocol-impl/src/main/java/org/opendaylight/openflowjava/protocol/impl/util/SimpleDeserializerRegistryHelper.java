@@ -19,9 +19,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * @author michal.polkorab
  */
 public class SimpleDeserializerRegistryHelper {
-
-    private final short version;
-    private final @NonNull Uint8 uintVersion;
+    private final @NonNull Uint8 version;
     private final DeserializerRegistry registry;
 
     /**
@@ -31,9 +29,8 @@ public class SimpleDeserializerRegistryHelper {
      * @param deserializerRegistry registry to be filled with message deserializers
      */
     public SimpleDeserializerRegistryHelper(final short version, final DeserializerRegistry deserializerRegistry) {
-        this.version = version;
+        this.version = Uint8.valueOf(version);
         this.registry = deserializerRegistry;
-        this.uintVersion = Uint8.valueOf(version);
     }
 
     /**
@@ -47,7 +44,7 @@ public class SimpleDeserializerRegistryHelper {
         registry.registerDeserializer(new MessageCodeKey(version, code, deserializedObjectClass), deserializer);
 
         if (deserializer instanceof VersionAssignableFactory) {
-            ((VersionAssignableFactory<?>) deserializer).assignVersion(uintVersion);
+            ((VersionAssignableFactory<?>) deserializer).assignVersion(version);
         }
     }
 }

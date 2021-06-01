@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -36,8 +35,8 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public class HelloInputMessageFactoryTest {
-
     private static final Logger LOG = LoggerFactory.getLogger(HelloInputMessageFactoryTest.class);
+
     private SerializerRegistry registry;
     private OFSerializer<HelloInput> helloFactory;
 
@@ -49,7 +48,7 @@ public class HelloInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         helloFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, HelloInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, HelloInput.class));
     }
 
     /**
@@ -119,7 +118,7 @@ public class HelloInputMessageFactoryTest {
                 element.getVersionBitmap().toArray());
     }
 
-    private static List<Elements> createElement(int lengthOfBitmap) {
+    private static List<Elements> createElement(final int lengthOfBitmap) {
         ElementsBuilder elementsBuilder = new ElementsBuilder();
         final List<Elements> elementsList = new ArrayList<>();
         List<Boolean> booleanList = new ArrayList<>();
@@ -132,7 +131,7 @@ public class HelloInputMessageFactoryTest {
         return elementsList;
     }
 
-    private static List<Elements> createComparationElement(int lengthOfBitmap) {
+    private static List<Elements> createComparationElement(final int lengthOfBitmap) {
         final ElementsBuilder elementsBuilder = new ElementsBuilder();
         final List<Elements> elementsList = new ArrayList<>();
         List<Boolean> booleanList = new ArrayList<>();
@@ -151,7 +150,7 @@ public class HelloInputMessageFactoryTest {
         return elementsList;
     }
 
-    private static List<Elements> readElement(ByteBuf input) {
+    private static List<Elements> readElement(final ByteBuf input) {
         List<Elements> elementsList = new ArrayList<>();
         while (input.readableBytes() > 0) {
             ElementsBuilder elementsBuilder = new ElementsBuilder();
@@ -174,7 +173,7 @@ public class HelloInputMessageFactoryTest {
         return elementsList;
     }
 
-    private static List<Boolean> readVersionBitmap(int[] input) {
+    private static List<Boolean> readVersionBitmap(final int[] input) {
         List<Boolean> versionBitmapList = new ArrayList<>();
         for (int mask : input) {
             for (int j = 0; j < Integer.SIZE; j++) {
