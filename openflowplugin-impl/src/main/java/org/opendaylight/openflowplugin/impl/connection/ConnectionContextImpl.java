@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
@@ -309,7 +311,7 @@ public class ConnectionContextImpl implements ConnectionContext {
                 final OutboundQueue outboundQueueProvider) {
             this.nodeId = nodeId;
             this.nodeII = nodeII;
-            this.version = version;
+            this.version = requireNonNull(version);
             this.datapathId = datapathId;
             this.outboundQueueProvider = outboundQueueProvider;
             this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
@@ -326,8 +328,8 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public short getVersion() {
-            return version.toJava();
+        public Uint8 getVersion() {
+            return version;
         }
 
         @Override

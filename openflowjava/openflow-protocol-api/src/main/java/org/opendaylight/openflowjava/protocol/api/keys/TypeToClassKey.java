@@ -7,14 +7,17 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import static java.util.Objects.requireNonNull;
+
+import org.opendaylight.yangtools.yang.common.Uint8;
+
 /**
  * Key for a class type.
  *
  * @author michal.polkorab
  */
 public class TypeToClassKey {
-
-    private final short version;
+    private final Uint8 version;
     private final int type;
 
     /**
@@ -23,8 +26,8 @@ public class TypeToClassKey {
      * @param version wire protocol version
      * @param type message type / code
      */
-    public TypeToClassKey(short version, int type) {
-        this.version = version;
+    public TypeToClassKey(final Uint8 version, final int type) {
+        this.version = requireNonNull(version);
         this.type = type;
     }
 
@@ -37,7 +40,7 @@ public class TypeToClassKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -51,7 +54,7 @@ public class TypeToClassKey {
         if (type != other.type) {
             return false;
         }
-        if (version != other.version) {
+        if (version.equals(other.version)) {
             return false;
         }
         return true;

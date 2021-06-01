@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Enhanced MessageCodeKey.
@@ -15,7 +16,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
  * @author michal.polkorab
  */
 public class EnhancedMessageCodeKey extends MessageCodeKey {
-
     private final int msgType2;
 
     /**
@@ -26,7 +26,7 @@ public class EnhancedMessageCodeKey extends MessageCodeKey {
      * @param value2 used as detailed distinguisher
      * @param clazz class of object that is going to be deserialized
      */
-    public EnhancedMessageCodeKey(short version, int value, int value2, Class<?> clazz) {
+    public EnhancedMessageCodeKey(final Uint8 version, final int value, final int value2, final Class<?> clazz) {
         super(version, value, clazz);
         this.msgType2 = value2;
     }
@@ -40,7 +40,7 @@ public class EnhancedMessageCodeKey extends MessageCodeKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

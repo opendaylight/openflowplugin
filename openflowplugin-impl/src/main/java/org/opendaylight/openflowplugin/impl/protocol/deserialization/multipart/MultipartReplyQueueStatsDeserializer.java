@@ -35,7 +35,7 @@ public class MultipartReplyQueueStatsDeserializer implements OFDeserializer<Mult
         while (message.readableBytes() > 0) {
             final long port = message.readUnsignedInt();
             final NodeConnectorId nodeConnectorId = new NodeConnectorId(OpenflowPortsUtil
-                    .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port));
+                    .getProtocolAgnosticPortUri(EncodeConstants.OF_VERSION_1_3, port));
 
             items.add(new QueueIdAndStatisticsMapBuilder()
                 .setNodeConnectorId(nodeConnectorId)

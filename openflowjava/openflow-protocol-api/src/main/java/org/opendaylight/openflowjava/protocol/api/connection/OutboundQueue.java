@@ -13,6 +13,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @Beta
 public interface OutboundQueue {
@@ -20,7 +21,7 @@ public interface OutboundQueue {
      * Reserve an entry in the outbound queue.
      * @return XID for the new message, or null if the queue is full
      */
-    Long reserveEntry();
+    Uint32 reserveEntry();
 
     /**
      * Commit the specified offset using a message. Specified callback will
@@ -48,7 +49,7 @@ public interface OutboundQueue {
      * @throws IllegalArgumentException if the slot is already committed or was never reserved.
      */
     void commitEntry(
-            @NonNull Long xid,
+            @NonNull Uint32 xid,
             @Nullable OfHeader message,
             @Nullable FutureCallback<OfHeader> callback);
 
@@ -79,7 +80,7 @@ public interface OutboundQueue {
      * @throws IllegalArgumentException if the slot is already committed or was never reserved.
      */
     void commitEntry(
-            @NonNull Long xid,
+            @NonNull Uint32 xid,
             @Nullable OfHeader message,
             @Nullable FutureCallback<OfHeader> callback,
             @Nullable Function<OfHeader, Boolean> isComplete);

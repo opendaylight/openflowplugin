@@ -7,6 +7,11 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Objects;
+import org.opendaylight.yangtools.yang.common.Uint8;
+
 /**
  * Lookup and register key for extension converters, basic case expects this to
  * correlate with input model type.
@@ -16,11 +21,11 @@ package org.opendaylight.openflowplugin.extension.api;
 public class TypeVersionKey<T> {
 
     private final Class<? extends T> type;
-    private final short ofVersion;
+    private final Uint8 ofVersion;
 
-    public TypeVersionKey(Class<? extends T> type, short ofVersion) {
+    public TypeVersionKey(final Class<? extends T> type, final Uint8 ofVersion) {
         this.type = type;
-        this.ofVersion = ofVersion;
+        this.ofVersion = requireNonNull(ofVersion);
     }
 
     /**
@@ -35,13 +40,13 @@ public class TypeVersionKey<T> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ofVersion;
+        result = prime * result + ofVersion.hashCode();
         result = prime * result + (type == null ? 0 : type.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -52,14 +57,10 @@ public class TypeVersionKey<T> {
             return false;
         }
         TypeVersionKey<?> other = (TypeVersionKey<?>) obj;
-        if (ofVersion != other.ofVersion) {
+        if (!ofVersion.equals(other.ofVersion)) {
             return false;
         }
-        if (type == null) {
-            if (other.type != null) {
-                return false;
-            }
-        } else if (!type.equals(other.type)) {
+        if (!Objects.equals(type, other.type)) {
             return false;
         }
         return true;

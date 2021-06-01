@@ -22,7 +22,7 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod$G;
 
 /**
  * Translates FlowMod messages. OF protocol versions: 1.3.
@@ -30,16 +30,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, SerializerRegistryInjector {
+public class FlowModInputMessageFactory implements OFSerializer<FlowMod$G>, SerializerRegistryInjector {
     private static final byte MESSAGE_TYPE = 14;
     private static final byte PADDING_IN_FLOW_MOD_MESSAGE = 2;
     private static final TypeKeyMaker<Instruction> INSTRUCTION_KEY_MAKER =
-            TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+            TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF_VERSION_1_3);
     private SerializerRegistry registry;
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(final FlowMod message, final ByteBuf outBuffer) {
+    public void serialize(final FlowMod$G message, final ByteBuf outBuffer) {
         Objects.requireNonNull(registry);
 
         final int index = outBuffer.writerIndex();
@@ -57,7 +57,7 @@ public class FlowModInputMessageFactory implements OFSerializer<FlowMod>, Serial
         outBuffer.writeShort(createFlowModFlagsBitmask(message.getFlags()));
         outBuffer.writeZero(PADDING_IN_FLOW_MOD_MESSAGE);
         registry.<Match, OFSerializer<Match>>getSerializer(
-            new MessageTypeKey<>(message.getVersion().toJava(), Match.class)) .serialize(message.getMatch(), outBuffer);
+            new MessageTypeKey<>(message.getVersion(), Match.class)) .serialize(message.getMatch(), outBuffer);
         ListSerializer.serializeList(message.getInstruction(), INSTRUCTION_KEY_MAKER, registry, outBuffer);
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }

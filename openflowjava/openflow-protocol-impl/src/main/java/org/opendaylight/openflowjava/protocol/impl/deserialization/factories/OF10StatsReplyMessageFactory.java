@@ -91,7 +91,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     private DeserializerRegistry registry;
 
     @Override
-    public MultipartReplyMessage deserialize(ByteBuf rawMessage) {
+    public MultipartReplyMessage deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         MultipartReplyMessageBuilder builder = new MultipartReplyMessageBuilder()
@@ -128,7 +128,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return builder.build();
     }
 
-    private static MultipartReplyDescCase setDesc(ByteBuf input) {
+    private static MultipartReplyDescCase setDesc(final ByteBuf input) {
         final MultipartReplyDescCaseBuilder caseBuilder = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder descBuilder = new MultipartReplyDescBuilder();
         byte[] mfrDescBytes = new byte[DESC_STR_LEN];
@@ -155,7 +155,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private MultipartReplyFlowCase setFlow(ByteBuf input) {
+    private MultipartReplyFlowCase setFlow(final ByteBuf input) {
         MultipartReplyFlowCaseBuilder caseBuilder = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder flowBuilder = new MultipartReplyFlowBuilder();
         List<FlowStats> flowStatsList = new ArrayList<>();
@@ -165,7 +165,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
             flowStatsBuilder.setTableId(readUint8(input));
             input.skipBytes(PADDING_IN_FLOW_STATS_HEADER);
             OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
-                    new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+                    new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, EncodeConstants.EMPTY_VALUE, MatchV10.class));
             flowStatsBuilder.setMatchV10(matchDeserializer.deserialize(input));
             flowStatsBuilder.setDurationSec(readUint32(input));
             flowStatsBuilder.setDurationNsec(readUint32(input));
@@ -176,7 +176,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
             flowStatsBuilder.setCookie(readUint64(input));
             flowStatsBuilder.setPacketCount(readUint64(input));
             flowStatsBuilder.setByteCount(readUint64(input));
-            CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
+            CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_0);
             List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID,
                     length - LENGTH_OF_FLOW_STATS, input, keyMaker, registry);
             flowStatsBuilder.setAction(actions);
@@ -187,7 +187,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyAggregateCase setAggregate(ByteBuf input) {
+    private static MultipartReplyAggregateCase setAggregate(final ByteBuf input) {
         final MultipartReplyAggregateCaseBuilder caseBuilder = new MultipartReplyAggregateCaseBuilder();
         MultipartReplyAggregateBuilder builder = new MultipartReplyAggregateBuilder();
         builder.setPacketCount(readUint64(input));
@@ -198,7 +198,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyTableCase setTable(ByteBuf input) {
+    private static MultipartReplyTableCase setTable(final ByteBuf input) {
         final MultipartReplyTableCaseBuilder caseBuilder = new MultipartReplyTableCaseBuilder();
         MultipartReplyTableBuilder builder = new MultipartReplyTableBuilder();
         List<TableStats> tableStatsList = new ArrayList<>();
@@ -224,7 +224,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyPortStatsCase setPortStats(ByteBuf input) {
+    private static MultipartReplyPortStatsCase setPortStats(final ByteBuf input) {
         MultipartReplyPortStatsCaseBuilder caseBuilder = new MultipartReplyPortStatsCaseBuilder();
         MultipartReplyPortStatsBuilder builder = new MultipartReplyPortStatsBuilder();
         List<PortStats> portStatsList = new ArrayList<>();
@@ -251,7 +251,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private static MultipartReplyQueueCase setQueue(ByteBuf input) {
+    private static MultipartReplyQueueCase setQueue(final ByteBuf input) {
         MultipartReplyQueueCaseBuilder caseBuilder = new MultipartReplyQueueCaseBuilder();
         MultipartReplyQueueBuilder builder = new MultipartReplyQueueBuilder();
         List<QueueStats> queueStatsList = new ArrayList<>();
@@ -270,11 +270,11 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
         return caseBuilder.build();
     }
 
-    private MultipartReplyExperimenterCase setExperimenter(ByteBuf input) {
+    private MultipartReplyExperimenterCase setExperimenter(final ByteBuf input) {
         final Uint32 expId = readUint32(input);
         final OFDeserializer<ExperimenterDataOfChoice> deserializer = registry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createMultipartReplyVendorMessageDeserializerKey(
-                EncodeConstants.OF10_VERSION_ID, expId.toJava()));
+                EncodeConstants.OF_VERSION_1_0, expId));
 
         final MultipartReplyExperimenterBuilder mpExperimenterBld = new MultipartReplyExperimenterBuilder()
                 .setExperimenter(new ExperimenterId(expId))
@@ -285,7 +285,7 @@ public class OF10StatsReplyMessageFactory implements OFDeserializer<MultipartRep
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 }

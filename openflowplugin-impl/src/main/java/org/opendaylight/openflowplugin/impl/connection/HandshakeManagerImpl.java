@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -41,19 +42,20 @@ import org.slf4j.LoggerFactory;
 
 public class HandshakeManagerImpl implements HandshakeManager {
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeManagerImpl.class);
-    private static final long ACTIVE_XID = 20L;
+    private static final Uint32 ACTIVE_XID = Uint32.valueOf(20);
+    private static final long MAX_XID = Uint32.MAX_VALUE.toJava();
 
-    private Short lastProposedVersion;
-    private Short lastReceivedVersion;
-    private final List<Short> versionOrder;
+    private Uint8 lastProposedVersion;
+    private Uint8 lastReceivedVersion;
+    private final List<Uint8> versionOrder;
 
     private final ConnectionAdapter connectionAdapter;
-    private Short version;
+    private Uint8 version;
     private final ErrorHandler errorHandler;
 
-    private final Short highestVersion;
+    private final Uint8 highestVersion;
 
-    private Long activeXid;
+    private Uint32 activeXid;
 
     private final HandshakeListener handshakeListener;
 
@@ -77,8 +79,8 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param deviceConnectionHoldTime  deivce connection hold time in seconds
      * @param deviceConnectionStatusProvider  utility for maintaining device connection states
      */
-    public HandshakeManagerImpl(final ConnectionAdapter connectionAdapter, final Short highestVersion,
-                                final List<Short> versionOrder, final ErrorHandler errorHandler,
+    public HandshakeManagerImpl(final ConnectionAdapter connectionAdapter, final Uint8 highestVersion,
+                                final List<Uint8> versionOrder, final ErrorHandler errorHandler,
                                 final HandshakeListener handshakeListener, final boolean useVersionBitmap,
                                 final DeviceConnectionRateLimiter deviceConnectionRateLimiter,
                                 final int deviceConnectionHoldTime,
@@ -121,7 +123,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             // process the 2. and later hellos
             Uint8 remoteVersion = receivedHello.getVersion();
             List<Elements> elements = receivedHello.getElements();
-            setActiveXid(receivedHello.getXid().toJava());
+            setActiveXid(receivedHello.getXid());
             List<Boolean> remoteVersionBitmap = MessageFactory.digVersions(elements);
             LOG.debug("Hello message: version={}, xid={}, bitmap={}", remoteVersion, receivedHello.getXid(),
                       remoteVersionBitmap);
@@ -131,7 +133,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
                 handleVersionBitmapNegotiation(elements);
             } else {
                 // versionBitmap missing at least on one side -> STEP-BY-STEP NEGOTIATION applying
-                handleStepByStepVersionNegotiation(remoteVersion.toJava());
+                handleStepByStepVersionNegotiation(remoteVersion);
             }
         } catch (Exception ex) {
             errorHandler.handleException(ex);
@@ -146,7 +148,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param remoteVersion remote version
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    private void handleStepByStepVersionNegotiation(final Short remoteVersion) {
+    private void handleStepByStepVersionNegotiation(final Uint8 remoteVersion) {
         LOG.debug("remoteVersion:{} lastProposedVersion:{}, highestVersion:{}", remoteVersion, lastProposedVersion,
                   highestVersion);
 
@@ -154,7 +156,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
             // first hello has not been sent yet, send it and either wait for next remote
             // version or proceed
             lastProposedVersion = proposeNextVersion(remoteVersion);
-            final Long nextHelloXid = getNextXid();
+            final Uint32 nextHelloXid = getNextXid();
             ListenableFuture<Void> helloResult = sendHelloMessage(lastProposedVersion, nextHelloXid);
             Futures.addCallback(helloResult, new FutureCallback<Void>() {
                 @Override
@@ -178,7 +180,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
         }
     }
 
-    private void stepByStepVersionSubStep(final Short remoteVersion) {
+    private void stepByStepVersionSubStep(final Uint8 remoteVersion) {
         if (remoteVersion >= lastProposedVersion) {
             postHandshake(lastProposedVersion, getNextXid());
             LOG.trace("ret - OK - switch answered with lastProposedVersion");
@@ -201,10 +203,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param remoteVersion remote version
      * @throws Exception exception
      */
-    private void handleLowerVersionProposal(final Short remoteVersion) {
-        Short proposedVersion;
+    private void handleLowerVersionProposal(final Uint8 remoteVersion) {
         // find the version from header version field
-        proposedVersion = proposeNextVersion(remoteVersion);
+        final Uint8 proposedVersion = proposeNextVersion(remoteVersion);
         lastProposedVersion = proposedVersion;
         sendHelloMessage(proposedVersion, getNextXid());
 
@@ -223,10 +224,10 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @throws Exception exception
      */
     private void handleVersionBitmapNegotiation(final List<Elements> elements) {
-        final Short proposedVersion = proposeCommonBitmapVersion(elements);
+        final Uint8 proposedVersion = proposeCommonBitmapVersion(elements);
         if (lastProposedVersion == null) {
             // first hello has not been sent yet
-            Long nexHelloXid = getNextXid();
+            Uint32 nexHelloXid = getNextXid();
             ListenableFuture<Void> helloDone = sendHelloMessage(proposedVersion, nexHelloXid);
             Futures.addCallback(helloDone, new FutureCallback<Void>() {
                 @Override
@@ -247,12 +248,13 @@ public class HandshakeManagerImpl implements HandshakeManager {
         }
     }
 
-    private Long getNextXid() {
-        activeXid += 1;
+    private Uint32 getNextXid() {
+        final long next = activeXid.toJava() + 1;
+        activeXid = next == MAX_XID ? Uint32.ZERO : Uint32.valueOf(next);
         return activeXid;
     }
 
-    private void setActiveXid(final Long xid) {
+    private void setActiveXid(final Uint32 xid) {
         this.activeXid = xid;
     }
 
@@ -261,7 +263,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      *
      * @param remoteVersion remove version
      */
-    private void checkNegotiationStalling(final Short remoteVersion) {
+    private void checkNegotiationStalling(final Uint8 remoteVersion) {
         if (lastReceivedVersion != null && lastReceivedVersion.equals(remoteVersion)) {
             throw new IllegalStateException("version negotiation stalled: version = " + remoteVersion);
         }
@@ -269,7 +271,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
     }
 
     @Override
-    public Short getVersion() {
+    public Uint8 getVersion() {
         return version;
     }
 
@@ -279,25 +281,27 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param list bitmap list
      * @return proposed bitmap value
      */
-    protected Short proposeCommonBitmapVersion(final List<Elements> list) {
-        Short supportedHighestVersion = null;
-        if (null != list && 0 != list.size()) {
-            for (Elements element : list) {
-                List<Boolean> bitmap = element.getVersionBitmap();
-                // check for version bitmap
-                for (short bitPos : OFConstants.VERSION_ORDER) {
-                    // with all the version it should work.
-                    if (bitmap.get(bitPos % Integer.SIZE)) {
-                        supportedHighestVersion = bitPos;
-                        break;
-                    }
+    protected Uint8 proposeCommonBitmapVersion(final List<Elements> list) {
+        if (list == null || list.isEmpty()) {
+            return null;
+        }
+
+        Uint8 supportedHighestVersion = null;
+        for (Elements element : list) {
+            List<Boolean> bitmap = element.getVersionBitmap();
+            // check for version bitmap
+            for (Uint8 bitPos : OFConstants.VERSION_ORDER) {
+                // with all the version it should work.
+                if (bitmap.get(bitPos % Integer.SIZE)) {
+                    supportedHighestVersion = bitPos;
+                    break;
                 }
             }
+        }
 
-            if (null == supportedHighestVersion) {
-                LOG.trace("versionBitmap: no common version found");
-                throw new IllegalArgumentException("no common version found in versionBitmap");
-            }
+        if (null == supportedHighestVersion) {
+            LOG.trace("versionBitmap: no common version found");
+            throw new IllegalArgumentException("no common version found in versionBitmap");
         }
 
         return supportedHighestVersion;
@@ -309,9 +313,9 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param remoteVersion openflow version supported by remote entity
      * @return openflow version
      */
-    protected short proposeNextVersion(final short remoteVersion) {
-        Short proposal = null;
-        for (short offer : versionOrder) {
+    protected Uint8 proposeNextVersion(final Uint8 remoteVersion) {
+        Uint8 proposal = null;
+        for (Uint8 offer : versionOrder) {
             if (offer <= remoteVersion) {
                 proposal = offer;
                 break;
@@ -330,9 +334,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param helloVersion initial hello version for openflow connection negotiation
      * @param helloXid     transaction id
      */
-    private ListenableFuture<Void> sendHelloMessage(final Short helloVersion, final Long helloXid) {
-
-
+    private ListenableFuture<Void> sendHelloMessage(final Uint8 helloVersion, final Uint32 helloXid) {
         HelloInput helloInput = MessageFactory.createHelloInput(helloVersion, helloXid, versionOrder);
 
         final SettableFuture<Void> resultFtr = SettableFuture.create();
@@ -380,7 +382,7 @@ public class HandshakeManagerImpl implements HandshakeManager {
      * @param proposedVersion proposed openflow version
      * @param xid             transaction id
      */
-    protected void postHandshake(final Short proposedVersion, final Long xid) {
+    protected void postHandshake(final Uint8 proposedVersion, final Uint32 xid) {
         // set version
         version = proposedVersion;
 

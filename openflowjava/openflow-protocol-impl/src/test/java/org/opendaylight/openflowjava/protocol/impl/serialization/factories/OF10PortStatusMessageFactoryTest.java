@@ -42,7 +42,7 @@ public class OF10PortStatusMessageFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, PortStatusMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, PortStatusMessage.class));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class OF10PortStatusMessageFactoryTest {
         Assert.assertEquals("Wrong peer", message.getPeerFeaturesV10(), createPortFeatures(serializedBuffer.readInt()));
     }
 
-    private static PortConfigV10 createPortConfig(long input) {
+    private static PortConfigV10 createPortConfig(final long input) {
         final Boolean _portDown = (input & 1 << 0) > 0;
         final Boolean _noStp = (input & 1 << 1) > 0;
         final Boolean _noRecv = (input & 1 << 2) > 0;
@@ -100,7 +100,7 @@ public class OF10PortStatusMessageFactoryTest {
         return new PortConfigV10(_noFlood, _noFwd, _noPacketIn, _noRecv, _noRecvStp, _noStp, _portDown);
     }
 
-    private static PortFeaturesV10 createPortFeatures(long input) {
+    private static PortFeaturesV10 createPortFeatures(final long input) {
         final Boolean _10mbHd = (input & 1 << 0) > 0;
         final Boolean _10mbFd = (input & 1 << 1) > 0;
         final Boolean _100mbHd = (input & 1 << 2) > 0;
@@ -117,7 +117,7 @@ public class OF10PortStatusMessageFactoryTest {
                 _fiber, _pause, _pauseAsym);
     }
 
-    private static PortStateV10 createPortState(long input) {
+    private static PortStateV10 createPortState(final long input) {
         final Boolean _linkDown = (input & 1 << 0) > 0;
         final Boolean _blocked = (input & 1 << 1) > 0;
         final Boolean _live = (input & 1 << 2) > 0;

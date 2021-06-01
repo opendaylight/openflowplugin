@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
@@ -35,13 +34,13 @@ public abstract class AbstractMatchEntryDeserializerTest extends AbstractDeseria
 
     @Override
     protected void init() {
-        deserializer = getRegistry().getDeserializer(new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
+        deserializer = getRegistry().getDeserializer(new MessageCodeMatchKey(EncodeConstants.OF_VERSION_1_3,
                 EncodeConstants.EMPTY_LENGTH,
                 Match.class,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH));
     }
 
-    private void deserializeAlreadyFilledCase(ByteBuf inBuffer) {
+    private void deserializeAlreadyFilledCase(final ByteBuf inBuffer) {
         final MatchBuilder builder = new MatchBuilder()
                 .setProtocolMatchFields(new ProtocolMatchFieldsBuilder().build())
                 .setEthernetMatch(new EthernetMatchBuilder().build())
@@ -64,14 +63,14 @@ public abstract class AbstractMatchEntryDeserializerTest extends AbstractDeseria
         }
     }
 
-    protected Match deserialize(ByteBuf inBuffer) {
+    protected Match deserialize(final ByteBuf inBuffer) {
         deserializeAlreadyFilledCase(inBuffer.copy());
         final MatchBuilder builder = new MatchBuilder();
         deserializer.deserializeEntry(inBuffer, builder);
         return builder.build();
     }
 
-    protected void writeHeader(ByteBuf inBuffer, boolean hasMask) {
+    protected void writeHeader(final ByteBuf inBuffer, final boolean hasMask) {
         inBuffer.writeShort(getOxmClassCode());
 
         int fieldAndMask = getOxmFieldCode() << 1;

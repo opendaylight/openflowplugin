@@ -28,14 +28,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.NodeConnectorStatisticsUpdate;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 final class PortStatsService extends AbstractCompatibleStatService<GetNodeConnectorStatisticsInput,
                                                                    GetNodeConnectorStatisticsOutput,
                                                                    NodeConnectorStatisticsUpdate> {
 
-    PortStatsService(RequestContextStack requestContextStack,
-                            DeviceContext deviceContext,
-                            AtomicLong compatibilityXidSeed) {
+    PortStatsService(final RequestContextStack requestContextStack,
+                            final DeviceContext deviceContext,
+                            final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
@@ -47,7 +48,7 @@ final class PortStatsService extends AbstractCompatibleStatService<GetNodeConnec
         MultipartRequestPortStatsBuilder mprPortStatsBuilder =
                 new MultipartRequestPortStatsBuilder();
         // Set specific port
-        final short version = getVersion();
+        final Uint8 version = getVersion();
         mprPortStatsBuilder
                 .setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                         OpenflowVersion.get(version),
@@ -62,13 +63,13 @@ final class PortStatsService extends AbstractCompatibleStatService<GetNodeConnec
     }
 
     @Override
-    public GetNodeConnectorStatisticsOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetNodeConnectorStatisticsOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetNodeConnectorStatisticsOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public NodeConnectorStatisticsUpdate transformToNotification(List<MultipartReply> result,
-                                                                 TransactionId emulatedTxId) {
+    public NodeConnectorStatisticsUpdate transformToNotification(final List<MultipartReply> result,
+                                                                 final TransactionId emulatedTxId) {
         return NodeConnectorStatisticsToNotificationTransformer.transformToNotification(result,
                                                                                         getDeviceInfo(),
                                                                                         getOfVersion(),

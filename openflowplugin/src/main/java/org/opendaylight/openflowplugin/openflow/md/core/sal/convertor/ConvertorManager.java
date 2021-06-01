@@ -7,10 +7,11 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.stream.Stream;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,20 +32,19 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
 
     // Cache, that holds all registered convertors, but they can have multiple keys,
     // based on instanceof checks in the convert method
-    private Map<Short, Map<Class<?>, Convertor<?, ?, ? extends ConvertorData>>> convertors;
+    private Map<Uint8, Map<Class<?>, Convertor<?, ?, ? extends ConvertorData>>> convertors;
 
     /**
      * Create new instance of Convertor Manager.
      *
      * @param supportedVersions supported versions
      */
-    public ConvertorManager(final Short... supportedVersions) {
-        final Stream<Short> stream = Arrays.stream(supportedVersions);
+    public ConvertorManager(final Uint8... supportedVersions) {
+        final Stream<Uint8> stream = Arrays.stream(supportedVersions);
 
         if (supportedVersions.length == 1) {
-            final Optional<Short> versionOptional = stream.findFirst();
-            versionOptional.ifPresent(version -> convertors =
-                    Collections.singletonMap(version, new ConcurrentHashMap<>()));
+            final Optional<Uint8> versionOptional = stream.findFirst();
+            versionOptional.ifPresent(version -> convertors = Map.of(version, new ConcurrentHashMap<>()));
         } else {
             convertors = new ConcurrentHashMap<>();
             stream.forEach(version -> convertors.putIfAbsent(version, new ConcurrentHashMap<>()));
@@ -51,10 +52,10 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
     }
 
     @Override
-    public ConvertorManager registerConvertor(final short version,
+    public ConvertorManager registerConvertor(final Uint8 version,
             final Convertor<?, ?, ? extends ConvertorData> convertor) {
         final Map<Class<?>, Convertor<?, ?, ? extends ConvertorData>> convertorsForVersion =
-                convertors.get(version);
+                convertors.get(requireNonNull(version));
 
         if (convertorsForVersion != null) {
             for (final Class<?> type : convertor.getTypes()) {
@@ -164,9 +165,9 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
      * @return found convertor
      */
     @VisibleForTesting
-    Optional<Convertor> findConvertor(final short version, final Class<?> type) {
+    Optional<Convertor> findConvertor(final Uint8 version, final Class<?> type) {
         final Map<Class<?>, Convertor<?, ?, ? extends ConvertorData>> convertorsForVersion =
-                convertors.get(version);
+                convertors.get(requireNonNull(version));
 
         Optional<Convertor> convertor = Optional.empty();
 

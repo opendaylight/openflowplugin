@@ -61,7 +61,7 @@ public final class TypeToClassMapInitializer {
         TypeToClassInitHelper helper;
 
         // init OF v1.0 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF10_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_0, messageClassMap);
         helper.registerTypeToClass((short) 0, HelloMessage.class);
         helper.registerTypeToClass((short) 1, ErrorMessage.class);
         helper.registerTypeToClass((short) 2, EchoRequestMessage.class);
@@ -77,7 +77,7 @@ public final class TypeToClassMapInitializer {
         helper.registerTypeToClass((short) 21, GetQueueConfigOutput.class);
 
         // init OF v1.3 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF13_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_3, messageClassMap);
         helper.registerTypeToClass((short) 0, HelloMessage.class);
         helper.registerTypeToClass((short) 1, ErrorMessage.class);
         helper.registerTypeToClass((short) 2, EchoRequestMessage.class);
@@ -95,7 +95,7 @@ public final class TypeToClassMapInitializer {
         helper.registerTypeToClass((short) 27, GetAsyncOutput.class);
 
         // init OF v1.4 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF14_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_4, messageClassMap);
         helper.registerTypeToClass((short) 0, HelloMessage.class);
         helper.registerTypeToClass((short) 2, EchoRequestMessage.class);
         helper.registerTypeToClass((short) 3, EchoOutput.class);
@@ -103,7 +103,7 @@ public final class TypeToClassMapInitializer {
         helper.registerTypeToClass((short) 21, BarrierOutput.class);
 
         // init OF v1.5 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF15_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_5, messageClassMap);
         helper.registerTypeToClass((short) 0, HelloMessage.class);
         helper.registerTypeToClass((short) 2, EchoRequestMessage.class);
         helper.registerTypeToClass((short) 3, EchoOutput.class);
@@ -119,7 +119,7 @@ public final class TypeToClassMapInitializer {
         TypeToClassInitHelper helper;
 
         // init OF v1.0 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF10_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_0, messageClassMap);
         helper.registerTypeToClass((short) 5, GetFeaturesInput.class);
         helper.registerTypeToClass((short) 7, GetConfigInput.class);
         helper.registerTypeToClass((short) 9, SetConfigInput.class);
@@ -131,7 +131,7 @@ public final class TypeToClassMapInitializer {
         helper.registerTypeToClass((short) 20, GetQueueConfigInput.class);
 
         // init OF v1.3 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF13_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_3, messageClassMap);
         helper.registerTypeToClass((short) 5, GetFeaturesInput.class);
         helper.registerTypeToClass((short) 7, GetConfigInput.class);
         helper.registerTypeToClass((short) 9, SetConfigInput.class);
@@ -149,13 +149,13 @@ public final class TypeToClassMapInitializer {
         helper.registerTypeToClass((short) 29, MeterModInput.class);
 
         // init OF v1.4 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF14_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_4, messageClassMap);
         helper.registerTypeToClass((short) 7, GetConfigInput.class);
         helper.registerTypeToClass((short) 9, SetConfigInput.class);
         helper.registerTypeToClass((short) 20, BarrierInput.class);
 
         // init OF v1.5 mapping
-        helper = new TypeToClassInitHelper(EncodeConstants.OF15_VERSION_ID, messageClassMap);
+        helper = new TypeToClassInitHelper(EncodeConstants.OF_VERSION_1_5, messageClassMap);
         helper.registerTypeToClass((short) 7, GetConfigInput.class);
         helper.registerTypeToClass((short) 9, SetConfigInput.class);
         helper.registerTypeToClass((short) 20, BarrierInput.class);

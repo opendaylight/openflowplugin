@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortGrouping;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 7/29/14.
@@ -98,7 +99,7 @@ public class PortTranslatorUtilTest {
     @Test
     public void testTranslatePort() {
 
-        Short version = OpenflowVersion.OF10.getVersion();
+        Uint8 version = OpenflowVersion.OF10.getVersion();
 
         Uint64 dataPathId = Uint64.ONE;
         Uint32 portNumber = Uint32.MAX_VALUE;

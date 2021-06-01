@@ -29,24 +29,24 @@ public class ExperimenterActionSerializerKeyTest {
     @Test
     public void test() {
         ExperimenterActionSerializerKey key1 =
-                new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FORTY_TWO, TestSubType.class);
+                new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FORTY_TWO, TestSubType.class);
         ExperimenterActionSerializerKey key2 =
-                new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FORTY_TWO, TestSubType.class);
+                new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FORTY_TWO, TestSubType.class);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF13_VERSION_ID, FORTY_TWO, TestSubType.class);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_3, FORTY_TWO, TestSubType.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, (Uint32) null, TestSubType.class);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, (Uint32) null, TestSubType.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FIFTY_FIVE, TestSubType.class);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FIFTY_FIVE, TestSubType.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FIFTY_FIVE, null);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FIFTY_FIVE, null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FIFTY_FIVE, TestSubType2.class);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FIFTY_FIVE, TestSubType2.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
     }
@@ -58,11 +58,11 @@ public class ExperimenterActionSerializerKeyTest {
     public void testEquals() {
         ExperimenterActionSerializerKey key1;
         ExperimenterActionSerializerKey key2;
-        key1 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FORTY_TWO, null);
+        key1 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FORTY_TWO, null);
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
-        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FORTY_TWO, TestSubType2.class);
+        key2 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FORTY_TWO, TestSubType2.class);
         Assert.assertFalse("Wrong equal by actionSubType.", key1.equals(key2));
-        key1 = new ExperimenterActionSerializerKey(EncodeConstants.OF10_VERSION_ID, FORTY_TWO, TestSubType.class);
+        key1 = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, FORTY_TWO, TestSubType.class);
         Assert.assertFalse("Wrong equal by actionSubType.", key1.equals(key2));
     }
 

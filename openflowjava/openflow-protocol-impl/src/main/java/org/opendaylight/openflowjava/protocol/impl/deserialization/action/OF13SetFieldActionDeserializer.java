@@ -43,7 +43,7 @@ public class OF13SetFieldActionDeserializer extends AbstractActionCaseDeserializ
         int oxmClass = input.getUnsignedShort(input.readerIndex());
         // get oxm_field & hasMask byte and extract the field value
         int oxmField = input.getUnsignedByte(input.readerIndex() + Short.BYTES) >>> 1;
-        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                 oxmClass, oxmField);
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
             long expId = input.getUnsignedInt(input.readerIndex() + Short.BYTES + 2 * Byte.BYTES);

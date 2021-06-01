@@ -32,12 +32,12 @@ public class OFDatagramPacketEncoder extends MessageToMessageEncoder<UdpMessageL
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    protected void encode(ChannelHandlerContext ctx,
-            UdpMessageListenerWrapper wrapper, List<Object> out) throws Exception {
+    protected void encode(final ChannelHandlerContext ctx,
+            final UdpMessageListenerWrapper wrapper, final List<Object> out) throws Exception {
         LOG.trace("Encoding");
         try {
             ByteBuf buffer = PooledByteBufAllocator.DEFAULT.buffer();
-            serializationFactory.messageToBuffer(wrapper.getMsg().getVersion().toJava(), buffer, wrapper.getMsg());
+            serializationFactory.messageToBuffer(wrapper.getMsg().getVersion(), buffer, wrapper.getMsg());
             out.add(new DatagramPacket(buffer, wrapper.getAddress()));
         } catch (RuntimeException e) {
             LOG.warn("Message serialization failed: {}", e.getMessage());
@@ -47,7 +47,7 @@ public class OFDatagramPacketEncoder extends MessageToMessageEncoder<UdpMessageL
         }
     }
 
-    public void setSerializationFactory(SerializationFactory serializationFactory) {
+    public void setSerializationFactory(final SerializationFactory serializationFactory) {
         this.serializationFactory = serializationFactory;
     }
 }

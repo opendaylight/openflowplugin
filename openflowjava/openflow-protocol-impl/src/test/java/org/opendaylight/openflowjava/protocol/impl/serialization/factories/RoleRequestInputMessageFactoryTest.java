@@ -45,7 +45,7 @@ public class RoleRequestInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         roleFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, RoleRequestInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, RoleRequestInput.class));
     }
 
     /**

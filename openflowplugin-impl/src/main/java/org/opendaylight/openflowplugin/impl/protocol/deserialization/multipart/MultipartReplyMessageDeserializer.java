@@ -35,8 +35,7 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
         message.skipBytes(PADDING_IN_MULTIPART_REPLY_HEADER);
 
         final OFDeserializer<MultipartReplyBody> deserializer = Preconditions.checkNotNull(registry)
-            .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID,
-                        type, MultipartReplyBody.class));
+            .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, type, MultipartReplyBody.class));
 
         return new MultipartReplyBuilder()
             .setVersion(EncodeConstants.OF_VERSION_1_3)

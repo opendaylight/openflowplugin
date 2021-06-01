@@ -59,7 +59,7 @@ public class OF10FlowModInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         flowModFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, FlowModInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, FlowModInput.class));
     }
 
     /**
@@ -154,5 +154,4 @@ public class OF10FlowModInputMessageFactoryTest {
         Assert.assertEquals("Wrong flags", 42, out.readUnsignedShort());
         out.skipBytes(2);
     }
-
 }

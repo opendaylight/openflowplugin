@@ -37,7 +37,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
     @Override
     public void serialize(final MultipartRequestExperimenter input, final ByteBuf byteBuf) {
         final OFSerializer<ExperimenterMessageOfChoice> serializer = registry.getSerializer(new MessageTypeKey<>(
-            EncodeConstants.OF13_VERSION_ID,
+            EncodeConstants.OF_VERSION_1_3,
             input.getExperimenterMessageOfChoice().implementedInterface()));
 
         try {
@@ -58,7 +58,7 @@ public class MultipartRequestExperimenterSerializer implements OFSerializer<Mult
         if (converter != null) {
             final OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createMultipartRequestSerializerKey(
-                    EncodeConstants.OF13_VERSION_ID, converter.getExperimenterId().getValue().toJava(),
+                    EncodeConstants.OF_VERSION_1_3, converter.getExperimenterId().getValue(),
                     converter.getType()));
 
             try {

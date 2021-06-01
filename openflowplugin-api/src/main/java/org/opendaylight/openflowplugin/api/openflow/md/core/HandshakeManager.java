@@ -8,15 +8,15 @@
 package org.opendaylight.openflowplugin.api.openflow.md.core;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public interface HandshakeManager {
-
     /**
      * Return negotiated version.
      *
      * @return negotiated version.
      */
-    Short getVersion();
+    Uint8 getVersion();
 
     /**
      * Process current handshake step.

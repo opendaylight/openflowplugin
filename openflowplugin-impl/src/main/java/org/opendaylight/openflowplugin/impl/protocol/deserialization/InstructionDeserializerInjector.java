@@ -23,6 +23,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction.WriteMetadataInstructionDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class InstructionDeserializerInjector {
 
@@ -38,7 +39,7 @@ public final class InstructionDeserializerInjector {
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
         // Inject new instruction deserializers here using injector created by createInjector method
         final Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(InstructionConstants.GOTO_TABLE_TYPE).apply(null).accept(new GoToTableInstructionDeserializer());
         injector.apply(InstructionConstants.WRITE_METADATA_TYPE)
@@ -64,8 +65,7 @@ public final class InstructionDeserializerInjector {
      * @return injector
      */
     private static Function<Byte, Function<ActionPath, Consumer<OFDeserializer<Instruction>>>> createInjector(
-            final DeserializerExtensionProvider provider,
-            final short version) {
+            final DeserializerExtensionProvider provider, final Uint8 version) {
         return code -> actionPath -> deserializer -> provider.registerDeserializer(actionPath != null
                         ? new MessageCodeActionExperimenterKey(version,
                                                                code,

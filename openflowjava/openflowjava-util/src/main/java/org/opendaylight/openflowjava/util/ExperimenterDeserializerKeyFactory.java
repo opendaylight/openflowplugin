@@ -15,6 +15,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Factory for creating experimenter deserializer keys.
@@ -35,7 +37,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdDeserializerKey createExperimenterErrorDeserializerKey(
-            short version, Long experimenterId) {
+            final Uint8 version, final Uint32 experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, ErrorMessage.class);
     }
 
@@ -48,7 +50,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdTypeDeserializerKey createExperimenterMessageDeserializerKey(
-            short version, long experimenterId, long type) {
+            final Uint8 version, final Uint32 experimenterId, final long type) {
         return new ExperimenterIdTypeDeserializerKey(version, experimenterId, type, ExperimenterDataOfChoice.class);
     }
 
@@ -60,7 +62,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdDeserializerKey createVendorMessageDeserializerKey(
-            short version, long experimenterId) {
+            final Uint8 version, final Uint32 experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, ExperimenterDataOfChoice.class);
     }
 
@@ -73,7 +75,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdTypeDeserializerKey createMultipartReplyMessageDeserializerKey(
-            short version, long experimenterId, long type) {
+            final Uint8 version, final Uint32 experimenterId, final long type) {
         return new ExperimenterIdTypeDeserializerKey(version, experimenterId, type, ExperimenterDataOfChoice.class);
     }
 
@@ -85,7 +87,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdDeserializerKey createMultipartReplyVendorMessageDeserializerKey(
-            short version, long experimenterId) {
+            final Uint8 version, final Uint32 experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, ExperimenterDataOfChoice.class);
     }
 
@@ -97,7 +99,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdDeserializerKey createMultipartReplyTFDeserializerKey(
-            short version, Long experimenterId) {
+            final Uint8 version, final Uint32 experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, TableFeatureProperties.class);
     }
 
@@ -109,7 +111,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdDeserializerKey createQueuePropertyDeserializerKey(
-            short version, Long experimenterId) {
+            final Uint8 version, final Uint32 experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, QueueProperty.class);
     }
 
@@ -121,7 +123,7 @@ public final class ExperimenterDeserializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdDeserializerKey createMeterBandDeserializerKey(
-            short version, Long experimenterId) {
+            final Uint8 version, final Uint32 experimenterId) {
         return new ExperimenterIdDeserializerKey(version, experimenterId, MeterBandExperimenterCase.class);
     }
 }

@@ -36,7 +36,7 @@ public class MessageSerializerInjectorTest {
 
     @Before
     public void setUp() {
-        injector = MessageSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
+        injector = MessageSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF_VERSION_1_3);
     }
 
     @Test

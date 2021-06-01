@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -22,6 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.ElementsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.HelloMessageFactory}.
@@ -35,7 +35,7 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
     public HelloMessageFactoryTest() {
-        super(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 0, HelloMessage.class));
+        super(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 0, HelloMessage.class));
     }
 
     /**
@@ -43,10 +43,10 @@ public class HelloMessageFactoryTest extends DefaultDeserializerFactoryTest<Hell
      */
     @Test
     public void testVersion() {
-        List<Byte> versions = new ArrayList<>(Arrays.asList(
-                EncodeConstants.OF13_VERSION_ID,
-                EncodeConstants.OF14_VERSION_ID,
-                EncodeConstants.OF15_VERSION_ID
+        List<Uint8> versions = new ArrayList<>(Arrays.asList(
+                EncodeConstants.OF_VERSION_1_3,
+                EncodeConstants.OF_VERSION_1_4,
+                EncodeConstants.OF_VERSION_1_5
         ));
         ByteBuf bb = BufferHelper.buildBuffer("00 01 " // type
                                             + "00 08 " // length

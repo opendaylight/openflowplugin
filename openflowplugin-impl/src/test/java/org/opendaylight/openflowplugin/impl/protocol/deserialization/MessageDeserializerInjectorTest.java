@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import static org.mockito.Mockito.verify;
@@ -38,18 +37,17 @@ public class MessageDeserializerInjectorTest {
     @Before
     public void setUp() {
         injector = MessageDeserializerInjector.createInjector(switchConnectionProvider, EncodeConstants
-                .OF13_VERSION_ID);
+                .OF_VERSION_1_3);
     }
 
     @Test
     public void injectDeserializers() {
         injector.apply(10).apply(OfHeader.class).accept(ofDeserializer);
         verify(switchConnectionProvider).unregisterDeserializerMapping(new TypeToClassKey(EncodeConstants
-                .OF13_VERSION_ID, 10));
+                .OF_VERSION_1_3, 10));
         verify(switchConnectionProvider).registerDeserializerMapping(new TypeToClassKey(EncodeConstants
-                .OF13_VERSION_ID, 10), OfHeader.class);
-        verify(switchConnectionProvider).registerDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 10,
+                .OF_VERSION_1_3, 10), OfHeader.class);
+        verify(switchConnectionProvider).registerDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 10,
                 OfHeader.class), ofDeserializer);
     }
-
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
@@ -20,23 +19,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.group._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SalToOfGroupActionCase extends ConvertorCase<GroupActionCase, Action, ActionConvertorData> {
     public SalToOfGroupActionCase() {
         super(GroupActionCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
     public Optional<Action> process(@NonNull final GroupActionCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         GroupAction groupAction = source.getGroupAction();
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
 
         if (null != groupAction.getGroupId()) {
             groupActionBuilder.setGroupId(groupAction.getGroupId());
         } else {
-            groupActionBuilder.setGroupId(Long.parseLong(groupAction.getGroup()));
+            groupActionBuilder.setGroupId(Uint32.valueOf(groupAction.getGroup()));
         }
 
         return Optional.of(new ActionBuilder()

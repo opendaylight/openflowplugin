@@ -14,6 +14,7 @@ import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +23,6 @@ import org.slf4j.LoggerFactory;
  * another requests.
  */
 public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue {
-
     private static final Logger LOG = LoggerFactory.getLogger(StackedOutboundQueueNoBarrier.class);
 
     StackedOutboundQueueNoBarrier(final AbstractOutboundQueueManager<?, ?> manager) {
@@ -33,9 +33,9 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
      * This method is expected to be called from multiple threads concurrently
      */
     @Override
-    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
+    public void commitEntry(final Uint32 xid, final OfHeader message, final FutureCallback<OfHeader> callback,
             final Function<OfHeader, Boolean> isCompletedFunction) {
-        final OutboundQueueEntry entry = getEntry(xid);
+        final OutboundQueueEntry entry = getEntry(xid.toJava());
 
         if (message instanceof FlowModInput) {
             callback.onSuccess(null);

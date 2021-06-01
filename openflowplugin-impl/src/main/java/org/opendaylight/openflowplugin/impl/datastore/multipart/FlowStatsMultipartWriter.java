@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceRegistry;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
@@ -23,18 +25,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.F
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndStatisticsMapList> {
     private final DeviceRegistry registry;
-    private final short version;
+    private final Uint8 version;
 
     public FlowStatsMultipartWriter(final TxFacade txFacade,
                                     final InstanceIdentifier<Node> instanceIdentifier,
                                     final DeviceRegistry registry,
-                                    final short version) {
+                                    final Uint8 version) {
         super(txFacade, instanceIdentifier);
         this.registry = registry;
-        this.version = version;
+        this.version = requireNonNull(version);
     }
 
     @Override

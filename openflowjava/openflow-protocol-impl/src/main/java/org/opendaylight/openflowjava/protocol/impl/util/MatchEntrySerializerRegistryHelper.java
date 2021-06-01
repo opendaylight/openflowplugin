@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -14,6 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Expe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper class for registering match entry serializers.
@@ -23,7 +26,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
 
-    private final short version;
+    private final Uint8 version;
     private final Class<C> generalClass;
     private final SerializerRegistry serializerRegistry;
 
@@ -34,9 +37,9 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param generalClass class that will be used for match entry serializer registration
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public MatchEntrySerializerRegistryHelper(final short version, final Class<C> generalClass,
+    public MatchEntrySerializerRegistryHelper(final Uint8 version, final Class<C> generalClass,
             final SerializerRegistry serializerRegistry) {
-        this.version = version;
+        this.version = requireNonNull(version);
         this.generalClass = generalClass;
         this.serializerRegistry = serializerRegistry;
     }

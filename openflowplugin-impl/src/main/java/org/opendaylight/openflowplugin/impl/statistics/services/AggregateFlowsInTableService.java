@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestAggregateCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class AggregateFlowsInTableService extends
         AbstractCompatibleStatService<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput,
@@ -72,7 +73,7 @@ public final class AggregateFlowsInTableService extends
         mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
         mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
         mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-        final short version = getVersion();
+        final Uint8 version = getVersion();
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
 
         // Set request body to main multipart request
@@ -101,7 +102,7 @@ public final class AggregateFlowsInTableService extends
 
         MultipartReply mpReply = result.get(0);
         final TranslatorKey translatorKey =
-                new TranslatorKey(mpReply.getVersion().toJava(), MultipartReplyAggregateCase.class.getName());
+                new TranslatorKey(mpReply.getVersion(), MultipartReplyAggregateCase.class.getName());
         final MessageTranslator<MultipartReply, AggregatedFlowStatistics> messageTranslator =
                 translatorLibrary.lookupTranslator(translatorKey);
 

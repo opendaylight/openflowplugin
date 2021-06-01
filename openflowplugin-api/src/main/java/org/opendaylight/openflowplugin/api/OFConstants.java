@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.api;
 
-import com.google.common.collect.ImmutableList;
 import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
@@ -34,9 +33,9 @@ public final class OFConstants {
     public static final short OFPP_LOCAL = (short)0xfffe;
 
     /** openflow protocol 1.0 - version identifier. */
-    public static final short OFP_VERSION_1_0 = 0x01;
+    public static final Uint8 OFP_VERSION_1_0 = Uint8.ONE;
     /** openflow protocol 1.3 - version identifier. */
-    public static final short OFP_VERSION_1_3 = 0x04;
+    public static final Uint8 OFP_VERSION_1_3 = Uint8.valueOf(0x04);
 
     public static final String OF_URI_PREFIX = "openflow:";
 
@@ -82,8 +81,5 @@ public final class OFConstants {
     public static final String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";
 
     /** supported version ordered by height (highest version is at the beginning). */
-    public static final List<Short> VERSION_ORDER = ImmutableList
-            .<Short>builder()
-            .add((short) 0x04, (short) 0x01)
-            .build();
+    public static final List<Uint8> VERSION_ORDER = List.of(OFP_VERSION_1_3, OFP_VERSION_1_0);
 }

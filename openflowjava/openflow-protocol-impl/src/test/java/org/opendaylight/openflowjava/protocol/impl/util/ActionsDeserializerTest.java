@@ -83,7 +83,7 @@ public class ActionsDeserializerTest {
         message.skipBytes(4); // skip XID
         LOG.info("bytes: {}", message.readableBytes());
 
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,
                 message.readableBytes(), message, keyMaker, registry);
         Assert.assertTrue("Wrong action type", actions.get(0).getActionChoice() instanceof OutputActionCase);
@@ -152,7 +152,7 @@ public class ActionsDeserializerTest {
         ByteBuf message = BufferHelper.buildBuffer("00 00 00 04 00 19 00 04");
 
         message.skipBytes(4); // skip XID
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         List<Action> actions = ListDeserializer.deserializeHeaders(EncodeConstants.OF13_VERSION_ID,
                 message.readableBytes(), message, keyMaker, registry);
 
