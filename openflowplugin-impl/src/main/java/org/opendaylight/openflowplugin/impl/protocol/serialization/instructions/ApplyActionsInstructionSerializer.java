@@ -16,10 +16,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 public class ApplyActionsInstructionSerializer extends AbstractActionInstructionSerializer<ApplyActionsCase> {
 
     @Override
-    public void serialize(ApplyActionsCase input, ByteBuf outBuffer) {
+    public void serialize(final ApplyActionsCase input, final ByteBuf outBuffer) {
         int index = outBuffer.writerIndex();
         super.serialize(input, outBuffer);
-        writeActions(input.getApplyActions(), EncodeConstants.OF13_VERSION_ID, outBuffer,index);
+        writeActions(input.getApplyActions(), EncodeConstants.OF_VERSION_1_3, outBuffer,index);
     }
 
     @Override

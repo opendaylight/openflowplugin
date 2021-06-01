@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import io.netty.buffer.ByteBuf;
@@ -33,7 +32,7 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
 
     @Override
     @SuppressWarnings("unchecked")
-    public MultipartReplyBody deserialize(ByteBuf message) {
+    public MultipartReplyBody deserialize(final ByteBuf message) {
         final MultipartReplyExperimenterBuilder builder = new MultipartReplyExperimenterBuilder();
         final long expId = message.readUnsignedInt();
         final long expType = message.readUnsignedInt();
@@ -51,7 +50,7 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
 
             final ExperimenterDataOfChoice data = deserializer.deserialize(message);
             final MessageTypeKey<? extends ExperimenterDataOfChoice> key = new MessageTypeKey<>(
-                    EncodeConstants.OF13_VERSION_ID,
+                    EncodeConstants.OF_VERSION_1_3,
                     (Class<? extends ExperimenterDataOfChoice>) data.implementedInterface());
 
             final ConvertorMessageFromOFJava<ExperimenterDataOfChoice, MessagePath> convertor = OFSessionUtil
@@ -65,8 +64,7 @@ public class MultipartReplyExperimenterDeserializer implements OFDeserializer<Mu
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
-
 }

@@ -48,7 +48,7 @@ public class OF10QueueGetConfigReplyMessageFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, GetQueueConfigOutput.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, GetQueueConfigOutput.class));
     }
 
     @Test

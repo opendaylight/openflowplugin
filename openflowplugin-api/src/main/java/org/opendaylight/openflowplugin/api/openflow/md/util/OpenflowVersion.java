@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.md.util;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
@@ -21,17 +23,17 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 // FIXME: enum in api is not something what we would like to see in case it is evolving.
 public enum OpenflowVersion {
-    OF10((short)0x01),
-    OF13((short)0x04),
-    UNSUPPORTED((short)0x00);
+    OF10(Uint8.ONE),
+    OF13(Uint8.valueOf(4)),
+    UNSUPPORTED(Uint8.ZERO);
 
     private static final ImmutableMap<Uint8, OpenflowVersion> VERSIONS = Maps.uniqueIndex(Arrays.asList(values()),
-        ver -> Uint8.valueOf(ver.version));
+        OpenflowVersion::getVersion);
 
-    private short version;
+    private Uint8 version;
 
-    OpenflowVersion(final short version) {
-        this.version = version;
+    OpenflowVersion(final Uint8 version) {
+        this.version = requireNonNull(version);
     }
 
     public static OpenflowVersion get(final Uint8 version) {
@@ -39,21 +41,12 @@ public enum OpenflowVersion {
         return ver != null ? ver : UNSUPPORTED;
     }
 
-    public static OpenflowVersion get(final Short version) {
-        for (final OpenflowVersion ofv : OpenflowVersion.values()) {
-            if (ofv.version == version) {
-                return ofv;
-            }
-        }
-        return UNSUPPORTED;
-    }
-
     /**
      * Getter.
      *
      * @return the version
      */
-    public short getVersion() {
+    public Uint8 getVersion() {
         return version;
     }
 }

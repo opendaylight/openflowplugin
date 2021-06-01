@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Tr
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.IdentifiableItem;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,13 +64,13 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
      * @param version Openflow version
      * @return default empty meter mod input builder
      */
-    public static PacketOutInput defaultResult(final short version) {
+    public static PacketOutInput defaultResult(final Uint8 version) {
         return new PacketOutInputBuilder()
                 .setVersion(version)
                 .build();
     }
 
-    private static PortNumber getPortNumber(final PathArgument pathArgument, final Short ofVersion) {
+    private static PortNumber getPortNumber(final PathArgument pathArgument, final Uint8 ofVersion) {
         checkArgument(pathArgument instanceof IdentifiableItem, "Unexpected path argument %s", pathArgument);
 
         // FIXME VD P! find InstanceIdentifier helper

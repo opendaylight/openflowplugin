@@ -49,9 +49,9 @@ public final class MatchConvertorUtil {
      * @param flags ipv6 external header flag
      * @return integer containing lower 9 bits filled with corresponding flags
      */
-    public static Integer ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags flags) {
+    public static int ipv6ExthdrFlagsToInt(final Ipv6ExthdrFlags flags) {
         // FIXME: this should be 'int'
-        Integer bitmap = 0;
+        int bitmap = 0;
         // FIXME: use explicit if (flags) { bitmap |= 1 << 2; }
         bitmap |= flags.getNonext() ? 1 : 0;
         bitmap |= flags.getEsp() ? 1 << 1 : 0;

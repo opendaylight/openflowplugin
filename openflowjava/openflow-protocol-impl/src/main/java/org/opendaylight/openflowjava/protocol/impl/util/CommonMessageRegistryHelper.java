@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper class for serializer registration.
@@ -17,8 +20,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
  * @author michal.polkorab
  */
 public class CommonMessageRegistryHelper {
-
-    private final short version;
+    private final Uint8 version;
     private final SerializerRegistry serializerRegistry;
 
     /**
@@ -27,8 +29,8 @@ public class CommonMessageRegistryHelper {
      * @param version wire protocol version
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public CommonMessageRegistryHelper(short version, SerializerRegistry serializerRegistry) {
-        this.version = version;
+    public CommonMessageRegistryHelper(final Uint8 version, final SerializerRegistry serializerRegistry) {
+        this.version = requireNonNull(version);
         this.serializerRegistry = serializerRegistry;
     }
 
@@ -37,7 +39,7 @@ public class CommonMessageRegistryHelper {
      * @param msgType class of object that will be serialized by given serializer
      * @param serializer serializer instance
      */
-    public void registerSerializer(Class<?> msgType, OFGeneralSerializer serializer) {
+    public void registerSerializer(final Class<?> msgType, final OFGeneralSerializer serializer) {
         serializerRegistry.registerSerializer(new MessageTypeKey<>(version, msgType), serializer);
     }
 }

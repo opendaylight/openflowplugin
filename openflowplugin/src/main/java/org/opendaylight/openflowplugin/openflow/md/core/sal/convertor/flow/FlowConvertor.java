@@ -72,6 +72,7 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Converts the SAL Flow to OF Flow. It checks if there is a set-vlan-id (1.0) action made on OF1.3.
@@ -217,7 +218,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
 
     private static void salToOFFlowOutPort(final Flow flow, final FlowModInputBuilder flowMod) {
         final var outPort = flow.getOutPort();
-        flowMod.setOutPort(outPort != null ? new PortNumber(outPort.longValue()) : DEFAULT_OUT_PORT);
+        flowMod.setOutPort(outPort != null ? new PortNumber(outPort.toUint32()) : DEFAULT_OUT_PORT);
     }
 
     private static void salToOFFlowCommand(final Flow flow, final FlowModInputBuilder flowMod) {
@@ -244,7 +245,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
         flowMod.setCookie(omNomNom != null ? omNomNom.getValue() : OFConstants.DEFAULT_COOKIE);
     }
 
-    private List<Instruction> toInstructions(final Flow flow, final short version, final Uint64 datapathid) {
+    private List<Instruction> toInstructions(final Flow flow, final Uint8 version, final Uint64 datapathid) {
         final List<Instruction> instructionsList = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
@@ -259,7 +260,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
         return instructionsList;
     }
 
-    private List<Action> getActions(final short version, final Uint64 datapathid, final Flow flow) {
+    private List<Action> getActions(final Uint8 version, final Uint64 datapathid, final Flow flow) {
         Instructions instructions = flow.getInstructions();
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
             sortedInstructions = INSTRUCTION_ORDERING.sortedCopy(instructions.nonnullInstruction().values());
@@ -471,7 +472,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
 
     @Override
     public List<FlowModInputBuilder> convert(final Flow source, final VersionDatapathIdConvertorData data) {
-        if (data.getVersion() >= OFConstants.OFP_VERSION_1_3 && isSetVlanIdActionCasePresent(source)) {
+        if (OFConstants.OFP_VERSION_1_3.compareTo(data.getVersion()) <= 0 && isSetVlanIdActionCasePresent(source)) {
             return handleSetVlanIdForOF13(source, data);
         } else {
             return Collections.singletonList(toFlowModInput(source, data));

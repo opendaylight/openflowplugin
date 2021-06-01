@@ -92,12 +92,12 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
                         try {
                             OFSerializer<MeterBandExperimenterCase> serializer = registry.getSerializer(
                                     ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                                            EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType));
+                                            EncodeConstants.OF_VERSION_1_3, expId, meterBandSubType));
                             serializer.serialize(experimenterBandCase, outBuffer);
                         } catch (final IllegalStateException e) {
                             LOG.warn("Serializer for key: {} wasn't found",
                                     ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                                    EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType));
+                                    EncodeConstants.OF_VERSION_1_3, expId, meterBandSubType));
                         }
                     }
                 }

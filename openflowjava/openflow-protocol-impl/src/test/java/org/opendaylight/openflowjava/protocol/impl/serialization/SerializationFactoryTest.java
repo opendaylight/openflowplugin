@@ -16,6 +16,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInputBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for SerializationFactory.
@@ -37,7 +38,7 @@ public class SerializationFactoryTest {
         helloBuilder.setVersion(EncodeConstants.OF_VERSION_1_0);
         helloBuilder.setXid(Uint32.valueOf(123456));
         helloBuilder.setElements(null);
-        factory.messageToBuffer(EncodeConstants.OF10_VERSION_ID, buffer, helloBuilder.build());
+        factory.messageToBuffer(EncodeConstants.OF_VERSION_1_0, buffer, helloBuilder.build());
         assertEquals("Serialization failed", EncodeConstants.OFHEADER_SIZE, buffer.readableBytes());
     }
 
@@ -54,6 +55,6 @@ public class SerializationFactoryTest {
         helloBuilder.setVersion(EncodeConstants.OF_VERSION_1_0);
         helloBuilder.setXid(Uint32.valueOf(123456));
         helloBuilder.setElements(null);
-        factory.messageToBuffer((short) 0, buffer, helloBuilder.build());
+        factory.messageToBuffer(Uint8.ZERO, buffer, helloBuilder.build());
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -31,13 +30,13 @@ public class VendorInputMessageFactory implements OFSerializer<ExperimenterOfMes
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(ExperimenterOfMessage message, ByteBuf outBuffer) {
+    public void serialize(final ExperimenterOfMessage message, final ByteBuf outBuffer) {
         Objects.requireNonNull(registry);
 
         long expId = message.getExperimenter().getValue().toJava();
         OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createExperimenterMessageSerializerKey(
-                        EncodeConstants.OF10_VERSION_ID, expId, message.getExpType().longValue()));
+                        EncodeConstants.OF_VERSION_1_0, expId, message.getExpType().longValue()));
 
         // write experimenterId
         outBuffer.writeInt(message.getExperimenter().getValue().intValue());
@@ -46,7 +45,7 @@ public class VendorInputMessageFactory implements OFSerializer<ExperimenterOfMes
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
 }

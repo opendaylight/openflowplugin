@@ -33,6 +33,7 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,7 +69,7 @@ public abstract class AbstractService<I, O> {
         this.eventIdentifier = eventIdentifier;
     }
 
-    public short getVersion() {
+    public Uint8 getVersion() {
         return version;
     }
 

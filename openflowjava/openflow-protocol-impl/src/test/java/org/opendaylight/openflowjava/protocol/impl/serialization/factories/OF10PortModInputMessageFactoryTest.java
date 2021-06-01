@@ -45,7 +45,7 @@ public class OF10PortModInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         portModFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, PortModInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, PortModInput.class));
     }
 
     /**

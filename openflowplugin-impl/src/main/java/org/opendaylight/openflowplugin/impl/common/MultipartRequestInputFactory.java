@@ -57,6 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.request.multipart.request.body.MultipartRequestExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * openflowplugin-impl
@@ -84,7 +85,7 @@ public final class MultipartRequestInputFactory {
      * @return multipart request
      */
     public static OfHeader makeMultipartRequest(final long xid,
-                                                final short version,
+                                                final Uint8 version,
                                                 @NonNull final MultipartType type,
                                                 final boolean canUseSingleLayer) {
         return canUseSingleLayer

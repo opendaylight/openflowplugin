@@ -24,6 +24,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class SalToOfOutputActionCase extends ConvertorCase<OutputActionCase, Act
         if (outputAction.getMaxLength() != null) {
             outputBuilder.setMaxLength(outputAction.getMaxLength());
         } else {
-            outputBuilder.setMaxLength(0);
+            outputBuilder.setMaxLength(Uint16.ZERO);
         }
 
         final OpenflowVersion version = OpenflowVersion.get(data.getVersion());

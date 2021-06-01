@@ -44,7 +44,7 @@ public final class SwitchFeaturesUtil {
      * Returns the features of the switch.
      *
      * @param features
-     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
+     *        {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
      */
     public SwitchFeatures buildSwitchFeatures(final GetFeaturesOutput features) {

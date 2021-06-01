@@ -7,10 +7,13 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.InstructionSerializerKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.InstructionChoice;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper class for registering instruction serializers.
@@ -19,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
  */
 public class InstructionSerializerRegistryHelper {
 
-    private final short version;
+    private final Uint8 version;
     private final SerializerRegistry serializerRegistry;
 
     /**
@@ -28,8 +31,8 @@ public class InstructionSerializerRegistryHelper {
      * @param version Openflow wire version
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public InstructionSerializerRegistryHelper(short version, SerializerRegistry serializerRegistry) {
-        this.version = version;
+    public InstructionSerializerRegistryHelper(final Uint8 version, final SerializerRegistry serializerRegistry) {
+        this.version = requireNonNull(version);
         this.serializerRegistry = serializerRegistry;
     }
 
@@ -39,9 +42,9 @@ public class InstructionSerializerRegistryHelper {
      * @param instructionType instruction type
      * @param serializer serializer instance
      */
-    public <T extends InstructionChoice> void registerSerializer(Class<T> instructionType,
-            OFGeneralSerializer serializer) {
-        serializerRegistry.registerSerializer(new InstructionSerializerKey<>(version,
-                instructionType, null), serializer);
+    public <T extends InstructionChoice> void registerSerializer(final Class<T> instructionType,
+            final OFGeneralSerializer serializer) {
+        serializerRegistry.registerSerializer(new InstructionSerializerKey<>(version, instructionType, null),
+            serializer);
     }
 }

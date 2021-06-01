@@ -7,19 +7,17 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * OF-action related utilities.
  */
 public final class ActionUtil {
-
     /** http://en.wikipedia.org/wiki/IPv4#Packet_structure (end of octet number 1, bit 14.+15.). */
     public static final int ENC_FIELD_BIT_SIZE = 2;
 
     private ActionUtil() {
-        throw new AssertionError("ActionUtil is not expected to be instantiated.");
+        // Hidden on purpose
     }
 
     /**
@@ -28,13 +26,12 @@ public final class ActionUtil {
      * @param tosValue TypeOfService value
      * @return DSCP value
      */
-    @SuppressFBWarnings("ICAST_QUESTIONABLE_UNSIGNED_RIGHT_SHIFT")
-    public static Short tosToDscp(final short tosValue) {
-        return (short) (tosValue >>> ActionUtil.ENC_FIELD_BIT_SIZE);
+    public static Uint8 tosToDscp(final short tosValue) {
+        return Uint8.valueOf(tosValue >>> ActionUtil.ENC_FIELD_BIT_SIZE);
     }
 
     public static Uint8 tosToDscp(final Uint8 tosValue) {
-        return Uint8.valueOf(tosValue.toJava() >>> ActionUtil.ENC_FIELD_BIT_SIZE);
+        return tosToDscp(tosValue.toJava());
     }
 
     /**

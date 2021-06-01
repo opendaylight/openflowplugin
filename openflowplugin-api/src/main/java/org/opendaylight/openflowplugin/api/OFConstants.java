@@ -34,9 +34,9 @@ public final class OFConstants {
     public static final short OFPP_LOCAL = (short)0xfffe;
 
     /** openflow protocol 1.0 - version identifier. */
-    public static final short OFP_VERSION_1_0 = 0x01;
+    public static final Uint8 OFP_VERSION_1_0 = Uint8.ONE;
     /** openflow protocol 1.3 - version identifier. */
-    public static final short OFP_VERSION_1_3 = 0x04;
+    public static final Uint8 OFP_VERSION_1_3 = Uint8.valueOf(0x04);
 
     public static final String OF_URI_PREFIX = "openflow:";
 

@@ -92,7 +92,7 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
         MultipartRequestFlowCase flowCase = (MultipartRequestFlowCase) multipartRequestBody;
         MultipartRequestFlow flow = flowCase.getMultipartRequestFlow();
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF10_VERSION_ID, MatchV10.class));
+                EncodeConstants.OF_VERSION_1_0, MatchV10.class));
         matchSerializer.serialize(flow.getMatchV10(), output);
         output.writeByte(flow.getTableId().shortValue());
         output.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY);
@@ -103,7 +103,7 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
         MultipartRequestAggregateCase aggregateCase = (MultipartRequestAggregateCase) multipartRequestBody;
         MultipartRequestAggregate aggregate = aggregateCase.getMultipartRequestAggregate();
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF10_VERSION_ID, MatchV10.class));
+                EncodeConstants.OF_VERSION_1_0, MatchV10.class));
         matchSerializer.serialize(aggregate.getMatchV10(), output);
         output.writeByte(aggregate.getTableId().shortValue());
         output.writeZero(PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY);
@@ -135,7 +135,7 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
 
         OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createMultipartRequestSerializerKey(
-                        EncodeConstants.OF10_VERSION_ID, expId,
+                        EncodeConstants.OF_VERSION_1_0, expId,
                         -1 /* in order not to collide with OF >= 1.3 codecs*/));
         serializer.serialize(experimenter.getExperimenterDataOfChoice(), output);
     }

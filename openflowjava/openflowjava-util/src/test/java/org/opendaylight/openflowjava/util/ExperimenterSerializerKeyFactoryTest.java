@@ -32,8 +32,8 @@ public class ExperimenterSerializerKeyFactoryTest {
         ExperimenterIdSerializerKey<?> comparationKey;
 
         createdKey = ExperimenterSerializerKeyFactory
-                .createExperimenterMessageSerializerKey(EncodeConstants.OF10_VERSION_ID, 42L, 1L);
-        comparationKey = new ExperimenterIdTypeSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+                .createExperimenterMessageSerializerKey(EncodeConstants.OF_VERSION_1_0, 42L, 1L);
+        comparationKey = new ExperimenterIdTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 42L, 1L, ExperimenterDataOfChoice.class);
         Assert.assertEquals("Wrong key created", comparationKey, createdKey);
     }
@@ -44,8 +44,8 @@ public class ExperimenterSerializerKeyFactoryTest {
         ExperimenterIdSerializerKey<?> comparationKey;
 
         createdKey = ExperimenterSerializerKeyFactory.createMultipartRequestSerializerKey(
-                EncodeConstants.OF10_VERSION_ID, 44L, 1L);
-        comparationKey = new ExperimenterIdSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_0, 44L, 1L);
+        comparationKey = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 44L, ExperimenterDataOfChoice.class);
         Assert.assertEquals("Wrong key created", comparationKey, createdKey);
     }
@@ -56,8 +56,8 @@ public class ExperimenterSerializerKeyFactoryTest {
         ExperimenterIdSerializerKey<?> comparationKey;
 
         createdKey = ExperimenterSerializerKeyFactory.createMultipartRequestTFSerializerKey(
-                EncodeConstants.OF10_VERSION_ID, 45L);
-        comparationKey = new ExperimenterIdSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_0, 45L);
+        comparationKey = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 45L, TableFeatureProperties.class);
         Assert.assertEquals("Wrong key created", comparationKey, createdKey);
     }
@@ -68,8 +68,8 @@ public class ExperimenterSerializerKeyFactoryTest {
         ExperimenterIdSerializerKey<?> comparationKey;
 
         createdKey = ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                EncodeConstants.OF10_VERSION_ID, 43L);
-        comparationKey = new ExperimenterIdSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_0, 43L);
+        comparationKey = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 43L, MeterBandExperimenterCase.class);
         Assert.assertEquals("Wrong key created", comparationKey, createdKey);
     }
@@ -84,16 +84,16 @@ public class ExperimenterSerializerKeyFactoryTest {
         final ExperimenterIdSerializerKey<?> comparationKey5;
 
         createdKey = ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                EncodeConstants.OF10_VERSION_ID, 43L, ExperimenterMeterBandSubType.class);
-        comparationKey1 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_0, 43L, ExperimenterMeterBandSubType.class);
+        comparationKey1 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                 43L, MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.class);
-        comparationKey2 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+        comparationKey2 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 42L, MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.class);
-        comparationKey3 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+        comparationKey3 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 43L, null, ExperimenterMeterBandSubType.class);
-        comparationKey4 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+        comparationKey4 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 43L, MeterBandExperimenterCase.class, null);
-        comparationKey5 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+        comparationKey5 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 43L, MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.class);
         Assert.assertNotEquals("Wrong key created", comparationKey1, createdKey);
         Assert.assertNotEquals("Wrong key created", comparationKey2, createdKey);
