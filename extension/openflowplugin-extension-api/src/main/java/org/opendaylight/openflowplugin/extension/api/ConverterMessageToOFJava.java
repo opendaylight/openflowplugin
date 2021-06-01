@@ -11,6 +11,7 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Convert message from MD-SAL model into OFJava-API model.
@@ -41,5 +42,5 @@ public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice,
      * Returns the corresponding experimenter message type.
      * @return experimenter message type.
      */
-    long getType();
+    Uint32 getType();
 }

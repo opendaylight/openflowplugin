@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -101,6 +100,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Util class for injecting new multipart match field serializers into OpenflowJava.
@@ -119,7 +119,7 @@ final class MultipartMatchFieldSerializerInjector {
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(ArpOp.class).accept(new ArpOpMatchFieldSerializer());
         injector.apply(ArpSha.class).accept(new ArpShaMatchFieldSerializer());
@@ -177,12 +177,8 @@ final class MultipartMatchFieldSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
+            final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+                provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
-
 }

@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * UNit tests for GetQueueConfigInputMessageFactory.
+ * Unit tests for GetQueueConfigInputMessageFactory.
  *
  * @author giuseppex.petralia@intel.com
  */
@@ -34,7 +34,7 @@ public class GetQueueConfigInputMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 22, GetQueueConfigInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 22, GetQueueConfigInput.class));
     }
 
     @Test

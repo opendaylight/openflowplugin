@@ -60,7 +60,7 @@ public class OF10StatsRequestInputFactory
     private static final byte AGGREGATE_PADDING_1 = 1;
 
     @Override
-    public MultipartRequestInput deserialize(ByteBuf rawMessage) {
+    public MultipartRequestInput deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         MultipartRequestInputBuilder builder = new MultipartRequestInputBuilder()
@@ -98,14 +98,14 @@ public class OF10StatsRequestInputFactory
         return builder.build();
     }
 
-    private static MultipartRequestExperimenterCase setExperimenter(ByteBuf input) {
+    private static MultipartRequestExperimenterCase setExperimenter(final ByteBuf input) {
         MultipartRequestExperimenterCaseBuilder caseBuilder = new MultipartRequestExperimenterCaseBuilder();
         MultipartRequestExperimenterBuilder experimenterBuilder = new MultipartRequestExperimenterBuilder();
         caseBuilder.setMultipartRequestExperimenter(experimenterBuilder.build());
         return caseBuilder.build();
     }
 
-    private static MultipartRequestQueueCase setQueue(ByteBuf input) {
+    private static MultipartRequestQueueCase setQueue(final ByteBuf input) {
         final MultipartRequestQueueCaseBuilder caseBuilder = new MultipartRequestQueueCaseBuilder();
         MultipartRequestQueueBuilder queueBuilder = new MultipartRequestQueueBuilder();
         queueBuilder.setPortNo(readUint16(input).toUint32());
@@ -115,7 +115,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestPortStatsCase setPortStats(ByteBuf input) {
+    private static MultipartRequestPortStatsCase setPortStats(final ByteBuf input) {
         MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
         MultipartRequestPortStatsBuilder portBuilder = new MultipartRequestPortStatsBuilder();
         portBuilder.setPortNo(readUint16(input).toUint32());
@@ -123,7 +123,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestTableCase setTable(ByteBuf input) {
+    private static MultipartRequestTableCase setTable(final ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
         tableBuilder.setEmpty(Empty.getInstance());
@@ -131,11 +131,11 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private MultipartRequestAggregateCase setAggregate(ByteBuf input) {
+    private MultipartRequestAggregateCase setAggregate(final ByteBuf input) {
         final MultipartRequestAggregateCaseBuilder caseBuilder = new MultipartRequestAggregateCaseBuilder();
         MultipartRequestAggregateBuilder aggregateBuilder = new MultipartRequestAggregateBuilder();
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         aggregateBuilder.setMatchV10(matchDeserializer.deserialize(input));
         aggregateBuilder.setTableId(readUint8(input));
         input.skipBytes(AGGREGATE_PADDING_1);
@@ -144,11 +144,11 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private MultipartRequestFlowCase setFlow(ByteBuf input) {
+    private MultipartRequestFlowCase setFlow(final ByteBuf input) {
         final MultipartRequestFlowCaseBuilder caseBuilder = new MultipartRequestFlowCaseBuilder();
         MultipartRequestFlowBuilder flowBuilder = new MultipartRequestFlowBuilder();
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         flowBuilder.setMatchV10(matchDeserializer.deserialize(input));
         flowBuilder.setTableId(readUint8(input));
         input.skipBytes(FLOW_PADDING_1);
@@ -157,7 +157,7 @@ public class OF10StatsRequestInputFactory
         return caseBuilder.build();
     }
 
-    private static MultipartRequestDescCase setDesc(ByteBuf input) {
+    private static MultipartRequestDescCase setDesc(final ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
         descBuilder.setEmpty(Empty.getInstance());
@@ -166,18 +166,18 @@ public class OF10StatsRequestInputFactory
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static MultipartRequestFlags getMultipartRequestFlags(int input) {
+    private static MultipartRequestFlags getMultipartRequestFlags(final int input) {
         final Boolean _oFPMPFREQMORE = (input & 1 << 0) != 0;
         MultipartRequestFlags flag = new MultipartRequestFlags(_oFPMPFREQMORE);
         return flag;
     }
 
-    private static MultipartType getMultipartType(int input) {
+    private static MultipartType getMultipartType(final int input) {
         return MultipartType.forValue(input);
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 }

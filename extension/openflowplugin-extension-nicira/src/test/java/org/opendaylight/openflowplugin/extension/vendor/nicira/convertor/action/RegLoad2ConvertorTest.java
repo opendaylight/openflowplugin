@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import static org.junit.Assert.assertEquals;
@@ -22,14 +21,14 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NshFlagsConvertor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.OfjAugNxExpMatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NshFlagsCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsh.flags.grouping.NshFlagsValues;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxNshFlagsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNotifFlowsStatisticsUpdateApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.write.actions._case.write.actions.action.action.NxActionRegLoadNotifFlowsStatisticsUpdateWriteActionsCase;
@@ -84,12 +83,12 @@ public class RegLoad2ConvertorTest {
 
     @Test
     @Parameters(method = "commonData, salToOpenflowData")
-    public void testConvertSalToOf(Uint16 rangeStart,
-                                   Uint16 rangeEnd,
-                                   Integer rangeValue,
-                                   Integer value,
-                                   Integer mask,
-                                   Class<? extends Exception> expectedException) {
+    public void testConvertSalToOf(final Uint16 rangeStart,
+                                   final Uint16 rangeEnd,
+                                   final Integer rangeValue,
+                                   final Integer value,
+                                   final Integer mask,
+                                   final Class<? extends Exception> expectedException) {
 
         if (expectedException != null) {
             thrown.expect(expectedException);
@@ -121,12 +120,12 @@ public class RegLoad2ConvertorTest {
 
     @Test
     @Parameters(method = "commonData, openflowToSalData")
-    public void testConvertOfToSal(Uint16 rangeStart,
-                                   Uint16 rangeEnd,
-                                   Integer rangeValue,
-                                   Integer value,
-                                   Integer mask,
-                                   Class<? extends Exception> expectedException) {
+    public void testConvertOfToSal(final Uint16 rangeStart,
+                                   final Uint16 rangeEnd,
+                                   final Integer rangeValue,
+                                   final Integer value,
+                                   final Integer mask,
+                                   final Class<? extends Exception> expectedException) {
 
         if (expectedException != null) {
             thrown.expect(expectedException);

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import io.netty.buffer.ByteBuf;
@@ -15,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for VersionMessageUdpWrapper.
@@ -32,11 +32,11 @@ public class VersionMessageUdpWrapperTest {
 
     @Test
     public void test() {
-        short version = 35;
+        Uint8 version = Uint8.valueOf(35);
         int port = 9876;
         String host = "localhost";
         InetSocketAddress inetSockAddr = InetSocketAddress.createUnresolved(host, port);
-        VersionMessageUdpWrapper wrapper = new VersionMessageUdpWrapper(version,byteBuff,inetSockAddr);
+        VersionMessageUdpWrapper wrapper = new VersionMessageUdpWrapper(version, byteBuff, inetSockAddr);
 
         Assert.assertEquals("Wrong getAddress", inetSockAddr, wrapper.getAddress());
         Assert.assertEquals("Wrong getVersion", version, wrapper.getVersion());

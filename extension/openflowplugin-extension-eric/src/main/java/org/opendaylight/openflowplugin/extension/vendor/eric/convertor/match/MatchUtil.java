@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.er
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNodesNodeTableFlowApplyActionsSetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNotifPacketIn;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNotifSwitchFlowRemoved;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNotifUpdateFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchPacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchRpcAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchRpcRemoveFlow;
@@ -46,6 +47,7 @@ public final class MatchUtil {
         AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchNodesNodeTableFlow.class);
         AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchNotifSwitchFlowRemoved.class);
         AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchNotifPacketIn.class);
+        AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchNotifUpdateFlowStats.class);
         AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchPacketInMessage.class);
         AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchNodesNodeTableFlowApplyActionsSetField.class);
         ICMPV6_ND_RESERVED_RESOLVER.setAugmentations(AUGMENTATIONS_OF_EXTENSION);
@@ -55,9 +57,9 @@ public final class MatchUtil {
     private MatchUtil() {
     }
 
-    public static MatchEntryBuilder createDefaultMatchEntryBuilder(Class<? extends MatchField> matchField,
-                                                                   Class<? extends OxmClassBase> oxmClass,
-                                                                   MatchEntryValue matchEntryValue) {
+    public static MatchEntryBuilder createDefaultMatchEntryBuilder(final Class<? extends MatchField> matchField,
+                                                                   final Class<? extends OxmClassBase> oxmClass,
+                                                                   final MatchEntryValue matchEntryValue) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setHasMask(false);
         matchEntryBuilder.setOxmMatchField(matchField);

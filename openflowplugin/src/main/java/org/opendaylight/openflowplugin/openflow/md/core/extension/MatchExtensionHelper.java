@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.extension.api.AugmentTuple;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yangtools.yang.binding.Augmentable;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,7 +56,7 @@ public final class MatchExtensionHelper {
      * @param matchPath match path
      */
     public static void injectExtension(
-            final short ofVersion,
+            final Uint8 ofVersion,
             final MatchEntry matchEntry,
             final MatchBuilder matchBuilder,
             final MatchPath matchPath) {
@@ -141,7 +142,7 @@ public final class MatchExtensionHelper {
      * @param matchEntry match entry
      * @return an ExtensionListBuilder
      */
-    private static ExtensionListBuilder processExtension(final MatchEntry matchEntry, final short ofVersion,
+    private static ExtensionListBuilder processExtension(final MatchEntry matchEntry, final Uint8 ofVersion,
             final MatchPath matchPath) {
         final var convertorProvider = OFSessionUtil.getExtensionConvertorProvider();
         if (convertorProvider == null) {

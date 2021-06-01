@@ -86,7 +86,7 @@ public class BundleControlFactory implements OFDeserializer<BundleControlOnf>, D
             .setExpType(expType);
 
         OFDeserializer<BundlePropertyExperimenterData> deserializer = deserializerRegistry.getDeserializer(
-            new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF13_VERSION_ID, experimenterId.toJava(),
+            new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF_VERSION_1_3, experimenterId,
                 expType.toJava(), BundlePropertyExperimenterData.class));
         experimenterProperty.setBundlePropertyExperimenterData(
                 deserializer.deserialize(message.readBytes(length - 12)));

@@ -13,33 +13,33 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.HelloElementType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.hello.Elements;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MessageFactoryTest {
-
     @Test
     public void testCreateHelloInputWoElements() {
-        short highestVersion = (short) 0x04;
-        long xid = 42L;
+        Uint8 highestVersion = Uint8.valueOf(4);
+        Uint32 xid = Uint32.valueOf(42);
 
         HelloInput helloMsg = MessageFactory.createHelloInput(highestVersion, xid);
-        Assert.assertEquals(highestVersion, helloMsg.getVersion().shortValue());
-        Assert.assertEquals(xid, helloMsg.getXid().longValue());
+        Assert.assertEquals(highestVersion, helloMsg.getVersion());
+        Assert.assertEquals(xid, helloMsg.getXid());
         Assert.assertNull(helloMsg.getElements());
     }
 
     @Test
     public void testCreateHelloInputWithElements() {
-        short highestVersion = (short) 0x04;
-        long xid = 42L;
+        Uint8 highestVersion = Uint8.valueOf(4);
+        Uint32 xid = Uint32.valueOf(42);
         Boolean[] expectedVersionBitmap = new Boolean[]{false, true, false, false, true};
 
         HelloInput helloMsg = MessageFactory.createHelloInput(highestVersion, xid, OFConstants.VERSION_ORDER);
-        Assert.assertEquals(highestVersion, helloMsg.getVersion().shortValue());
-        Assert.assertEquals(xid, helloMsg.getXid().longValue());
+        Assert.assertEquals(highestVersion, helloMsg.getVersion());
+        Assert.assertEquals(xid, helloMsg.getXid());
         Assert.assertEquals(1, helloMsg.getElements().size());
         Elements actualElement = helloMsg.getElements().get(0);
         Assert.assertEquals(HelloElementType.VERSIONBITMAP, actualElement.getType());
         Assert.assertArrayEquals(expectedVersionBitmap, actualElement.getVersionBitmap().toArray(new Boolean[0]));
     }
-
 }

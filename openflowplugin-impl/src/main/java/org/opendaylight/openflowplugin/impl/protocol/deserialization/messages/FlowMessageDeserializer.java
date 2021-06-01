@@ -42,7 +42,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
     private static final byte PADDING = 2;
 
-    private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
+    private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF_VERSION_1_3,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
 
@@ -86,13 +86,13 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                 if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
                     deserializer = Preconditions.checkNotNull(registry).getDeserializer(
                             new MessageCodeActionExperimenterKey(
-                                EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
+                                EncodeConstants.OF_VERSION_1_3, type, Instruction.class,
                                 ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS,
                                 null));
                 } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
                     deserializer = Preconditions.checkNotNull(registry).getDeserializer(
                             new MessageCodeActionExperimenterKey(
-                                EncodeConstants.OF13_VERSION_ID, type, Instruction.class,
+                                EncodeConstants.OF_VERSION_1_3, type, Instruction.class,
                                 ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
                                 null));
                 } else {
@@ -104,7 +104,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
                     deserializer = Preconditions.checkNotNull(registry).getDeserializer(
                             new MessageCodeExperimenterKey(
-                                EncodeConstants.OF13_VERSION_ID, type, Instruction.class, expId));
+                                EncodeConstants.OF_VERSION_1_3, type, Instruction.class, expId));
                 }
 
                 instructions.add(new InstructionBuilder()

@@ -31,28 +31,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 final class AllGroupsStatsService extends
         AbstractCompatibleStatService<GetAllGroupStatisticsInput, GetAllGroupStatisticsOutput, GroupStatisticsUpdated> {
-
-    private static final MultipartRequestGroupCase GROUP_CASE;
-
-    static {
-        final MultipartRequestGroupCaseBuilder caseBuilder = new MultipartRequestGroupCaseBuilder();
-        final MultipartRequestGroupBuilder mprGroupBuild = new MultipartRequestGroupBuilder();
-        mprGroupBuild.setGroupId(new GroupId(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue())));
-        caseBuilder.setMultipartRequestGroup(mprGroupBuild.build());
-
-        GROUP_CASE = caseBuilder.build();
-    }
+    private static final MultipartRequestGroupCase GROUP_CASE = new MultipartRequestGroupCaseBuilder()
+        .setMultipartRequestGroup(new MultipartRequestGroupBuilder()
+            .setGroupId(new GroupId(Uint32.valueOf(BinContent.intToUnsignedLong(Group.OFPGALL.getIntValue()))))
+            .build())
+        .build();
 
     private final ConvertorExecutor convertorExecutor;
 
 
-    AllGroupsStatsService(RequestContextStack requestContextStack,
-                                 DeviceContext deviceContext,
-                                 AtomicLong compatibilityXidSeed,
-                                 ConvertorExecutor convertorExecutor) {
+    AllGroupsStatsService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+                          final AtomicLong compatibilityXidSeed, final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
@@ -71,12 +64,13 @@ final class AllGroupsStatsService extends
     }
 
     @Override
-    public GetAllGroupStatisticsOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetAllGroupStatisticsOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetAllGroupStatisticsOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public GroupStatisticsUpdated transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+    public GroupStatisticsUpdated transformToNotification(final List<MultipartReply> result,
+            final TransactionId emulatedTxId) {
         return GroupStatisticsToNotificationTransformer.transformToNotification(result,
                                                                                 getDeviceInfo(),
                                                                                 emulatedTxId,

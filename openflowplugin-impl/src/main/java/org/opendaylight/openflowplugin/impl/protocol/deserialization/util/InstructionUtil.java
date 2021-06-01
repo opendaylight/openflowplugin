@@ -18,6 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.Mes
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.key.MessageCodeActionExperimenterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Utility class for action deserialization.
@@ -34,8 +35,7 @@ public final class InstructionUtil {
      * @param message  OpenFlow buffered message
      * @param registry deserializer registry
      */
-    @SuppressWarnings("checkstyle:LineLength")
-    public static Instruction readInstruction(final short version,
+    public static Instruction readInstruction(final Uint8 version,
                                               final ByteBuf message,
                                               final DeserializerRegistry registry) {
         final int type = message.getUnsignedShort(message.readerIndex());
@@ -75,8 +75,7 @@ public final class InstructionUtil {
      * @param message  OpenFlow buffered message
      * @param registry deserializer registry
      */
-    @SuppressWarnings("checkstyle:LineLength")
-    public static Instruction readInstructionHeader(final short version,
+    public static Instruction readInstructionHeader(final Uint8 version,
                                                     final ByteBuf message,
                                                     final DeserializerRegistry registry) {
         final int type = message.getUnsignedShort(message.readerIndex());

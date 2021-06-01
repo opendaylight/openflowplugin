@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +60,7 @@ final class OutboundQueueManager<T extends OutboundQueueHandler> extends
     }
 
     private void scheduleBarrierMessage() {
-        final Long xid = currentQueue.reserveBarrierIfNeeded();
+        final Uint32 xid = currentQueue.reserveBarrierIfNeeded();
         if (xid == null) {
             LOG.trace("Queue {} already contains a barrier, not scheduling one", currentQueue);
             return;

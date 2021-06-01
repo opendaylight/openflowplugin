@@ -87,7 +87,7 @@ public class AsyncConfigMessageSerializerTest extends AbstractSerializerTest {
     @Override
     protected void init() {
         serializer = getRegistry()
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, AsyncConfigMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, AsyncConfigMessage.class));
     }
 
     @Test

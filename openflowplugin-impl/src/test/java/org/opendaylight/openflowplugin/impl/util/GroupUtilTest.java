@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -245,7 +246,7 @@ public class GroupUtilTest {
         final RpcResult<List<BatchFailedGroupsOutput>> batchOutcomeWithError = createBatchOutcomeWithError();
         return RpcResultBuilder.<AddGroupsBatchOutput>failed()
                 .withResult(new AddGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(batchOutcomeWithError.getResult())
+                        .setBatchFailedGroupsOutput(BindingMap.ordered(batchOutcomeWithError.getResult()))
                         .build())
                 .withRpcErrors(batchOutcomeWithError.getErrors())
                 .build();

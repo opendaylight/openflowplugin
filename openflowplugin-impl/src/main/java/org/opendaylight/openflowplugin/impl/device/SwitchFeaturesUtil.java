@@ -15,6 +15,7 @@ import java.util.Map;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.BuildSwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public final class SwitchFeaturesUtil {
     private static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
 
     private static SwitchFeaturesUtil instance = new SwitchFeaturesUtil();
-    private final Map<Short, BuildSwitchFeatures> swFeaturesBuilders;
+    private final Map<Uint8, BuildSwitchFeatures> swFeaturesBuilders;
 
     private SwitchFeaturesUtil() {
         swFeaturesBuilders = new HashMap<>();
@@ -44,14 +45,14 @@ public final class SwitchFeaturesUtil {
      * Returns the features of the switch.
      *
      * @param features
-     * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
+     *        {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
      */
     public SwitchFeatures buildSwitchFeatures(final GetFeaturesOutput features) {
-        if (swFeaturesBuilders.containsKey(features.getVersion().toJava())) {
+        if (swFeaturesBuilders.containsKey(features.getVersion())) {
             LOG.debug("map contains version {}", features.getVersion());
             try {
-                return swFeaturesBuilders.get(features.getVersion().toJava()).build(features);
+                return swFeaturesBuilders.get(features.getVersion()).build(features);
             } catch (NullPointerException e) {
                 LOG.warn("error while building switch features: {}", e.getMessage());
                 LOG.debug("error while building switch features.. ", e);

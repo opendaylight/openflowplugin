@@ -43,7 +43,7 @@ public class GetQueueConfigInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         getQueueFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetQueueConfigInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GetQueueConfigInput.class));
     }
 
     /**

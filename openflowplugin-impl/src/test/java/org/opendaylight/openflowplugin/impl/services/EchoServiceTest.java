@@ -46,6 +46,6 @@ public class EchoServiceTest extends ServiceMocking {
         assertTrue(request instanceof EchoInput);
         final byte[] data = ((EchoInput) request).getData();
         assertArrayEquals(DUMMY_DATA, data);
-        assertEquals(OFConstants.OFP_VERSION_1_3, request.getVersion().shortValue());
+        assertEquals(OFConstants.OFP_VERSION_1_3, request.getVersion());
     }
 }

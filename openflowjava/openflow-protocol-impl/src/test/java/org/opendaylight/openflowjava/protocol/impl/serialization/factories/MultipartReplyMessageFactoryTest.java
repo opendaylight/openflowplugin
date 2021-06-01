@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeaturePropertyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeaturePropertyBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIdsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.next.table.related.table.feature.property.NextTableIdsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopPbbCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PushVlanCaseBuilder;
@@ -192,7 +192,7 @@ public class MultipartReplyMessageFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MultipartReplyMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, MultipartReplyMessage.class));
     }
 
     @Test
@@ -925,7 +925,7 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertEquals("Wrong desc body", message.getMultipartReplyBody(), decodeDescBody(serializedBuffer));
     }
 
-    private static void testFlowBody(MultipartReplyBody body, ByteBuf output) {
+    private static void testFlowBody(final MultipartReplyBody body, final ByteBuf output) {
         MultipartReplyFlowCase flowCase = (MultipartReplyFlowCase) body;
         MultipartReplyFlow flow = flowCase.getMultipartReplyFlow();
         FlowStats flowStats = flow.getFlowStats().get(0);
@@ -1024,7 +1024,7 @@ public class MultipartReplyMessageFactoryTest {
         return list;
     }
 
-    private static PortConfig createPortConfig(long input) {
+    private static PortConfig createPortConfig(final long input) {
         final Boolean _portDown = (input & 1 << 0) > 0;
         final Boolean _noRecv = (input & 1 << 2) > 0;
         final Boolean _noFwd = (input & 1 << 5) > 0;
@@ -1032,7 +1032,7 @@ public class MultipartReplyMessageFactoryTest {
         return new PortConfig(_noFwd, _noPacketIn, _noRecv, _portDown);
     }
 
-    private static PortFeatures createPortFeatures(long input) {
+    private static PortFeatures createPortFeatures(final long input) {
         final Boolean _10mbHd = (input & 1 << 0) > 0;
         final Boolean _10mbFd = (input & 1 << 1) > 0;
         final Boolean _100mbHd = (input & 1 << 2) > 0;
@@ -1053,14 +1053,14 @@ public class MultipartReplyMessageFactoryTest {
                 _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
     }
 
-    private static PortState createPortState(long input) {
+    private static PortState createPortState(final long input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;
         return new PortState(two, one, three);
     }
 
-    private static List<Bands> decodeBandsList(ByteBuf input) {
+    private static List<Bands> decodeBandsList(final ByteBuf input) {
         final List<Bands> bandsList = new ArrayList<>();
         final BandsBuilder bandsBuilder = new BandsBuilder();
         final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();
@@ -1093,7 +1093,7 @@ public class MultipartReplyMessageFactoryTest {
         return list;
     }
 
-    private static MeterBandTypeBitmap createMeterBandTypeBitmap(int input) {
+    private static MeterBandTypeBitmap createMeterBandTypeBitmap(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         return new MeterBandTypeBitmap(one, two);
@@ -1120,7 +1120,7 @@ public class MultipartReplyMessageFactoryTest {
         return bandsList;
     }
 
-    private static MeterFlags createMeterFlags(int input) {
+    private static MeterFlags createMeterFlags(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;
@@ -1151,7 +1151,7 @@ public class MultipartReplyMessageFactoryTest {
         return list;
     }
 
-    private static ActionType createActionType(int input) {
+    private static ActionType createActionType(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;
@@ -1191,7 +1191,7 @@ public class MultipartReplyMessageFactoryTest {
 
     }
 
-    private static GroupCapabilities createGroupCapabilities(int input) {
+    private static GroupCapabilities createGroupCapabilities(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;
@@ -1199,7 +1199,7 @@ public class MultipartReplyMessageFactoryTest {
         return new GroupCapabilities(three, four, two, one);
     }
 
-    private static GroupTypes createGroupTypes(int input) {
+    private static GroupTypes createGroupTypes(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;
@@ -1432,12 +1432,12 @@ public class MultipartReplyMessageFactoryTest {
         return list;
     }
 
-    private static MultipartRequestFlags createMultipartRequestFlags(int input) {
+    private static MultipartRequestFlags createMultipartRequestFlags(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         return new MultipartRequestFlags(one);
     }
 
-    private static MultipartReplyDescCase decodeDescBody(ByteBuf output) {
+    private static MultipartReplyDescCase decodeDescBody(final ByteBuf output) {
         final MultipartReplyDescCaseBuilder descCase = new MultipartReplyDescCaseBuilder();
         MultipartReplyDescBuilder desc = new MultipartReplyDescBuilder();
         byte[] mfrDesc = new byte[256];

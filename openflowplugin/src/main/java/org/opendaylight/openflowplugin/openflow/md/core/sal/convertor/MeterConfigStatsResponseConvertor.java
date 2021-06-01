@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.MeterConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.Bands;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -76,7 +77,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                     meterConfig.getFlags().getOFPMFSTATS());
 
             meterConfigStatsBuilder.setFlags(meterFlags);
-            List<MeterBandHeader> listBandHeaders = new ArrayList<>();
+            BindingMap.Builder<MeterBandHeaderKey, MeterBandHeader> listBandHeaders = BindingMap.builder();
             int bandKey = 0;
 
             for (Bands band : meterConfig.nonnullBands()) {
@@ -146,7 +147,7 @@ public class MeterConfigStatsResponseConvertor extends Convertor<List<MeterConfi
                 bandKey++;
             }
 
-            meterBandHeadersBuilder.setMeterBandHeader(listBandHeaders);
+            meterBandHeadersBuilder.setMeterBandHeader(listBandHeaders.build());
             meterConfigStatsBuilder.setMeterBandHeaders(meterBandHeadersBuilder.build());
             listMeterConfigStats.add(meterConfigStatsBuilder.build());
         }

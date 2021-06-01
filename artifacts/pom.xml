@@ -13,7 +13,7 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent-lite</artifactId>
-    <version>8.1.1</version>
+    <version>9.0.2</version>
     <relativePath/>
   </parent>
 
@@ -113,6 +113,16 @@
             <dependency>
                 <groupId>${project.groupId}.model</groupId>
                 <artifactId>model-flow-statistics</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.model</groupId>
+                <artifactId>model-inventory</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.model</groupId>
+                <artifactId>model-topology</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- extensions -->

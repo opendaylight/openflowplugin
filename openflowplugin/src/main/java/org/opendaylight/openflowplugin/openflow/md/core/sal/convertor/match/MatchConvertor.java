@@ -57,11 +57,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlagsContainerBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.oxm.container.match.entry.value.experimenter.id._case.TcpFlagsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.tcp.flags.container.TcpFlagsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.experimenter.id._case.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.EtherType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc;
@@ -467,9 +466,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             tcpFlagsContainerBuilder.setTcpFlags(tcpFlagsBuilder.build());
 
             //Set experimenter ID.
-            ExperimenterBuilder experimenterBuilder = new ExperimenterBuilder();
-            experimenterBuilder.setExperimenter(new ExperimenterId(OFApprovedExperimenterIds.MATCH_TCP_FLAGS_EXP_ID));
-            expIdCaseBuilder.setExperimenter(experimenterBuilder.build());
+            expIdCaseBuilder.setExperimenter(new ExperimenterBuilder()
+                .setExperimenter(OFApprovedExperimenterIds.MATCH_TCP_FLAGS_EXP_ID)
+                .build());
 
             expIdCaseBuilder.addAugmentation(tcpFlagsContainerBuilder.build());
             matchEntryBuilder.setMatchEntryValue(expIdCaseBuilder.build());
@@ -536,7 +535,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         matchEntryBuilder.setOxmMatchField(EthType.class);
         EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
         EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
-        EtherType etherType = new EtherType(ethernetType.getType().getValue().intValue());
+        EtherType etherType = new EtherType(ethernetType.getType().getValue().toUint16());
         ethTypeBuilder.setEthType(etherType);
         ethTypeCaseBuilder.setEthType(ethTypeBuilder.build());
         matchEntryBuilder.setMatchEntryValue(ethTypeCaseBuilder.build());

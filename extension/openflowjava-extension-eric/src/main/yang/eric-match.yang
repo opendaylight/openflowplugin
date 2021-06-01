@@ -39,17 +39,16 @@ module eric-match {
     }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
-        ext:augment-identifier "ofj-aug-eric-match";
+        ext:augment-identifier "ofj-aug-eric-match-reserved";
         case icmpv6-nd-reserved-case-value {
             uses icmpv6-nd-reserved-grouping;
         }
     }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
-        ext:augment-identifier "ofj-aug-eric-match";
+        ext:augment-identifier "ofj-aug-eric-match-options";
         case icmpv6-nd-options-type-case-value {
             uses icmpv6-nd-options-type-grouping;
         }
     }
-
 }

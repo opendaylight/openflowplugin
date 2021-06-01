@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.onf.converter;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
@@ -31,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.bundle.control.onf.OnfControlGroupingDataBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowplugin.extension.onf.converter.BundleControlConverter}.
@@ -47,7 +47,7 @@ public class BundleControlConverterTest {
 
     @Test
     public void testGetType() {
-        Assert.assertEquals("Wrong type.", 2300, converter.getType());
+        Assert.assertEquals("Wrong type.", Uint32.valueOf(2300), converter.getType());
     }
 
     @Test
@@ -72,9 +72,9 @@ public class BundleControlConverterTest {
 
     private void testConvertDown(final boolean withProperty) {
         final BundleControlSal original = createOFPMessage(withProperty);
-        final ExtensionConvertorData data = new ExtensionConvertorData((short)1);
-        data.setXid(Uint32.valueOf(0L));
-        data.setDatapathId(Uint64.valueOf(BigInteger.ONE));
+        final ExtensionConvertorData data = new ExtensionConvertorData(Uint8.ONE);
+        data.setXid(Uint32.ZERO);
+        data.setDatapathId(Uint64.ONE);
         final BundleControlOnf converted = converter.convert(original, data);
         testConvert(original, converted, withProperty);
     }

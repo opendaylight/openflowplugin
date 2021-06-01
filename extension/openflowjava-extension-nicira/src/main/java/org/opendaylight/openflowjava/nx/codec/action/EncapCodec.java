@@ -15,8 +15,8 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionEncap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionEncapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionEncap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionEncapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.encap.grouping.NxActionEncap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.encap.grouping.NxActionEncapBuilder;
 
@@ -27,12 +27,12 @@ public class EncapCodec extends AbstractActionCodec {
     private static final int HEADER_SIZE_NOT_SPECIFIED = 0;
 
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionEncap.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF_VERSION_1_3, ActionEncap.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
-            new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_ENCAP_SUBTYPE);
+            new NiciraActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, NXAST_ENCAP_SUBTYPE);
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         final ActionBuilder actionBuilder = deserializeHeader(message);
         // skip header size, not used
         message.skipBytes(Short.BYTES);
@@ -43,7 +43,7 @@ public class EncapCodec extends AbstractActionCodec {
     }
 
     @Override
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(final Action input, final ByteBuf outBuffer) {
         serializeHeader(LENGTH, NXAST_ENCAP_SUBTYPE, outBuffer);
         outBuffer.writeShort(HEADER_SIZE_NOT_SPECIFIED);
         ActionEncap actionEncap = (ActionEncap) input.getActionChoice();

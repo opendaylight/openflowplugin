@@ -116,7 +116,7 @@ public class PortConvertorTest {
         flowCapableNodeConnectorBuilder.setSupported(features);
 
         final Ports portsOut = PortConvertor.toPortDesc(
-                flowCapableNodeConnectorBuilder.build(), EncodeConstants.OF13_VERSION_ID);
+                flowCapableNodeConnectorBuilder.build(), EncodeConstants.OF_VERSION_1_3);
 
         PortsBuilder portsB = new PortsBuilder();
 

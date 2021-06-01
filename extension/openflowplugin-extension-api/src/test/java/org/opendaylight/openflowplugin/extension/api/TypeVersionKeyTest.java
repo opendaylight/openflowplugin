@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.api;
 
 import org.junit.Assert;
@@ -28,17 +27,17 @@ public class TypeVersionKeyTest {
     @Test
     public void test() {
         TypeVersionKey<? extends DataObject> key1 =
-                new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF13_VERSION_ID);
+                new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF_VERSION_1_3);
         TypeVersionKey<? extends DataObject> key2 =
-                new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF13_VERSION_ID);
+                new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF_VERSION_1_3);
         Assert.assertTrue("Wrong equals()", key1.equals(key2));
         Assert.assertEquals("Wrong hashCode()", key1.hashCode(), key2.hashCode());
 
-        key2 = new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF10_VERSION_ID);
+        key2 = new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF_VERSION_1_0);
         Assert.assertFalse("Wrong equals()", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode()", key1.hashCode() == key2.hashCode());
 
-        key2 = new TypeVersionKey<>(BarrierReply.class, EncodeConstants.OF13_VERSION_ID);
+        key2 = new TypeVersionKey<>(BarrierReply.class, EncodeConstants.OF_VERSION_1_3);
         Assert.assertFalse("Wrong equals()", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode()", key1.hashCode() == key2.hashCode());
     }

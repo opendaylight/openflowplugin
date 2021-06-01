@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjNxHashFields;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.OfjNxMpAlgorithm;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipath;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionMultipathBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionMultipath;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionMultipathBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.multipath.grouping.NxActionMultipathBuilder;
 
 /**
@@ -29,9 +29,9 @@ public class MultipathCodec extends AbstractActionCodec {
     public static final int LENGTH = 32;
     public static final byte NXAST_MULTIPATH_SUBTYPE = 10;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionMultipath.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF_VERSION_1_3, ActionMultipath.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
-            new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_MULTIPATH_SUBTYPE);
+            new NiciraActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, NXAST_MULTIPATH_SUBTYPE);
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {

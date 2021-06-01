@@ -33,7 +33,7 @@ public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput
 
     private static final byte MESSAGE_TYPE = 14;
     private static final TypeKeyMaker<Action> ACTION_KEY_MAKER =
-            TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF10_VERSION_ID);
+            TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF_VERSION_1_0);
     private SerializerRegistry registry;
 
     @Override
@@ -42,8 +42,8 @@ public class OF10FlowModInputMessageFactory implements OFSerializer<FlowModInput
         Objects.requireNonNull(registry);
 
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
-        OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                message.getVersion().toJava(), MatchV10.class));
+        OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(message.getVersion(),
+            MatchV10.class));
         matchSerializer.serialize(message.getMatchV10(), outBuffer);
         outBuffer.writeLong(message.getCookie().longValue());
         outBuffer.writeShort(message.getCommand().getIntValue());

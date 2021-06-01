@@ -14,17 +14,17 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegMove;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 
 public class RegMoveCodec extends AbstractActionCodec {
 
     public static final byte SUBTYPE = 6; // NXAST_REG_MOVE
     public static final NiciraActionSerializerKey SERIALIZER_KEY = new NiciraActionSerializerKey(
-            EncodeConstants.OF13_VERSION_ID, ActionRegMove.class);
+            EncodeConstants.OF_VERSION_1_3, ActionRegMove.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY = new NiciraActionDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, SUBTYPE);
+            EncodeConstants.OF_VERSION_1_3, SUBTYPE);
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {

@@ -28,18 +28,18 @@ public class MessageTypeKeyTest {
     @Test
     public void test() {
         MessageTypeKey<?> key1 =
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, BarrierInput.class);
         MessageTypeKey<?> key2 =
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, BarrierInput.class);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, BarrierInput.class);
+        key2 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, BarrierInput.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, null);
+        key2 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierOutput.class);
+        key2 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, BarrierOutput.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
     }
@@ -49,17 +49,17 @@ public class MessageTypeKeyTest {
      */
     @Test
     public void testEquals() {
-        MessageTypeKey<?> key1 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+        MessageTypeKey<?> key1 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, BarrierInput.class);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to null.", key1.equals(null));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
-        key1 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, null);
-        MessageTypeKey<?> key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+        key1 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, null);
+        MessageTypeKey<?> key2 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, BarrierInput.class);
         Assert.assertFalse("Wrong equal by msgType.", key1.equals(key2));
 
-        key2 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, null);
+        key2 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, null);
         Assert.assertTrue("Wrong equal by msgType.", key1.equals(key2));
     }
 
@@ -68,7 +68,7 @@ public class MessageTypeKeyTest {
      */
     @Test
     public void testToString() {
-        MessageTypeKey<?> key1 = new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, BarrierInput.class);
+        MessageTypeKey<?> key1 = new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, BarrierInput.class);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectType: org.opendaylight.yang.gen.v1.urn"
                  + ".opendaylight.openflow.protocol.rev130731.BarrierInput", key1.toString());

@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class PacketReceivedTranslator implements MessageTranslator<PacketInMessage, PacketReceived> {
     private final ConvertorExecutor convertorExecutor;
@@ -62,7 +63,9 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         packetReceivedBuilder.setPacketInReason(PacketInUtil.getMdSalPacketInReason(input.getReason()));
 
         if (input.getTableId() != null) {
-            packetReceivedBuilder.setTableId(new TableId(input.getTableId().getValue().shortValue()));
+            packetReceivedBuilder.setTableId(new TableId(Uint8.valueOf(
+                // FIXME: This is truncating value, is that really okay?
+                input.getTableId().getValue().shortValue())));
         }
 
         if (input.getMatch() != null) {
@@ -79,7 +82,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
             final PacketInMessage input, final Uint64 datapathId) {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(
-                input.getVersion().toJava());
+                input.getVersion());
         datapathIdConvertorData.setDatapathId(datapathId);
 
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder>

@@ -42,7 +42,7 @@ public class OF10PortStatusMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         statusFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 12, PortStatusMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 12, PortStatusMessage.class));
     }
 
     /**

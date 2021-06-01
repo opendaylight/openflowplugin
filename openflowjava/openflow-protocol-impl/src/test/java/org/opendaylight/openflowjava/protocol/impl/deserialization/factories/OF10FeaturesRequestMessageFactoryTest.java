@@ -31,7 +31,7 @@ public class OF10FeaturesRequestMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 5, GetFeaturesInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 5, GetFeaturesInput.class));
     }
 
     @Test

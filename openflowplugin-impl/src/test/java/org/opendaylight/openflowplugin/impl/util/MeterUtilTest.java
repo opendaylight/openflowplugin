@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -230,7 +231,7 @@ public class MeterUtilTest {
     private static RpcResult<AddMetersBatchOutput> createAddMetersBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(Collections.emptyMap())
+                        .setBatchFailedMetersOutput(Map.of())
                         .build())
                 .build();
     }
@@ -239,7 +240,7 @@ public class MeterUtilTest {
         final RpcResult<List<BatchFailedMetersOutput>> batchOutcomeWithError = createBatchOutcomeWithError();
         return RpcResultBuilder.<AddMetersBatchOutput>failed()
                 .withResult(new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(batchOutcomeWithError.getResult())
+                        .setBatchFailedMetersOutput(BindingMap.ordered(batchOutcomeWithError.getResult()))
                         .build())
                 .withRpcErrors(batchOutcomeWithError.getErrors())
                 .build();

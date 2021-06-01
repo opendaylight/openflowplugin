@@ -49,7 +49,7 @@ public class QueueGetConfigReplyMessageFactoryMultiTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         queueFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 23, GetQueueConfigOutput.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 23, GetQueueConfigOutput.class));
     }
 
     /**

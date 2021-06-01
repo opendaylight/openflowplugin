@@ -132,10 +132,9 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
     }
 
-    private SalFlowServiceImpl mockSalFlowService(final short version) {
-        Uint8 ver = Uint8.valueOf(version);
-        when(mockedFeatures.getVersion()).thenReturn(ver);
-        when(mockedFeaturesOutput.getVersion()).thenReturn(ver);
+    private SalFlowServiceImpl mockSalFlowService(final Uint8 version) {
+        when(mockedFeatures.getVersion()).thenReturn(version);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
@@ -158,7 +157,7 @@ public class SalFlowServiceImplTest extends TestCase {
         addFlowFailCallback(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlowFailCallback(final short version) throws InterruptedException, ExecutionException {
+    private void addFlowFailCallback(final Uint8 version) throws InterruptedException, ExecutionException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId(Uint8.ONE)
@@ -187,7 +186,7 @@ public class SalFlowServiceImplTest extends TestCase {
         removeFlowFailCallback(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlowFailCallback(final short version) throws InterruptedException, ExecutionException {
+    private void removeFlowFailCallback(final Uint8 version) throws InterruptedException, ExecutionException {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setTableId(Uint8.ONE)
                 .setMatch(match)
@@ -212,7 +211,7 @@ public class SalFlowServiceImplTest extends TestCase {
         addFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlow(final short version) throws ExecutionException, InterruptedException {
+    private void addFlow(final Uint8 version) throws ExecutionException, InterruptedException {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId(Uint8.ONE)
@@ -235,7 +234,7 @@ public class SalFlowServiceImplTest extends TestCase {
         removeFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlow(final short version) throws Exception {
+    private void removeFlow(final Uint8 version) throws Exception {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setMatch(match)
                 .setTableId(Uint8.ONE)
@@ -258,7 +257,7 @@ public class SalFlowServiceImplTest extends TestCase {
         updateFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void updateFlow(final short version) throws Exception {
+    private void updateFlow(final Uint8 version) throws Exception {
         UpdateFlowInput mockedUpdateFlowInput = mock(UpdateFlowInput.class);
         UpdateFlowInput mockedUpdateFlowInput1 = mock(UpdateFlowInput.class);
 

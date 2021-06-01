@@ -70,10 +70,10 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
         final Uint8 tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL);
         mprAggregateRequestBuilder.setTableId(tableId);
         long outputPortValue = MoreObjects.firstNonNull(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
-        mprAggregateRequestBuilder.setOutPort(outputPortValue);
+        mprAggregateRequestBuilder.setOutPort(Uint32.valueOf(outputPortValue));
 
-        final short version = getVersion();
-        if (version == OFConstants.OFP_VERSION_1_3) {
+        final Uint8 version = getVersion();
+        if (OFConstants.OFP_VERSION_1_3.equals(version)) {
 
             if (input.getCookie() == null) {
                 mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
