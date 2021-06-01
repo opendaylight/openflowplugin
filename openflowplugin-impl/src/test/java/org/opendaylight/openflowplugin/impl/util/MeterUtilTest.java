@@ -230,7 +230,7 @@ public class MeterUtilTest {
     private static RpcResult<AddMetersBatchOutput> createAddMetersBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(Collections.emptyMap())
+                        .setBatchFailedMetersOutput(Map.of())
                         .build())
                 .build();
     }

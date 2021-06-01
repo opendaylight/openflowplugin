@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import static org.junit.Assert.assertEquals;
@@ -18,23 +17,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.tos.action._case.SetNwTosActionBuilder;
 
 public class SetNwTosActionSerializerTest extends AbstractSetFieldActionSerializerTest {
-
     @Test
     public void testSerialize() {
         final int tos = 10;
 
         final Action action = new SetNwTosActionCaseBuilder()
-                .setSetNwTosAction(new SetNwTosActionBuilder()
-                        .setTos(10)
-                        .build())
+                .setSetNwTosAction(new SetNwTosActionBuilder().setTos(10).build())
                 .build();
 
-        assertAction(action, out -> assertEquals(out.readUnsignedByte(), (short) ActionUtil.tosToDscp((short) tos)));
+        assertAction(action, out -> assertEquals(out.readUnsignedByte(), ActionUtil.tosToDscp((short) tos).toJava()));
     }
 
     @Override
     protected Class<? extends Action> getClazz() {
         return SetNwTosActionCase.class;
     }
-
 }

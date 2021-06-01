@@ -38,14 +38,14 @@ public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemoved
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public FlowRemovedMessage deserialize(ByteBuf rawMessage) {
+    public FlowRemovedMessage deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         FlowRemovedMessageBuilder builder = new FlowRemovedMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)
                 .setXid(readUint32(rawMessage));
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         builder.setMatchV10(matchDeserializer.deserialize(rawMessage));
         builder.setCookie(readUint64(rawMessage));
         builder.setPriority(readUint16(rawMessage));
@@ -61,7 +61,7 @@ public class OF10FlowRemovedMessageFactory implements OFDeserializer<FlowRemoved
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 }

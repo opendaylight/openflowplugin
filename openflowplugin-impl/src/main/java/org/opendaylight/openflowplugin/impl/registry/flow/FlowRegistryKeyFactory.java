@@ -36,7 +36,7 @@ public final class FlowRegistryKeyFactory {
     }
 
     @NonNull
-    public static FlowRegistryKey create(final short version, @NonNull final Flow flow) {
+    public static FlowRegistryKey create(final Uint8 version, @NonNull final Flow flow) {
         //TODO: mandatory flow input values (or default values) should be specified via yang model
         final Uint8 tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
         final Uint16 priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);

@@ -76,7 +76,7 @@ public class DeviceInitializationUtilTest {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         when(connectionAdapter.getRemoteAddress()).thenReturn(INET_SOCKET_ADDRESS);
         when(featuresReply.getTables()).thenReturn(TABLES);
-        when(featuresReply.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        when(featuresReply.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(featuresReply.getCapabilities()).thenReturn(new Capabilities(false, false,
                 false, false, false, false, false));
         when(connectionContext.getFeatures()).thenReturn(featuresReply);

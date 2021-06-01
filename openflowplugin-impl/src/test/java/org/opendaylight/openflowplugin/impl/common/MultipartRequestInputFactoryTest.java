@@ -38,17 +38,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeatures;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link MultipartRequestInputFactory}.
  */
 public class MultipartRequestInputFactoryTest {
 
-    private final long xid = 42L;
-    private short ofVersion;
+    private final Uint32 xid = Uint32.valueOf(42);
+    private Uint8 ofVersion;
 
     @Before
-
     public void setUp() {
         ofVersion = OFConstants.OFP_VERSION_1_3;
     }

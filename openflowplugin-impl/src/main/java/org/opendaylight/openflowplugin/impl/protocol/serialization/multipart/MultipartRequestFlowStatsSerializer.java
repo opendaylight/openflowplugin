@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import com.google.common.base.MoreObjects;
@@ -43,7 +42,7 @@ public class MultipartRequestFlowStatsSerializer implements OFSerializer<Multipa
                 new FlowCookie(OFConstants.DEFAULT_COOKIE_MASK)).getValue().longValue());
 
         Preconditions.checkNotNull(registry).<Match, OFSerializer<Match>>getSerializer(
-            new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class))
+            new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Match.class))
             .serialize(stats.getMatch(), byteBuf);
     }
 

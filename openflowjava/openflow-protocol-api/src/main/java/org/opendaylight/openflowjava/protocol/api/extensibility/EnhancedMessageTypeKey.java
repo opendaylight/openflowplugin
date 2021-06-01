@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 
 /**
@@ -28,7 +29,7 @@ public class EnhancedMessageTypeKey<E, F> extends MessageTypeKey<E> {
      * @param msgType main type
      * @param msgType2 subtype
      */
-    public EnhancedMessageTypeKey(short msgVersion, Class<E> msgType, Class<F> msgType2) {
+    public EnhancedMessageTypeKey(final Uint8 msgVersion, final Class<E> msgType, final Class<F> msgType2) {
         super(msgVersion, msgType);
         this.msgType2 = msgType2;
     }
@@ -42,7 +43,7 @@ public class EnhancedMessageTypeKey<E, F> extends MessageTypeKey<E> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

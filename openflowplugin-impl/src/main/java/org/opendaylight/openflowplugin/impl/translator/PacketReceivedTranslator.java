@@ -79,7 +79,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
             final PacketInMessage input, final Uint64 datapathId) {
 
         final VersionDatapathIdConvertorData datapathIdConvertorData = new VersionDatapathIdConvertorData(
-                input.getVersion().toJava());
+                input.getVersion());
         datapathIdConvertorData.setDatapathId(datapathId);
 
         final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder>

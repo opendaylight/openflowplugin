@@ -59,7 +59,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
     private static final byte FLOW_STATS_PADDING_1 = 1;
     private static final byte FLOW_STATS_PADDING_2 = 6;
     private static final TypeKeyMaker<Action> ACTION_KEY_MAKER = TypeKeyMakerFactory
-            .createActionKeyMaker(EncodeConstants.OF10_VERSION_ID);
+            .createActionKeyMaker(EncodeConstants.OF_VERSION_1_0);
     private static final int FLOW_STATS_LENGTH_INDEX = 0;
     private static final int QUEUE_STATS_LENGTH_INDEX = 0;
     private static final byte AGGREGATE_PADDING = 4;
@@ -200,7 +200,7 @@ public class OF10StatsReplyMessageFactory implements OFSerializer<MultipartReply
             flowStatsBuff.writeByte((byte)flowStats.getTableId().longValue());
             flowStatsBuff.writeZero(FLOW_STATS_PADDING_1);
             OFSerializer<MatchV10> matchSerializer = registry
-                    .getSerializer(new MessageTypeKey<>(message.getVersion().toJava(), MatchV10.class));
+                    .getSerializer(new MessageTypeKey<>(message.getVersion(), MatchV10.class));
             matchSerializer.serialize(flowStats.getMatchV10(), flowStatsBuff);
             flowStatsBuff.writeInt(flowStats.getDurationSec().intValue());
             flowStatsBuff.writeInt(flowStats.getDurationNsec().intValue());

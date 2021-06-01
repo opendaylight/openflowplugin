@@ -43,7 +43,7 @@ public class MultipartReplyFlowTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         factory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 19, MultipartReplyMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 19, MultipartReplyMessage.class));
     }
 
     /**

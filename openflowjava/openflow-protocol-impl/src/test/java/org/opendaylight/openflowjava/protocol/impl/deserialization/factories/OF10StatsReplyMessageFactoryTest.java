@@ -55,7 +55,7 @@ public class OF10StatsReplyMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         statsFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 17, MultipartReplyMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 17, MultipartReplyMessage.class));
     }
 
     /**

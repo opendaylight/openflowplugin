@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterModCommand;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, DeserializerRegistryInjector {
     private static final int OFPMBTDROP = 1;
@@ -93,7 +94,7 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                     message.readerIndex(bandStartIndex);
 
                     OFDeserializer<Experimenter> deserializer = registry.getDeserializer(
-                            new ExperimenterIdDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId,
+                            new ExperimenterIdDeserializerKey(EncodeConstants.OF_VERSION_1_3, expId,
                                     Experimenter.class));
 
                     bandBuilder
@@ -107,7 +108,7 @@ public class MeterMessageDeserializer implements OFDeserializer<MeterMessage>, D
                     // no operation
             }
 
-            bands.add(bandBuilder.setBandId(new BandId(key++)).build());
+            bands.add(bandBuilder.setBandId(new BandId(Uint32.valueOf(key++))).build());
         }
 
         return builder

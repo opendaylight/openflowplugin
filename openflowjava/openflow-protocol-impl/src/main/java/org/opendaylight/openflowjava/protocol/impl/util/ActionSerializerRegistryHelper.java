@@ -7,11 +7,14 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFGeneralSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper for registering serializers.
@@ -19,8 +22,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author michal.polkorab
  */
 public class ActionSerializerRegistryHelper {
-
-    private final short version;
+    private final Uint8 version;
     private final SerializerRegistry serializerRegistry;
 
     /**
@@ -29,8 +31,8 @@ public class ActionSerializerRegistryHelper {
      * @param version Openflow wire version
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public ActionSerializerRegistryHelper(final short version, final SerializerRegistry serializerRegistry) {
-        this.version = version;
+    public ActionSerializerRegistryHelper(final Uint8 version, final SerializerRegistry serializerRegistry) {
+        this.version = requireNonNull(version);
         this.serializerRegistry = serializerRegistry;
     }
 

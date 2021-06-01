@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
@@ -39,7 +38,7 @@ public class OF10MatchDeserializerTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, EncodeConstants.EMPTY_VALUE, MatchV10.class));
     }
 
     /**
@@ -97,5 +96,4 @@ public class OF10MatchDeserializerTest {
         Assert.assertEquals("Wrong tp-src", 20560, match.getTpSrc().shortValue());
         Assert.assertEquals("Wrong tp-dst", 8224, match.getTpDst().shortValue());
     }
-
 }

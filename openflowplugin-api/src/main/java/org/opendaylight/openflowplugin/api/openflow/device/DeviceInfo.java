@@ -7,12 +7,14 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.device;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * API defining basic device information.
@@ -35,7 +37,7 @@ public interface DeviceInfo extends XidSequencer {
      * Getter.
      * @return version
      */
-    short getVersion();
+    @NonNull Uint8 getVersion();
 
     /**
      * Getter.
@@ -57,5 +59,4 @@ public interface DeviceInfo extends XidSequencer {
     default String getLOGValue() {
         return getNodeId().getValue();
     }
-
 }

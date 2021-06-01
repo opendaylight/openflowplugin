@@ -45,7 +45,7 @@ public class GetAsyncReplyMessageFactoryTest {
     public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetAsyncOutput.class));
+        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GetAsyncOutput.class));
     }
 
     @Test
@@ -142,5 +142,4 @@ public class GetAsyncReplyMessageFactoryTest {
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 8);
         Assert.assertTrue("Unexpected data", serializedBuffer.readableBytes() == 0);
     }
-
 }

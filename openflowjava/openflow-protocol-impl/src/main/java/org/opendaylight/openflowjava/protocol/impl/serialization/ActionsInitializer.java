@@ -81,7 +81,7 @@ public final class ActionsInitializer {
     public static void registerActionSerializers(final SerializerRegistry serializerRegistry) {
         // register OF v1.0 action serializers
         ActionSerializerRegistryHelper helper = new ActionSerializerRegistryHelper(
-                EncodeConstants.OF10_VERSION_ID, serializerRegistry);
+                EncodeConstants.OF_VERSION_1_0, serializerRegistry);
         helper.registerSerializer(OutputActionCase.class, new OF10OutputActionSerializer());
         helper.registerSerializer(SetVlanVidCase.class, new OF10SetVlanVidActionSerializer());
         helper.registerSerializer(SetVlanPcpCase.class, new OF10SetVlanPcpActionSerializer());
@@ -96,7 +96,7 @@ public final class ActionsInitializer {
         helper.registerSerializer(EnqueueCase.class, new OF10EnqueueActionSerializer());
         // register OF v1.0 action serializers
         helper = new ActionSerializerRegistryHelper(
-                EncodeConstants.OF13_VERSION_ID, serializerRegistry);
+                EncodeConstants.OF_VERSION_1_3, serializerRegistry);
         helper.registerSerializer(OutputActionCase.class, new OF13OutputActionSerializer());
         helper.registerSerializer(CopyTtlOutCase.class, new EmptyActionSerializer(ActionConstants.COPY_TTL_OUT_CODE));
         helper.registerSerializer(CopyTtlInCase.class, new EmptyActionSerializer(ActionConstants.COPY_TTL_IN_CODE));

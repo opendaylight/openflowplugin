@@ -41,21 +41,21 @@ public final class FlowCreatorUtil {
         throw new AssertionError("FlowCreatorUtil is not expected to be instantiated.");
     }
 
-    public static void setWildcardedFlowMatch(final short version, final MultipartRequestFlowBuilder flowBuilder) {
-        if (version == OFConstants.OFP_VERSION_1_0) {
+    public static void setWildcardedFlowMatch(final Uint8 version, final MultipartRequestFlowBuilder flowBuilder) {
+        if (OFConstants.OFP_VERSION_1_0.equals(version)) {
             flowBuilder.setMatchV10(createWildcardedMatchV10());
         }
-        if (version == OFConstants.OFP_VERSION_1_3) {
+        if (OFConstants.OFP_VERSION_1_3.equals(version)) {
             flowBuilder.setMatch(createWildcardedMatch());
         }
     }
 
-    public static void setWildcardedFlowMatch(final short version,
+    public static void setWildcardedFlowMatch(final Uint8 version,
             final MultipartRequestAggregateBuilder aggregateBuilder) {
-        if (version == OFConstants.OFP_VERSION_1_0) {
+        if (OFConstants.OFP_VERSION_1_0.equals(version)) {
             aggregateBuilder.setMatchV10(createWildcardedMatchV10());
         }
-        if (version == OFConstants.OFP_VERSION_1_3) {
+        if (OFConstants.OFP_VERSION_1_3.equals(version)) {
             aggregateBuilder.setMatch(createWildcardedMatch());
         }
     }
@@ -98,7 +98,7 @@ public final class FlowCreatorUtil {
      * @param version  Protocol version.
      * @return {@code true} only if a flow entry can be modified.
      */
-    public static boolean canModifyFlow(final OriginalFlow original, final UpdatedFlow updated, final Short version) {
+    public static boolean canModifyFlow(final OriginalFlow original, final UpdatedFlow updated, final Uint8 version) {
         // FLOW_MOD does not change match, priority, idle_timeout, hard_timeout,
         // flags, and cookie.
         if (!Objects.equals(original.getMatch(), updated.getMatch()) || !equalsWithDefault(original.getPriority(),
@@ -113,7 +113,7 @@ public final class FlowCreatorUtil {
         }
 
         if (!Boolean.TRUE.equals(updated.getStrict()) && version != null
-                && version.shortValue() != OFConstants.OFP_VERSION_1_0) {
+                && !OFConstants.OFP_VERSION_1_0.equals(version)) {
             FlowCookie cookieMask = updated.getCookieMask();
             if (cookieMask != null) {
                 Uint64 mask = cookieMask.getValue();

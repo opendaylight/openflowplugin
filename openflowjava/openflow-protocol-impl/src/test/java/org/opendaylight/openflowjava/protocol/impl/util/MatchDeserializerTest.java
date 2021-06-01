@@ -130,8 +130,7 @@ public class MatchDeserializerTest {
         registry = new DeserializerRegistryImpl();
         registry.init();
         matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID,
-                        EncodeConstants.EMPTY_VALUE, Match.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, EncodeConstants.EMPTY_VALUE, Match.class));
     }
 
     /**
@@ -141,8 +140,7 @@ public class MatchDeserializerTest {
     public void testIpv4Address() {
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("80 00 18 04 00 01 02 03");
 
-        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                0x8000, 12);
+        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0x8000, 12);
         key.setExperimenterId(null);
         OFDeserializer<MatchEntry> entryDeserializer = registry.getDeserializer(key);
         MatchEntry entry = entryDeserializer.deserialize(buffer);
@@ -157,8 +155,7 @@ public class MatchDeserializerTest {
     public void testIpv6Address() {
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("80 00 34 10 00 00 00 01 00 02 00 03 00 04 00 05 00 06 0F 07");
 
-        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                0x8000, 26);
+        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0x8000, 26);
         key.setExperimenterId(null);
         OFDeserializer<MatchEntry> entryDeserializer = registry.getDeserializer(key);
         MatchEntry entry = entryDeserializer.deserialize(buffer);
@@ -512,8 +509,7 @@ public class MatchDeserializerTest {
     public void testHeaders() {
         ByteBuf buffer = ByteBufUtils.hexStringToByteBuf("80 00 18 04 00 01 02 03");
 
-        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                0x8000, 12);
+        MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0x8000, 12);
         key.setExperimenterId(null);
         HeaderDeserializer<MatchEntry> entryDeserializer = registry.getDeserializer(key);
         MatchEntry entry = entryDeserializer.deserializeHeader(buffer);

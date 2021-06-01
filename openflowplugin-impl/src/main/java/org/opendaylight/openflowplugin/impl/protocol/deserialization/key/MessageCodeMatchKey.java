@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.key;
 
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MessageCodeMatchKey extends MessageCodeKey {
-
     private final MatchPath matchPath;
 
     /**
@@ -22,7 +23,7 @@ public class MessageCodeMatchKey extends MessageCodeKey {
      * @param clazz     class of object that is going to be deserialized
      * @param matchPath match extension path
      */
-    public MessageCodeMatchKey(short version, int value, Class<?> clazz, MatchPath matchPath) {
+    public MessageCodeMatchKey(final Uint8 version, final int value, final Class<?> clazz, final MatchPath matchPath) {
         super(version, value, clazz);
         this.matchPath = matchPath;
     }
@@ -38,22 +39,15 @@ public class MessageCodeMatchKey extends MessageCodeKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
-            return false;
         }
         if (!(obj instanceof MessageCodeMatchKey)) {
             return false;
         }
         MessageCodeMatchKey other = (MessageCodeMatchKey) obj;
-        if (matchPath == null) {
-            if (other.matchPath != null) {
-                return false;
-            }
-        } else if (!matchPath.equals(other.matchPath)) {
+        if (!Objects.equals(matchPath, other.matchPath)) {
             return false;
         }
         return super.equals(obj);

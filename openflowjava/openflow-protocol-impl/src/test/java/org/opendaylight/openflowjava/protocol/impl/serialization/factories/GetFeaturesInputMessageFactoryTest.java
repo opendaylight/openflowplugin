@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -27,8 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public class GetFeaturesInputMessageFactoryTest {
-
     private static final byte FEATURES_REQUEST_MESSAGE_CODE_TYPE = 5;
+
     private SerializerRegistry registry;
     private OFSerializer<GetFeaturesInput> featuresFactory;
 
@@ -40,7 +39,7 @@ public class GetFeaturesInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         featuresFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetFeaturesInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GetFeaturesInput.class));
     }
 
     /**

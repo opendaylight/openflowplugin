@@ -27,7 +27,7 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
         implements DeserializerRegistryInjector {
 
     private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(
-            EncodeConstants.OF13_VERSION_ID,
+            EncodeConstants.OF_VERSION_1_3,
             EncodeConstants.EMPTY_LENGTH,
             Match.class,
             MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
@@ -35,7 +35,7 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
     private DeserializerRegistry registry;
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         final MatchEntryDeserializer deserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
         final MatchBuilder builder = new MatchBuilder();
 
@@ -54,13 +54,13 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
     }
 
     @Override
-    public Action deserializeHeader(ByteBuf message) {
+    public Action deserializeHeader(final ByteBuf message) {
         processHeader(message);
         return new SetFieldCaseBuilder().build();
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 

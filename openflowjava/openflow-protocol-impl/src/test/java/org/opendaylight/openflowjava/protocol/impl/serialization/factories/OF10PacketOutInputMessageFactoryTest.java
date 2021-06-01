@@ -50,7 +50,7 @@ public class OF10PacketOutInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         packetOutFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, PacketOutInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, PacketOutInput.class));
     }
 
     /**

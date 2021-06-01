@@ -38,7 +38,7 @@ public class OF10PacketInMessageFactoryTest {
     public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, PacketInMessage.class));
+        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, PacketInMessage.class));
     }
 
     @Test

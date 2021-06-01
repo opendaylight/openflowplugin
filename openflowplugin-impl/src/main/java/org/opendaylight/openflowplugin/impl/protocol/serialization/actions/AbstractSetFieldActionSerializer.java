@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
 import com.google.common.base.Preconditions;
@@ -21,13 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 
 public abstract class AbstractSetFieldActionSerializer extends AbstractActionSerializer<Action> implements
         SerializerRegistryInjector {
-
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(final Action input, final ByteBuf outBuffer) {
         final OFSerializer<Action> serializer = Preconditions.checkNotNull(registry)
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, SetFieldCase.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, SetFieldCase.class));
 
         serializer.serialize(buildAction(input), outBuffer);
     }
@@ -52,8 +50,7 @@ public abstract class AbstractSetFieldActionSerializer extends AbstractActionSer
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
-
 }

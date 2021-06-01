@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Output
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,10 +36,10 @@ public final class OpenflowPortsUtil {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPortsUtil.class);
 
     // TODO: deprecate this
-    private static final ImmutableBiMap<Short, ImmutableBiMap<Long, String>> VERSION_INVERSE_PORT_MAP;
+    private static final ImmutableBiMap<Uint8, ImmutableBiMap<Long, String>> VERSION_INVERSE_PORT_MAP;
 
-    private static final ImmutableBiMap<Short, ImmutableBiMap<String, Uint32>> VERSION_PORT_MAP_UINT;
-    private static final ImmutableBiMap<Short, ImmutableBiMap<Uint32, String>> VERSION_INVERSE_PORT_MAP_UINT;
+    private static final ImmutableBiMap<Uint8, ImmutableBiMap<String, Uint32>> VERSION_PORT_MAP_UINT;
+    private static final ImmutableBiMap<Uint8, ImmutableBiMap<Uint32, String>> VERSION_INVERSE_PORT_MAP_UINT;
 
     private static boolean inportWarnignAlreadyFired = false;
 
@@ -82,7 +83,7 @@ public final class OpenflowPortsUtil {
                         BinContent.intToUnsignedLong(PortNumberValues.ANY.getIntValue())) // 0xffffffff
                 .build();
 
-        VERSION_INVERSE_PORT_MAP = new ImmutableBiMap.Builder<Short, ImmutableBiMap<Long, String>>()
+        VERSION_INVERSE_PORT_MAP = new ImmutableBiMap.Builder<Uint8, ImmutableBiMap<Long, String>>()
                 .put(OFConstants.OFP_VERSION_1_0, ofv10ports.inverse())
                 .put(OFConstants.OFP_VERSION_1_3, ofv13ports.inverse())
                 .build();
@@ -92,23 +93,23 @@ public final class OpenflowPortsUtil {
         final ImmutableBiMap<String, Uint32> ofv13portsUint = ImmutableBiMap.copyOf(Maps.transformValues(ofv13ports,
             l -> Uint32.valueOf(l).intern()));
 
-        VERSION_PORT_MAP_UINT = new ImmutableBiMap.Builder<Short, ImmutableBiMap<String, Uint32>>()
+        VERSION_PORT_MAP_UINT = new ImmutableBiMap.Builder<Uint8, ImmutableBiMap<String, Uint32>>()
                 .put(OFConstants.OFP_VERSION_1_0, ofv10portsUint)
                 .put(OFConstants.OFP_VERSION_1_3, ofv13portsUint)
                 .build();
 
-        VERSION_INVERSE_PORT_MAP_UINT = new ImmutableBiMap.Builder<Short, ImmutableBiMap<Uint32, String>>()
+        VERSION_INVERSE_PORT_MAP_UINT = new ImmutableBiMap.Builder<Uint8, ImmutableBiMap<Uint32, String>>()
                 .put(OFConstants.OFP_VERSION_1_0, ofv10portsUint.inverse())
                 .put(OFConstants.OFP_VERSION_1_3, ofv13portsUint.inverse())
                 .build();
     }
 
     // TODO: deprecate and migrate
-    public static String getPortLogicalName(final short ofVersion, final Long portNumber) {
+    public static String getPortLogicalName(final Uint8 ofVersion, final Long portNumber) {
         return VERSION_INVERSE_PORT_MAP.get(ofVersion).get(portNumber);
     }
 
-    public static String getPortLogicalName(final short ofVersion, final Uint32 portNumber) {
+    public static String getPortLogicalName(final Uint8 ofVersion, final Uint32 portNumber) {
         return VERSION_INVERSE_PORT_MAP_UINT.get(ofVersion).get(portNumber);
     }
 
@@ -232,7 +233,7 @@ public final class OpenflowPortsUtil {
      * @return port number uri
      */
     // TODO: deprecate and migrate
-    public static Uri getProtocolAgnosticPortUri(final short version, final long portNumber) {
+    public static Uri getProtocolAgnosticPortUri(final Uint8 version, final long portNumber) {
         return new Uri(portNumberToString(getProtocolAgnosticPort(OpenflowVersion.get(version), portNumber)));
     }
 
@@ -243,7 +244,7 @@ public final class OpenflowPortsUtil {
      * @param portNumber port number
      * @return port number uri
      */
-    public static Uri getProtocolAgnosticPortUri(final short version, final Uint32 portNumber) {
+    public static Uri getProtocolAgnosticPortUri(final Uint8 version, final Uint32 portNumber) {
         return new Uri(portNumberToString(getProtocolAgnosticPort(OpenflowVersion.get(version), portNumber)));
     }
 }

@@ -53,8 +53,8 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractDirectStatisticsServiceTest {
     protected static final Uint32 PORT_NO = Uint32.ONE;
-    protected static final Uint64 DATAPATH_ID = Uint64.valueOf(10);
-    protected static final Uint8 OF_VERSION = Uint8.valueOf(OFConstants.OFP_VERSION_1_3);
+    protected static final Uint64 DATAPATH_ID = Uint64.TEN;
+    protected static final Uint8 OF_VERSION = OFConstants.OFP_VERSION_1_3;
     protected static final String NODE_ID = "openflow:10";
 
     @Mock
@@ -119,7 +119,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         lenient().when(deviceInfo.getNodeId()).thenReturn(new NodeId(NODE_ID));
-        when(deviceInfo.getVersion()).thenReturn(OF_VERSION.toJava());
+        when(deviceInfo.getVersion()).thenReturn(OF_VERSION);
         when(deviceInfo.getDatapathId()).thenReturn(DATAPATH_ID);
         lenient().when(getFeaturesOutput.getVersion()).thenReturn(OF_VERSION);
         lenient().when(getFeaturesOutput.getDatapathId()).thenReturn(DATAPATH_ID);

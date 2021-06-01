@@ -11,13 +11,14 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.MoreObjects.ToStringHelper;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Injection lookup key based on version and target object.
  */
 public class ConvertorKey {
 
-    private final int version;
+    private final Uint8 version;
     private final Class<?> targetClazz;
 
     /**
@@ -26,14 +27,14 @@ public class ConvertorKey {
      * @param version openflow version
      * @param targetClazz target class
      */
-    public ConvertorKey(final int version, final Class<?> targetClazz) {
-        this.version = version;
+    public ConvertorKey(final Uint8 version, final Class<?> targetClazz) {
+        this.version = requireNonNull(version);
         this.targetClazz = requireNonNull(targetClazz);
     }
 
     @Override
     public int hashCode() {
-        return 31 * version + targetClazz.hashCode();
+        return 31 * version.hashCode() + targetClazz.hashCode();
     }
 
     @Override
@@ -48,7 +49,7 @@ public class ConvertorKey {
             return false;
         }
         final ConvertorKey other = (ConvertorKey) obj;
-        return version == other.version && targetClazz.equals(other.targetClazz);
+        return version.equals(other.version) && targetClazz.equals(other.targetClazz);
     }
 
     @Override

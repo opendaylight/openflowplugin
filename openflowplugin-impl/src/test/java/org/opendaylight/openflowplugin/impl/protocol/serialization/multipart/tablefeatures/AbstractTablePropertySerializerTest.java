@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
 import static org.junit.Assert.assertEquals;
@@ -24,7 +23,7 @@ public abstract class AbstractTablePropertySerializerTest extends AbstractSerial
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, getClazz()));
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, getClazz()));
     }
 
     protected void assertProperty(final TableFeaturePropType property, final Consumer<ByteBuf> assertBody) {

@@ -220,7 +220,7 @@ public class DeviceContextImplTest {
 
         Mockito.lenient().when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.lenient().when(featuresOutput.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(contextChainHolder.getContextChain(deviceInfo)).thenReturn(contextChain);
         Mockito.when(contextChain.isMastered(ContextChainMastershipState.CHECK, false)).thenReturn(true);
 
@@ -421,7 +421,7 @@ public class DeviceContextImplTest {
         final GetFeaturesOutput mockedFeature = mock(GetFeaturesOutput.class);
         lenient().when(mockedFeature.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
 
-        lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        lenient().when(mockedPortStatusMessage.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         lenient().when(mockedPortStatusMessage.getReason()).thenReturn(PortReason.OFPPRADD);
         lenient().when(mockedPortStatusMessage.getPortNo()).thenReturn(Uint32.valueOf(42L));
         deviceContextSpy.processPortStatusMessage(mockedPortStatusMessage);

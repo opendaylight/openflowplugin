@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.writeUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -25,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.table.features.properties.container.table.feature.properties.NextTableIds;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.next.table.related.table.feature.property.NextTableIds;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartRequestFlags;
@@ -62,6 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.MultipartRequestTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.table.features._case.multipart.request.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates MultipartRequest messages.
@@ -143,17 +146,17 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
         MultipartRequestExperimenterCase expCase =
                 (MultipartRequestExperimenterCase) message.getMultipartRequestBody();
         MultipartRequestExperimenter experimenter = expCase.getMultipartRequestExperimenter();
-        final long expId = experimenter.getExperimenter().getValue().longValue();
+        final Uint32 expId = experimenter.getExperimenter().getValue();
         final long expType = experimenter.getExpType().longValue();
 
         // write experimenterId and type
-        outBuffer.writeInt((int) expId);
+        writeUint32(outBuffer, expId);
         outBuffer.writeInt((int) expType);
 
         // serialize experimenter data
         OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createMultipartRequestSerializerKey(
-                        EncodeConstants.OF13_VERSION_ID, expId, expType));
+                        EncodeConstants.OF_VERSION_1_3, expId, expType));
         serializer.serialize(experimenter.getExperimenterDataOfChoice(), outBuffer);
     }
 
@@ -196,7 +199,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
         output.writeLong(flow.getCookie().longValue());
         output.writeLong(flow.getCookieMask().longValue());
         OFSerializer<Match> serializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF13_VERSION_ID, Match.class));
+                EncodeConstants.OF_VERSION_1_3, Match.class));
         serializer.serialize(flow.getMatch(), output);
     }
 
@@ -211,7 +214,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
         output.writeLong(aggregate.getCookie().longValue());
         output.writeLong(aggregate.getCookieMask().longValue());
         OFSerializer<Match> serializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF13_VERSION_ID, Match.class));
+                EncodeConstants.OF_VERSION_1_3, Match.class));
         serializer.serialize(aggregate.getMatch(), output);
     }
 
@@ -327,7 +330,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
                 InstructionRelatedTableFeatureProperty.class).getInstruction();
         if (instructions != null) {
             TypeKeyMaker<Instruction> keyMaker = TypeKeyMakerFactory
-                    .createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                    .createInstructionKeyMaker(EncodeConstants.OF_VERSION_1_3);
             ListSerializer.serializeHeaderList(instructions, keyMaker, registry, output);
         }
         int length = output.writerIndex() - startIndex;
@@ -371,7 +374,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
         List<Action> actions = property.augmentation(ActionRelatedTableFeatureProperty.class).getAction();
         if (actions != null) {
             TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory
-                    .createActionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                    .createActionKeyMaker(EncodeConstants.OF_VERSION_1_3);
             ListSerializer.serializeHeaderList(actions, keyMaker, registry, output);
         }
         int length = output.writerIndex() - startIndex;
@@ -388,7 +391,7 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
         List<MatchEntry> entries = property.augmentation(OxmRelatedTableFeatureProperty.class).getMatchEntry();
         if (entries != null) {
             TypeKeyMaker<MatchEntry> keyMaker = TypeKeyMakerFactory
-                    .createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                    .createMatchEntriesKeyMaker(EncodeConstants.OF_VERSION_1_3);
             ListSerializer.serializeHeaderList(entries, keyMaker, registry, output);
         }
         int length = output.writerIndex() - startIndex;
@@ -398,11 +401,10 @@ public class MultipartRequestInputFactory implements OFSerializer<MultipartReque
 
     private void writeExperimenterRelatedTableProperty(final ByteBuf output,
             final TableFeatureProperties property) {
-        long expId = property.augmentation(ExperimenterIdTableFeatureProperty.class).getExperimenter().getValue()
-            .toJava();
+        Uint32 expId = property.augmentation(ExperimenterIdTableFeatureProperty.class).getExperimenter().getValue();
         OFSerializer<TableFeatureProperties> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createMultipartRequestTFSerializerKey(
-                        EncodeConstants.OF13_VERSION_ID, expId));
+                        EncodeConstants.OF_VERSION_1_3, expId));
         serializer.serialize(property, output);
     }
 

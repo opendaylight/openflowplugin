@@ -95,7 +95,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
             return null;
         };
 
-        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(rqContextStack.createRequestContext()).thenReturn(rqContext);
         Mockito.lenient().when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);

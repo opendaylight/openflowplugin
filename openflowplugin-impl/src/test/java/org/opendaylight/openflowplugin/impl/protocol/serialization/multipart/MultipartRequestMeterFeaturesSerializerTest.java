@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
 import static org.junit.Assert.assertEquals;
@@ -20,14 +19,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.request.multipart.request.body.MultipartRequestMeterFeaturesBuilder;
 
 public class MultipartRequestMeterFeaturesSerializerTest extends AbstractSerializerTest {
-    private static final MultipartRequestMeterFeatures BODY = new MultipartRequestMeterFeaturesBuilder()
-            .build();
+    private static final MultipartRequestMeterFeatures BODY = new MultipartRequestMeterFeaturesBuilder().build();
 
     private MultipartRequestMeterFeaturesSerializer serializer;
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID,
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3,
                 MultipartRequestMeterFeatures.class)) ;
     }
 
@@ -37,5 +35,4 @@ public class MultipartRequestMeterFeaturesSerializerTest extends AbstractSeriali
         serializer.serialize(BODY, out);
         assertEquals(out.readableBytes(), 0);
     }
-
 }

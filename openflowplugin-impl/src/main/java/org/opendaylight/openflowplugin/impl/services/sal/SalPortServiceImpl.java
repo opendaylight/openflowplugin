@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalP
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
-import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class SalPortServiceImpl
         extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
@@ -55,7 +54,7 @@ public final class SalPortServiceImpl
             .convert(getPortFromInput(input), data);
 
         final PortModInputBuilder mdInput = new PortModInputBuilder(ofPortModInput
-                .orElse(PortConvertor.defaultResult(Uint8.valueOf(getVersion()))))
+                .orElse(PortConvertor.defaultResult(getVersion())))
                 .setXid(xid.getValue());
 
         return mdInput.build();

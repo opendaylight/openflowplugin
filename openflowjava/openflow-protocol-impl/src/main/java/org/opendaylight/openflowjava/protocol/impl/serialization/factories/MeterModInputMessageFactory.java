@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.dscp.remark._case.MeterBandDscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,17 +88,17 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
                     ExperimenterIdMeterBand expIdMeterBand =
                             experimenterBand.augmentation(ExperimenterIdMeterBand.class);
                     if (expIdMeterBand != null) {
-                        long expId = expIdMeterBand.getExperimenter().getValue().toJava();
+                        Uint32 expId = expIdMeterBand.getExperimenter().getValue();
                         Class<? extends ExperimenterMeterBandSubType> meterBandSubType = expIdMeterBand.getSubType();
                         try {
                             OFSerializer<MeterBandExperimenterCase> serializer = registry.getSerializer(
                                     ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                                            EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType));
+                                            EncodeConstants.OF_VERSION_1_3, expId, meterBandSubType));
                             serializer.serialize(experimenterBandCase, outBuffer);
                         } catch (final IllegalStateException e) {
                             LOG.warn("Serializer for key: {} wasn't found",
                                     ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(
-                                    EncodeConstants.OF13_VERSION_ID, expId, meterBandSubType));
+                                    EncodeConstants.OF_VERSION_1_3, expId, meterBandSubType));
                         }
                     }
                 }

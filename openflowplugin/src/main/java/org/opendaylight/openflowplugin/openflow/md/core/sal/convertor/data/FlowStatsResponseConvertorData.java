@@ -5,15 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowStatsResponseConvertorData extends VersionDatapathIdConvertorData {
     private MatchPath matchPath;
 
-    public FlowStatsResponseConvertorData(short version) {
+    public FlowStatsResponseConvertorData(final Uint8 version) {
         super(version);
     }
 
@@ -21,7 +21,7 @@ public class FlowStatsResponseConvertorData extends VersionDatapathIdConvertorDa
         return matchPath;
     }
 
-    public void setMatchPath(MatchPath matchPath) {
+    public void setMatchPath(final MatchPath matchPath) {
         this.matchPath = matchPath;
     }
 }

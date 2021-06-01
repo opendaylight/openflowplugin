@@ -51,7 +51,7 @@ public class OF10StatsRequestAggregateTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         statsFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, MultipartRequestInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, MultipartRequestInput.class));
     }
 
     /**

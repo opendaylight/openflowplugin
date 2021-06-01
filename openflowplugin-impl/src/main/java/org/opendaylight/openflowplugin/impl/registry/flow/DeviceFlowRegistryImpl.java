@@ -62,7 +62,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final Consumer<Flow> flowConsumer;
     private final DataBroker dataBroker;
 
-    public DeviceFlowRegistryImpl(final short version, final DataBroker dataBroker,
+    public DeviceFlowRegistryImpl(final Uint8 version, final DataBroker dataBroker,
             final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier,
             final FlowGroupInfoHistoryAppender history) {
         this.dataBroker = requireNonNull(dataBroker);

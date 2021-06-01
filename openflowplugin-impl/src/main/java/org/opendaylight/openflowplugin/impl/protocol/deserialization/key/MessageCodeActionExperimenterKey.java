@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.key;
 
+import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.MessageCodeExperimenterKey;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MessageCodeActionExperimenterKey extends MessageCodeExperimenterKey {
 
@@ -22,8 +24,8 @@ public class MessageCodeActionExperimenterKey extends MessageCodeExperimenterKey
      * @param clazz          class of object that is going to be deserialized
      * @param experimenterId experimenter id
      */
-    public MessageCodeActionExperimenterKey(short version, int value, Class<?> clazz, ActionPath actionPath, Long
-            experimenterId) {
+    public MessageCodeActionExperimenterKey(final Uint8 version, final int value, final Class<?> clazz,
+            final ActionPath actionPath, final Long experimenterId) {
         super(version, value, clazz, experimenterId);
         this.actionPath = actionPath;
     }
@@ -39,27 +41,15 @@ public class MessageCodeActionExperimenterKey extends MessageCodeExperimenterKey
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
-            return false;
         }
         if (!(obj instanceof MessageCodeActionExperimenterKey)) {
             return false;
         }
         MessageCodeActionExperimenterKey other = (MessageCodeActionExperimenterKey) obj;
-
-        if (actionPath == null) {
-            if (other.actionPath != null) {
-                return false;
-            }
-        } else if (!actionPath.equals(other.actionPath)) {
-            return false;
-        }
-
-        return super.equals(obj);
+        return Objects.equals(actionPath, other.actionPath) && super.equals(obj);
     }
 
     @Override

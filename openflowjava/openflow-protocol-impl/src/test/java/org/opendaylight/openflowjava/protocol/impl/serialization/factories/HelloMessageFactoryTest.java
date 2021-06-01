@@ -33,7 +33,7 @@ public class HelloMessageFactoryTest {
     public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, HelloMessage.class));
+        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, HelloMessage.class));
     }
 
     @Test
@@ -46,5 +46,4 @@ public class HelloMessageFactoryTest {
         factory.serialize(message, serializedBuffer);
         BufferHelper.checkHeaderV13(serializedBuffer, MESSAGE_TYPE, 8);
     }
-
 }

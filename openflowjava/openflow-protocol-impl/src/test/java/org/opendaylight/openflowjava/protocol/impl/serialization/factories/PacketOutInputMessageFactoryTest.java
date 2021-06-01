@@ -53,7 +53,7 @@ public class PacketOutInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         packetOutFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PacketOutInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, PacketOutInput.class));
     }
 
     /**

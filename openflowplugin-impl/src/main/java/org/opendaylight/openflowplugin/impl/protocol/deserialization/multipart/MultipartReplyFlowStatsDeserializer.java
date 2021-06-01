@@ -44,7 +44,7 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
 
-    private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
+    private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF_VERSION_1_3,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
 
@@ -101,7 +101,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     instructions.add(new InstructionBuilder()
                             .setOrder(offset)
                             .setInstruction(InstructionUtil
-                                    .readInstruction(EncodeConstants.OF13_VERSION_ID, itemMessage, registry))
+                                    .readInstruction(EncodeConstants.OF_VERSION_1_3, itemMessage, registry))
                             .build());
 
                     offset++;

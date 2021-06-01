@@ -31,19 +31,19 @@ public class OF10FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMe
     private static final byte PADDING = 1;
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(FlowRemovedMessage message, ByteBuf outBuffer) {
+    public void serialize(final FlowRemovedMessage message, final ByteBuf outBuffer) {
         Objects.requireNonNull(registry);
 
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
 
         OFSerializer<MatchV10> matchSerializer = registry
-                .getSerializer(new MessageTypeKey<>(message.getVersion().toJava(), MatchV10.class));
+                .getSerializer(new MessageTypeKey<>(message.getVersion(), MatchV10.class));
 
         matchSerializer.serialize(message.getMatchV10(), outBuffer);
 
@@ -60,5 +60,4 @@ public class OF10FlowRemovedMessageFactory implements OFSerializer<FlowRemovedMe
         outBuffer.writeLong(message.getByteCount().longValue());
         ByteBufUtils.updateOFHeaderLength(outBuffer);
     }
-
 }

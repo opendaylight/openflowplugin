@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
 import com.google.common.base.Preconditions;
@@ -32,9 +31,7 @@ public class ApplySetfieldMissTablePropertySerializer extends
             .nonnullSetFieldMatch().values()
             .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
-                    new MessageTypeKey<>(
-                        EncodeConstants.OF13_VERSION_ID,
-                        setFieldMatch.getMatchType()))
+                    new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, setFieldMatch.getMatchType()))
                 .serialize(setFieldMatch, byteBuf));
     }
 
@@ -52,5 +49,4 @@ public class ApplySetfieldMissTablePropertySerializer extends
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
-
 }

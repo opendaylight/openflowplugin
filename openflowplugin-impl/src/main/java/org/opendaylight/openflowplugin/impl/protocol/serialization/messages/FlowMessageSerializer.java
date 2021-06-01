@@ -162,8 +162,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private void writeMatch(final FlowMessage message, final ByteBuf outBuffer) {
         requireNonNull(registry).<Match, OFSerializer<Match>>getSerializer(
-                new MessageTypeKey<>(message.getVersion().toJava(), Match.class)).serialize(message.getMatch(),
-                    outBuffer);
+                new MessageTypeKey<>(message.getVersion(), Match.class)).serialize(message.getMatch(), outBuffer);
     }
 
     /**
@@ -193,7 +192,7 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         }
 
         // ... and serialize them
-        flowInstructions.forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF13_VERSION_ID, registry,
+        flowInstructions.forEach(i -> InstructionUtil.writeInstruction(i, EncodeConstants.OF_VERSION_1_3, registry,
             outBuffer));
     }
 

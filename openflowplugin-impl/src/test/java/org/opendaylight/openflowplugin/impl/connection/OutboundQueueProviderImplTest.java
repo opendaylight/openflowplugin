@@ -41,7 +41,7 @@ public class OutboundQueueProviderImplTest extends TestCase {
 
     @Test
     public void testCreateBarrierRequest() {
-        final BarrierInput barrierRequest = outboundQueueProvider.createBarrierRequest(DUMMY_XID.toJava());
+        final BarrierInput barrierRequest = outboundQueueProvider.createBarrierRequest(DUMMY_XID);
         assertNotNull(barrierRequest);
         assertEquals(OFConstants.OFP_VERSION_1_3, barrierRequest.getVersion().toJava());
         assertEquals(DUMMY_XID, barrierRequest.getXid());

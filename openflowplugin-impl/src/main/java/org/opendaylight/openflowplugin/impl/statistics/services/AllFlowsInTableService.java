@@ -29,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAllFlowStatisticsFromFlowTableInput,
         GetAllFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
@@ -37,8 +38,8 @@ public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAll
 
     public AllFlowsInTableService(final RequestContextStack requestContextStack,
                                   final DeviceContext deviceContext,
-                                  AtomicLong compatibilityXidSeed,
-                                  ConvertorExecutor convertorExecutor) {
+                                  final AtomicLong compatibilityXidSeed,
+                                  final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
@@ -53,7 +54,7 @@ public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAll
         mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
         mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
-        final short version = getVersion();
+        final Uint8 version = getVersion();
         FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
 
         final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
@@ -68,14 +69,14 @@ public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAll
     }
 
     @Override
-    public GetAllFlowStatisticsFromFlowTableOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetAllFlowStatisticsFromFlowTableOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetAllFlowStatisticsFromFlowTableOutputBuilder()
                 .setTransactionId(emulatedTxId)
                 .build();
     }
 
     @Override
-    public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> mpResult, TransactionId emulatedTxId) {
+    public FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult, final TransactionId emulatedTxId) {
         return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult,
                                                                                getDeviceInfo(),
                                                                                getOfVersion(),
