@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.dscp.remark._case.MeterBandDscpRemarkBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates MeterModInput messages.
@@ -88,11 +89,11 @@ public class MeterModInputMessageFactory implements OFDeserializer<MeterModInput
                         .build());
                     break;
                 case 0xFFFF:
-                    long expId = rawMessage.getUnsignedInt(rawMessage.readerIndex() + 2 * Integer.BYTES);
+                    Uint32 expId = Uint32.fromIntBits(rawMessage.getInt(rawMessage.readerIndex() + 2 * Integer.BYTES));
                     rawMessage.readerIndex(bandStartIndex);
                     OFDeserializer<MeterBandExperimenterCase> deserializer = registry
                             .getDeserializer(ExperimenterDeserializerKeyFactory
-                                    .createMeterBandDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId));
+                                    .createMeterBandDeserializerKey(EncodeConstants.OF_VERSION_1_3, expId));
                     bandsBuilder.setMeterBand(deserializer.deserialize(rawMessage));
                     break;
                 default:

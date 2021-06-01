@@ -37,7 +37,7 @@ public class OF10StatsRequestInputDescFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 16, MultipartRequestInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 16, MultipartRequestInput.class));
     }
 
     @Test

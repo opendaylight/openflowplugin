@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Table
 
 public class PacketInMessageDeserializer implements OFDeserializer<PacketInMessage>, DeserializerRegistryInjector {
     private static final byte PADDING_IN_PACKET_IN_HEADER = 2;
-    private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF13_VERSION_ID,
+    private static final MessageCodeKey MATCH_KEY = new MessageCodeMatchKey(EncodeConstants.OF_VERSION_1_3,
             EncodeConstants.EMPTY_VALUE, Match.class,
             MatchPath.PACKET_IN_MESSAGE_MATCH);
 

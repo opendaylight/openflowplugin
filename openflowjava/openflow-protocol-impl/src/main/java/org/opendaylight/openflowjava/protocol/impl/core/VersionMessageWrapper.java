@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import static java.util.Objects.requireNonNull;
 
 import io.netty.buffer.ByteBuf;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Wraps received messages (includes version).
@@ -17,7 +18,7 @@ import io.netty.buffer.ByteBuf;
  * @author michal.polkorab
  */
 public class VersionMessageWrapper {
-    private final short version;
+    private final Uint8 version;
     private final ByteBuf messageBuffer;
 
     /**
@@ -26,8 +27,8 @@ public class VersionMessageWrapper {
      * @param version version decoded in {@link OFVersionDetector}
      * @param messageBuffer message received from {@link OFFrameDecoder}
      */
-    public VersionMessageWrapper(final short version, final ByteBuf messageBuffer) {
-        this.version = version;
+    public VersionMessageWrapper(final Uint8 version, final ByteBuf messageBuffer) {
+        this.version = requireNonNull(version);
         this.messageBuffer = requireNonNull(messageBuffer);
     }
 
@@ -36,7 +37,7 @@ public class VersionMessageWrapper {
      *
      * @return the version version decoded in {@link OFVersionDetector}
      */
-    public short getVersion() {
+    public Uint8 getVersion() {
         return version;
     }
 

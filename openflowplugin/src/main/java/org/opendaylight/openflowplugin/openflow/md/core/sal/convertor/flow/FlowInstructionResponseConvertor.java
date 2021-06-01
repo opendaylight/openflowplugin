@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +41,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.MeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.WriteActionsCase;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Converts Openflow 1.3+ specific instructions to MD-SAL format flow instruction.
@@ -70,11 +71,10 @@ public final class FlowInstructionResponseConvertor extends Convertor<
     }
 
     @Override
-    public Instructions convert(List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
-            .rev130731.instructions.grouping.Instruction> source, VersionConvertorData data) {
-        InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
+    public Instructions convert(final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
+            .rev130731.instructions.grouping.Instruction> source, final VersionConvertorData data) {
 
-        List<Instruction> salInstructionList = new ArrayList<>();
+        BindingMap.Builder<InstructionKey, Instruction> salInstructionList = BindingMap.builder();
         int instructionTreeNodekey = 0;
         org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction salInstruction;
 
@@ -93,7 +93,7 @@ public final class FlowInstructionResponseConvertor extends Convertor<
                         actionsInstruction.getApplyActions().getAction(), actionResponseConvertorData);
 
                 applyActionsBuilder.setAction(FlowConvertorUtil.wrapActionList(
-                        actions.orElse(Collections.emptyList())));
+                        actions.orElse(List.of())));
                 applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
                 salInstruction = applyActionsCaseBuilder.build();
             } else if (switchInst.getInstructionChoice() instanceof org.opendaylight.yang.gen.v1.urn.opendaylight
@@ -143,10 +143,10 @@ public final class FlowInstructionResponseConvertor extends Convertor<
                                 .getInstructionChoice();
                 WriteMetadataCaseBuilder writeMetadataCaseBuilder = new WriteMetadataCaseBuilder();
                 WriteMetadataBuilder writeMetadataBuilder = new WriteMetadataBuilder();
-                writeMetadataBuilder.setMetadata(new BigInteger(OFConstants.SIGNUM_UNSIGNED,
-                        writeMetadataCase.getWriteMetadata().getMetadata()));
-                writeMetadataBuilder.setMetadataMask(new BigInteger(OFConstants.SIGNUM_UNSIGNED,
-                        writeMetadataCase.getWriteMetadata().getMetadataMask()));
+                writeMetadataBuilder.setMetadata(Uint64.valueOf(new BigInteger(OFConstants.SIGNUM_UNSIGNED,
+                        writeMetadataCase.getWriteMetadata().getMetadata())));
+                writeMetadataBuilder.setMetadataMask(Uint64.valueOf(new BigInteger(OFConstants.SIGNUM_UNSIGNED,
+                        writeMetadataCase.getWriteMetadata().getMetadataMask())));
                 writeMetadataCaseBuilder.setWriteMetadata(writeMetadataBuilder.build());
                 salInstruction = writeMetadataCaseBuilder.build();
             } else {
@@ -162,7 +162,8 @@ public final class FlowInstructionResponseConvertor extends Convertor<
 
         }
 
-        instructionsBuilder.setInstruction(salInstructionList);
-        return instructionsBuilder.build();
+        return new InstructionsBuilder()
+            .setInstruction(salInstructionList.build())
+            .build();
     }
 }

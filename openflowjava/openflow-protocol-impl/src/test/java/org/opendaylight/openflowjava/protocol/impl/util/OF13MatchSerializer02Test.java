@@ -177,8 +177,7 @@ public class OF13MatchSerializer02Test {
     public void startUp() {
         registry = new SerializerRegistryImpl();
         registry.init();
-        matchSerializer = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Match.class));
+        matchSerializer = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Match.class));
     }
 
     /**

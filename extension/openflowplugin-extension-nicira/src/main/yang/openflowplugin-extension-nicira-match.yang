@@ -527,7 +527,7 @@ module openflowplugin-extension-nicira-match {
         uses all-matches-grouping;
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "nx-aug-match-nodes-node-table-flow";
+        ext:augment-identifier "nx-aug-match-notif-update-flow-stats";
         uses all-matches-grouping;
     }
     augment "/odl-direct-stats:get-flow-statistics/odl-direct-stats:output/odl-direct-stats:flow-and-statistics-map-list/odl-direct-stats:match/ext-gen:extension-list/ext-gen:extension" {

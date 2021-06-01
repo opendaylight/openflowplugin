@@ -120,8 +120,7 @@ public class FlowMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.setShort(instructionLengthIndex, buffer.writerIndex() - instructionStartIndex);
 
         // Deserialize and check everything
-        final FlowMessage message = (FlowMessage) getFactory()
-            .deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+        final FlowMessage message = (FlowMessage) getFactory().deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(XID, message.getXid().intValue());
         assertEquals(COMMAND.getIntValue(), message.getCommand().getIntValue());

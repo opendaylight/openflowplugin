@@ -9,7 +9,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -20,20 +19,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.nw.tos._case.SetNwTosActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SalToOfSetNwTosActionV10Case extends ConvertorCase<SetNwTosActionCase, Action, ActionConvertorData> {
     public SalToOfSetNwTosActionV10Case() {
         super(SetNwTosActionCase.class, true, OFConstants.OFP_VERSION_1_0);
     }
 
-    @NonNull
     @Override
-    public Optional<Action> process(@NonNull final SetNwTosActionCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<Action> process(final SetNwTosActionCase source, final ActionConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         SetNwTosAction setnwtosaction = source.getSetNwTosAction();
         SetNwTosActionBuilder setNwTosActionBuilder = new SetNwTosActionBuilder();
         SetNwTosCaseBuilder setNwTosCaseBuilder = new SetNwTosCaseBuilder();
-        setNwTosActionBuilder.setNwTos(setnwtosaction.getTos().shortValue());
+        setNwTosActionBuilder.setNwTos(Uint8.valueOf(setnwtosaction.getTos()));
         setNwTosCaseBuilder.setSetNwTosAction(setNwTosActionBuilder.build());
 
         return Optional.of(new ActionBuilder()

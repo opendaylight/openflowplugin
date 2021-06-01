@@ -7,14 +7,18 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Objects;
+import org.opendaylight.yangtools.yang.common.Uint8;
+
 /**
  * Key for a message code.
  *
  * @author michal.polkorab
  */
 public class MessageCodeKey {
-
-    private final short msgVersion;
+    private final Uint8 msgVersion;
     private final int msgType;
     private final Class<?> clazz;
 
@@ -25,8 +29,8 @@ public class MessageCodeKey {
      * @param value used as distinguisher (read from binary data / buffer)
      * @param clazz class of object that is going to be deserialized
      */
-    public MessageCodeKey(short version, int value, Class<?> clazz) {
-        this.msgVersion = version;
+    public MessageCodeKey(final Uint8 version, final int value, final Class<?> clazz) {
+        this.msgVersion = requireNonNull(version);
         this.msgType = value;
         this.clazz = clazz;
     }
@@ -45,36 +49,20 @@ public class MessageCodeKey {
         int result = 1;
         result = prime * result + (clazz == null ? 0 : clazz.hashCode());
         result = prime * result + msgType;
-        result = prime * result + msgVersion;
+        result = prime * result + msgVersion.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
-            return false;
         }
         if (!(obj instanceof MessageCodeKey)) {
             return false;
         }
         MessageCodeKey other = (MessageCodeKey) obj;
-        if (clazz == null) {
-            if (other.clazz != null) {
-                return false;
-            }
-        } else if (!clazz.equals(other.clazz)) {
-            return false;
-        }
-        if (msgType != other.msgType) {
-            return false;
-        }
-        if (msgVersion != other.msgVersion) {
-            return false;
-        }
-        return true;
+        return Objects.equals(clazz, other.clazz) && msgType == other.msgType && msgVersion.equals(other.msgVersion);
     }
 
     @Override

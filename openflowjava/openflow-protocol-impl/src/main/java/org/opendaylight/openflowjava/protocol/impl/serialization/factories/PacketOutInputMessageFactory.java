@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -32,7 +31,7 @@ public class PacketOutInputMessageFactory implements OFSerializer<PacketOutInput
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(PacketOutInput message, ByteBuf outBuffer) {
+    public void serialize(final PacketOutInput message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeInt(message.getInPort().getValue().intValue());
@@ -41,7 +40,7 @@ public class PacketOutInputMessageFactory implements OFSerializer<PacketOutInput
         outBuffer.writeZero(PADDING_IN_PACKET_OUT_MESSAGE);
         int actionsStartIndex = outBuffer.writerIndex();
         ListSerializer.serializeList(message.getAction(), TypeKeyMakerFactory
-                .createActionKeyMaker(EncodeConstants.OF13_VERSION_ID), registry, outBuffer);
+                .createActionKeyMaker(EncodeConstants.OF_VERSION_1_3), registry, outBuffer);
         outBuffer.setShort(actionsLengthIndex, outBuffer.writerIndex() - actionsStartIndex);
         byte[] data = message.getData();
         if (data != null) {
@@ -51,8 +50,7 @@ public class PacketOutInputMessageFactory implements OFSerializer<PacketOutInput
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
-
 }

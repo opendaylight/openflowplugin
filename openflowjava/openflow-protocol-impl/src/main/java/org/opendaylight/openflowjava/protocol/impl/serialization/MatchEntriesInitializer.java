@@ -110,11 +110,11 @@ public final class MatchEntriesInitializer {
      * Registers match entry serializers into provided registry.
      * @param serializerRegistry registry to be initialized with match entry serializers
      */
-    public static void registerMatchEntrySerializers(SerializerRegistry serializerRegistry) {
+    public static void registerMatchEntrySerializers(final SerializerRegistry serializerRegistry) {
         // register OF v1.3 OpenflowBasicClass match entry serializers
         Class<OpenflowBasicClass> oxmClass = OpenflowBasicClass.class;
         MatchEntrySerializerRegistryHelper<OpenflowBasicClass> helper =
-                new MatchEntrySerializerRegistryHelper<>(EncodeConstants.OF13_VERSION_ID,
+                new MatchEntrySerializerRegistryHelper<>(EncodeConstants.OF_VERSION_1_3,
                         oxmClass, serializerRegistry);
         helper.registerSerializer(InPort.class, new OxmInPortSerializer());
         helper.registerSerializer(InPhyPort.class, new OxmInPhyPortSerializer());

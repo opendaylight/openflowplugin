@@ -14,11 +14,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.NxExpMatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NshMdtypeCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NshMdtypeCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsh.mdtype.grouping.NshMdtypeValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsh.mdtype.grouping.NshMdtypeValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshMdtypeCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshMdtypeCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NshMdtypeCodecTest {
@@ -54,12 +54,12 @@ public class NshMdtypeCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private static NxExpMatchEntryValue createMatchEntryValue(Uint8 value) {
+    private static NxExpMatchEntryValue createMatchEntryValue(final Uint8 value) {
         NshMdtypeValues nshMdtypeValues = new NshMdtypeValuesBuilder().setValue(value).build();
         return new NshMdtypeCaseValueBuilder().setNshMdtypeValues(nshMdtypeValues).build();
     }
 
-    private static void writeBuffer(ByteBuf message, Uint8 value) {
+    private static void writeBuffer(final ByteBuf message, final Uint8 value) {
         message.writeByte(value.intValue());
     }
 }

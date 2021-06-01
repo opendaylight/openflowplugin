@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
 import java.util.Optional;
@@ -18,8 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Eric
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.Icmpv6NdReserved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.icmpv6.nd.reserved.grouping.Icmpv6NdReservedValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdReservedCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdReservedCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.ofj.aug.eric.match.reserved.Icmpv6NdReservedCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.ofj.aug.eric.match.reserved.Icmpv6NdReservedCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNodesNodeTableFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNotifPacketIn;
@@ -46,7 +45,7 @@ public class Icmpv6NDReservedConvertor implements ConvertorToOFJava<MatchEntry>,
         ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         Icmpv6NdReservedCaseValue icmpv6NdReservedCaseValue = (Icmpv6NdReservedCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(
                 icmpv6NdReservedCaseValue.getIcmpv6NdReservedValues().getIcmpv6NdReserved()).build(), path,
@@ -54,7 +53,7 @@ public class Icmpv6NDReservedConvertor implements ConvertorToOFJava<MatchEntry>,
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<EricOfIcmpv6NdReservedGrouping> matchGrouping
                 = MatchUtil.ICMPV6_ND_RESERVED_RESOLVER.getExtension(extension);
         if (!matchGrouping.isPresent()) {
@@ -68,8 +67,8 @@ public class Icmpv6NDReservedConvertor implements ConvertorToOFJava<MatchEntry>,
                 icmpv6NdReservedCaseValueBuilder.build()).build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(EricOfIcmpv6NdReserved value,
-            MatchPath path, Class<? extends ExtensionKey> key) {
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
+            final EricOfIcmpv6NdReserved value, final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
@@ -90,5 +89,4 @@ public class Icmpv6NDReservedConvertor implements ConvertorToOFJava<MatchEntry>,
                 throw new CodecPreconditionException(path);
         }
     }
-
 }

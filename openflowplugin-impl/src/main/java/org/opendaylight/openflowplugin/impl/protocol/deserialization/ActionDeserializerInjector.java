@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import java.util.function.Consumer;
@@ -32,6 +31,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetM
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetNwTtlActionDeserializer;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.action.SetQueueActionDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class ActionDeserializerInjector {
 
@@ -47,7 +47,7 @@ public final class ActionDeserializerInjector {
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
         // Inject new message deserializers here using injector created by createInjector method
         final Function<Byte, Consumer<OFDeserializer<Action>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(ActionConstants.COPY_TTL_IN_CODE).accept(new CopyTtlInActionDeserializer());
         injector.apply(ActionConstants.COPY_TTL_OUT_CODE).accept(new CopyTtlOutActionDeserializer());
@@ -76,11 +76,9 @@ public final class ActionDeserializerInjector {
      * @return injector
      */
     private static Function<Byte, Consumer<OFDeserializer<Action>>> createInjector(
-            final DeserializerExtensionProvider provider,
-            final short version) {
+            final DeserializerExtensionProvider provider, final Uint8 version) {
         return code -> deserializer -> provider.registerDeserializer(
                 new MessageCodeExperimenterKey(version, code, Action.class, null),
                 deserializer);
     }
-
 }

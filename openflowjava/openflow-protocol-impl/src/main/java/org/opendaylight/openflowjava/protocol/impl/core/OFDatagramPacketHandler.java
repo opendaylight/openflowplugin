@@ -5,8 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
+
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -20,6 +21,7 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAda
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionFacade;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,7 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
     private static final byte LENGTH_INDEX_IN_HEADER = 2;
     private final ConnectionAdapterFactory adapterFactory = new ConnectionAdapterFactoryImpl();
     private final SwitchConnectionHandler connectionHandler;
-    private int channelOutboundQueueSize;
+    private final int channelOutboundQueueSize;
 
     /**
      * Default constructor.
@@ -46,21 +48,21 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
      * @param channelOutboundQueueSize the queue size is made configurable
      */
 
-    public OFDatagramPacketHandler(SwitchConnectionHandler sch, int channelOutboundQueueSize) {
+    public OFDatagramPacketHandler(final SwitchConnectionHandler sch, final int channelOutboundQueueSize) {
         this.connectionHandler = sch;
         this.channelOutboundQueueSize = channelOutboundQueueSize;
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
         LOG.warn("Unexpected exception from downstream.", cause);
         LOG.warn("Closing connection.");
         ctx.close();
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, DatagramPacket msg,
-           List<Object> out) {
+    protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg,
+           final List<Object> out) {
         LOG.debug("OFDatagramPacketFramer");
         MessageConsumer consumer = UdpConnectionMap.getMessageConsumer(msg.sender());
         if (consumer == null) {
@@ -94,8 +96,8 @@ public class OFDatagramPacketHandler extends MessageToMessageDecoder<DatagramPac
         LOG.debug("OF Protocol message received, type:{}", bb.getByte(bb.readerIndex() + 1));
 
 
-        byte version = bb.readByte();
-        if (version == EncodeConstants.OF13_VERSION_ID || version == EncodeConstants.OF10_VERSION_ID) {
+        final Uint8 version = readUint8(bb);
+        if (EncodeConstants.OF_VERSION_1_3.equals(version) || EncodeConstants.OF_VERSION_1_0.equals(version)) {
             LOG.debug("detected version: {}", version);
             ByteBuf messageBuffer = bb.slice();
             out.add(new VersionMessageUdpWrapper(version, messageBuffer, msg.sender()));

@@ -5,9 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
@@ -17,7 +17,6 @@ import java.util.concurrent.Future;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -75,7 +74,6 @@ public class SalAsyncConfigServiceImplTest extends ServiceMocking {
         Assert.assertTrue(getAsyncResult.isDone());
         Assert.assertTrue(getAsyncResult.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
-        verify(mockedOutboundQueue).commitEntry(eq(ServiceMocking.DUMMY_XID_VALUE.toJava()),
-                ArgumentMatchers.any(), ArgumentMatchers.any());
+        verify(mockedOutboundQueue).commitEntry(eq(ServiceMocking.DUMMY_XID_VALUE), any(), any());
     }
 }

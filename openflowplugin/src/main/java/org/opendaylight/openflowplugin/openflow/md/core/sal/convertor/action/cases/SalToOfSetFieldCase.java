@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -20,17 +18,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.set.field._case.SetFieldActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SalToOfSetFieldCase extends ConvertorCase<SetFieldCase, Action, ActionConvertorData> {
     public SalToOfSetFieldCase() {
         super(SetFieldCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
-    public Optional<Action> process(@NonNull final SetFieldCase source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
-        final short version = data.getVersion();
+    public Optional<Action> process(final SetFieldCase source, final ActionConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
+        final Uint8 version = data.getVersion();
         final SetFieldActionBuilder setFieldBuilder = new SetFieldActionBuilder();
 
         // convert and inject match

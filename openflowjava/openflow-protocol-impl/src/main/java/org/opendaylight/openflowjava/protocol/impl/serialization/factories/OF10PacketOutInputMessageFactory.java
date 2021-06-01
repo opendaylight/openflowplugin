@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -24,12 +23,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author michal.polkorab
  */
 public class OF10PacketOutInputMessageFactory implements OFSerializer<PacketOutInput>, SerializerRegistryInjector {
-
     private static final byte MESSAGE_TYPE = 13;
+
     private SerializerRegistry registry;
 
     @Override
-    public void serialize(PacketOutInput message, ByteBuf outBuffer) {
+    public void serialize(final PacketOutInput message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getBufferId().intValue());
         outBuffer.writeShort(message.getInPort().getValue().intValue());
@@ -37,7 +36,7 @@ public class OF10PacketOutInputMessageFactory implements OFSerializer<PacketOutI
         outBuffer.writeShort(EncodeConstants.EMPTY_LENGTH);
         int actionsStartIndex = outBuffer.writerIndex();
         ListSerializer.serializeList(message.getAction(), TypeKeyMakerFactory
-                .createActionKeyMaker(EncodeConstants.OF10_VERSION_ID), registry, outBuffer);
+                .createActionKeyMaker(EncodeConstants.OF_VERSION_1_0), registry, outBuffer);
         outBuffer.setShort(actionsLengthIndex, outBuffer.writerIndex() - actionsStartIndex);
         byte[] data = message.getData();
         if (data != null) {
@@ -47,8 +46,7 @@ public class OF10PacketOutInputMessageFactory implements OFSerializer<PacketOutI
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
-
 }

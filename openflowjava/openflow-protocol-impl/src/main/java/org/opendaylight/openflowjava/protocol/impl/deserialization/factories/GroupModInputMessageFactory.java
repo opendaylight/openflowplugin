@@ -43,12 +43,12 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
     private static final byte BUCKETS_HEADER_LENGTH = 16;
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 
     @Override
-    public GroupModInput deserialize(ByteBuf rawMessage) {
+    public GroupModInput deserialize(final ByteBuf rawMessage) {
         GroupModInputBuilder builder = new GroupModInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
@@ -64,7 +64,7 @@ public class GroupModInputMessageFactory implements OFDeserializer<GroupModInput
             bucketsBuilder.setWatchPort(new PortNumber(readUint32(rawMessage)));
             bucketsBuilder.setWatchGroup(readUint32(rawMessage));
             rawMessage.skipBytes(PADDING_IN_BUCKETS_HEADER);
-            CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+            CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
             List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,
                     bucketsLength - BUCKETS_HEADER_LENGTH, rawMessage, keyMaker, registry);
             bucketsBuilder.setAction(actions);

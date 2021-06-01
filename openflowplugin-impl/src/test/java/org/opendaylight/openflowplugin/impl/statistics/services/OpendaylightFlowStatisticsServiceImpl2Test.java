@@ -79,7 +79,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
     @Test
     public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(eq(42L), requestInput.capture(), Mockito.<FutureCallback>any());
+                .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), Mockito.<FutureCallback>any());
         Mockito.doAnswer((Answer<Void>) invocation -> {
             final MultipartReplyMessageBuilder messageBuilder = new MultipartReplyMessageBuilder()
                     .setVersion(EncodeConstants.OF_VERSION_1_3);

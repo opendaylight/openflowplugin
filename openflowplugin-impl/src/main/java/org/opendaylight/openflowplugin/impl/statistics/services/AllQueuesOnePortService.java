@@ -29,14 +29,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromGivenPortOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromGivenPortOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueStatisticsUpdate;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 final class AllQueuesOnePortService extends AbstractCompatibleStatService<GetAllQueuesStatisticsFromGivenPortInput,
                                                                           GetAllQueuesStatisticsFromGivenPortOutput,
                                                                           QueueStatisticsUpdate> {
 
-    AllQueuesOnePortService(RequestContextStack requestContextStack,
-                                   DeviceContext deviceContext,
-                                   AtomicLong compatibilityXidSeed) {
+    AllQueuesOnePortService(final RequestContextStack requestContextStack,
+                                   final DeviceContext deviceContext,
+                                   final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
@@ -47,7 +48,7 @@ final class AllQueuesOnePortService extends AbstractCompatibleStatService<GetAll
         MultipartRequestQueueBuilder mprQueueBuilder = new MultipartRequestQueueBuilder();
         // Select all queues
         // Select specific port
-        final short version = getVersion();
+        final Uint8 version = getVersion();
         mprQueueBuilder.setPortNo(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
                 OpenflowVersion.get(version), input.getNodeConnectorId()));
 
@@ -63,12 +64,13 @@ final class AllQueuesOnePortService extends AbstractCompatibleStatService<GetAll
     }
 
     @Override
-    public GetAllQueuesStatisticsFromGivenPortOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetAllQueuesStatisticsFromGivenPortOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetAllQueuesStatisticsFromGivenPortOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public QueueStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+    public QueueStatisticsUpdate transformToNotification(final List<MultipartReply> result,
+            final TransactionId emulatedTxId) {
         return QueueStatisticsToNotificationTransformer.transformToNotification(result,
                                                                                 getDeviceInfo(),
                                                                                 getOfVersion(),

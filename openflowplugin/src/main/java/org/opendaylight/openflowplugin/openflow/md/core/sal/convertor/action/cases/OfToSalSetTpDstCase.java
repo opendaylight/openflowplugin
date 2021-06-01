@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
@@ -27,10 +26,10 @@ public class OfToSalSetTpDstCase extends ConvertorCase<SetTpDstCase, Action, Act
 
     @Override
     public Optional<Action> process(@NonNull final SetTpDstCase source, final ActionResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+            final ConvertorExecutor convertorExecutor) {
         return Optional.of(new SetTpDstActionCaseBuilder()
                 .setSetTpDstAction(new SetTpDstActionBuilder()
-                        .setPort(new PortNumber(source.getSetTpDstAction().getPort().getValue().intValue()))
+                        .setPort(new PortNumber(source.getSetTpDstAction().getPort().getValue().toUint16()))
                         .setIpProtocol(data.getIpProtocol())
                         .build())
                 .build());

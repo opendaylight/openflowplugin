@@ -35,7 +35,7 @@ public class GetFeaturesOutputFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetFeaturesOutput.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GetFeaturesOutput.class));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class GetFeaturesOutputFactoryTest {
         Assert.assertEquals("Wrong reserved", message.getReserved().longValue(), serializedBuffer.readInt());
     }
 
-    private static Capabilities createCapabilities(int input) {
+    private static Capabilities createCapabilities(final int input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;

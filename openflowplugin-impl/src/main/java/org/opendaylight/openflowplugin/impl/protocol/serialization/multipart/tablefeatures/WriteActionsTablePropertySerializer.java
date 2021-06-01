@@ -35,7 +35,7 @@ public class WriteActionsTablePropertySerializer extends AbstractTablePropertySe
                 .forEach(action -> ActionUtil
                         .writeActionHeader(
                                 action,
-                                EncodeConstants.OF13_VERSION_ID,
+                                EncodeConstants.OF_VERSION_1_3,
                                 registry,
                                 byteBuf));
     }

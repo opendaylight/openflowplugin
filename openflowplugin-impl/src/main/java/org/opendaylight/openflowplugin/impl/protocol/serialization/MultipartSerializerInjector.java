@@ -46,12 +46,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.request.multipart.request.body.MultipartRequestPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.multipart.request.multipart.request.body.MultipartRequestTableFeatures;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Util class for injecting new multipart serializers into OpenflowJava.
  */
 final class MultipartSerializerInjector {
-
     private MultipartSerializerInjector() {
     }
 
@@ -65,7 +65,7 @@ final class MultipartSerializerInjector {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends MultipartRequestBody>,
             Consumer<OFSerializer<? extends MultipartRequestBody>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         MultipartMatchFieldSerializerInjector.injectSerializers(provider);
         MultipartTableFeaturesSerializerInjector.injectSerializers(provider);
@@ -99,11 +99,8 @@ final class MultipartSerializerInjector {
     @VisibleForTesting
     static Function<Class<? extends MultipartRequestBody>,
             Consumer<OFSerializer<? extends MultipartRequestBody>>> createInjector(
-                    final SerializerExtensionProvider provider, final byte version) {
+                    final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+                provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
-
 }

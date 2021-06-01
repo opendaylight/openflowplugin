@@ -7,7 +7,11 @@
  */
 package org.opendaylight.openflowjava.nx.api;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Serializer key for a Nicira action.
@@ -16,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  */
 public class NiciraActionSerializerKey {
 
-    private final short version;
+    private final Uint8 version;
     private final Class<? extends ActionChoice> subtype;
 
     /**
@@ -25,12 +29,12 @@ public class NiciraActionSerializerKey {
      * @param version protocol wire version
      * @param subtype nx_action_subtype
      */
-    public NiciraActionSerializerKey(final short version, final Class<? extends ActionChoice> subtype) {
-        this.version = version;
+    public NiciraActionSerializerKey(final Uint8 version, final Class<? extends ActionChoice> subtype) {
+        this.version = requireNonNull(version);
         this.subtype = subtype;
     }
 
-    public short getVersion() {
+    public Uint8 getVersion() {
         return version;
     }
 
@@ -42,8 +46,8 @@ public class NiciraActionSerializerKey {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (subtype == null ? 0 : subtype.hashCode());
-        result = prime * result + version;
+        result = prime * result + Objects.hashCode(subtype);
+        result = prime * result + version.hashCode();
         return result;
     }
 
@@ -59,17 +63,7 @@ public class NiciraActionSerializerKey {
             return false;
         }
         NiciraActionSerializerKey other = (NiciraActionSerializerKey) obj;
-        if (subtype == null) {
-            if (other.subtype != null) {
-                return false;
-            }
-        } else if (!subtype.equals(other.subtype)) {
-            return false;
-        }
-        if (version != other.version) {
-            return false;
-        }
-        return true;
+        return Objects.equals(subtype, other.subtype) && version.equals(other.version);
     }
 
     @Override

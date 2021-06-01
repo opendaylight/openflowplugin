@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.CopyTtlInCaseBuilder;
@@ -141,7 +142,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setBuckets(buckets);
 
-        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
@@ -196,7 +197,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setGroupType(GroupTypes.GroupAll);
 
-        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
@@ -237,7 +238,7 @@ public class GroupConvertorTest {
                 .setBucket(BindingMap.ordered(bucketB.build(), bucketB1.build()))
                 .build());
 
-        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);
@@ -340,7 +341,7 @@ public class GroupConvertorTest {
                 .setBuckets(new BucketsBuilder().setBucket(bucket).build())
                 .build();
 
-        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
 
         final GroupModInputBuilder outAddGroupInput = convert(input, data);
@@ -438,7 +439,7 @@ public class GroupConvertorTest {
 
         addGroupBuilder.setBuckets(buckets);
 
-        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData((short) 0X4);
+        VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
 
         final GroupModInputBuilder outAddGroupInput = convert(addGroupBuilder.build(), data);

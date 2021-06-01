@@ -7,11 +7,14 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,10 +26,10 @@ import org.slf4j.LoggerFactory;
  * @param <D> the type of convertor data
  */
 public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorData> {
-    private static final short OFP_VERSION_ALL = 0x00;
     private static final Logger LOG = LoggerFactory.getLogger(ConvertorProcessor.class);
+    private static final Uint8 OFP_VERSION_ALL = Uint8.ZERO;
 
-    private final Map<Short, Map<Class<?>, ConvertorCase<?, T, D>>> conversions = new ConcurrentHashMap<>();
+    private final Map<Uint8, Map<Class<?>, ConvertorCase<?, T, D>>> conversions = new ConcurrentHashMap<>();
     private ConvertorCase<?, T, D> defaultCase;
 
     /**
@@ -39,7 +42,7 @@ public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorD
         if (processorCase.getSupportedVersions().isEmpty()) {
             getCasesForVersion(OFP_VERSION_ALL).putIfAbsent(processorCase.getType(), processorCase);
         } else {
-            for (short supportedVersion : processorCase.getSupportedVersions()) {
+            for (Uint8 supportedVersion : processorCase.getSupportedVersions()) {
                 getCasesForVersion(supportedVersion).putIfAbsent(processorCase.getType(), processorCase);
             }
         }
@@ -68,7 +71,7 @@ public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorD
      */
     public Optional<T> process(final F source, final D data, final ConvertorExecutor convertorExecutor) {
         Optional<T> result = Optional.empty();
-        final short version = data != null ? data.getVersion() : OFP_VERSION_ALL;
+        final Uint8 version = data != null ? data.getVersion() : OFP_VERSION_ALL;
 
         if (source == null) {
             LOG.trace("Failed to convert null for version {}", version);
@@ -105,9 +108,9 @@ public class ConvertorProcessor<F extends DataContainer, T, D extends ConvertorD
         return this;
     }
 
-    private Map<Class<?>, ConvertorCase<?, T, D>> getCasesForVersion(final short version) {
+    private Map<Class<?>, ConvertorCase<?, T, D>> getCasesForVersion(final Uint8 version) {
         final Map<Class<?>, ConvertorCase<?, T, D>> casesForVersion =
-                conversions.getOrDefault(version, new ConcurrentHashMap<>());
+                conversions.getOrDefault(requireNonNull(version), new ConcurrentHashMap<>());
 
         conversions.putIfAbsent(version, casesForVersion);
 

@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates Error messages.
@@ -63,8 +64,8 @@ public class ErrorMessageFactory implements OFDeserializer<ErrorMessage>,
         if (ErrorType.EXPERIMENTER.equals(errorType)) {
             OFDeserializer<ErrorMessage> deserializer = registry.getDeserializer(
                     ExperimenterDeserializerKeyFactory.createExperimenterErrorDeserializerKey(
-                            EncodeConstants.OF13_VERSION_ID, rawMessage.getUnsignedInt(
-                                    rawMessage.readerIndex() + Short.BYTES)));
+                            EncodeConstants.OF_VERSION_1_3, Uint32.fromIntBits(rawMessage.getInt(
+                                    rawMessage.readerIndex() + Short.BYTES))));
             rawMessage.readerIndex(startIndex);
             return deserializer.deserialize(rawMessage);
         }

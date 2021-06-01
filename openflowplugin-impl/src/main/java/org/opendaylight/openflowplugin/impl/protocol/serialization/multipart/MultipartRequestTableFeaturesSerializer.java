@@ -58,7 +58,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
                     (Class<? extends TableFeaturePropType>) property.getTableFeaturePropType().implementedInterface();
 
                 registry.<TableFeaturePropType, OFSerializer<TableFeaturePropType>>getSerializer(
-                        new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, clazz))
+                        new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, clazz))
                             .serialize(property.getTableFeaturePropType(), byteBuf);
             }
         }

@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.Mockito.when;
 
 import io.netty.buffer.ByteBuf;
@@ -24,6 +23,7 @@ import org.mockito.MockitoAnnotations;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for OFDecoder.
@@ -50,13 +50,13 @@ public class OFDecoderTest {
         ofDecoder = new OFDecoder();
         ofDecoder.setDeserializationFactory(mockDeserializationFactory);
         writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
-        inMsg = new VersionMessageWrapper((short) 8, writeObj);
+        inMsg = new VersionMessageWrapper(Uint8.valueOf(8), writeObj);
         outList = new ArrayList<>();
     }
 
     @Test
     public void testDecode() {
-        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), anyShort())).thenReturn(mockDataObject);
+        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), any(Uint8.class))).thenReturn(mockDataObject);
 
         ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
 
@@ -67,7 +67,7 @@ public class OFDecoderTest {
 
     @Test
     public void testDecodeDeserializeException() {
-        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), anyShort()))
+        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), any(Uint8.class)))
                 .thenThrow(new IllegalArgumentException());
 
         ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
@@ -79,7 +79,7 @@ public class OFDecoderTest {
 
     @Test
     public void testDecodeDeserializeNull() {
-        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), anyShort())).thenReturn(null);
+        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), any(Uint8.class))).thenReturn(null);
 
         ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
 

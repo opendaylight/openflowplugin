@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -20,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.PbbIsidCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.pbb.isid._case.PbbIsid;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class OfToSalPbbIsidCase extends ConvertorCase<PbbIsidCase, MatchBuilder, MatchResponseConvertorData> {
     public OfToSalPbbIsidCase() {
@@ -27,8 +26,8 @@ public class OfToSalPbbIsidCase extends ConvertorCase<PbbIsidCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull PbbIsidCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(final PbbIsidCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder = data.getProtocolMatchFieldsBuilder();
 
@@ -40,7 +39,7 @@ public class OfToSalPbbIsidCase extends ConvertorCase<PbbIsidCase, MatchBuilder,
             byte[] mask = pbbIsid.getMask();
 
             if (mask != null) {
-                pbbBuilder.setPbbMask(ByteUtil.bytesToUnsignedMedium(mask));
+                pbbBuilder.setPbbMask(Uint32.valueOf(ByteUtil.bytesToUnsignedMedium(mask)));
             }
 
             protocolMatchFieldsBuilder.setPbb(pbbBuilder.build());

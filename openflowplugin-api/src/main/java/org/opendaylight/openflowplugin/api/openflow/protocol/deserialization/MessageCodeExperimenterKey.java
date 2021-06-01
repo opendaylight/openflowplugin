@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.protocol.deserialization;
 
+import java.util.Objects;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MessageCodeExperimenterKey extends MessageCodeKey implements ExperimenterDeserializerKey {
-
     private final Long experimenterId;
 
     /**
@@ -21,7 +22,8 @@ public class MessageCodeExperimenterKey extends MessageCodeKey implements Experi
      * @param clazz class of object that is going to be deserialized
      * @param experimenterId experimenter id
      */
-    public MessageCodeExperimenterKey(short version, int value, Class<?> clazz, Long experimenterId) {
+    public MessageCodeExperimenterKey(final Uint8 version, final int value, final Class<?> clazz,
+            final Long experimenterId) {
         super(version, value, clazz);
         this.experimenterId = experimenterId;
     }
@@ -37,27 +39,15 @@ public class MessageCodeExperimenterKey extends MessageCodeKey implements Experi
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
-        }
-        if (obj == null) {
-            return false;
         }
         if (!(obj instanceof MessageCodeExperimenterKey)) {
             return false;
         }
         MessageCodeExperimenterKey other = (MessageCodeExperimenterKey) obj;
-
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
-            return false;
-        }
-
-        return super.equals(obj);
+        return Objects.equals(experimenterId, other.experimenterId) && super.equals(obj);
     }
 
     @Override

@@ -24,11 +24,12 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EricExpClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EricExtensionCodecRegistratorImplTest {
 
-    public static final short VERSION = 4;
+    public static final Uint8 VERSION = Uint8.valueOf(4);
     public static final byte VERSION1 = EncodeConstants.OF10_VERSION_ID;
     public static final byte VERSION2 = EncodeConstants.OF13_VERSION_ID;
 

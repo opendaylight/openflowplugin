@@ -155,7 +155,7 @@ public class RoleContextImpl implements RoleContext {
         }
         LOG.debug("Sending new role {} to device {}", newRole, deviceInfo);
 
-        if (deviceInfo.getVersion() >= OFConstants.OFP_VERSION_1_3) {
+        if (OFConstants.OFP_VERSION_1_3.compareTo(deviceInfo.getVersion()) <= 0) {
             final SetRoleInput setRoleInput = new SetRoleInputBuilder()
                     .setControllerRole(newRole)
                     .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))

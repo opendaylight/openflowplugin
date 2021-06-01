@@ -14,17 +14,17 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
 import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionOutputReg2Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionOutputReg2;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionOutputReg2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.output.reg2.grouping.NxActionOutputReg2Builder;
 
 public class OutputReg2Codec extends AbstractActionCodec {
 
     public static final byte SUBTYPE = 32; // NXAST_OUTPUT_REG2
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionOutputReg2.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF_VERSION_1_3, ActionOutputReg2.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
-            new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, SUBTYPE);
+            new NiciraActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, SUBTYPE);
 
     @Override
     public Action deserialize(final ByteBuf message) {

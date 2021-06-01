@@ -12,11 +12,11 @@ import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod$G;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod$G;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod$G;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.BundleInnerMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.add.message.grouping.bundle.inner.message.BundleFlowModCase;
@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 public class BundleAddMessageFactory extends AbstractBundleMessageFactory<BundleAddMessageOnf> {
 
     @Override
-    public void serialize(BundleAddMessageOnf input, ByteBuf outBuffer) {
+    public void serialize(final BundleAddMessageOnf input, final ByteBuf outBuffer) {
         outBuffer.writeInt(input.getOnfAddMessageGroupingData().getBundleId().getValue().intValue());
         outBuffer.writeZero(2);
         writeBundleFlags(input.getOnfAddMessageGroupingData().getFlags(), outBuffer);
@@ -51,18 +51,18 @@ public class BundleAddMessageFactory extends AbstractBundleMessageFactory<Bundle
     private void serializeInnerMessage(final BundleInnerMessage message, final ByteBuf outBuffer) {
         final Class<?> clazz = message.implementedInterface();
         if (clazz.equals(BundleFlowModCase.class)) {
-            OFSerializer<FlowMod> serializer = serializerRegistry.getSerializer(
-                    new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowModInput.class));
+            OFSerializer<FlowMod$G> serializer = serializerRegistry.getSerializer(
+                    new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, FlowModInput.class));
             serializer.serialize(((BundleFlowModCase)message)
                     .getFlowModCaseData(), outBuffer);
         } else if (clazz.equals(BundleGroupModCase.class)) {
-            OFSerializer<GroupMod> serializer = serializerRegistry.getSerializer(
-                    new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GroupModInput.class));
+            OFSerializer<GroupMod$G> serializer = serializerRegistry.getSerializer(
+                    new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GroupModInput.class));
             serializer.serialize(((BundleGroupModCase)message)
                     .getGroupModCaseData(), outBuffer);
         } else if (clazz.equals(BundlePortModCase.class)) {
-            OFSerializer<PortMod> serializer = serializerRegistry.getSerializer(
-                    new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PortModInput.class));
+            OFSerializer<PortMod$G> serializer = serializerRegistry.getSerializer(
+                    new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, PortModInput.class));
             serializer.serialize(((BundlePortModCase)message)
                     .getPortModCaseData(), outBuffer);
         }
@@ -70,7 +70,7 @@ public class BundleAddMessageFactory extends AbstractBundleMessageFactory<Bundle
 
     private static int paddingNeeded(final int length) {
         int paddingRemainder = length % EncodeConstants.PADDING;
-        return (paddingRemainder != 0) ? (EncodeConstants.PADDING - paddingRemainder) : 0;
+        return paddingRemainder != 0 ? EncodeConstants.PADDING - paddingRemainder : 0;
     }
 
 }

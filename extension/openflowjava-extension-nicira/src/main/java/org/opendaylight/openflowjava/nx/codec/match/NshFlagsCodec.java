@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
@@ -18,11 +17,11 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshFlags;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.NxExpMatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NshFlagsCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NshFlagsCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsh.flags.grouping.NshFlagsValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsh.flags.grouping.NshFlagsValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NshFlagsCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -32,12 +31,12 @@ public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
     private static final int NXM_FIELD_CODE = 1;
     public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNshFlags> SERIALIZER_KEY =
             createSerializerKey(
-                    EncodeConstants.OF13_VERSION_ID,
+                    EncodeConstants.OF_VERSION_1_3,
                     NiciraConstants.NX_NSH_VENDOR_ID,
                     NxmNxNshFlags.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
             createDeserializerKey(
-                    EncodeConstants.OF13_VERSION_ID,
+                    EncodeConstants.OF_VERSION_1_3,
                     NiciraConstants.NX_NSH_VENDOR_ID,
                     NXM_FIELD_CODE);
 
@@ -57,7 +56,7 @@ public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
+    protected NxExpMatchEntryValue deserializeValue(final ByteBuf message, final boolean hasMask) {
         Uint8 flagsValue = readUint8(message);
         Uint8 maskValue = hasMask ? readUint8(message) : null;
         return new NshFlagsCaseValueBuilder()
@@ -71,7 +70,7 @@ public class NshFlagsCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
+    protected void serializeValue(final NxExpMatchEntryValue value, final boolean hasMask, final ByteBuf outBuffer) {
         NshFlagsCaseValue nshFlagsCaseValue = (NshFlagsCaseValue) value;
         NshFlagsValues nshFlagsValues = nshFlagsCaseValue.getNshFlagsValues();
         outBuffer.writeByte(nshFlagsValues.getNshFlags().toJava());

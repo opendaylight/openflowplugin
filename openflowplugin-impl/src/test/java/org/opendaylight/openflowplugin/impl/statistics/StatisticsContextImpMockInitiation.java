@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class StatisticsContextImpMockInitiation {
     Boolean isTable = false;
@@ -75,8 +76,9 @@ public class StatisticsContextImpMockInitiation {
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
 
+        when(mockedDeviceInfo.getVersion()).thenReturn(Uint8.ONE);
         when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_ID);
-        when(mockedDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
+        when(mockedDeviceInfo.getDatapathId()).thenReturn(Uint64.TEN);
 
         when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);

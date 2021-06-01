@@ -49,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Initializes serializer registry with additional action serializers.
@@ -66,9 +67,9 @@ public final class AdditionalMessageFactoryInitializer {
      * @param serializerRegistry
      *            registry to be initialized with message serializers
      */
-    public static void registerMessageSerializers(SerializerRegistry serializerRegistry) {
+    public static void registerMessageSerializers(final SerializerRegistry serializerRegistry) {
         // register OF v1.0 message serializers
-        short version = EncodeConstants.OF10_VERSION_ID;
+        Uint8 version = EncodeConstants.OF_VERSION_1_0;
         CommonMessageRegistryHelper registryHelper = new CommonMessageRegistryHelper(version, serializerRegistry);
         registryHelper.registerSerializer(ErrorMessage.class, new ErrorMessageFactory());
         registryHelper.registerSerializer(EchoRequestMessage.class, new EchoRequestMessageFactory());
@@ -83,7 +84,7 @@ public final class AdditionalMessageFactoryInitializer {
         registryHelper.registerSerializer(GetQueueConfigOutput.class, new OF10QueueGetConfigReplyMessageFactory());
 
         // register OF v1.3 message serializers
-        version = EncodeConstants.OF13_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_3;
         registryHelper = new CommonMessageRegistryHelper(version, serializerRegistry);
         registryHelper.registerSerializer(EchoOutput.class, new EchoOutputMessageFactory());
         registryHelper.registerSerializer(PacketInMessage.class, new PacketInMessageFactory());

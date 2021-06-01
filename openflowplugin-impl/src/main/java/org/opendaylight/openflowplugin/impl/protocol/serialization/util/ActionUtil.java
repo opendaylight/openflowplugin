@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.util;
 
 import io.netty.buffer.ByteBuf;
@@ -24,6 +23,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +46,8 @@ public final class ActionUtil {
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
-    public static void writeAction(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+    public static void writeAction(final Action action, final Uint8 version, final SerializerRegistry registry,
+            final ByteBuf outBuffer) {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
@@ -85,7 +86,8 @@ public final class ActionUtil {
      * @param outBuffer output buffer
      */
     @SuppressWarnings("unchecked")
-    public static void writeActionHeader(Action action, short version, SerializerRegistry registry, ByteBuf outBuffer) {
+    public static void writeActionHeader(final Action action, final Uint8 version, final SerializerRegistry registry,
+            final ByteBuf outBuffer) {
         try {
             Optional.ofNullable(OFSessionUtil.getExtensionConvertorProvider())
                     .flatMap(provider ->
@@ -130,7 +132,7 @@ public final class ActionUtil {
     private static Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
             .grouping.Action> convertExtensionGrouping(final ExtensionConverterProvider provider,
                                                        final GeneralExtensionGrouping action,
-                                                       final short version) {
+                                                       final Uint8 version) {
         final ConverterExtensionKey<? extends ExtensionKey> key =
                 new ConverterExtensionKey<>(action.getExtensionKey(), version);
 
@@ -151,7 +153,7 @@ public final class ActionUtil {
     private static Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
             .grouping.Action> convertGenericAction(final ExtensionConverterProvider provider,
                                                    final Action action,
-                                                   final short version) {
+                                                   final Uint8 version) {
 
         final TypeVersionKey<Action> key =
                 new TypeVersionKey<>((Class<? extends Action>) action.implementedInterface(), version);

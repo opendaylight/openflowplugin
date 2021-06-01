@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
@@ -21,12 +20,12 @@ public class Nshc1Codec extends AbstractNshcCodec {
     private static final int NXM_FIELD_CODE = 6;
     public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNshc1> SERIALIZER_KEY =
             createSerializerKey(
-                    EncodeConstants.OF13_VERSION_ID,
+                    EncodeConstants.OF_VERSION_1_3,
                     NiciraConstants.NX_NSH_VENDOR_ID,
                     NxmNxNshc1.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
             createDeserializerKey(
-                    EncodeConstants.OF13_VERSION_ID,
+                    EncodeConstants.OF_VERSION_1_3,
                     NiciraConstants.NX_NSH_VENDOR_ID,
                     NXM_FIELD_CODE);
 

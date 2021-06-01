@@ -34,10 +34,10 @@ public final class InstructionDeserializerInitializer {
      *
      * @param registry registry to be filled with deserializers
      */
-    public static void registerDeserializers(DeserializerRegistry registry) {
+    public static void registerDeserializers(final DeserializerRegistry registry) {
         // register OF v1.3 instruction deserializers
         InstructionDeserializerRegistryHelper helper =
-                new InstructionDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
+                new InstructionDeserializerRegistryHelper(EncodeConstants.OF_VERSION_1_3, registry);
         helper.registerDeserializer(1, new GoToTableInstructionDeserializer());
         helper.registerDeserializer(2, new WriteMetadataInstructionDeserializer());
         helper.registerDeserializer(3, new WriteActionsInstructionDeserializer());

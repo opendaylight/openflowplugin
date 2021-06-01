@@ -52,7 +52,7 @@ public final class GroupUtil {
     public static final Function<RpcResult<List<BatchFailedGroupsOutput>>, RpcResult<AddGroupsBatchOutput>>
         GROUP_ADD_TRANSFORM = batchGroupsCumulatedResult -> {
             final AddGroupsBatchOutput batchOutput = new AddGroupsBatchOutputBuilder()
-                    .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+                    .setBatchFailedGroupsOutput(FlowUtil.index(batchGroupsCumulatedResult.getResult())).build();
 
             final RpcResultBuilder<AddGroupsBatchOutput> resultBld =
                     createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
@@ -67,7 +67,7 @@ public final class GroupUtil {
         GROUP_REMOVE_TRANSFORM =
             batchGroupsCumulatedResult -> {
                 final RemoveGroupsBatchOutput batchOutput = new RemoveGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+                        .setBatchFailedGroupsOutput(FlowUtil.index(batchGroupsCumulatedResult.getResult())).build();
 
                 final RpcResultBuilder<RemoveGroupsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);
@@ -82,7 +82,7 @@ public final class GroupUtil {
         GROUP_UPDATE_TRANSFORM =
             batchGroupsCumulatedResult -> {
                 final UpdateGroupsBatchOutput batchOutput = new UpdateGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(batchGroupsCumulatedResult.getResult()).build();
+                        .setBatchFailedGroupsOutput(FlowUtil.index(batchGroupsCumulatedResult.getResult())).build();
 
                 final RpcResultBuilder<UpdateGroupsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchGroupsCumulatedResult, batchOutput);

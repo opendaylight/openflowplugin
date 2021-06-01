@@ -5,11 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
+
+import static java.util.Objects.requireNonNull;
 
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an experimenter id deserializer.
@@ -17,8 +20,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @author michal.polkorab
  */
 public class ExperimenterIdDeserializerKey extends MessageCodeKey implements ExperimenterDeserializerKey {
-
-    private final long experimenterId;
+    private final Uint32 experimenterId;
 
     /**
      * Constructor.
@@ -28,13 +30,13 @@ public class ExperimenterIdDeserializerKey extends MessageCodeKey implements Exp
      * @param experimenterId experimenter / vendor ID
      * @param objectClass class of created object
      */
-    public <E extends DataContainer> ExperimenterIdDeserializerKey(final short version, final long experimenterId,
+    public <E extends DataContainer> ExperimenterIdDeserializerKey(final Uint8 version, final Uint32 experimenterId,
                                                                    final Class<E> objectClass) {
         super(version, EncodeConstants.EXPERIMENTER_VALUE, objectClass);
-        this.experimenterId = experimenterId;
+        this.experimenterId = requireNonNull(experimenterId);
     }
 
-    protected int hashCodeOfLong(long longValue) {
+    protected int hashCodeOfLong(final long longValue) {
         return (int) (longValue ^ longValue >>> 32);
     }
 
@@ -42,12 +44,12 @@ public class ExperimenterIdDeserializerKey extends MessageCodeKey implements Exp
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + hashCodeOfLong(experimenterId);
+        result = prime * result + experimenterId.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }

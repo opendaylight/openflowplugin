@@ -44,7 +44,7 @@ public class TableModInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         tableModFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, TableModInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, TableModInput.class));
     }
 
     /**

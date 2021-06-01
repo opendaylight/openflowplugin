@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import io.netty.buffer.ByteBuf;
@@ -16,8 +15,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearn;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionLearnBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionLearn;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionLearnBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.learn.grouping.NxActionLearnBuilder;
 
 /**
@@ -28,9 +27,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev1
 public class LearnCodec extends AbstractActionCodec {
     public static final byte NXAST_LEARN_SUBTYPE = 16;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionLearn.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF_VERSION_1_3, ActionLearn.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
-            new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_LEARN_SUBTYPE);
+            new NiciraActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, NXAST_LEARN_SUBTYPE);
     private static final int MUL_LENGTH = 8;
 
     @Override

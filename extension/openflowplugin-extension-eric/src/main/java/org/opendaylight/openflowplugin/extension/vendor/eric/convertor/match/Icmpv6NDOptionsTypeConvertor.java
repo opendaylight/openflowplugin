@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.eric.convertor.match;
 
 import java.util.Optional;
@@ -18,8 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Eric
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.Icmpv6NdOptionsType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.icmpv6.nd.options.type.grouping.Icmpv6NdOptionsTypeValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.ofj.aug.eric.match.options.Icmpv6NdOptionsTypeCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.ofj.aug.eric.match.options.Icmpv6NdOptionsTypeCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNodesNodeTableFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNodesNodeTableFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricAugMatchNotifPacketIn;
@@ -46,7 +45,7 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
         ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         Icmpv6NdOptionsTypeCaseValue icmpv6NdOptionsTypeCaseValue
                 = (Icmpv6NdOptionsTypeCaseValue)input.getMatchEntryValue();
         return resolveAugmentation(new EricOfIcmpv6NdOptionsTypeBuilder()
@@ -55,7 +54,7 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<EricOfIcmpv6NdOptionsTypeGrouping> matchGrouping = MatchUtil.ICMPV6_ND_OPTIONS_TYPE_RESOLVER
                 .getExtension(extension);
         if (!matchGrouping.isPresent()) {
@@ -71,7 +70,7 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
-            EricOfIcmpv6NdOptionsType value, MatchPath path, Class<? extends ExtensionKey> key) {
+            final EricOfIcmpv6NdOptionsType value, final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
@@ -92,5 +91,4 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
                 throw new CodecPreconditionException(path);
         }
     }
-
 }

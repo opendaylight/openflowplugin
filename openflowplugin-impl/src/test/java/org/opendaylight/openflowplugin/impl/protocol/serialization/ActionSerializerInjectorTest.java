@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import static org.mockito.Mockito.verify;
@@ -37,15 +36,14 @@ public class ActionSerializerInjectorTest {
 
     @Before
     public void setUp() {
-        injector = ActionSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF13_VERSION_ID);
+        injector = ActionSerializerInjector.createInjector(switchConnectionProvider, EncodeConstants.OF_VERSION_1_3);
     }
 
     @Test
     public void injectSerializers() {
         injector.apply(CopyTtlInCase.class).accept(actionSerializer);
         verify(switchConnectionProvider).registerSerializer(
-                new MessageTypeKey<Object>(EncodeConstants.OF13_VERSION_ID, CopyTtlInCase.class),
+                new MessageTypeKey<Object>(EncodeConstants.OF_VERSION_1_3, CopyTtlInCase.class),
                 actionSerializer);
     }
-
 }

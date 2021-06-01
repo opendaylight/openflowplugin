@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
@@ -19,6 +17,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.dat
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +31,10 @@ public class SalToOfVendorCodecCase extends ConvertorCase<org.opendaylight.yang.
     }
 
     @SuppressWarnings("unchecked")
-    @NonNull
     @Override
     public Optional<Action> process(final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-            .action.Action source, final ActionConvertorData data, ConvertorExecutor convertorExecutor) {
-        final short version = data.getVersion();
+            .action.Action source, final ActionConvertorData data, final ConvertorExecutor convertorExecutor) {
+        final Uint8 version = data.getVersion();
         final TypeVersionKey<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> key =
                 new TypeVersionKey<>(
                         (Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112

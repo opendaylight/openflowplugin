@@ -2133,28 +2133,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     }
 
     private static MatchBuilder createICMPv6Match1() {
-
-        final MatchBuilder match = new MatchBuilder();
-        final EthernetMatchBuilder eth = new EthernetMatchBuilder();
-        final EthernetTypeBuilder ethTypeBuilder = new EthernetTypeBuilder();
-        ethTypeBuilder.setType(new EtherType(Uint32.valueOf(0x86dd)));
-        eth.setEthernetType(ethTypeBuilder.build());
-        match.setEthernetMatch(eth.build());
-
-        // ipv4 version
-        final IpMatchBuilder ipmatch = new IpMatchBuilder();
-        ipmatch.setIpProtocol((short) 256);
-        match.setIpMatch(ipmatch.build());
-
-        // icmpv6
-        final Icmpv6MatchBuilder icmpv6match = new Icmpv6MatchBuilder();
-
-        // match
-        icmpv6match.setIcmpv6Type(Uint8.valueOf(135));
-        icmpv6match.setIcmpv6Code(Uint8.ONE);
-        match.setIcmpv6Match(icmpv6match.build());
-
-        return match;
+        return new MatchBuilder()
+            .setEthernetMatch(new EthernetMatchBuilder()
+                .setEthernetType(new EthernetTypeBuilder()
+                    .setType(new EtherType(Uint32.valueOf(0x86dd)))
+                    .build())
+                .build())
+            // ipv4 version
+            .setIpMatch(new IpMatchBuilder().setIpProtocol(Uint8.MAX_VALUE).build())
+            // icmpv6
+            .setIcmpv6Match(new Icmpv6MatchBuilder()
+                .setIcmpv6Type(Uint8.valueOf(135))
+                .setIcmpv6Code(Uint8.ONE)
+                .build());
     }
 
     private static MatchBuilder createMatch33() {

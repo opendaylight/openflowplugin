@@ -50,7 +50,7 @@ public class PortModInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         portModFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PortModInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, PortModInput.class));
     }
 
     /**
@@ -97,7 +97,7 @@ public class PortModInputMessageFactoryTest {
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_03);
     }
 
-    private static PortConfig createPortConfig(long input) {
+    private static PortConfig createPortConfig(final long input) {
         final Boolean _portDown = (input & 1 << 0) > 0;
         final Boolean _noRecv = (input & 1 << 2) > 0;
         final Boolean _noFwd = (input & 1 << 5) > 0;
@@ -105,7 +105,7 @@ public class PortModInputMessageFactoryTest {
         return new PortConfig(_noFwd, _noPacketIn, _noRecv, _portDown);
     }
 
-    private static PortFeatures createPortFeatures(long input) {
+    private static PortFeatures createPortFeatures(final long input) {
         final Boolean _10mbHd = (input & 1 << 0) > 0;
         final Boolean _10mbFd = (input & 1 << 1) > 0;
         final Boolean _100mbHd = (input & 1 << 2) > 0;
@@ -125,5 +125,4 @@ public class PortModInputMessageFactoryTest {
         return new PortFeatures(_100gbFd, _100mbFd,  _100mbHd, _10gbFd, _10mbFd, _10mbHd,
                 _1gbFd, _1gbHd, _1tbFd, _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
     }
-
 }
