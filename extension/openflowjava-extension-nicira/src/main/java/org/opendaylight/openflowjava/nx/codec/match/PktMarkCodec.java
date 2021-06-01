@@ -19,21 +19,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.PktMarkCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.PktMarkCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.pkt.mark.grouping.PktMarkValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.PktMarkCaseValueBuilder;
 
 public class PktMarkCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 4;
     private static final int NXM_FIELD_CODE = 33;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxPktMark> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxPktMark.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxPktMark.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
+            EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         PktMarkCaseValue pktMarkCase = (PktMarkCaseValue)input.getMatchEntryValue();
         outBuffer.writeInt(pktMarkCase.getPktMarkValues().getPktMark().intValue());
@@ -41,7 +41,7 @@ public class PktMarkCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         return deserializeHeaderToBuilder(message)
                 .setMatchEntryValue(new PktMarkCaseValueBuilder()
                     .setPktMarkValues(new PktMarkValuesBuilder().setPktMark(readUint32(message)).build())

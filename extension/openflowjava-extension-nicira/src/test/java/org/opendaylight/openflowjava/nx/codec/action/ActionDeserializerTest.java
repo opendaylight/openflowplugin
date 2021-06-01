@@ -26,6 +26,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActionDeserializerTest {
@@ -44,9 +45,7 @@ public class ActionDeserializerTest {
     OFDeserializer<Action> ofDeserializer;
 
 
-
-
-    private static final short VERSION = 4;
+    private static final Uint8 VERSION = Uint8.valueOf(4);
     private static final Uint32 EXPERIMENT_ID = NiciraConstants.NX_VENDOR_ID;
     private static final byte SUBTYPE = 10;
 
@@ -86,7 +85,7 @@ public class ActionDeserializerTest {
         Mockito.verify(deserializer).deserialize(buffer);
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         //size of experiment type
         message.writeShort(1);
         //size of length
@@ -97,7 +96,7 @@ public class ActionDeserializerTest {
         message.writeShort(SUBTYPE);
     }
 
-    private static void createBufferWithWrongExperimentId(ByteBuf message) {
+    private static void createBufferWithWrongExperimentId(final ByteBuf message) {
         //size of experiment type
         message.writeShort(1);
         //size of length

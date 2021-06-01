@@ -16,9 +16,9 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.UdpDstCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.UdpDstCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.udp.dst.grouping.UdpDstValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.UdpDstCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.UdpDstCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
@@ -45,7 +45,7 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 public class UdpDstConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         UdpDstCaseValue udpDstCaseValue = (UdpDstCaseValue) input.getMatchEntryValue();
         NxmOfUdpDstBuilder udpDstBuilder = new NxmOfUdpDstBuilder();
         udpDstBuilder.setPort(udpDstCaseValue.getUdpDstValues().getPort());
@@ -55,7 +55,7 @@ public class UdpDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<NxmOfUdpDstGrouping> matchGrouping = MatchUtil.UDP_DST_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
@@ -73,8 +73,8 @@ public class UdpDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         return ofMatch.build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfUdpDst value,
-                                                                   MatchPath path, Class<? extends ExtensionKey> key) {
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfUdpDst value,
+            final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

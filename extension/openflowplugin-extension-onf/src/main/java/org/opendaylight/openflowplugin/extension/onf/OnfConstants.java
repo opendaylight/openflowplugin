@@ -17,20 +17,20 @@ public interface OnfConstants {
     /**
      * Experimenter ID of ONF approved extensions.
      */
-    long ONF_EXPERIMENTER_ID_LONG = 0x4F4E4600;
+    Uint32 ONF_EXPERIMENTER = Uint32.valueOf(0x4F4E4600).intern();
 
     /**
      * Experimenter ID of ONF approved extensions.
      */
-    ExperimenterId ONF_EXPERIMENTER_ID = new ExperimenterId(Uint32.valueOf(ONF_EXPERIMENTER_ID_LONG).intern());
+    ExperimenterId ONF_EXPERIMENTER_ID = new ExperimenterId(ONF_EXPERIMENTER);
 
     /**
      * ONF_ET_BUNDLE_CONTROL message type.
      */
-    int ONF_ET_BUNDLE_CONTROL = 2300;
+    Uint32 ONF_ET_BUNDLE_CONTROL = Uint32.valueOf(2300).intern();
 
     /**
      * ONF_ET_BUNDLE_ADD_MESSAGE message type.
      */
-    int ONF_ET_BUNDLE_ADD_MESSAGE = 2301;
+    Uint32 ONF_ET_BUNDLE_ADD_MESSAGE = Uint32.valueOf(2301).intern();
 }

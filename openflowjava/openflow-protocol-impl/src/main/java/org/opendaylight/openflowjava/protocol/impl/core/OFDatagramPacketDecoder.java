@@ -35,7 +35,7 @@ public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<Version
         }
 
         try {
-            final DataObject dataObject = deserializationFactory.deserialize(msg.getMessageBuffer(),msg.getVersion());
+            final DataObject dataObject = deserializationFactory.deserialize(msg.getMessageBuffer(), msg.getVersion());
             if (dataObject == null) {
                 LOG.warn("Translated POJO is null");
             } else {

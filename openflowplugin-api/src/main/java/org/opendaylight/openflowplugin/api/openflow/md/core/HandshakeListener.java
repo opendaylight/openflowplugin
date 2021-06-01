@@ -9,15 +9,15 @@ package org.opendaylight.openflowplugin.api.openflow.md.core;
 
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public interface HandshakeListener {
-
     /**
      * Handshake successfull.
      * @param featureOutput obtained
      * @param version negotiated
      */
-    void onHandshakeSuccessful(GetFeaturesOutput featureOutput, Short version);
+    void onHandshakeSuccessful(GetFeaturesOutput featureOutput, Uint8 version);
 
     /**
      * This method is called when handshake fails for some reason. It allows

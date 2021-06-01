@@ -99,8 +99,8 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
 
                     // TODO: finish experimenter serialization
                     final ExperimenterIdSerializerKey<Experimenter> key =
-                        new ExperimenterIdSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
-                            band.getExperimenter().toJava(), (Class<Experimenter>) type.implementedInterface());
+                        new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
+                            band.getExperimenter(), (Class<Experimenter>) type.implementedInterface());
 
                     final OFSerializer<Experimenter> serializer = registry.getSerializer(key);
                     try {

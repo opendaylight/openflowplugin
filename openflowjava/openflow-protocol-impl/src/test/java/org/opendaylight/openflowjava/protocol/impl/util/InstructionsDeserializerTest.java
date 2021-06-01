@@ -60,7 +60,7 @@ public class InstructionsDeserializerTest {
 
         message.skipBytes(4); // skip XID
 
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         List<Instruction> instructions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID,
                 message.readableBytes(), message, keyMaker, registry);
         Instruction i1 = instructions.get(0);

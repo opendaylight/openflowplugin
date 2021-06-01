@@ -184,7 +184,7 @@ public class OF13ActionsSerializerTest {
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         ListSerializer.serializeList(actions, TypeKeyMakerFactory
-                .createActionKeyMaker(EncodeConstants.OF13_VERSION_ID), registry, out);
+                .createActionKeyMaker(EncodeConstants.OF_VERSION_1_3), registry, out);
 
         Assert.assertEquals("Wrong action type", 0, out.readUnsignedShort());
         Assert.assertEquals("Wrong action length", 16, out.readUnsignedShort());
@@ -284,7 +284,7 @@ public class OF13ActionsSerializerTest {
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         ListSerializer.serializeHeaderList(actions, TypeKeyMakerFactory
-                .createActionKeyMaker(EncodeConstants.OF13_VERSION_ID), registry, out);
+                .createActionKeyMaker(EncodeConstants.OF_VERSION_1_3), registry, out);
 
         Assert.assertEquals("Wrong action type", 0, out.readUnsignedShort());
         Assert.assertEquals("Wrong action length", 4, out.readUnsignedShort());

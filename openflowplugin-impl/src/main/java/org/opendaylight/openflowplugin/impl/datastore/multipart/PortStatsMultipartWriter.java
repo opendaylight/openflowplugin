@@ -60,7 +60,7 @@ public class PortStatsMultipartWriter extends AbstractMultipartWriter<NodeConnec
                         .child(FlowCapableNodeConnectorStatistics.class),
                     new FlowCapableNodeConnectorStatisticsBuilder(stat)
                         .build(),
-                        OFConstants.OFP_VERSION_1_0 == features.getVersion().toJava() || withParents);
+                        OFConstants.OFP_VERSION_1_0.equals(features.getVersion()) || withParents);
             });
     }
 

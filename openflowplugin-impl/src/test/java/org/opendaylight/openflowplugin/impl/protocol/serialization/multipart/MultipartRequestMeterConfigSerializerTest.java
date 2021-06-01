@@ -30,7 +30,7 @@ public class MultipartRequestMeterConfigSerializerTest extends AbstractSerialize
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID,
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3,
                 MultipartRequestMeterConfig.class));
     }
 
@@ -43,5 +43,4 @@ public class MultipartRequestMeterConfigSerializerTest extends AbstractSerialize
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_METER_CONFIG_BODY);
         assertEquals(out.readableBytes(), 0);
     }
-
 }

@@ -67,7 +67,7 @@ public class OF10ActionsDeserializerTest {
                 + "00 0B 00 10 00 04 00 00 00 00 00 00 00 00 00 30");
 
         message.skipBytes(4); // skip XID
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_0);
         List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID,
                 message.readableBytes(), message, keyMaker, registry);
         Assert.assertEquals("Wrong number of actions", 12, actions.size());

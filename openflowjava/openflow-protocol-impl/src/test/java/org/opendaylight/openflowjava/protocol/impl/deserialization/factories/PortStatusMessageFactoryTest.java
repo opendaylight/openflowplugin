@@ -43,7 +43,7 @@ public class PortStatusMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         statusFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 12, PortStatusMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 12, PortStatusMessage.class));
     }
 
     /**

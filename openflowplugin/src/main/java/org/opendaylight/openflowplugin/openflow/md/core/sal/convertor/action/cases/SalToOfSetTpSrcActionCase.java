@@ -38,6 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.icmpv6.type._case.Icmpv6TypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.tcp.src._case.TcpSrcBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.udp.src._case.UdpSrcBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,44 +66,40 @@ public class SalToOfSetTpSrcActionCase extends ConvertorCase<SetTpSrcActionCase,
                 .setOxmClass(OpenflowBasicClass.class)
                 .setHasMask(Boolean.FALSE);
 
-        int port = settpsrcaction.getPort().getValue().toJava();
-        int type = 0xff & port;
+        final Uint16 port = settpsrcaction.getPort().getValue();
+        final Uint8 type = Uint8.valueOf(0xff & port.toJava());
 
         if (protocol != null) {
             switch (protocol) {
                 case ICMP:
                     matchBuilder.setOxmMatchField(Icmpv4Type.class);
-                    Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
-                    Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
-                    icmpv4TypeBuilder.setIcmpv4Type((short) type);
-                    icmpv4TypeCaseBuilder.setIcmpv4Type(icmpv4TypeBuilder.build());
-                    matchBuilder.setMatchEntryValue(icmpv4TypeCaseBuilder.build());
+                    matchBuilder.setMatchEntryValue(new Icmpv4TypeCaseBuilder()
+                        .setIcmpv4Type(new Icmpv4TypeBuilder().setIcmpv4Type(type).build())
+                        .build());
                     break;
                 case ICMPV6:
                     matchBuilder.setOxmMatchField(Icmpv6Type.class);
-                    Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
-                    Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
-                    icmpv6TypeBuilder.setIcmpv6Type((short) type);
-                    icmpv6TypeCaseBuilder.setIcmpv6Type(icmpv6TypeBuilder.build());
-                    matchBuilder.setMatchEntryValue(icmpv6TypeCaseBuilder.build());
+                    matchBuilder.setMatchEntryValue(new Icmpv6TypeCaseBuilder()
+                        .setIcmpv6Type(new Icmpv6TypeBuilder().setIcmpv6Type(type).build())
+                        .build());
                     break;
                 case TCP:
                     matchBuilder.setOxmMatchField(TcpSrc.class);
-                    TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
-                    TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
-                    tcpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet
-                            .types.rev130715.PortNumber(port));
-                    tcpSrcCaseBuilder.setTcpSrc(tcpSrcBuilder.build());
-                    matchBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
+                    matchBuilder.setMatchEntryValue(new TcpSrcCaseBuilder()
+                        .setTcpSrc(new TcpSrcBuilder()
+                            .setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
+                                .rev130715.PortNumber(port))
+                            .build())
+                        .build());
                     break;
                 case UDP:
                     matchBuilder.setOxmMatchField(UdpSrc.class);
-                    UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
-                    UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
-                    udpSrcBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet
-                            .types.rev130715.PortNumber(port));
-                    udpSrcCaseBuilder.setUdpSrc(udpSrcBuilder.build());
-                    matchBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
+                    matchBuilder.setMatchEntryValue(new UdpSrcCaseBuilder()
+                        .setUdpSrc(new UdpSrcBuilder()
+                            .setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
+                                .rev130715.PortNumber(port))
+                            .build())
+                        .build());
                     break;
                 default:
                     LOG.warn("Unknown protocol with combination of SetSourcePort: {}", protocol);

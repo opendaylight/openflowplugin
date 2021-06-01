@@ -97,7 +97,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
     @Override
     protected void init() {
         serializer = getRegistry()
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PortMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, PortMessage.class));
     }
 
     @Test

@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowjava.nx.codec.action;
 
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.nx.NiciraExtensionCodecRegistratorImpl;
 import org.opendaylight.openflowjava.nx.api.NiciraActionDeserializerKey;
@@ -18,6 +20,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterActionDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +29,12 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
     private static final Logger LOG = LoggerFactory.getLogger(ActionDeserializer.class);
 
     public static final ExperimenterActionDeserializerKey OF13_DESERIALIZER_KEY = new ExperimenterActionDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, NiciraConstants.NX_VENDOR_ID.toJava());
+            EncodeConstants.OF_VERSION_1_3, NiciraConstants.NX_VENDOR_ID.toJava());
     public static final ExperimenterActionDeserializerKey OF10_DESERIALIZER_KEY = new ExperimenterActionDeserializerKey(
-            EncodeConstants.OF10_VERSION_ID, NiciraConstants.NX_VENDOR_ID.toJava());
+            EncodeConstants.OF_VERSION_1_0, NiciraConstants.NX_VENDOR_ID.toJava());
 
-    private final short version;
+    private final Uint8 version;
+
     private DeserializerRegistry deserializerRegistry;
 
     /**
@@ -38,12 +42,12 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
      *
      * @param version protocol wire version
      */
-    public ActionDeserializer(short version) {
-        this.version = version;
+    public ActionDeserializer(final Uint8 version) {
+        this.version = requireNonNull(version);
     }
 
     @Override
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         final int startPosition = message.readerIndex();
         // size of experimenter type
         message.skipBytes(Short.BYTES);
@@ -66,7 +70,7 @@ public class ActionDeserializer implements OFDeserializer<Action>, DeserializerR
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry registry) {
         this.deserializerRegistry = registry;
     }
 

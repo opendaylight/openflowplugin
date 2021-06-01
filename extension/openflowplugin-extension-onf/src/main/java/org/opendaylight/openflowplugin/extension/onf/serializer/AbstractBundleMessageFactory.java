@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.onf.serializer;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.writeUint32;
+
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
@@ -20,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.BundlePropertyExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,12 +64,12 @@ public abstract class AbstractBundleMessageFactory<T extends DataContainer> impl
     }
 
     private void writeBundleExperimenterProperty(final BundlePropertyExperimenter property, final ByteBuf outBuffer) {
-        int experimenterId = property.getExperimenter().getValue().intValue();
-        int expType = property.getExpType().intValue();
-        outBuffer.writeInt(experimenterId);
-        outBuffer.writeInt(expType);
+        final Uint32 experimenterId = property.getExperimenter().getValue();
+        final Uint32 expType = property.getExpType();
+        writeUint32(outBuffer, experimenterId);
+        writeUint32(outBuffer, expType);
         OFSerializer<BundlePropertyExperimenterData> serializer = serializerRegistry.getSerializer(
-                new ExperimenterIdTypeSerializerKey<>(EncodeConstants.OF13_VERSION_ID, experimenterId, expType,
+                new ExperimenterIdTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_3, experimenterId, expType.toJava(),
                         BundlePropertyExperimenterData.class));
         serializer.serialize(property.getBundlePropertyExperimenterData(), outBuffer);
     }

@@ -181,7 +181,7 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
     @Override
     protected void init() {
         serializer = getRegistry()
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, FlowMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, FlowMessage.class));
     }
 
     @Test

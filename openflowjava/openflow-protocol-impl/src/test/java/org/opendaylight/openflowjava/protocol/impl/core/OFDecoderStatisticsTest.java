@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.Mockito.when;
 
 import io.netty.buffer.ByteBuf;
@@ -26,6 +25,7 @@ import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test to count decoder events (counters US_DECODE_SUCCESS, US_DECODE_FAIL and
@@ -82,11 +82,11 @@ public class OFDecoderStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.US_RECEIVED_IN_OFJAVA + " is not enable");
         }
         int count = 4;
-        when(mockDeserializationFactory.deserialize(any(ByteBuf.class),anyShort())).thenReturn(mockDataObject);
+        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), any(Uint8.class))).thenReturn(mockDataObject);
 
         for (int i = 0; i < count; i++) {
             writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
-            inMsg = new VersionMessageWrapper((short) 8, writeObj);
+            inMsg = new VersionMessageWrapper(Uint8.valueOf(8), writeObj);
             ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
         }
 
@@ -114,12 +114,12 @@ public class OFDecoderStatisticsTest {
             Assert.fail("Counter " + CounterEventTypes.US_RECEIVED_IN_OFJAVA + " is not enable");
         }
         int count = 2;
-        when(mockDeserializationFactory.deserialize(any(ByteBuf.class),anyShort()))
+        when(mockDeserializationFactory.deserialize(any(ByteBuf.class), any(Uint8.class)))
             .thenThrow(new IllegalArgumentException());
 
         for (int i = 0; i < count; i++) {
             writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");
-            inMsg = new VersionMessageWrapper((short) 8, writeObj);
+            inMsg = new VersionMessageWrapper(Uint8.valueOf(8), writeObj);
             ofDecoder.decode(mockChHndlrCtx, inMsg, outList);
         }
 

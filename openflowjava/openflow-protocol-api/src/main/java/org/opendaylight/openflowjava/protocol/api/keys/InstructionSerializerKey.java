@@ -8,8 +8,10 @@
 
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.InstructionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an instruction serializer.
@@ -30,8 +32,7 @@ public class InstructionSerializerKey<T extends InstructionChoice>
      * @param instructionType type of instruction
      * @param experimenterId experimenter / vendor ID
      */
-    public InstructionSerializerKey(short msgVersion, Class<T> instructionType,
-            Long experimenterId) {
+    public InstructionSerializerKey(final Uint8 msgVersion, final Class<T> instructionType, final Long experimenterId) {
         super(msgVersion, Instruction.class);
         this.instructionType = instructionType;
         this.experimenterId = experimenterId;
@@ -47,7 +48,7 @@ public class InstructionSerializerKey<T extends InstructionChoice>
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -58,18 +59,10 @@ public class InstructionSerializerKey<T extends InstructionChoice>
             return false;
         }
         InstructionSerializerKey<?> other = (InstructionSerializerKey<?>) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
+        if (!Objects.equals(experimenterId, other.experimenterId)) {
             return false;
         }
-        if (instructionType == null) {
-            if (other.instructionType != null) {
-                return false;
-            }
-        } else if (!instructionType.equals(other.instructionType)) {
+        if (!Objects.equals(instructionType, other.instructionType)) {
             return false;
         }
         return true;

@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUt
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.ActionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public abstract class AbstractActionInstructionSerializer<T extends Instruction>
         extends AbstractInstructionSerializer<T> implements SerializerRegistryInjector {
@@ -36,7 +37,7 @@ public abstract class AbstractActionInstructionSerializer<T extends Instruction>
      * @param outBuffer output buffer
      * @param startIndex start index of byte buffer
      */
-    protected void writeActions(final ActionList actions, final short version, final ByteBuf outBuffer,
+    protected void writeActions(final ActionList actions, final Uint8 version, final ByteBuf outBuffer,
             final int startIndex) {
         if (actions != null) {
             final int lengthIndex = outBuffer.writerIndex();

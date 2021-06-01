@@ -43,7 +43,7 @@ public class OF10PacketOutInputMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 13, PacketOutInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 13, PacketOutInput.class));
     }
 
     @Test

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -18,7 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetFieldCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
@@ -46,7 +45,7 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
         MatchEntry entry = ((SetFieldCase) action.getActionChoice()).getSetFieldAction()
                 .getMatchEntry().get(0);
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF13_VERSION_ID, entry.getOxmClass(), entry.getOxmMatchField());
+                EncodeConstants.OF_VERSION_1_3, entry.getOxmClass(), entry.getOxmMatchField());
         if (entry.getOxmClass().equals(ExperimenterClass.class)) {
             ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) entry.getMatchEntryValue();
             key.setExperimenterId(experimenterIdCase.getExperimenter().getExperimenter().getValue());
@@ -72,5 +71,4 @@ public class OF13SetFieldActionSerializer implements OFSerializer<Action>,
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         registry = serializerRegistry;
     }
-
 }

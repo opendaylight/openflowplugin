@@ -48,15 +48,16 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     private final ActionDeserializer of10ActionDeserializer;
     private final ActionDeserializer of13ActionDeserializer;
 
-    public NiciraExtensionCodecRegistratorImpl(List<SwitchConnectionProvider> providers) {
+    public NiciraExtensionCodecRegistratorImpl(final List<SwitchConnectionProvider> providers) {
         this.providers = providers;
-        of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF10_VERSION_ID);
-        of13ActionDeserializer = new ActionDeserializer(EncodeConstants.OF13_VERSION_ID);
+        of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF_VERSION_1_0);
+        of13ActionDeserializer = new ActionDeserializer(EncodeConstants.OF_VERSION_1_3);
         registerActionDeserializer(ActionDeserializer.OF10_DESERIALIZER_KEY, of10ActionDeserializer);
         registerActionDeserializer(ActionDeserializer.OF13_DESERIALIZER_KEY, of13ActionDeserializer);
     }
 
-    private void registerActionDeserializer(ExperimenterActionDeserializerKey key, OFGeneralDeserializer deserializer) {
+    private void registerActionDeserializer(final ExperimenterActionDeserializerKey key,
+            final OFGeneralDeserializer deserializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerActionDeserializer(key, deserializer);
         }
@@ -72,20 +73,21 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer)
      */
     @Override
-    public void registerActionDeserializer(NiciraActionDeserializerKey key, OFDeserializer<Action> deserializer) {
+    public void registerActionDeserializer(final NiciraActionDeserializerKey key,
+            final OFDeserializer<Action> deserializer) {
         if (deserializer instanceof DeserializerRegistryInjector) {
             DeserializerRegistryInjector registryInjectable = (DeserializerRegistryInjector) deserializer;
-            if (key.getVersion() == EncodeConstants.OF10_VERSION_ID) {
+            if (EncodeConstants.OF_VERSION_1_0.equals(key.getVersion())) {
                 registryInjectable.injectDeserializerRegistry(of10ActionDeserializer.getDeserializerRegistry());
             }
-            if (key.getVersion() == EncodeConstants.OF13_VERSION_ID) {
+            if (EncodeConstants.OF_VERSION_1_3.equals(key.getVersion())) {
                 registryInjectable.injectDeserializerRegistry(of13ActionDeserializer.getDeserializerRegistry());
             }
         }
         ACTION_DESERIALIZERS.put(key, deserializer);
     }
 
-    private void registerActionSerializer(ActionSerializerKey<?> key, OFGeneralSerializer serializer) {
+    private void registerActionSerializer(final ActionSerializerKey<?> key, final OFGeneralSerializer serializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerActionSerializer(key, serializer);
         }
@@ -101,17 +103,17 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer)
      */
     @Override
-    public void registerActionSerializer(NiciraActionSerializerKey key, OFSerializer<Action> serializer) {
+    public void registerActionSerializer(final NiciraActionSerializerKey key, final OFSerializer<Action> serializer) {
         registerActionSerializer(NiciraUtil.createOfJavaKeyFrom(key), serializer);
     }
 
-    private void unregisterDeserializer(ExperimenterDeserializerKey key) {
+    private void unregisterDeserializer(final ExperimenterDeserializerKey key) {
         for (SwitchConnectionProvider provider : providers) {
             provider.unregisterDeserializer(key);
         }
     }
 
-    private void unregisterSerializer(ExperimenterSerializerKey key) {
+    private void unregisterSerializer(final ExperimenterSerializerKey key) {
         for (SwitchConnectionProvider provider : providers) {
             provider.unregisterSerializer(key);
         }
@@ -126,11 +128,11 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * .openflow.extension.nicira.api.NiciraActionDeserializerKey)
      */
     @Override
-    public void unregisterActionDeserializer(NiciraActionDeserializerKey key) {
+    public void unregisterActionDeserializer(final NiciraActionDeserializerKey key) {
         ACTION_DESERIALIZERS.remove(key);
     }
 
-    public static OFDeserializer<Action> getActionDeserializer(NiciraActionDeserializerKey key) {
+    public static OFDeserializer<Action> getActionDeserializer(final NiciraActionDeserializerKey key) {
         return ACTION_DESERIALIZERS.get(key);
     }
 
@@ -143,7 +145,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * .openflow.extension.nicira.api.NiciraActionSerializerKey)
      */
     @Override
-    public void unregisterActionSerializer(NiciraActionSerializerKey key) {
+    public void unregisterActionSerializer(final NiciraActionSerializerKey key) {
         unregisterSerializer(NiciraUtil.createOfJavaKeyFrom(key));
     }
 
@@ -157,7 +159,8 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer)
      */
     @Override
-    public void registerMatchEntryDeserializer(MatchEntryDeserializerKey key, OFDeserializer<MatchEntry> deserializer) {
+    public void registerMatchEntryDeserializer(final MatchEntryDeserializerKey key,
+            final OFDeserializer<MatchEntry> deserializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerMatchEntryDeserializer(key, deserializer);
         }
@@ -172,7 +175,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * .openflowjava.protocol.api.keys.MatchEntryDeserializerKey)
      */
     @Override
-    public void unregisterMatchEntryDeserializer(MatchEntryDeserializerKey key) {
+    public void unregisterMatchEntryDeserializer(final MatchEntryDeserializerKey key) {
         unregisterDeserializer(key);
     }
 
@@ -186,8 +189,9 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      * org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer)
      */
     @Override
-    public void registerMatchEntrySerializer(MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
-            OFSerializer<MatchEntry> serializer) {
+    public void registerMatchEntrySerializer(
+            final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
+            final OFSerializer<MatchEntry> serializer) {
         for (SwitchConnectionProvider provider : providers) {
             provider.registerMatchEntrySerializer(key, serializer);
         }
@@ -203,7 +207,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
      */
     @Override
     public void unregisterMatchEntrySerializer(
-            MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key) {
+            final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key) {
         unregisterSerializer(key);
     }
 

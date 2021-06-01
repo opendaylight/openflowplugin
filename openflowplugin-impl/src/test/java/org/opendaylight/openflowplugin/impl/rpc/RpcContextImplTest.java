@@ -8,10 +8,13 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -40,6 +42,7 @@ import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RpcContextImplTest {
@@ -80,6 +83,7 @@ public class RpcContextImplTest {
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
+        when(deviceInfo.reserveXidForDeviceMessage()).thenReturn(Uint32.TWO);
 
         rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
@@ -139,9 +143,9 @@ public class RpcContextImplTest {
 
     public void testRegisterRpcServiceImplementation() {
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        verify(rpcProviderRegistry, Mockito.times(1)).registerRpcImplementation(TestRpcService.class, serviceInstance,
+        verify(rpcProviderRegistry, times(1)).registerRpcImplementation(TestRpcService.class, serviceInstance,
             ImmutableSet.of(nodeInstanceIdentifier));
-        assertEquals(rpcContext.isEmptyRpcRegistrations(), false);
+        assertFalse(rpcContext.isEmptyRpcRegistrations());
     }
 
     @Test
@@ -149,7 +153,7 @@ public class RpcContextImplTest {
         when(routedRpcReg.getInstance()).thenReturn(serviceInstance);
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
         TestRpcService temp = rpcContext.lookupRpcService(TestRpcService.class);
-        assertEquals(serviceInstance,temp);
+        assertEquals(serviceInstance, temp);
     }
 
     @Test
@@ -157,7 +161,7 @@ public class RpcContextImplTest {
         when(routedRpcReg.getInstance()).thenReturn(serviceInstance);
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
         rpcContext.close();
-        assertEquals(rpcContext.isEmptyRpcRegistrations(), true);
+        assertTrue(rpcContext.isEmptyRpcRegistrations());
     }
 
     /**
@@ -166,7 +170,7 @@ public class RpcContextImplTest {
     @Test
     public void testCreateRequestContext1() {
         when(deviceInfo.reserveXidForDeviceMessage()).thenReturn(null);
-        assertEquals(rpcContext.createRequestContext(),null);
+        assertNull(rpcContext.createRequestContext());
     }
 
     /**
@@ -183,9 +187,9 @@ public class RpcContextImplTest {
     @Test
     public void testUnregisterRpcServiceImpl() {
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        assertEquals(rpcContext.isEmptyRpcRegistrations(), false);
+        assertFalse(rpcContext.isEmptyRpcRegistrations());
         rpcContext.unregisterRpcServiceImplementation(TestRpcService.class);
-        assertEquals(rpcContext.isEmptyRpcRegistrations(), true);
+        assertTrue(rpcContext.isEmptyRpcRegistrations());
     }
 
     //Stub for RpcService class.

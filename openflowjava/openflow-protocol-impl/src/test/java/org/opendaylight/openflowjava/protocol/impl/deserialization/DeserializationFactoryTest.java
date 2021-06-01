@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import static org.junit.Assert.assertEquals;
@@ -14,6 +13,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.PooledByteBufAllocator;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Unit tests for DeserializationFactory.
@@ -34,7 +34,7 @@ public class DeserializationFactoryTest {
         buffer.writeByte(0);
         buffer.writeShort(EncodeConstants.OFHEADER_SIZE);
         buffer.writeInt(1234);
-        factory.deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+        factory.deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
         assertEquals("Deserialization failed", 0, buffer.readableBytes());
     }
 
@@ -50,6 +50,6 @@ public class DeserializationFactoryTest {
         buffer.writeByte(0);
         buffer.writeShort(EncodeConstants.OFHEADER_SIZE);
         buffer.writeInt(1234);
-        factory.deserialize(buffer, (short) 0);
+        factory.deserialize(buffer, Uint8.ZERO);
     }
 }

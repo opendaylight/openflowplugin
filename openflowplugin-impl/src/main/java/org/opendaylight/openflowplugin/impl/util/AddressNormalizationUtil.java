@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public final class AddressNormalizationUtil {
      * @param protocolVersion the OpenFLow protocol version
      * @return normalized uri
      */
-    public static @Nullable Uri normalizeProtocolAgnosticPort(@Nullable final Uri port, final short protocolVersion) {
+    public static @Nullable Uri normalizeProtocolAgnosticPort(@Nullable final Uri port, final Uint8 protocolVersion) {
         if (port == null) {
             return null;
         }

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>8.1.1</version>
+        <version>9.0.2</version>
         <relativePath/>
     </parent>
 
@@ -21,7 +21,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>7.0.6</version>
+                <version>8.0.0</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>controller-artifacts</artifactId>
-                <version>3.0.7</version>
+                <version>4.0.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -42,20 +42,6 @@
         <dependency>
             <groupId>org.opendaylight.mdsal.model</groupId>
             <artifactId>odl-mdsal-model-odl-l2-types</artifactId>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>odl-mdsal-model-inventory</artifactId>
-            <classifier>features</classifier>
-            <type>xml</type>
-        </dependency>
-
-        <dependency>
-            <groupId>org.opendaylight.controller</groupId>
-            <artifactId>odl-controller-model-topology</artifactId>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
@@ -86,6 +72,17 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-inventory</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-topology</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -28,7 +28,7 @@ public class InPhyPortEntryDeserializerTest extends AbstractMatchEntryDeserializ
         writeHeader(in, false);
         in.writeInt(port);
 
-        assertEquals(OpenflowPortsUtil.getPortLogicalName(EncodeConstants.OF13_VERSION_ID,
+        assertEquals(OpenflowPortsUtil.getPortLogicalName(EncodeConstants.OF_VERSION_1_3,
                 BinContent.intToUnsignedLong(port)), deserialize(in).getInPhyPort().getValue());
         assertEquals(0, in.readableBytes());
     }

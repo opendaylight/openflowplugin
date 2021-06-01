@@ -85,7 +85,7 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
                     actions.add(new ActionBuilder()
                         .withKey(new ActionKey(offset))
                         .setOrder(offset)
-                        .setAction(ActionUtil.readAction(EncodeConstants.OF13_VERSION_ID, message, registry,
+                        .setAction(ActionUtil.readAction(EncodeConstants.OF_VERSION_1_3, message, registry,
                                 ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION))
                         .build());
 

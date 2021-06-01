@@ -145,7 +145,7 @@ public class OF13InstructionsSerializerTest {
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         ListSerializer.serializeList(instructions, TypeKeyMakerFactory
-                .createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID), registry, out);
+                .createInstructionKeyMaker(EncodeConstants.OF_VERSION_1_3), registry, out);
 
         Assert.assertEquals("Wrong instruction type", 1, out.readUnsignedShort());
         Assert.assertEquals("Wrong instruction length", 8, out.readUnsignedShort());

@@ -5,19 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.device;
+
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Reserves unique XID for Device Messages.
  */
 public interface XidSequencer {
-
     /**
      * Method reserve unique XID for Device Message.
-     * Attention: OFJava expect the message,
-     * otherwise OutboundQueue could stop working.
+     * Attention: OFJava expect the message, otherwise OutboundQueue could stop working.
+     *
      * @return Reserved XID
      */
-    Long reserveXidForDeviceMessage();
+    Uint32 reserveXidForDeviceMessage();
 }

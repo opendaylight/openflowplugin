@@ -12,7 +12,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.InstructionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.InstructionChoice;
@@ -20,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Creates KeyMakers.
@@ -38,7 +39,7 @@ public final class TypeKeyMakerFactory {
      * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
-    public static TypeKeyMaker<MatchEntry> createMatchEntriesKeyMaker(final short version) {
+    public static TypeKeyMaker<MatchEntry> createMatchEntriesKeyMaker(final Uint8 version) {
         return new AbstractTypeKeyMaker<>(version) {
             @Override
             public MatchEntrySerializerKey<?, ?> make(final MatchEntry entry) {
@@ -62,7 +63,7 @@ public final class TypeKeyMakerFactory {
      * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
-    public static TypeKeyMaker<Action> createActionKeyMaker(final short version) {
+    public static TypeKeyMaker<Action> createActionKeyMaker(final Uint8 version) {
         return new AbstractTypeKeyMaker<>(version) {
             @Override
             public MessageTypeKey<?> make(final Action entry) {
@@ -83,7 +84,7 @@ public final class TypeKeyMakerFactory {
      * @param version openflow wire version that shall be used in lookup key
      * @return lookup key
      */
-    public static TypeKeyMaker<Instruction> createInstructionKeyMaker(final short version) {
+    public static TypeKeyMaker<Instruction> createInstructionKeyMaker(final Uint8 version) {
         return new AbstractTypeKeyMaker<>(version) {
             @Override
             public MessageTypeKey<?> make(final Instruction entry) {

@@ -5,10 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an experimenter id type deserializer.
@@ -16,7 +17,6 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @author michal.polkorab
  */
 public class ExperimenterIdTypeDeserializerKey extends ExperimenterIdDeserializerKey {
-
     private final long type;
 
     /**
@@ -28,8 +28,8 @@ public class ExperimenterIdTypeDeserializerKey extends ExperimenterIdDeserialize
      * @param type           data type according to vendor implementation
      * @param objectClass    class of object to be serialized
      */
-    public <T extends DataContainer> ExperimenterIdTypeDeserializerKey(final short version, final long experimenterId,
-                                                                       final long type, Class<T> objectClass) {
+    public <T extends DataContainer> ExperimenterIdTypeDeserializerKey(final Uint8 version, final Uint32 experimenterId,
+                                                                       final long type, final Class<T> objectClass) {
         super(version, experimenterId, objectClass);
         this.type = type;
     }
@@ -43,7 +43,7 @@ public class ExperimenterIdTypeDeserializerKey extends ExperimenterIdDeserialize
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!super.equals(obj)) {
             return false;
         }

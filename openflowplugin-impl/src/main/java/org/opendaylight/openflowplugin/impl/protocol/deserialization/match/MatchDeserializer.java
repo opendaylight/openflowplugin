@@ -83,7 +83,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
         int oxmField = inBuffer.getUnsignedByte(inBuffer.readerIndex() + Short.BYTES) >>> 1;
 
         final MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
-                EncodeConstants.OF13_VERSION_ID, oxmClass, oxmField);
+                EncodeConstants.OF_VERSION_1_3, oxmClass, oxmField);
 
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
             long expId = inBuffer.getUnsignedInt(inBuffer.readerIndex() + Short.BYTES + 2 * Byte.BYTES);
@@ -96,7 +96,7 @@ public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeseriali
             entryDeserializer.deserializeEntry(inBuffer, builder);
         } else {
             final OFDeserializer<MatchEntry> deserializer = registry.getDeserializer(key);
-            MatchExtensionHelper.injectExtension(EncodeConstants.OF13_VERSION_ID,
+            MatchExtensionHelper.injectExtension(EncodeConstants.OF_VERSION_1_3,
                     deserializer.deserialize(inBuffer), builder, matchPath);
         }
     }

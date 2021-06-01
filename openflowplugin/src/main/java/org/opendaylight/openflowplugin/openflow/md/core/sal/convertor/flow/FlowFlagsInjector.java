@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.util.HashMap;
@@ -18,17 +17,18 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Res
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlagsV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class FlowFlagsInjector {
     private FlowFlagsInjector() {
     }
 
     @SuppressWarnings("unchecked")
-    public static <F, T> void inject(Optional<F> source, T target, short version) {
+    public static <F, T> void inject(final Optional<F> source, final T target, final Uint8 version) {
         F sourceResult;
         if (source.isPresent()) {
             sourceResult = source.get();
-        } else if (version == EncodeConstants.OF10_VERSION_ID) {
+        } else if (version.equals(EncodeConstants.OF_VERSION_1_0)) {
             sourceResult = (F) FlowFlagsV10Convertor.defaultResult();
         } else {
             sourceResult = (F) FlowFlagsConvertor.defaultResult();

@@ -39,7 +39,7 @@ public class MultipartRequestMeterInputMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 18, MultipartRequestInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 18, MultipartRequestInput.class));
     }
 
     @Test

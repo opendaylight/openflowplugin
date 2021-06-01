@@ -83,7 +83,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.nodes.node.meter.MeterStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.node.meter.statistics.MeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
@@ -185,7 +185,7 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.isTransactionsEnabled()).thenReturn(Boolean.TRUE);
         when(connectionAdapter.getFeatures()).thenReturn(features);
         when(features.getDatapathId()).thenReturn(Uint64.ONE);
-        when(features.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        when(features.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         when(deviceInfo.getDatapathId()).thenReturn(Uint64.ONE);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(dummyNodePath);

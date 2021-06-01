@@ -17,9 +17,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfMplsLabel;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.OfMplsLabelCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.OfMplsLabelCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.oxm.of.mpls.label.grouping.MplsLabelValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfMplsLabelCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.OfMplsLabelCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MplsLabelCodec extends AbstractMatchCodec {
@@ -28,10 +28,10 @@ public class MplsLabelCodec extends AbstractMatchCodec {
     private static final int NXM_FIELD_CODE = 34;
 
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfMplsLabel> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfMplsLabel.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfMplsLabel.class);
 
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
+            EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
     @Override
     public void serialize(final MatchEntry input, final ByteBuf outBuffer) {

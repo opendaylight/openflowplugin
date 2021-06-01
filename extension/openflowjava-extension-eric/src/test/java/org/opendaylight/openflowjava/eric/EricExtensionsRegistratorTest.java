@@ -43,18 +43,18 @@ public class EricExtensionsRegistratorTest {
     @Test
     public void registerEricExtensionsTest() {
         verify(registrator).registerMatchEntrySerializer(
-                eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
+                eq(new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
                         Icmpv6NdReserved.class)), any(Icmpv6NDReservedCodec.class));
         verify(registrator).registerMatchEntryDeserializer(
-                eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+                eq(new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                         EricConstants.ERICOXM_OF_EXPERIMENTER_ID, EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED)),
                 any(Icmpv6NDReservedCodec.class));
 
         verify(registrator).registerMatchEntrySerializer(
-                        eq(new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
+                        eq(new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
                                 Icmpv6NdOptionsType.class)), any(Icmpv6NDOptionsTypeCodec.class));
         verify(registrator).registerMatchEntryDeserializer(
-                        eq(new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+                        eq(new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                                 EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                                 EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE)),
                 any(Icmpv6NDOptionsTypeCodec.class));
@@ -65,17 +65,17 @@ public class EricExtensionsRegistratorTest {
         ericExtensionsRegistrator.close();
 
         verify(registrator).unregisterMatchEntrySerializer(
-                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
+                new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
                         Icmpv6NdReserved.class));
         verify(registrator).unregisterMatchEntryDeserializer(
-                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
+                new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                         EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED));
 
         verify(registrator).unregisterMatchEntrySerializer(
-                new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, EricExpClass.class,
+                new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
                         Icmpv6NdOptionsType.class));
         verify(registrator).unregisterMatchEntryDeserializer(
-                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
+                new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                          EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE));
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import static org.junit.Assert.assertEquals;
@@ -45,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.TypeToClassMapInitializer}.
@@ -60,7 +60,7 @@ public class TypeToClassMapInitializerTest {
         messageClassMap = new HashMap<>();
         TypeToClassMapInitializer.initializeTypeToClassMap(messageClassMap);
 
-        short version = EncodeConstants.OF10_VERSION_ID;
+        Uint8 version = EncodeConstants.OF_VERSION_1_0;
         assertEquals("Wrong class", HelloMessage.class, messageClassMap.get(new TypeToClassKey(version, 0)));
         assertEquals("Wrong class", ErrorMessage.class, messageClassMap.get(new TypeToClassKey(version, 1)));
         assertEquals("Wrong class", EchoRequestMessage.class, messageClassMap.get(new TypeToClassKey(version, 2)));
@@ -75,7 +75,7 @@ public class TypeToClassMapInitializerTest {
         assertEquals("Wrong class", BarrierOutput.class, messageClassMap.get(new TypeToClassKey(version, 19)));
         assertEquals("Wrong class", GetQueueConfigOutput.class, messageClassMap.get(new TypeToClassKey(version, 21)));
 
-        version = EncodeConstants.OF13_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_3;
         assertEquals("Wrong class", HelloMessage.class, messageClassMap.get(new TypeToClassKey(version, 0)));
         assertEquals("Wrong class", ErrorMessage.class, messageClassMap.get(new TypeToClassKey(version, 1)));
         assertEquals("Wrong class", EchoRequestMessage.class, messageClassMap.get(new TypeToClassKey(version, 2)));
@@ -92,14 +92,14 @@ public class TypeToClassMapInitializerTest {
         assertEquals("Wrong class", RoleRequestOutput.class, messageClassMap.get(new TypeToClassKey(version, 25)));
         assertEquals("Wrong class", GetAsyncOutput.class, messageClassMap.get(new TypeToClassKey(version, 27)));
 
-        version = EncodeConstants.OF14_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_4;
         assertEquals("Wrong class", HelloMessage.class, messageClassMap.get(new TypeToClassKey(version, 0)));
         assertEquals("Wrong class", EchoRequestMessage.class, messageClassMap.get(new TypeToClassKey(version, 2)));
         assertEquals("Wrong class", EchoOutput.class, messageClassMap.get(new TypeToClassKey(version, 3)));
         assertEquals("Wrong class", GetConfigOutput.class, messageClassMap.get(new TypeToClassKey(version, 8)));
         assertEquals("Wrong class", BarrierOutput.class, messageClassMap.get(new TypeToClassKey(version, 21)));
 
-        version = EncodeConstants.OF15_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_5;
         assertEquals("Wrong class", HelloMessage.class, messageClassMap.get(new TypeToClassKey(version, 0)));
         assertEquals("Wrong class", EchoRequestMessage.class, messageClassMap.get(new TypeToClassKey(version, 2)));
         assertEquals("Wrong class", EchoOutput.class, messageClassMap.get(new TypeToClassKey(version, 3)));
@@ -112,7 +112,7 @@ public class TypeToClassMapInitializerTest {
         messageClassMap = new HashMap<>();
         TypeToClassMapInitializer.initializeAdditionalTypeToClassMap(messageClassMap);
 
-        short version = EncodeConstants.OF10_VERSION_ID;
+        Uint8 version = EncodeConstants.OF_VERSION_1_0;
         assertEquals("Wrong class", GetFeaturesInput.class, messageClassMap.get(new TypeToClassKey(version, 5)));
         assertEquals("Wrong class", GetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 7)));
         assertEquals("Wrong class", SetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 9)));
@@ -123,7 +123,7 @@ public class TypeToClassMapInitializerTest {
         assertEquals("Wrong class", BarrierInput.class, messageClassMap.get(new TypeToClassKey(version, 18)));
         assertEquals("Wrong class", GetQueueConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 20)));
 
-        version = EncodeConstants.OF13_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_3;
         assertEquals("Wrong class", GetFeaturesInput.class, messageClassMap.get(new TypeToClassKey(version, 5)));
         assertEquals("Wrong class", GetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 7)));
         assertEquals("Wrong class", SetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 9)));
@@ -140,15 +140,14 @@ public class TypeToClassMapInitializerTest {
         assertEquals("Wrong class", SetAsyncInput.class, messageClassMap.get(new TypeToClassKey(version, 28)));
         assertEquals("Wrong class", MeterModInput.class, messageClassMap.get(new TypeToClassKey(version, 29)));
 
-        version = EncodeConstants.OF14_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_4;
         assertEquals("Wrong class", GetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 7)));
         assertEquals("Wrong class", SetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 9)));
         assertEquals("Wrong class", BarrierInput.class, messageClassMap.get(new TypeToClassKey(version, 20)));
 
-        version = EncodeConstants.OF15_VERSION_ID;
+        version = EncodeConstants.OF_VERSION_1_5;
         assertEquals("Wrong class", GetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 7)));
         assertEquals("Wrong class", SetConfigInput.class, messageClassMap.get(new TypeToClassKey(version, 9)));
         assertEquals("Wrong class", BarrierInput.class, messageClassMap.get(new TypeToClassKey(version, 20)));
     }
-
 }

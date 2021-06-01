@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.util;
 
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdMeterSubTypeSerializerKey;
@@ -15,6 +14,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Factory for creating experimenter serializer keys.
@@ -32,7 +33,7 @@ public abstract class ExperimenterSerializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdSerializerKey<ExperimenterDataOfChoice> createExperimenterMessageSerializerKey(
-            short msgVersion, long experimenterId, long type) {
+            final Uint8 msgVersion, final Uint32 experimenterId, final long type) {
         return new ExperimenterIdTypeSerializerKey<>(msgVersion, experimenterId, type, ExperimenterDataOfChoice.class);
     }
 
@@ -45,7 +46,7 @@ public abstract class ExperimenterSerializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdSerializerKey<ExperimenterDataOfChoice> createMultipartRequestSerializerKey(
-            short msgVersion, long experimenterId, long type) {
+            final Uint8 msgVersion, final Uint32 experimenterId, final long type) {
         return new ExperimenterIdTypeSerializerKey<>(msgVersion, experimenterId, type, ExperimenterDataOfChoice.class);
     }
 
@@ -57,7 +58,7 @@ public abstract class ExperimenterSerializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdSerializerKey<TableFeatureProperties> createMultipartRequestTFSerializerKey(
-            short msgVersion, long experimenterId) {
+            final Uint8 msgVersion, final Uint32 experimenterId) {
         return new ExperimenterIdSerializerKey<>(msgVersion, experimenterId, TableFeatureProperties.class);
     }
 
@@ -69,13 +70,14 @@ public abstract class ExperimenterSerializerKeyFactory {
      * @return key instance
      */
     public static ExperimenterIdSerializerKey<MeterBandExperimenterCase> createMeterBandSerializerKey(
-            short msgVersion, long experimenterId) {
+            final Uint8 msgVersion, final Uint32 experimenterId) {
         return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId,
                 MeterBandExperimenterCase.class, null);
     }
 
     public static ExperimenterIdSerializerKey<MeterBandExperimenterCase> createMeterBandSerializerKey(
-            short msgVersion, long experimenterId, Class<? extends ExperimenterMeterBandSubType> meterSubType) {
+            final Uint8 msgVersion, final Uint32 experimenterId,
+            final Class<? extends ExperimenterMeterBandSubType> meterSubType) {
         return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId,
                 MeterBandExperimenterCase.class, meterSubType);
     }

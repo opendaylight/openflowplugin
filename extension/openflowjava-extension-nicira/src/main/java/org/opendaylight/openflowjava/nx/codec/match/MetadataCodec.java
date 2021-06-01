@@ -23,21 +23,19 @@ public class MetadataCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 8;
     private static final int NXM_FIELD_CODE = 2;
 
-    public static final MatchEntrySerializerKey<Nxm0Class, NxmOfMetadata> SERIALIZER_KEY = new
-            MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm0Class.class,
-            NxmOfMetadata.class);
+    public static final MatchEntrySerializerKey<Nxm0Class, NxmOfMetadata> SERIALIZER_KEY =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfMetadata.class);
 
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS,
-            NXM_FIELD_CODE);
+            EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         return matchEntryBuilder.build();
     }

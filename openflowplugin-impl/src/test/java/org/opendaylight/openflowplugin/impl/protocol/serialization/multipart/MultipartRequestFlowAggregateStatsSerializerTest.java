@@ -55,7 +55,7 @@ public class MultipartRequestFlowAggregateStatsSerializerTest extends AbstractSe
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID,
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3,
                 MultipartRequestFlowAggregateStats.class)) ;
     }
 

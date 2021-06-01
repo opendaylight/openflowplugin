@@ -17,6 +17,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Factory for creating CodeKeyMaker instances.
@@ -29,7 +30,7 @@ public final class CodeKeyMakerFactory {
         //not called
     }
 
-    public static CodeKeyMaker createMatchEntriesKeyMaker(final short version) {
+    public static CodeKeyMaker createMatchEntriesKeyMaker(final Uint8 version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
             public MessageCodeKey make(final ByteBuf input) {
@@ -48,7 +49,7 @@ public final class CodeKeyMakerFactory {
         };
     }
 
-    public static CodeKeyMaker createActionsKeyMaker(final short version) {
+    public static CodeKeyMaker createActionsKeyMaker(final Uint8 version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
             public MessageCodeKey make(final ByteBuf input) {
@@ -63,7 +64,7 @@ public final class CodeKeyMakerFactory {
         };
     }
 
-    public static CodeKeyMaker createInstructionsKeyMaker(final short version) {
+    public static CodeKeyMaker createInstructionsKeyMaker(final Uint8 version) {
         return new AbstractCodeKeyMaker(version) {
             @Override
             public MessageCodeKey make(final ByteBuf input) {

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import com.google.common.base.Preconditions;
@@ -14,8 +13,8 @@ import org.opendaylight.openflowplugin.extension.api.ConvertorActionToOFJava;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionDecap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionDecapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionDecap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionDecapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.decap.grouping.NxActionDecap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.decap.grouping.NxActionDecapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.NxActionDecapGrouping;
@@ -35,7 +34,7 @@ public class DecapConvertor implements
                         Action>, ConvertorActionFromOFJava<Action, ActionPath> {
     @Override
     public org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action convert(
-            Action input, ActionPath path) {
+            final Action input, final ActionPath path) {
         ActionDecap actionDecap = (ActionDecap) input.getActionChoice();
         Uint32 packetType = actionDecap.getNxActionDecap().getPacketType();
         NxDecap nxDecap = new NxDecapBuilder().setPacketType(packetType).build();
@@ -44,7 +43,7 @@ public class DecapConvertor implements
 
     @Override
     public Action convert(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
         Preconditions.checkArgument(actionCase instanceof NxActionDecapGrouping);
         NxActionDecapGrouping nxActionDecapGrouping = (NxActionDecapGrouping) actionCase;
         Uint32 packetType = nxActionDecapGrouping.getNxDecap().getPacketType();
@@ -54,7 +53,7 @@ public class DecapConvertor implements
     }
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action resolveAction(
-            NxDecap value, ActionPath path) {
+            final NxDecap value, final ActionPath path) {
         switch (path) {
             case INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS:
                 return new NxActionDecapNodesNodeTableFlowWriteActionsCaseBuilder().setNxDecap(value).build();

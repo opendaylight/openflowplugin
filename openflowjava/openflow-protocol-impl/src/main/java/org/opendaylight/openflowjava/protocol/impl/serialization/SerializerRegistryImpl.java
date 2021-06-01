@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization;
 
 import java.util.HashMap;
@@ -35,10 +34,8 @@ import org.slf4j.LoggerFactory;
 public class SerializerRegistryImpl implements SerializerRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(SerializerRegistryImpl.class);
-    private static final short OF10 = EncodeConstants.OF10_VERSION_ID;
-    private static final short OF13 = EncodeConstants.OF13_VERSION_ID;
-    private Map<MessageTypeKey<?>, OFGeneralSerializer> registry;
 
+    private Map<MessageTypeKey<?>, OFGeneralSerializer> registry;
     private boolean isGroupAddModEnabled = false;
 
     @Override
@@ -51,8 +48,10 @@ public class SerializerRegistryImpl implements SerializerRegistry {
         AdditionalMessageFactoryInitializer.registerMessageSerializers(this);
 
         // match structure serializers
-        registerSerializer(new MessageTypeKey<>(OF10, MatchV10.class), new OF10MatchSerializer());
-        registerSerializer(new MessageTypeKey<>(OF13, Match.class), new OF13MatchSerializer());
+        registerSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, MatchV10.class),
+            new OF10MatchSerializer());
+        registerSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Match.class),
+            new OF13MatchSerializer());
 
         // match entry serializers
         MatchEntriesInitializer.registerMatchEntrySerializers(this);
@@ -62,7 +61,8 @@ public class SerializerRegistryImpl implements SerializerRegistry {
         InstructionsInitializer.registerInstructionSerializers(this);
     }
 
-    public void setGroupAddModConfig(boolean value) {
+    @Override
+    public void setGroupAddModConfig(final boolean value) {
         this.isGroupAddModEnabled = value;
     }
 
@@ -79,7 +79,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <K, S extends OFGeneralSerializer> S getSerializer(MessageTypeKey<K> msgTypeKey) {
+    public <K, S extends OFGeneralSerializer> S getSerializer(final MessageTypeKey<K> msgTypeKey) {
         OFGeneralSerializer serializer = registry.get(msgTypeKey);
         if (serializer == null) {
             throw new IllegalStateException("Serializer for key: " + msgTypeKey
@@ -90,7 +90,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
     }
 
     @Override
-    public <K> void registerSerializer(MessageTypeKey<K> msgTypeKey, OFGeneralSerializer serializer) {
+    public <K> void registerSerializer(final MessageTypeKey<K> msgTypeKey, final OFGeneralSerializer serializer) {
         if (msgTypeKey == null || serializer == null) {
             throw new IllegalArgumentException("MessageTypeKey or Serializer is null");
         }
@@ -105,7 +105,7 @@ public class SerializerRegistryImpl implements SerializerRegistry {
     }
 
     @Override
-    public <K> boolean unregisterSerializer(MessageTypeKey<K> msgTypeKey) {
+    public <K> boolean unregisterSerializer(final MessageTypeKey<K> msgTypeKey) {
         if (msgTypeKey == null) {
             throw new IllegalArgumentException("MessageTypeKey is null");
         }

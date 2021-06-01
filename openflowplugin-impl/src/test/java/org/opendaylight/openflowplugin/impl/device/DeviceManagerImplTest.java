@@ -61,6 +61,7 @@ import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceManagerImplTest {
@@ -114,6 +115,7 @@ public class DeviceManagerImplTest {
         when(mockConnectionContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_IDENTIFIER);
         when(deviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID);
+        when(deviceInfo.getVersion()).thenReturn(Uint8.ONE);
 
         when(mockedFuture.isDone()).thenReturn(true);
         doReturn(mockedFuture).when(writeTransaction).commit();

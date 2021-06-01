@@ -21,10 +21,10 @@ public abstract class AbstractMultipartDeserializerTest  extends AbstractDeseria
     @Override
     protected void init() {
         deserializer = getRegistry().getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, getType(), MultipartReplyBody.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, getType(), MultipartReplyBody.class));
     }
 
-    protected MultipartReplyBody deserializeMultipart(ByteBuf message) {
+    protected MultipartReplyBody deserializeMultipart(final ByteBuf message) {
         return deserializer.deserialize(message);
     }
 

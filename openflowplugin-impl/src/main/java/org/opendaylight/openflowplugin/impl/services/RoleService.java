@@ -31,6 +31,7 @@ import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         return input.build();
     }
 
-    public ListenableFuture<Uint64> getGenerationIdFromDevice(final Short version) {
+    public ListenableFuture<Uint64> getGenerationIdFromDevice(final Uint8 version) {
         LOG.info("getGenerationIdFromDevice called for device: {}", getDeviceInfo().getNodeId().getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
@@ -96,7 +97,7 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
 
-    public ListenableFuture<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Short version,
+    public ListenableFuture<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Uint8 version,
                                                                        final Uint64 generationId) {
         LOG.info("submitRoleChange called for device:{}, role:{}",
                 getDeviceInfo().getNodeId(), ofpRole);

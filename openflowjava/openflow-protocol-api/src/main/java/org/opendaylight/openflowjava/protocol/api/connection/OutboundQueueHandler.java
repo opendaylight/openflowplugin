@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.api.connection;
 import com.google.common.annotations.Beta;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Handler of the outbound queue. The queue has a maximum depth assigned when the
@@ -25,7 +26,7 @@ public interface OutboundQueueHandler {
      * @param xid XID for the barrier message
      * @return New barrier message.
      */
-    @NonNull BarrierInput createBarrierRequest(@NonNull Long xid);
+    @NonNull BarrierInput createBarrierRequest(@NonNull Uint32 xid);
 
     /**
      * Invoked whenever the underlying queue is refreshed. Implementations should
