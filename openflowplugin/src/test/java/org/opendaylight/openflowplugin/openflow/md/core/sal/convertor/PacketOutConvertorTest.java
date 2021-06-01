@@ -79,7 +79,7 @@ public class PacketOutConvertorTest {
             .setIngress(null)
             .build();
 
-        Short version = (short) 0x04;
+        Uint8 version = OFConstants.OFP_VERSION_1_3;
         Long xid = null;
         XidConvertorData data = new XidConvertorData(version);
         PacketOutInput message = convert(transmitPacketInput, data);
@@ -90,7 +90,7 @@ public class PacketOutConvertorTest {
 
         Assert.assertEquals(OFConstants.OFP_NO_BUFFER, message.getBufferId());
         Assert.assertEquals(new PortNumber(Uint32.valueOf(0xfffffffdL)), message.getInPort());
-        Assert.assertEquals(Uint8.valueOf(version), message.getVersion());
+        Assert.assertEquals(version, message.getVersion());
         Assert.assertEquals(xid, message.getXid());
         Assert.assertArrayEquals(transmitPacketInput.getPayload(), message.getData());
     }
@@ -143,7 +143,7 @@ public class PacketOutConvertorTest {
             .setPayload("sendOutputMsg_TEST".getBytes())
             .build();
 
-        Short version = (short) 0x04;
+        Uint8 version = OFConstants.OFP_VERSION_1_3;
         byte[] datapathIdByte = new byte[Long.BYTES];
         for (int i = 0; i < datapathIdByte.length; i++) {
             datapathIdByte[i] = 1;
@@ -158,7 +158,7 @@ public class PacketOutConvertorTest {
 
         Assert.assertEquals(transmitPacketInput.getBufferId(), message.getBufferId());
         Assert.assertEquals(Uint32.valueOf(inPort), message.getInPort().getValue());
-        Assert.assertEquals(Uint8.valueOf(version), message.getVersion());
+        Assert.assertEquals(version, message.getVersion());
         Assert.assertEquals(xid, message.getXid());
 
         ActionConvertorData actionConvertorData = new ActionConvertorData(version);
@@ -172,7 +172,7 @@ public class PacketOutConvertorTest {
     }
 
     private static List<Action> buildActionForNullTransmitPacketInputAction(
-            final NodeConnectorKey nodeConKey, final short version) {
+            final NodeConnectorKey nodeConKey, final Uint8 version) {
 
         PortNumber outPort = getPortNumber(nodeConKey, version);
 
@@ -197,7 +197,7 @@ public class PacketOutConvertorTest {
         return actions;
     }
 
-    private static PortNumber getPortNumber(final NodeConnectorKey nodeConKey, final Short ofVersion) {
+    private static PortNumber getPortNumber(final NodeConnectorKey nodeConKey, final Uint8 ofVersion) {
         Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
                 nodeConKey.getId());
         return new PortNumber(port);

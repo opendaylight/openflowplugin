@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterMeterBandSubType;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an experimenter id meter subtype serializer.
@@ -16,7 +18,6 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
  * @author hyy on 2016/9/8.
  */
 public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> extends ExperimenterIdSerializerKey<T> {
-
     private final Class<? extends ExperimenterMeterBandSubType> meterSubType;
 
     /**
@@ -27,8 +28,8 @@ public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> ex
      * @param objectClass     class of object to be serialized
      * @param meterSubType    vendor defined subtype
      */
-    public ExperimenterIdMeterSubTypeSerializerKey(short msgVersion, long experimenterId,
-            Class<T> objectClass, Class<? extends ExperimenterMeterBandSubType> meterSubType) {
+    public ExperimenterIdMeterSubTypeSerializerKey(final Uint8 msgVersion, final long experimenterId,
+            final Class<T> objectClass, final Class<? extends ExperimenterMeterBandSubType> meterSubType) {
         super(msgVersion, experimenterId, objectClass);
         this.meterSubType = meterSubType;
     }
@@ -42,7 +43,7 @@ public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> ex
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -53,11 +54,7 @@ public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> ex
             return false;
         }
         ExperimenterIdMeterSubTypeSerializerKey<?> other = (ExperimenterIdMeterSubTypeSerializerKey<?>) obj;
-        if (meterSubType == null) {
-            if (other.meterSubType != null) {
-                return false;
-            }
-        } else if (!meterSubType.equals(other.meterSubType)) {
+        if (!Objects.equals(meterSubType, other.meterSubType)) {
             return false;
         }
         return true;

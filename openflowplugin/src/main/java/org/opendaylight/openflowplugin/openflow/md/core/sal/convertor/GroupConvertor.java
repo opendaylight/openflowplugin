@@ -97,7 +97,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
         return bucket1.getBucketId().getValue().compareTo(bucket2.getBucketId().getValue());
     };
 
-    private List<BucketsList> salToOFBucketList(final List<Bucket> buckets, final short version, final int groupType,
+    private List<BucketsList> salToOFBucketList(final List<Bucket> buckets, final Uint8 version, final int groupType,
             final Uint64 datapathid) {
         final List<BucketsList> bucketLists = new ArrayList<>();
         final ActionConvertorData data = new ActionConvertorData(version);

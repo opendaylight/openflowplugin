@@ -9,6 +9,7 @@
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an experimenter id type serializer.
@@ -28,8 +29,8 @@ public class ExperimenterIdTypeSerializerKey<T extends DataContainer> extends Ex
      * @param type           data type according to vendor implementation
      * @param objectClass    class of object to be serialized
      */
-    public ExperimenterIdTypeSerializerKey(short msgVersion,
-                                           long experimenterId, long type, Class<T> objectClass) {
+    public ExperimenterIdTypeSerializerKey(final Uint8 msgVersion,
+                                           final long experimenterId, final long type, final Class<T> objectClass) {
         super(msgVersion, experimenterId, objectClass);
         this.type = type;
     }
@@ -43,7 +44,7 @@ public class ExperimenterIdTypeSerializerKey<T extends DataContainer> extends Ex
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (!super.equals(obj)) {
             return false;
         }

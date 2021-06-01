@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
@@ -32,6 +33,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.multipart.reply.group.desc.GroupDesc;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Converts GroupDesc message from library to MD SAL defined GroupDescStats.
@@ -51,13 +55,11 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
     private static final Set<Class<?>> TYPES = Collections.singleton(GroupDesc.class);
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(
-            final List<BucketsList> bucketDescStats, final short version) {
+            final List<BucketsList> bucketDescStats, final Uint8 version) {
         final ActionResponseConvertorData data = new ActionResponseConvertorData(version);
         data.setActionPath(ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
 
-        org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder salBucketsDesc =
-                new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder();
-        List<Bucket> allBuckets = new ArrayList<>();
+        BindingMap.Builder<BucketKey, Bucket> allBuckets = BindingMap.builder();
         int bucketKey = 0;
 
         for (BucketsList bucketDetails : bucketDescStats) {
@@ -66,7 +68,7 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
                 convertedSalActions = getConvertorExecutor().convert(bucketDetails.getAction(), data);
 
             if (convertedSalActions.isPresent()) {
-                List<Action> actions = new ArrayList<>();
+                BindingMap.Builder<ActionKey, Action> actions = BindingMap.builder();
 
                 int actionKey = 0;
 
@@ -80,23 +82,24 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
                     actionKey++;
                 }
 
-                bucketDesc.setAction(actions);
+                bucketDesc.setAction(actions.build());
             } else {
-                bucketDesc.setAction(Collections.emptyMap());
+                bucketDesc.setAction(Map.of());
             }
 
             bucketDesc.setWeight(bucketDetails.getWeight());
             bucketDesc.setWatchPort(bucketDetails.getWatchPort().getValue());
             bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
-            BucketId bucketId = new BucketId((long) bucketKey);
+            BucketId bucketId = new BucketId(Uint32.valueOf(bucketKey));
             bucketDesc.setBucketId(bucketId);
             bucketDesc.withKey(new BucketKey(bucketId));
             bucketKey++;
             allBuckets.add(bucketDesc.build());
         }
 
-        salBucketsDesc.setBucket(allBuckets);
-        return salBucketsDesc.build();
+        return new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.BucketsBuilder()
+            .setBucket(allBuckets.build())
+            .build();
     }
 
     @Override

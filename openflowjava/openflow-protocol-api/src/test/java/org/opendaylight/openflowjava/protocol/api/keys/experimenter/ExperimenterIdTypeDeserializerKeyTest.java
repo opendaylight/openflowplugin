@@ -63,7 +63,7 @@ public class ExperimenterIdTypeDeserializerKeyTest {
         ExperimenterIdTypeDeserializerKey key1 = new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF10_VERSION_ID,
                 41L, 1L, ExperimenterMessage.class);
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
-        ExperimenterIdSerializerKey<?> mk = new ExperimenterIdSerializerKey<>(EncodeConstants.OF10_VERSION_ID, 42L,
+        ExperimenterIdSerializerKey<?> mk = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, 42L,
                 ExperimenterMessage.class);
         Assert.assertFalse("Wrong equal to different class.", key1.equals(mk));
         ExperimenterIdTypeDeserializerKey key2 = new ExperimenterIdTypeDeserializerKey(EncodeConstants.OF10_VERSION_ID,

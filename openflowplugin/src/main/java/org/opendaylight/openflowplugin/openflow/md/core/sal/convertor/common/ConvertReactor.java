@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Base class for a conversion reactor.
@@ -51,7 +52,7 @@ public abstract class ConvertReactor<F> {
      * @param convertorExecutor the convertor executor
      */
     @SuppressWarnings("unchecked")
-    public <R, T> void convert(final F source, final short version, final T target,
+    public <R, T> void convert(final F source, final Uint8 version, final T target,
             final ConvertorExecutor convertorExecutor) {
 
         //lookup converter
@@ -78,7 +79,7 @@ public abstract class ConvertReactor<F> {
      * @param target object
      * @return injection key
      */
-    protected ConvertorKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
+    protected ConvertorKey buildInjectionKey(final Uint8 version, final Object convertedItem, final Object target) {
         return new ConvertorKey(version, target.getClass());
     }
 

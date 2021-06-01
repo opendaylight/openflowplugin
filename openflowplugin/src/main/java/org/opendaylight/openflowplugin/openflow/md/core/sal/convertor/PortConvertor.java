@@ -107,7 +107,7 @@ public class PortConvertor extends Convertor<Port, PortModInput, VersionConverto
     @VisibleForTesting
     static Ports toPortDesc(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.FlowCapablePort source,
-            final short version) {
+            final Uint8 version) {
         return new PortsBuilder()
             // portNO
             .setPortNo(OpenflowPortsUtil.getProtocolPortNumber(OpenflowVersion.get(version), source.getPortNumber()))

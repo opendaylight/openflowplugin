@@ -15,9 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MatchConvertorUtilTest {
-
-    private static Logger LOG = LoggerFactory
-            .getLogger(MatchConvertorUtilTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MatchConvertorUtilTest.class);
 
     /**
      * Test method for {@link MatchConvertorUtil#ipv6ExthdrFlagsToInt(Ipv6ExthdrFlags)}.
@@ -40,11 +38,11 @@ public class MatchConvertorUtilTest {
 
         flags = new Ipv6ExthdrFlags(
                 false, false, false, false, false, false, false, false, false);
-        Assert.assertEquals(0, MatchConvertorUtil.ipv6ExthdrFlagsToInt(flags).intValue());
+        Assert.assertEquals(0, MatchConvertorUtil.ipv6ExthdrFlagsToInt(flags));
 
         flags = new Ipv6ExthdrFlags(
                 true, true, true, true, true, true, true, true, true);
-        Assert.assertEquals(511, MatchConvertorUtil.ipv6ExthdrFlagsToInt(flags).intValue());
+        Assert.assertEquals(511, MatchConvertorUtil.ipv6ExthdrFlagsToInt(flags));
     }
 
     private static Object[] createIpv6ExthdrFlagsCtorParams(final int trueIndex) {

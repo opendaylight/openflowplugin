@@ -10,7 +10,6 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import org.junit.Assert;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -134,10 +133,9 @@ public abstract class BufferHelper {
      */
     public static void setupHeader(final Object builder, final int version) throws NoSuchMethodException,
             IllegalAccessException, InvocationTargetException {
-        Method method = builder.getClass().getMethod("setVersion", Short.class);
-        method.invoke(builder, (short) version);
-        Method m2 = builder.getClass().getMethod("setXid", Uint32.class);
-        m2.invoke(builder, BufferHelper.DEFAULT_XID);
+        final Class<?> builderClass = builder.getClass();
+        builderClass.getMethod("setVersion", Uint8.class).invoke(builder, Uint8.valueOf(version));
+        builderClass.getMethod("setXid", Uint32.class).invoke(builder, BufferHelper.DEFAULT_XID);
     }
 
     /**
@@ -150,5 +148,4 @@ public abstract class BufferHelper {
     public static <E extends DataContainer> E deserialize(final OFDeserializer<E> decoder, final ByteBuf bb) {
         return decoder.deserialize(bb);
     }
-
 }

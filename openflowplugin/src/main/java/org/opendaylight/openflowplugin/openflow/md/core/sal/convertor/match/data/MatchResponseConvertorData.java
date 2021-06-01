@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Convertor data used in
@@ -59,7 +60,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param version the version
      */
-    public MatchResponseConvertorData(short version) {
+    public MatchResponseConvertorData(final Uint8 version) {
         super(version);
     }
 
@@ -77,7 +78,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param matchBuilder the match builder
      */
-    public void setMatchBuilder(MatchBuilder matchBuilder) {
+    public void setMatchBuilder(final MatchBuilder matchBuilder) {
         this.matchBuilder = matchBuilder;
     }
 
@@ -95,7 +96,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param ethernetMatchBuilder the ethernet match builder
      */
-    public void setEthernetMatchBuilder(EthernetMatchBuilder ethernetMatchBuilder) {
+    public void setEthernetMatchBuilder(final EthernetMatchBuilder ethernetMatchBuilder) {
         this.ethernetMatchBuilder = ethernetMatchBuilder;
     }
 
@@ -113,7 +114,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param vlanMatchBuilder the vlan match builder
      */
-    public void setVlanMatchBuilder(VlanMatchBuilder vlanMatchBuilder) {
+    public void setVlanMatchBuilder(final VlanMatchBuilder vlanMatchBuilder) {
         this.vlanMatchBuilder = vlanMatchBuilder;
     }
 
@@ -131,7 +132,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param ipMatchBuilder the ip match builder
      */
-    public void setIpMatchBuilder(IpMatchBuilder ipMatchBuilder) {
+    public void setIpMatchBuilder(final IpMatchBuilder ipMatchBuilder) {
         this.ipMatchBuilder = ipMatchBuilder;
     }
 
@@ -149,7 +150,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param tcpMatchBuilder the tcp match builder
      */
-    public void setTcpMatchBuilder(TcpMatchBuilder tcpMatchBuilder) {
+    public void setTcpMatchBuilder(final TcpMatchBuilder tcpMatchBuilder) {
         this.tcpMatchBuilder = tcpMatchBuilder;
     }
 
@@ -167,7 +168,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param udpMatchBuilder the udp match builder
      */
-    public void setUdpMatchBuilder(UdpMatchBuilder udpMatchBuilder) {
+    public void setUdpMatchBuilder(final UdpMatchBuilder udpMatchBuilder) {
         this.udpMatchBuilder = udpMatchBuilder;
     }
 
@@ -185,7 +186,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param sctpMatchBuilder the sctp match builder
      */
-    public void setSctpMatchBuilder(SctpMatchBuilder sctpMatchBuilder) {
+    public void setSctpMatchBuilder(final SctpMatchBuilder sctpMatchBuilder) {
         this.sctpMatchBuilder = sctpMatchBuilder;
     }
 
@@ -203,7 +204,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param icmpv4MatchBuilder the icmpv 4 match builder
      */
-    public void setIcmpv4MatchBuilder(Icmpv4MatchBuilder icmpv4MatchBuilder) {
+    public void setIcmpv4MatchBuilder(final Icmpv4MatchBuilder icmpv4MatchBuilder) {
         this.icmpv4MatchBuilder = icmpv4MatchBuilder;
     }
 
@@ -221,7 +222,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param icmpv6MatchBuilder the icmpv 6 match builder
      */
-    public void setIcmpv6MatchBuilder(Icmpv6MatchBuilder icmpv6MatchBuilder) {
+    public void setIcmpv6MatchBuilder(final Icmpv6MatchBuilder icmpv6MatchBuilder) {
         this.icmpv6MatchBuilder = icmpv6MatchBuilder;
     }
 
@@ -239,7 +240,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param ipv4MatchBuilder the ipv 4 match builder
      */
-    public void setIpv4MatchBuilder(Ipv4MatchBuilder ipv4MatchBuilder) {
+    public void setIpv4MatchBuilder(final Ipv4MatchBuilder ipv4MatchBuilder) {
         this.ipv4MatchBuilder = ipv4MatchBuilder;
     }
 
@@ -257,7 +258,8 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param ipv4MatchArbitraryBitMaskBuilder the ipv 4 match arbitrary bit mask builder
      */
-    public void setIpv4MatchArbitraryBitMaskBuilder(Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder) {
+    public void setIpv4MatchArbitraryBitMaskBuilder(
+            final Ipv4MatchArbitraryBitMaskBuilder ipv4MatchArbitraryBitMaskBuilder) {
         this.ipv4MatchArbitraryBitMaskBuilder = ipv4MatchArbitraryBitMaskBuilder;
     }
 
@@ -275,7 +277,8 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param ipv6MatchArbitraryBitMaskBuilder the ipv 6 match arbitrary bit mask builder
      */
-    public void setIpv6MatchArbitraryBitMaskBuilder(Ipv6MatchArbitraryBitMaskBuilder ipv6MatchArbitraryBitMaskBuilder) {
+    public void setIpv6MatchArbitraryBitMaskBuilder(
+            final Ipv6MatchArbitraryBitMaskBuilder ipv6MatchArbitraryBitMaskBuilder) {
         this.ipv6MatchArbitraryBitMaskBuilder = ipv6MatchArbitraryBitMaskBuilder;
     }
 
@@ -293,7 +296,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param arpMatchBuilder the arp match builder
      */
-    public void setArpMatchBuilder(ArpMatchBuilder arpMatchBuilder) {
+    public void setArpMatchBuilder(final ArpMatchBuilder arpMatchBuilder) {
         this.arpMatchBuilder = arpMatchBuilder;
     }
 
@@ -311,7 +314,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param ipv6MatchBuilder the ipv 6 match builder
      */
-    public void setIpv6MatchBuilder(Ipv6MatchBuilder ipv6MatchBuilder) {
+    public void setIpv6MatchBuilder(final Ipv6MatchBuilder ipv6MatchBuilder) {
         this.ipv6MatchBuilder = ipv6MatchBuilder;
     }
 
@@ -329,7 +332,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param protocolMatchFieldsBuilder the protocol match fields builder
      */
-    public void setProtocolMatchFieldsBuilder(ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder) {
+    public void setProtocolMatchFieldsBuilder(final ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder) {
         this.protocolMatchFieldsBuilder = protocolMatchFieldsBuilder;
     }
 
@@ -347,7 +350,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param tunnelIpv4MatchBuilder the tunnel ipv 4 match builder
      */
-    public void setTunnelIpv4MatchBuilder(TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder) {
+    public void setTunnelIpv4MatchBuilder(final TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder) {
         this.tunnelIpv4MatchBuilder = tunnelIpv4MatchBuilder;
     }
 
@@ -356,7 +359,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param tcpFlagsMatchBuilder the tcp flags match builder
      */
-    public void setTcpFlagsMatchBuilder(TcpFlagsMatchBuilder tcpFlagsMatchBuilder) {
+    public void setTcpFlagsMatchBuilder(final TcpFlagsMatchBuilder tcpFlagsMatchBuilder) {
         this.tcpFlagsMatchBuilder = tcpFlagsMatchBuilder;
     }
 
@@ -374,7 +377,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param oxmMatchField the oxm match field
      */
-    public void setOxmMatchField(Class<? extends MatchField> oxmMatchField) {
+    public void setOxmMatchField(final Class<? extends MatchField> oxmMatchField) {
         this.oxmMatchField = oxmMatchField;
     }
 

@@ -33,12 +33,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -69,7 +68,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
     private Instructions wrapOF10ActionsToInstruction(
             final List<org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions
                 .grouping.Action> actionsList,
-            final short version, final Uint8 ipProtocol) {
+            final Uint8 version, final Uint8 ipProtocol) {
         ActionResponseConvertorData actionResponseConvertorData = new ActionResponseConvertorData(version);
         actionResponseConvertorData.setActionPath(ActionPath.FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS);
         actionResponseConvertorData.setIpProtocol(ipProtocol);
@@ -83,16 +82,12 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
         applyActionsBuilder.setAction(FlowConvertorUtil.wrapActionList(actions.orElse(Collections.emptyList())));
         applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
 
-        InstructionBuilder instBuilder = new InstructionBuilder();
-        instBuilder.setInstruction(applyActionsCaseBuilder.build());
-        instBuilder.withKey(new InstructionKey(0));
-        instBuilder.setOrder(0);
-        List<Instruction> salInstructionList = new ArrayList<>();
-        salInstructionList.add(instBuilder.build());
-
-        InstructionsBuilder instructionsBuilder = new InstructionsBuilder();
-        instructionsBuilder.setInstruction(salInstructionList);
-        return instructionsBuilder.build();
+        return new InstructionsBuilder()
+            .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(applyActionsCaseBuilder.build())
+                .setOrder(0)
+                .build()))
+            .build();
     }
 
     @Override

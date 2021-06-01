@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opendaylight.odlparent</groupId>
     <artifactId>odlparent-lite</artifactId>
-    <version>8.1.1</version>
+    <version>9.0.2</version>
     <relativePath/>
   </parent>
 
@@ -24,6 +24,8 @@
     <module>model-flow-base</module>
     <module>model-flow-service</module>
     <module>model-flow-statistics</module>
+    <module>model-inventory</module>
+    <module>model-topology</module>
   </modules>
 
 </project>

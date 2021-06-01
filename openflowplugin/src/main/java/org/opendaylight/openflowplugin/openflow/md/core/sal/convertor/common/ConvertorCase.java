@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * The Convertor case used in
@@ -24,7 +25,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
  * @param <D> the data type
  */
 public abstract class ConvertorCase<F, T, D extends ConvertorData> {
-    private final List<Short> supportedVersions;
+    private final List<Uint8> supportedVersions;
     private final Class<F> type;
     private final boolean errorOnEmpty;
 
@@ -35,7 +36,7 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      * @param errorOnEmpty      the error on empty
      * @param supportedVersions the supported versions
      */
-    protected ConvertorCase(final Class<F> type, final boolean errorOnEmpty, final Short... supportedVersions) {
+    protected ConvertorCase(final Class<F> type, final boolean errorOnEmpty, final Uint8... supportedVersions) {
         this.type = type;
         this.errorOnEmpty = errorOnEmpty;
         this.supportedVersions = Arrays.asList(requireNonNull(supportedVersions));
@@ -88,7 +89,7 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      *
      * @return the supported versions
      */
-    List<Short> getSupportedVersions() {
+    List<Uint8> getSupportedVersions() {
         return supportedVersions;
     }
 }
