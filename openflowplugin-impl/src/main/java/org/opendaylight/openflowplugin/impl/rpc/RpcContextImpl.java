@@ -129,7 +129,7 @@ class RpcContextImpl implements RpcContext {
                     nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
         }
 
-        final Long xid = deviceInfo.reserveXidForDeviceMessage();
+        final Uint32 xid = deviceInfo.reserveXidForDeviceMessage();
         if (xid == null) {
             LOG.warn("Xid cannot be reserved for new RequestContext, node:{}",
                     nodeInstanceIdentifier.getKey().getId().getValue());
@@ -137,7 +137,7 @@ class RpcContextImpl implements RpcContext {
             return null;
         }
 
-        return new AbstractRequestContext<>(Uint32.valueOf(xid)) {
+        return new AbstractRequestContext<>(xid) {
             @Override
             public void close() {
                 tracker.release();

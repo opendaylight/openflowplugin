@@ -103,6 +103,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -652,7 +653,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public boolean canUseSingleLayerSerialization() {
-        return useSingleLayerSerialization && getDeviceInfo().getVersion() >= OFConstants.OFP_VERSION_1_3;
+        return useSingleLayerSerialization && OFConstants.OFP_VERSION_1_3.compareTo(getDeviceInfo().getVersion()) <= 0;
     }
 
     @Override
@@ -725,7 +726,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T> RequestContext<T> createRequestContext() {
-        final Long xid = deviceInfo.reserveXidForDeviceMessage();
+        final Uint32 xid = deviceInfo.reserveXidForDeviceMessage();
 
         final AbstractRequestContext<T> abstractRequestContext = new AbstractRequestContext<>(xid) {
             @Override

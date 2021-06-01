@@ -43,7 +43,7 @@ public class OF10MatchSerializerTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         matchSerializer = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, MatchV10.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, MatchV10.class));
     }
 
     /**

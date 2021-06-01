@@ -54,7 +54,7 @@ public class MultipartRequestMessageSerializer extends AbstractMessageSerializer
 
         final OFSerializer<MultipartRequestBody> serializer = Preconditions.checkNotNull(registry)
             .getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_3,
                 multipartRequestBody.implementedInterface()));
 
         serializer.serialize(multipartRequestBody, outBuffer);

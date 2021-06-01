@@ -73,7 +73,7 @@ public class PacketInMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.writeBytes(PAYLOAD);
 
         final PacketInMessage message =
-                (PacketInMessage) getFactory().deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+                (PacketInMessage) getFactory().deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(XID, message.getXid().intValue());
         assertEquals(PacketInUtil.getMdSalPacketInReason(org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common

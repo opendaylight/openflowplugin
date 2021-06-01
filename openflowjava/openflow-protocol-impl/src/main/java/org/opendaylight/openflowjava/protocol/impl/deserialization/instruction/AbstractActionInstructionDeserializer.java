@@ -30,9 +30,9 @@ public abstract class AbstractActionInstructionDeserializer implements OFDeseria
 
     private DeserializerRegistry registry;
 
-    protected List<Action> deserializeActions(ByteBuf input, int instructionLength) {
+    protected List<Action> deserializeActions(final ByteBuf input, final int instructionLength) {
         int length = instructionLength - InstructionConstants.STANDARD_INSTRUCTION_LENGTH;
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         List<Action> actions = ListDeserializer.deserializeList(
                 EncodeConstants.OF13_VERSION_ID, length, input, keyMaker, getRegistry());
         return actions;
@@ -43,7 +43,7 @@ public abstract class AbstractActionInstructionDeserializer implements OFDeseria
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         this.registry = deserializerRegistry;
     }
 }

@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsService<MultipartReply> {
 
@@ -86,7 +87,7 @@ public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsSer
         }
 
         if (input.getOutPort() != null) {
-            mprFlowRequestBuilder.setOutPort(input.getOutPort().longValue());
+            mprFlowRequestBuilder.setOutPort(Uint32.valueOf(input.getOutPort().longValue()));
         } else {
             mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
         }

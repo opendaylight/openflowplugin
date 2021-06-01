@@ -18,7 +18,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.ListSerializer;
 import org.opendaylight.openflowjava.protocol.impl.util.TypeKeyMakerFactory;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupModCommand;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod$G;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsList;
 
 /**
@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, SerializerRegistryInjector {
+public class GroupModInputMessageFactory implements OFSerializer<GroupMod$G>, SerializerRegistryInjector {
     private static final byte MESSAGE_TYPE = 15;
     private static final byte PADDING_IN_GROUP_MOD_MESSAGE = 1;
     private static final byte PADDING_IN_BUCKET = 4;
@@ -40,7 +40,7 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
     }
 
     @Override
-    public void serialize(GroupMod message, ByteBuf outBuffer) {
+    public void serialize(final GroupMod$G message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         if (isGroupAddModEnaled) {
@@ -60,7 +60,7 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
         ByteBufUtils.updateOFHeaderLength(outBuffer, index);
     }
 
-    private void serializerBuckets(List<BucketsList> buckets, ByteBuf outBuffer) {
+    private void serializerBuckets(final List<BucketsList> buckets, final ByteBuf outBuffer) {
         if (buckets != null) {
             for (BucketsList currentBucket : buckets) {
                 final int bucketLengthIndex = outBuffer.writerIndex();
@@ -70,14 +70,14 @@ public class GroupModInputMessageFactory implements OFSerializer<GroupMod>, Seri
                 outBuffer.writeInt(currentBucket.getWatchGroup().intValue());
                 outBuffer.writeZero(PADDING_IN_BUCKET);
                 ListSerializer.serializeList(currentBucket.getAction(), TypeKeyMakerFactory
-                        .createActionKeyMaker(EncodeConstants.OF13_VERSION_ID), registry, outBuffer);
+                        .createActionKeyMaker(EncodeConstants.OF_VERSION_1_3), registry, outBuffer);
                 outBuffer.setShort(bucketLengthIndex, outBuffer.writerIndex() - bucketLengthIndex);
             }
         }
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry serializerRegistry) {
+    public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
 

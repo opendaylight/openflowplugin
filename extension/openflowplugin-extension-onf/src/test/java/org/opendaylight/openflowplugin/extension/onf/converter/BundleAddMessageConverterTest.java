@@ -86,7 +86,7 @@ public class BundleAddMessageConverterTest {
 
     @Test
     public void testGetType() {
-        Assert.assertEquals("Wrong type.", 2301, converter.getType());
+        Assert.assertEquals("Wrong type.", Uint32.valueOf(2301), converter.getType());
     }
 
     @Test

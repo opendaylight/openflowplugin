@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -38,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.meter.band.experimenter._case.MeterBandExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.mod.BandsBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,9 +68,9 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
      * @param version Openflow version
      * @return default empty meter mod input builder
      */
-    public static MeterModInputBuilder defaultResult(final short version) {
+    public static MeterModInputBuilder defaultResult(final Uint8 version) {
         return new MeterModInputBuilder()
-                .setVersion(version)
+                .setVersion(requireNonNull(version))
                 .setFlags(new MeterFlags(false, false, true, false));
     }
 

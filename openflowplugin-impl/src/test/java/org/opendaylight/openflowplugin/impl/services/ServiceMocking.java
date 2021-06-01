@@ -56,7 +56,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 @RunWith(MockitoJUnitRunner.class)
 public abstract class ServiceMocking {
     protected static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(444);
-    protected static final Uint8 DUMMY_VERSION = Uint8.valueOf(OFConstants.OFP_VERSION_1_3);
+    protected static final Uint8 DUMMY_VERSION = OFConstants.OFP_VERSION_1_3;
     protected static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(2121L);
     protected static final Xid DUMMY_XID = new Xid(DUMMY_XID_VALUE);
     protected static final Uint32 DUMMY_EXPERIMENTER_ID = Uint32.valueOf(42);
@@ -123,13 +123,12 @@ public abstract class ServiceMocking {
 
         lenient().when(mockedDeviceInfo.getNodeInstanceIdentifier()).thenReturn(DUMMY_NODE_II);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(DUMMY_DATAPATH_ID);
-        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION.toJava());
+        when(mockedDeviceInfo.getVersion()).thenReturn(DUMMY_VERSION);
 
         lenient().when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedPrimConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessagSpy);
         lenient().when(mockedDeviceContext.getDeviceFlowRegistry())
-                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION.toJava(), dataBroker, DUMMY_NODE_II,
-                    historyAppender));
+                .thenReturn(new DeviceFlowRegistryImpl(DUMMY_VERSION, dataBroker, DUMMY_NODE_II, historyAppender));
         lenient().when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         lenient().when(mockedDeviceContext.getMultiMsgCollector(any())).thenReturn(multiMessageCollector);

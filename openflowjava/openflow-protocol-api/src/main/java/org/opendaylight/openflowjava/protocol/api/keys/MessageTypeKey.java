@@ -7,6 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import static java.util.Objects.requireNonNull;
+
+import java.util.Objects;
+import org.opendaylight.yangtools.yang.common.Uint8;
+
 /**
  * Class used as a key in {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry}.
  *
@@ -17,7 +22,7 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 public class MessageTypeKey<E> {
 
     private final Class<? extends E> msgType;
-    private final short msgVersion;
+    private final Uint8 msgVersion;
 
     /**
      * Constructor.
@@ -25,9 +30,9 @@ public class MessageTypeKey<E> {
      * @param msgVersion protocol version
      * @param msgType type of message - class of serialized object
      */
-    public MessageTypeKey(short msgVersion, Class<? extends E> msgType) {
+    public MessageTypeKey(final Uint8 msgVersion, final Class<? extends E> msgType) {
         this.msgType = msgType;
-        this.msgVersion = msgVersion;
+        this.msgVersion = requireNonNull(msgVersion);
     }
 
     @Override
@@ -40,12 +45,12 @@ public class MessageTypeKey<E> {
         final int prime = 31;
         int result = 1;
         result = prime * result + (msgType == null ? 0 : msgType.hashCode());
-        result = prime * result + msgVersion;
+        result = prime * result + msgVersion.hashCode();
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -56,14 +61,10 @@ public class MessageTypeKey<E> {
             return false;
         }
         MessageTypeKey<?> other = (MessageTypeKey<?>) obj;
-        if (msgType == null) {
-            if (other.msgType != null) {
-                return false;
-            }
-        } else if (!msgType.equals(other.msgType)) {
+        if (!Objects.equals(msgType, other.msgType)) {
             return false;
         }
-        if (msgVersion != other.msgVersion) {
+        if (!msgVersion.equals(other.msgVersion)) {
             return false;
         }
         return true;

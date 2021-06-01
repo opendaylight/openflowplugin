@@ -33,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.desc.stats.reply.GroupDescStatsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyGroupDescDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
@@ -65,7 +66,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                 final int bucketsLength = message.readUnsignedShort();
 
                 final BucketBuilder bucketBuilder = new BucketBuilder()
-                        .setBucketId(new BucketId(bucketKey))
+                        .setBucketId(new BucketId(Uint32.valueOf(bucketKey)))
                         .setWeight(readUint16(message))
                         .setWatchPort(readUint32(message))
                         .setWatchGroup(readUint32(message));
@@ -80,7 +81,7 @@ public class MultipartReplyGroupDescDeserializer implements OFDeserializer<Multi
                     actions.add(new ActionBuilder()
                             .withKey(new ActionKey(offset))
                             .setOrder(offset)
-                            .setAction(ActionUtil.readAction(EncodeConstants.OF13_VERSION_ID, message, registry,
+                            .setAction(ActionUtil.readAction(EncodeConstants.OF_VERSION_1_3, message, registry,
                                     ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION))
                             .build());
 

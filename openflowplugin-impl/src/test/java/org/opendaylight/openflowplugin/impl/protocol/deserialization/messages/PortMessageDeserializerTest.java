@@ -99,7 +99,7 @@ public class PortMessageDeserializerTest extends AbstractDeserializerTest {
 
         buffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_3);
 
-        final PortMessage message = (PortMessage) getFactory().deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+        final PortMessage message = (PortMessage) getFactory().deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(XID, message.getXid().intValue());
         assertEquals(PORT, message.getPortNumber().getUint32().intValue());

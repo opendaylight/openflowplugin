@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
 import io.netty.buffer.ByteBuf;
@@ -16,26 +15,24 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.AbstractDes
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 
 public abstract class AbstractActionDeserializerTest extends AbstractDeserializerTest {
-
     private OFDeserializer<Action> deserializer;
 
     @Override
     protected void init() {
         deserializer = getRegistry().getDeserializer(
-                new MessageCodeExperimenterKey(EncodeConstants.OF13_VERSION_ID, getType(), Action.class, null));
+                new MessageCodeExperimenterKey(EncodeConstants.OF_VERSION_1_3, getType(), Action.class, null));
     }
 
-    protected void writeHeader(ByteBuf message) {
+    protected void writeHeader(final ByteBuf message) {
         message.writeShort(getType());
         message.writeShort(getLength());
     }
 
-    protected Action deserializeAction(ByteBuf message) {
+    protected Action deserializeAction(final ByteBuf message) {
         return deserializer.deserialize(message);
     }
 
     protected abstract short getType();
 
     protected abstract short getLength();
-
 }

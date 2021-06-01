@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -309,7 +312,7 @@ public class ConnectionContextImpl implements ConnectionContext {
                 final OutboundQueue outboundQueueProvider) {
             this.nodeId = nodeId;
             this.nodeII = nodeII;
-            this.version = version;
+            this.version = requireNonNull(version);
             this.datapathId = datapathId;
             this.outboundQueueProvider = outboundQueueProvider;
             this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
@@ -326,8 +329,8 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public short getVersion() {
-            return version.toJava();
+        public Uint8 getVersion() {
+            return version;
         }
 
         @Override
@@ -378,7 +381,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public Long reserveXidForDeviceMessage() {
+        public Uint32 reserveXidForDeviceMessage() {
             return outboundQueueProvider.reserveEntry();
         }
     }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization;
 
 import java.util.function.Consumer;
@@ -31,6 +30,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.M
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart.MultipartReplyTableFeaturesDeserializer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 final class MultipartDeserializerInjector {
 
@@ -44,7 +44,7 @@ final class MultipartDeserializerInjector {
      * @param provider OpenflowJava deserializer extension provider
      */
     static void injectDeserializers(final DeserializerExtensionProvider provider) {
-        final short version = EncodeConstants.OF13_VERSION_ID;
+        final Uint8 version = EncodeConstants.OF_VERSION_1_3;
 
         // Inject new multipart body deserializers here using injector created by createInjector method
         final Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> injector =
@@ -81,11 +81,8 @@ final class MultipartDeserializerInjector {
      * @return injector
      */
     private static Function<Integer, Consumer<OFDeserializer<? extends MultipartReplyBody>>> createInjector(
-            final DeserializerExtensionProvider provider,
-            final short version) {
+            final DeserializerExtensionProvider provider, final Uint8 version) {
         return code -> deserializer -> provider.registerDeserializer(
-                new MessageCodeKey(version, code, MultipartReplyBody.class),
-                deserializer);
+                new MessageCodeKey(version, code, MultipartReplyBody.class), deserializer);
     }
-
 }

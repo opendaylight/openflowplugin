@@ -36,7 +36,7 @@ public class OF10FlowRemovedMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         flowFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 11, FlowRemovedMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 11, FlowRemovedMessage.class));
     }
 
     /**

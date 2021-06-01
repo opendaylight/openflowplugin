@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.function.Function;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,13 +30,14 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
      * This method is expected to be called from multiple threads concurrently
      */
     @Override
-    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback,
+    public void commitEntry(final Uint32 xid, final OfHeader message, final FutureCallback<OfHeader> callback,
             final Function<OfHeader, Boolean> isCompletedFunction) {
-        final OutboundQueueEntry entry = getEntry(xid);
+        final long longXid = xid.toJava();
+        final OutboundQueueEntry entry = getEntry(longXid);
 
         entry.commit(message, callback, isCompletedFunction);
         if (entry.isBarrier()) {
-            long my = xid;
+            long my = longXid;
             for (;;) {
                 final long prev = BARRIER_XID_UPDATER.getAndSet(this, my);
                 if (prev < my) {
@@ -53,7 +55,7 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
         manager.ensureFlushing();
     }
 
-    Long reserveBarrierIfNeeded() {
+    Uint32 reserveBarrierIfNeeded() {
         if (isBarrierNeeded()) {
             return reserveEntry();
         }

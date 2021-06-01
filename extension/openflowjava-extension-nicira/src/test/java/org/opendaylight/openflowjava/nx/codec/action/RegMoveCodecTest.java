@@ -21,8 +21,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMoveBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegMove;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegMoveBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMoveBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -156,7 +156,7 @@ public class RegMoveCodecTest {
         assertEquals(0, buffer.readableBytes());
     }
 
-    private static Action createAction(Uint64 src, Uint64 dst) {
+    private static Action createAction(final Uint64 src, final Uint64 dst) {
         ExperimenterId experimenterId = new ExperimenterId(NiciraConstants.NX_VENDOR_ID);
         ActionBuilder actionBuilder = new ActionBuilder();
         actionBuilder.setExperimenterId(experimenterId);
@@ -175,7 +175,7 @@ public class RegMoveCodecTest {
         return actionBuilder.build();
     }
 
-    private static void createBuffer(ByteBuf message, boolean withExpSrc, boolean withExpDst) {
+    private static void createBuffer(final ByteBuf message, final boolean withExpSrc, final boolean withExpDst) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         int length = withExpSrc || withExpDst ? 32 : 24;
         message.writeShort(length);

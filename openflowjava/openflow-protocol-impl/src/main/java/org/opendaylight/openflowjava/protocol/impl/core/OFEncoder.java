@@ -43,7 +43,7 @@ public class OFEncoder extends MessageToByteEncoder<MessageListenerWrapper> {
             throws Exception {
         LOG.trace("Encoding");
         try {
-            serializationFactory.messageToBuffer(wrapper.getMsg().getVersion().toJava(), out, wrapper.getMsg());
+            serializationFactory.messageToBuffer(wrapper.getMsg().getVersion(), out, wrapper.getMsg());
             if (wrapper.getMsg() instanceof FlowModInput) {
                 statisticsCounters.incrementCounter(CounterEventTypes.DS_FLOW_MODS_SENT);
             }

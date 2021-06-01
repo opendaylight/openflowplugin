@@ -17,11 +17,11 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.NxExpMatchEntryValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NspCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.exp.match.nx.exp.match.entry.value.NspCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.nsp.grouping.NspValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.NxExpMatchEntryValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.experimenter.id._case.nx.exp.match.entry.value.NspCaseValueBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NspCodec extends AbstractExperimenterMatchCodec {
@@ -30,17 +30,17 @@ public class NspCodec extends AbstractExperimenterMatchCodec {
     private static final int NXM_FIELD_CODE = 4;
     public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNsp> SERIALIZER_KEY =
             createSerializerKey(
-                    EncodeConstants.OF13_VERSION_ID,
+                    EncodeConstants.OF_VERSION_1_3,
                     NiciraConstants.NX_NSH_VENDOR_ID,
                     NxmNxNsp.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
             createDeserializerKey(
-                EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_3,
                 NiciraConstants.NX_NSH_VENDOR_ID,
                 NXM_FIELD_CODE);
 
     @Override
-    protected void serializeValue(NxExpMatchEntryValue value, boolean hasMask, ByteBuf outBuffer) {
+    protected void serializeValue(final NxExpMatchEntryValue value, final boolean hasMask, final ByteBuf outBuffer) {
         NspCaseValue nspCaseValue = (NspCaseValue) value;
         NspValues nspValues = nspCaseValue.getNspValues();
         outBuffer.writeInt(nspValues.getNsp().intValue());
@@ -50,7 +50,7 @@ public class NspCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    protected NxExpMatchEntryValue deserializeValue(ByteBuf message, boolean hasMask) {
+    protected NxExpMatchEntryValue deserializeValue(final ByteBuf message, final boolean hasMask) {
         Uint32 nspValue = readUint32(message);
         Uint32 maskValue = hasMask ? readUint32(message) : null;
         return new NspCaseValueBuilder()

@@ -58,21 +58,21 @@ public class OnfExtensionProvider {
     public void init() {
         switchConnectionProvider.registerExperimenterMessageSerializer(
             new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
-                OnfConstants.ONF_EXPERIMENTER_ID_LONG, OnfConstants.ONF_ET_BUNDLE_CONTROL,
+                OnfConstants.ONF_EXPERIMENTER, OnfConstants.ONF_ET_BUNDLE_CONTROL.toJava(),
                 ExperimenterDataOfChoice.class), new BundleControlFactory());
         switchConnectionProvider.registerExperimenterMessageSerializer(
             new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
-                OnfConstants.ONF_EXPERIMENTER_ID_LONG, OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE,
+                OnfConstants.ONF_EXPERIMENTER, OnfConstants.ONF_ET_BUNDLE_ADD_MESSAGE.toJava(),
                 ExperimenterDataOfChoice.class), new BundleAddMessageFactory());
 
         switchConnectionProvider.registerExperimenterMessageDeserializer(
             new ExperimenterIdTypeDeserializerKey(OFConstants.OFP_VERSION_1_3,
-                OnfConstants.ONF_EXPERIMENTER_ID_LONG, OnfConstants.ONF_ET_BUNDLE_CONTROL,
+                OnfConstants.ONF_EXPERIMENTER, OnfConstants.ONF_ET_BUNDLE_CONTROL.toJava(),
                 ExperimenterDataOfChoice.class),
             new org.opendaylight.openflowplugin.extension.onf.deserializer.BundleControlFactory());
         switchConnectionProvider.registerErrorDeserializer(
             new ExperimenterIdDeserializerKey(OFConstants.OFP_VERSION_1_3,
-                OnfConstants.ONF_EXPERIMENTER_ID_LONG, ErrorMessage.class),
+                OnfConstants.ONF_EXPERIMENTER, ErrorMessage.class),
             new OnfExperimenterErrorFactory());
 
         converterRegistrator.registerMessageConvertor(

@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NiciraExtensionCodecRegistratorImplTest {
@@ -57,7 +58,7 @@ public class NiciraExtensionCodecRegistratorImplTest {
     @Mock
     OFDeserializer<MatchEntry> matchDeserializer;
 
-    public static final short VERSION = 4;
+    public static final Uint8 VERSION = Uint8.valueOf(4);
     public static final byte VERSION1 = EncodeConstants.OF10_VERSION_ID;
     public static final byte VERSION2 = EncodeConstants.OF13_VERSION_ID;
 

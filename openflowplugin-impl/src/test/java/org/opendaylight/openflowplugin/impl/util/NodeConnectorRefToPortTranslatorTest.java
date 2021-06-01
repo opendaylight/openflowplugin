@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NodeConnectorRefToPortTranslatorTest extends TestCase {
@@ -35,7 +36,7 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
     private static final String PACKET_DATA = "Test_Data";
     private static final Uint32 PORT_NO = Uint32.valueOf(5L);
     private static final Uint64 DATA_PATH_ID = Uint64.TEN;
-    private static final short OF_VERSION = OFConstants.OFP_VERSION_1_3;
+    private static final Uint8 OF_VERSION = OFConstants.OFP_VERSION_1_3;
     private static final Uint32 TABLE_ID = Uint32.valueOf(42);
 
     private static PacketIn createPacketIn(final Uint32 portNo) {

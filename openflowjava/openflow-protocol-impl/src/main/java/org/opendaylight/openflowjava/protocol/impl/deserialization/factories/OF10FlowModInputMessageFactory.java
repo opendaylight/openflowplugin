@@ -41,20 +41,20 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
     private DeserializerRegistry registry;
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public FlowModInput deserialize(ByteBuf rawMessage) {
+    public FlowModInput deserialize(final ByteBuf rawMessage) {
         Objects.requireNonNull(registry);
 
         FlowModInputBuilder builder = new FlowModInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)
                 .setXid(readUint32(rawMessage));
         OFDeserializer<MatchV10> matchDeserializer = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, EncodeConstants.EMPTY_VALUE, MatchV10.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, EncodeConstants.EMPTY_VALUE, MatchV10.class));
         builder.setMatchV10(matchDeserializer.deserialize(rawMessage));
         builder.setCookie(readUint64(rawMessage));
         builder.setCommand(FlowModCommand.forValue(rawMessage.readUnsignedShort()));
@@ -64,7 +64,7 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
         builder.setBufferId(readUint32(rawMessage));
         builder.setOutPort(new PortNumber(readUint16(rawMessage).toUint32()));
         builder.setFlagsV10(createFlowModFlagsFromBitmap(rawMessage.readUnsignedShort()));
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF10_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_0);
 
         List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF10_VERSION_ID,
                 rawMessage.readableBytes(), rawMessage, keyMaker, registry);
@@ -73,7 +73,7 @@ public class OF10FlowModInputMessageFactory implements OFDeserializer<FlowModInp
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static FlowModFlagsV10 createFlowModFlagsFromBitmap(int input) {
+    private static FlowModFlagsV10 createFlowModFlagsFromBitmap(final int input) {
         final Boolean _oFPFFSENDFLOWREM = (input & 1 << 0) != 0;
         final Boolean _oFPFFCHECKOVERLAP = (input & 1 << 1) != 0;
         final Boolean _oFPFFEMERG = (input & 1 << 2) != 0;

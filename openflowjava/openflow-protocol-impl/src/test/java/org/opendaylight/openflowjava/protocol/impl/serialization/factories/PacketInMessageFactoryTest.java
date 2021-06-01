@@ -57,7 +57,7 @@ public class PacketInMessageFactoryTest {
     public void startUp() {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
-        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PacketInMessage.class));
+        factory = registry.getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, PacketInMessage.class));
     }
 
     @Test

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -40,7 +39,7 @@ public class GetConfigInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         getConfigFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, GetConfigInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, GetConfigInput.class));
     }
 
     /**
@@ -72,5 +71,4 @@ public class GetConfigInputMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(out, GET_CONFIG_REQUEST_MESSAGE_CODE_TYPE, 8);
     }
-
 }

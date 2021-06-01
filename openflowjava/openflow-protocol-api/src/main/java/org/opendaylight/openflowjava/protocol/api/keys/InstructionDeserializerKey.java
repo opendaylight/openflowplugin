@@ -8,7 +8,9 @@
 
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an instruction deserializer.
@@ -26,7 +28,7 @@ public class InstructionDeserializerKey extends MessageCodeKey {
      * @param type instruction type
      * @param experimenterId experimenter (vendor) identifier
      */
-    public InstructionDeserializerKey(short version, int type, Long experimenterId) {
+    public InstructionDeserializerKey(final Uint8 version, final int type, final Long experimenterId) {
         super(version, type, Instruction.class);
         this.experimenterId = experimenterId;
     }
@@ -40,7 +42,7 @@ public class InstructionDeserializerKey extends MessageCodeKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -51,11 +53,7 @@ public class InstructionDeserializerKey extends MessageCodeKey {
             return false;
         }
         InstructionDeserializerKey other = (InstructionDeserializerKey) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
+        if (!Objects.equals(experimenterId, other.experimenterId)) {
             return false;
         }
         return true;

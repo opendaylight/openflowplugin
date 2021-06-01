@@ -36,7 +36,7 @@ public class OF10ErrorMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         errorFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 1, ErrorMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 1, ErrorMessage.class));
     }
 
     /**

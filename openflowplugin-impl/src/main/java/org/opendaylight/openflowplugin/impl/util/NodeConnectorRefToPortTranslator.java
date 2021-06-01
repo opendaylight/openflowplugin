@@ -26,6 +26,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Created by Tomas Slusny on 23.3.2016.
@@ -65,7 +66,7 @@ public final class NodeConnectorRefToPortTranslator {
      */
     @SuppressWarnings("unchecked")
     @Nullable
-    public static Uint32 fromNodeConnectorRef(@NonNull final NodeConnectorRef nodeConnectorRef, final short version) {
+    public static Uint32 fromNodeConnectorRef(@NonNull final NodeConnectorRef nodeConnectorRef, final Uint8 version) {
         Preconditions.checkNotNull(nodeConnectorRef);
 
         Uint32 port = null;
@@ -91,9 +92,9 @@ public final class NodeConnectorRefToPortTranslator {
 
         Uint32 port = null;
 
-        if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_0 && packetIn.getInPort() != null) {
+        if (OFConstants.OFP_VERSION_1_0.equals(packetIn.getVersion()) && packetIn.getInPort() != null) {
             port = Uint32.valueOf(packetIn.getInPort());
-        } else if (packetIn.getVersion().toJava() == OFConstants.OFP_VERSION_1_3) {
+        } else if (OFConstants.OFP_VERSION_1_3.equals(packetIn.getVersion())) {
             if (packetIn.getMatch() != null && packetIn.getMatch().getMatchEntry() != null) {
                 List<MatchEntry> entries = packetIn.getMatch().getMatchEntry();
 

@@ -34,6 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,14 +153,12 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
         if (notification.getSwitchCertificate() != null) {
             switchCertificateBuilder = new SwitchCertificateBuilder(notification.getSwitchCertificate());
         }
-        notificationPublishService
-                .offerNotification(
-                        new SslErrorBuilder().setType(SslErrorType.SslConFailed)
-                                .setCode(SslErrorType.SslConFailed.getIntValue())
-                                .setNodeIpAddress(ip)
-                                .setData(notification.getInfo())
-                                .setSwitchCertificate(notification.getSwitchCertificate() != null
-                                        ? switchCertificateBuilder.build() : null)
-                                .build());
+        notificationPublishService.offerNotification(new SslErrorBuilder()
+            .setType(SslErrorType.SslConFailed)
+            .setCode(Uint16.valueOf(SslErrorType.SslConFailed.getIntValue()))
+            .setNodeIpAddress(ip)
+            .setData(notification.getInfo())
+            .setSwitchCertificate(notification.getSwitchCertificate() != null ? switchCertificateBuilder.build() : null)
+            .build());
     }
 }

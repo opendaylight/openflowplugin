@@ -8,7 +8,9 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -17,7 +19,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Collections;
-import org.junit.Assert;
+import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,15 +38,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsContextImplTest extends StatisticsContextImpMockInitiation {
+    private static final Uint32 TEST_XID = Uint32.valueOf(55);
 
-    private static final Logger LOG = LoggerFactory.getLogger(StatisticsContextImplTest.class);
-
-    private static final Long TEST_XID = 55L;
     private StatisticsContextImpl<MultipartReply> statisticsContext;
     private ConvertorManager convertorManager;
     @Mock
@@ -55,15 +53,15 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void setUp() {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceInfo.reserveXidForDeviceMessage()).thenReturn(TEST_XID);
-        Mockito.when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
-        Mockito.when(config.getIsTableStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getIsFlowStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getIsGroupStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getIsMeterStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getIsPortStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getIsQueueStatisticsPollingOn()).thenReturn(true);
-        Mockito.when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(3000)));
-        Mockito.when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(50000)));
+        when(mockedDeviceContext.getDeviceState()).thenReturn(mockedDeviceState);
+        when(config.getIsTableStatisticsPollingOn()).thenReturn(true);
+        when(config.getIsFlowStatisticsPollingOn()).thenReturn(true);
+        when(config.getIsGroupStatisticsPollingOn()).thenReturn(true);
+        when(config.getIsMeterStatisticsPollingOn()).thenReturn(true);
+        when(config.getIsPortStatisticsPollingOn()).thenReturn(true);
+        when(config.getIsQueueStatisticsPollingOn()).thenReturn(true);
+        when(config.getBasicTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(3000)));
+        when(config.getMaximumTimerDelay()).thenReturn(new NonZeroUint32Type(Uint32.valueOf(50000)));
 
         initStatisticsContext();
     }
@@ -85,16 +83,15 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
     public void testCreateRequestContext() {
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         assertNotNull(requestContext);
-        assertEquals(Uint32.valueOf(TEST_XID), requestContext.getXid().getValue());
-        Assert.assertFalse(requestContext.getFuture().isDone());
+        assertEquals(TEST_XID, requestContext.getXid().getValue());
+        assertFalse(requestContext.getFuture().isDone());
     }
 
     /**
      * There is nothing to check in close method.
      */
     @Test
-    @SuppressWarnings("checkstyle:IllegalCatch")
-    public void testClose() {
+    public void testClose() throws InterruptedException, ExecutionException {
         statisticsContext =
                 new StatisticsContextImpl<>(mockedDeviceContext,
                         convertorManager,
@@ -107,15 +104,9 @@ public class StatisticsContextImplTest extends StatisticsContextImpMockInitiatio
 
         final RequestContext<Object> requestContext = statisticsContext.createRequestContext();
         statisticsContext.close();
-        try {
-            Assert.assertTrue(requestContext.getFuture().isDone());
-            final RpcResult<?> rpcResult = requestContext.getFuture().get();
-            Assert.assertFalse(rpcResult.isSuccessful());
-            Assert.assertFalse(rpcResult.isSuccessful());
-        } catch (final Exception e) {
-            LOG.error("request future value should be finished", e);
-            Assert.fail("request context closing failed");
-        }
+        assertTrue(requestContext.getFuture().isDone());
+        final RpcResult<?> rpcResult = requestContext.getFuture().get();
+        assertFalse(rpcResult.isSuccessful());
     }
 
     @Test

@@ -7,8 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Map;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Helper for initializing type to class mappings.
@@ -16,8 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
  * @author michal.polkorab
  */
 public class TypeToClassInitHelper {
-
-    private final short version;
+    private final Uint8 version;
     private final Map<TypeToClassKey, Class<?>> messageClassMap;
 
     /**
@@ -26,9 +28,8 @@ public class TypeToClassInitHelper {
      * @param version protocol wire version
      * @param messageClassMap map which stores type to class mapping
      */
-    public TypeToClassInitHelper(short version, Map<TypeToClassKey,
-            Class<?>> messageClassMap) {
-        this.version = version;
+    public TypeToClassInitHelper(final Uint8 version, final Map<TypeToClassKey, Class<?>> messageClassMap) {
+        this.version = requireNonNull(version);
         this.messageClassMap = messageClassMap;
     }
 
@@ -38,7 +39,7 @@ public class TypeToClassInitHelper {
      * @param type code value for message type / class
      * @param clazz class corresponding to the code
      */
-    public void registerTypeToClass(short type, Class<?> clazz) {
+    public void registerTypeToClass(final short type, final Class<?> clazz) {
         messageClassMap.put(new TypeToClassKey(version, type), clazz);
     }
 }

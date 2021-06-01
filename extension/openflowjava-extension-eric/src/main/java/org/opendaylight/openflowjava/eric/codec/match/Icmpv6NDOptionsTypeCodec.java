@@ -20,27 +20,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.Icmpv6NdOptionsType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.icmpv6.nd.options.type.grouping.Icmpv6NdOptionsTypeValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.oxm.container.match.entry.value.Icmpv6NdOptionsTypeCaseValueBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.ofj.aug.eric.match.options.Icmpv6NdOptionsTypeCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev180730.ofj.aug.eric.match.options.Icmpv6NdOptionsTypeCaseValueBuilder;
 
 public class Icmpv6NDOptionsTypeCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 1;
     public static final MatchEntrySerializerKey<?, ?> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, EricExpClass.class, Icmpv6NdOptionsType.class);
+            EncodeConstants.OF_VERSION_1_3, EricExpClass.class, Icmpv6NdOptionsType.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
+            EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
             EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE);
     public static final Icmpv6NDOptionsTypeCodec INSTANCE = new Icmpv6NDOptionsTypeCodec();
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         Icmpv6NdOptionsTypeCaseValue caseValue = (Icmpv6NdOptionsTypeCaseValue) input.getMatchEntryValue();
         outBuffer.writeByte(caseValue.getIcmpv6NdOptionsTypeValues().getIcmpv6NdOptionsType().toJava());
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         return deserializeHeaderToBuilder(message)
                 .setMatchEntryValue(new Icmpv6NdOptionsTypeCaseValueBuilder()
                     .setIcmpv6NdOptionsTypeValues(new Icmpv6NdOptionsTypeValuesBuilder()

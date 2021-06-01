@@ -5,10 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
+import java.util.Objects;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Key for an action deserializer.
@@ -16,7 +17,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
  * @author michal.polkorab
  */
 public class ActionDeserializerKey extends MessageCodeKey {
-
     private final Long experimenterId;
 
     /**
@@ -26,8 +26,7 @@ public class ActionDeserializerKey extends MessageCodeKey {
      * @param type action type
      * @param experimenterId experimenter / vendor ID
      */
-    public ActionDeserializerKey(short version,
-            int type, Long experimenterId) {
+    public ActionDeserializerKey(final Uint8 version, final int type, final Long experimenterId) {
         super(version, type, Action.class);
         this.experimenterId = experimenterId;
     }
@@ -41,7 +40,7 @@ public class ActionDeserializerKey extends MessageCodeKey {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -52,14 +51,7 @@ public class ActionDeserializerKey extends MessageCodeKey {
             return false;
         }
         ActionDeserializerKey other = (ActionDeserializerKey) obj;
-        if (experimenterId == null) {
-            if (other.experimenterId != null) {
-                return false;
-            }
-        } else if (!experimenterId.equals(other.experimenterId)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(experimenterId, other.experimenterId);
     }
 
     @Override

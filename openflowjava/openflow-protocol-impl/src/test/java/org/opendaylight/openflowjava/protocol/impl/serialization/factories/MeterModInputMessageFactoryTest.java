@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -55,7 +54,7 @@ public class MeterModInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         meterModFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MeterModInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, MeterModInput.class));
     }
 
     /**
@@ -82,7 +81,7 @@ public class MeterModInputMessageFactoryTest {
     }
 
     @SuppressWarnings("checkstyle:AbbreviationAsWordInName")
-    private static MeterFlags decodeMeterModFlags(short input) {
+    private static MeterFlags decodeMeterModFlags(final short input) {
         final Boolean _oFPMFKBPS = (input & 1 << 0) > 0;
         final Boolean _oFPMFPKTPS = (input & 1 << 1) > 0;
         final Boolean _oFPMFBURST = (input & 1 << 2) > 0;
@@ -111,7 +110,7 @@ public class MeterModInputMessageFactoryTest {
         return bandsList;
     }
 
-    private static List<Bands> decodeBandsList(ByteBuf input) {
+    private static List<Bands> decodeBandsList(final ByteBuf input) {
         final List<Bands> bandsList = new ArrayList<>();
         final BandsBuilder bandsBuilder = new BandsBuilder();
         final MeterBandDropCaseBuilder dropCaseBuilder = new MeterBandDropCaseBuilder();

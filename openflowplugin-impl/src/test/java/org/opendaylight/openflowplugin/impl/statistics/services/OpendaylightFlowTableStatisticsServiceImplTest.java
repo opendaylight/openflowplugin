@@ -58,7 +58,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
     @Test
     public void testGetFlowTablesStatistics() throws Exception {
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
+                .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
 
         GetFlowTablesStatisticsInputBuilder input = new GetFlowTablesStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));

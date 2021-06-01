@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Lookup and register key for extension converters, basic case expects this to
@@ -16,8 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
  * @param <T> type of key
  */
 public class ConverterExtensionKey<T extends ExtensionKey> extends TypeVersionKey<T> {
-
-    public ConverterExtensionKey(Class<T> type, short ofVersion) {
+    public ConverterExtensionKey(final Class<T> type, final Uint8 ofVersion) {
         super(type, ofVersion);
     }
 }

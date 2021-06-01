@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -70,6 +69,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanPcpActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.StripVlanActionCase;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Util class for injecting new action serializers into OpenflowJava.
@@ -88,7 +88,7 @@ public final class ActionSerializerInjector {
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new action serializers here using injector created by createInjector method
         final Function<Class<? extends Action>, Consumer<OFSerializer<? extends Action>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(SetFieldCase.class).accept(new SetFieldActionSerializer());
         injector.apply(CopyTtlInCase.class).accept(new CopyTtlInActionSerializer());
@@ -129,8 +129,7 @@ public final class ActionSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends Action>, Consumer<OFSerializer<? extends Action>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
+            final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
                 provider.registerSerializer(
                         new MessageTypeKey<>(version, type),

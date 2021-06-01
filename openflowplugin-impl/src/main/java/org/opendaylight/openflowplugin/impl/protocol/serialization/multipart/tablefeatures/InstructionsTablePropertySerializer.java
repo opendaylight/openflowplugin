@@ -34,7 +34,7 @@ public class InstructionsTablePropertySerializer extends AbstractTablePropertySe
                 .forEach(instruction -> InstructionUtil
                         .writeInstructionHeader(
                                 instruction,
-                                EncodeConstants.OF13_VERSION_ID,
+                                EncodeConstants.OF_VERSION_1_3,
                                 registry,
                                 byteBuf));
     }

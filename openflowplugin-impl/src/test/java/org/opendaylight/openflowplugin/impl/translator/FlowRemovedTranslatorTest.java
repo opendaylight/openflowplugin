@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.translator;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +38,7 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test of {@link AggregatedFlowStatisticsTranslator}.
@@ -74,6 +74,7 @@ public class FlowRemovedTranslatorTest {
         translator = new FlowRemovedTranslator(convertorManager);
         translatorV10 = new FlowRemovedV10Translator(convertorManager);
 
+        when(deviceInfo.getVersion()).thenReturn(Uint8.ONE);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeId);
     }
 

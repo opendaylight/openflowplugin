@@ -88,7 +88,7 @@ module openflowplugin-extension-eric-match {
         uses all-matches-grouping;
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-nodes-node-table-flow";
+        ext:augment-identifier "eric-aug-match-notif-update-flow-stats";
         uses all-matches-grouping;
     }
     augment "/odl-direct-stats:get-flow-statistics/odl-direct-stats:output/odl-direct-stats:flow-and-statistics-map-list/odl-direct-stats:match/ext-gen:extension-list/ext-gen:extension" {

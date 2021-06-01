@@ -38,7 +38,7 @@ public class OF10PacketInMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         packetInFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 10, PacketInMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 10, PacketInMessage.class));
     }
 
     /**

@@ -29,24 +29,24 @@ public class ActionSerializerKeyTest {
     @Test
     public void test() {
         ActionSerializerKey<CopyTtlInCase> key1 =
-                new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, FORTY_TWO);
+                new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, CopyTtlInCase.class, FORTY_TWO);
         ActionSerializerKey<?> key2 =
-                new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, FORTY_TWO);
+                new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, CopyTtlInCase.class, FORTY_TWO);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, (Uint32) null);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, CopyTtlInCase.class, (Uint32) null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, (Uint32) null);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, null, (Uint32) null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlOutCase.class, FORTY_TWO);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, CopyTtlOutCase.class, FORTY_TWO);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, FIFTY_FIVE);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, CopyTtlInCase.class, FIFTY_FIVE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, CopyTtlInCase.class, FIFTY_FIVE);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_3, CopyTtlInCase.class, FIFTY_FIVE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
     }
@@ -56,18 +56,18 @@ public class ActionSerializerKeyTest {
      */
     @Test
     public void testEquals() {
-        ActionSerializerKey<?> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, FORTY_TWO);
-        ActionSerializerKey<?> key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+        ActionSerializerKey<?> key1 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, null, FORTY_TWO);
+        ActionSerializerKey<?> key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 CopyTtlInCase.class, FORTY_TWO);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal by actionType", key1.equals(key2));
 
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, FORTY_TWO);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, null, FORTY_TWO);
         Assert.assertTrue("Wrong equal by action type", key1.equals(key2));
-        key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,  CopyTtlInCase.class, (Uint32) null);
+        key1 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0,  CopyTtlInCase.class, (Uint32) null);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
-        key2 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, CopyTtlInCase.class, (Uint32) null);
+        key2 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, CopyTtlInCase.class, (Uint32) null);
         Assert.assertTrue("Wrong equal by experimenterId", key1.equals(key2));
     }
 
@@ -76,7 +76,7 @@ public class ActionSerializerKeyTest {
      */
     @Test
     public void testToString() {
-        ActionSerializerKey<CopyTtlInCase> key1 = new ActionSerializerKey<>(EncodeConstants.OF10_VERSION_ID,
+        ActionSerializerKey<CopyTtlInCase> key1 = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 CopyTtlInCase.class, FORTY_TWO);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectType: org.opendaylight.yang.gen.v1.urn"

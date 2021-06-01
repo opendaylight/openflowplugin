@@ -27,24 +27,24 @@ public class InstructionSerializerKeyTest {
     @Test
     public void test() {
         InstructionSerializerKey<?> key1 =
-                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
+                new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, 42L);
         InstructionSerializerKey<?> key2 =
-                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
+                new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, 42L);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, null);
+        key2 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, 42L);
+        key2 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, null, 42L);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, WriteActionsCase.class, 42L);
+        key2 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, WriteActionsCase.class, 42L);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 55L);
+        key2 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, 55L);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
-        key2 = new InstructionSerializerKey<>(EncodeConstants.OF13_VERSION_ID, ApplyActionsCase.class, 42L);
+        key2 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_3, ApplyActionsCase.class, 42L);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
     }
@@ -55,18 +55,18 @@ public class InstructionSerializerKeyTest {
     @Test
     public void testEquals() {
         InstructionSerializerKey<?> key1 =
-                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
+                new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, 42L);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
         InstructionSerializerKey<?> key2 =
-                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
-        key1 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, null);
+                new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, 42L);
+        key1 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, null);
         Assert.assertFalse("Wrong equal by experimenterId.", key1.equals(key2));
 
-        key1 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, 42L);
-        key2 = new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, null, 42L);
+        key1 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, null, 42L);
+        key2 = new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, null, 42L);
         Assert.assertTrue("Wrong equal by instructionType.", key1.equals(key2));
     }
 
@@ -76,7 +76,7 @@ public class InstructionSerializerKeyTest {
     @Test
     public void testToString() {
         InstructionSerializerKey<?> key1 =
-                new InstructionSerializerKey<>(EncodeConstants.OF10_VERSION_ID, ApplyActionsCase.class, 42L);
+                new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_0, ApplyActionsCase.class, 42L);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectType: org.opendaylight.yang.gen.v1.urn"
                 + ".opendaylight.openflow.common.instruction.rev130731.instructions.grouping.Instruction "

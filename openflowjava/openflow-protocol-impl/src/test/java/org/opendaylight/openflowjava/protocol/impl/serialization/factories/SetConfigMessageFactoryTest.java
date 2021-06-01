@@ -43,7 +43,7 @@ public class SetConfigMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         setConfigFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, SetConfigInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, SetConfigInput.class));
     }
 
     /**

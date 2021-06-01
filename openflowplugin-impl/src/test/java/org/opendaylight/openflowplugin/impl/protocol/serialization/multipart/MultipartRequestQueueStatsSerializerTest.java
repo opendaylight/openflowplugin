@@ -33,7 +33,7 @@ public class MultipartRequestQueueStatsSerializerTest extends AbstractSerializer
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID,
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3,
                 MultipartRequestQueueStats.class));
     }
 
@@ -46,5 +46,4 @@ public class MultipartRequestQueueStatsSerializerTest extends AbstractSerializer
         assertEquals(out.readUnsignedInt(), QUEUE_ID.longValue());
         assertEquals(out.readableBytes(), 0);
     }
-
 }

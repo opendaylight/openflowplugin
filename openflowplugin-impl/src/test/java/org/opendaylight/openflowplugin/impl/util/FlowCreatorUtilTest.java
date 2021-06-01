@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowCreatorUtilTest {
 
@@ -83,9 +84,7 @@ public class FlowCreatorUtilTest {
      */
     @Test
     public void testCanModifyFlow() {
-        final Short of10 = Short.valueOf(OFConstants.OFP_VERSION_1_0);
-        final Short of13 = Short.valueOf(OFConstants.OFP_VERSION_1_3);
-        final Short[] versions = {null, of10, of13};
+        final Uint8[] versions = {null, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3};
         final Boolean[] bools = {null, Boolean.TRUE, Boolean.FALSE};
 
         final Uint16 defPri = Uint16.valueOf(0x8000);
@@ -98,7 +97,7 @@ public class FlowCreatorUtilTest {
         final FlowCookie cookie1 = new FlowCookie(Uint64.valueOf(0x67890));
         final FlowCookie cookieMask = new FlowCookie(Uint64.valueOf(0xffff00));
 
-        for (final Short ver : versions) {
+        for (final Uint8 ver : versions) {
             final OriginalFlowBuilder originalBuilder = new OriginalFlowBuilder();
             final UpdatedFlowBuilder updatedBuilder = new UpdatedFlowBuilder();
             canModifyFlowTest(true, originalBuilder, updatedBuilder, ver);
@@ -139,9 +138,9 @@ public class FlowCreatorUtilTest {
             }
 
             // Set different idle-timeout, hard-timeout, priority.
-            final Integer[] integers = {null, Integer.valueOf(3600)};
+            final Integer[] integers = {null, 3600};
             for (final Integer i : integers) {
-                final Uint16 uint = i == null ? null : Uint16.valueOf(i.intValue());
+                final Uint16 uint = i == null ? null : Uint16.valueOf(i);
                 canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setIdleTimeout(uint), ver);
                 canModifyFlowTest(false, new OriginalFlowBuilder(org).setIdleTimeout(uint), updatedBuilder, ver);
 
@@ -177,7 +176,7 @@ public class FlowCreatorUtilTest {
                 canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
 
                 updatedBuilder.setCookieMask(cookieMask);
-                final boolean expected = of13.equals(ver) && !Boolean.TRUE.equals(strict);
+                final boolean expected = OFConstants.OFP_VERSION_1_3.equals(ver) && !Boolean.TRUE.equals(strict);
                 canModifyFlowTest(expected, originalBuilder, updatedBuilder, ver);
             }
         }
@@ -256,15 +255,15 @@ public class FlowCreatorUtilTest {
             assertTrue(FlowCreatorUtil.equalsWithDefault(def, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, def, def));
 
-            final Boolean inv = Boolean.valueOf(!def.booleanValue());
+            final Boolean inv = !def.booleanValue();
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, inv, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(inv, null, def));
         }
 
         // Integer
-        final Integer[] integers = {Integer.valueOf(-100), Integer.valueOf(0), Integer.valueOf(100),};
+        final Integer[] integers = {-100, 0, 100,};
         for (final Integer def : integers) {
-            final Integer same = new Integer(def.intValue());
+            final Integer same = new Integer(def);
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(same, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, same, def));
@@ -324,7 +323,7 @@ public class FlowCreatorUtilTest {
      * @param version  OpenFlow protocol version.
      */
     private static void canModifyFlowTest(final boolean expected, final OriginalFlowBuilder org,
-                                          final UpdatedFlowBuilder upd, final Short version) {
+                                          final UpdatedFlowBuilder upd, final Uint8 version) {
         final boolean result = FlowCreatorUtil.canModifyFlow(org.build(), upd.build(), version);
         assertEquals(expected, result);
     }

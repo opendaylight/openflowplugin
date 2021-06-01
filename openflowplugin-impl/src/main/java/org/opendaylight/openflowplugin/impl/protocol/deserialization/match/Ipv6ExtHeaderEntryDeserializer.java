@@ -10,8 +10,6 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.openflowjava.protocol.impl.deserialization.match.OxmDeserializerHelper;
-import org.opendaylight.openflowplugin.openflow.md.util.ByteUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ipv6.match.fields.Ipv6ExtHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6Match;
@@ -25,8 +23,7 @@ public class Ipv6ExtHeaderEntryDeserializer extends AbstractMatchEntryDeserializ
             .setIpv6Exthdr(readUint16(message));
 
         if (hasMask) {
-            final byte[] mask = OxmDeserializerHelper.convertMask(message, Short.BYTES);
-            extHeaderBuilder.setIpv6ExthdrMask(ByteUtil.bytesToUnsignedShort(mask));
+            extHeaderBuilder.setIpv6ExthdrMask(readUint16(message));
         }
 
         if (builder.getLayer3Match() == null) {

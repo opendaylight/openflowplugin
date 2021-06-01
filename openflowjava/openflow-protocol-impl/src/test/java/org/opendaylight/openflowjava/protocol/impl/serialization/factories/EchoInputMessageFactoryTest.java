@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -41,7 +40,7 @@ public class EchoInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         echoFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, EchoInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, EchoInput.class));
     }
 
     /**

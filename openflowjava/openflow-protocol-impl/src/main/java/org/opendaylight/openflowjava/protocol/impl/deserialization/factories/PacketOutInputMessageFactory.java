@@ -29,7 +29,7 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
     private DeserializerRegistry registry;
 
     @Override
-    public PacketOutInput deserialize(ByteBuf rawMessage) {
+    public PacketOutInput deserialize(final ByteBuf rawMessage) {
         PacketOutInputBuilder builder = new PacketOutInputBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(readUint32(rawMessage))
@@ -37,7 +37,7 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
                 .setInPort(new PortNumber(readUint32(rawMessage)));
         int actionsLen = rawMessage.readShort();
         rawMessage.skipBytes(PADDING);
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         List<Action> actions = ListDeserializer.deserializeList(EncodeConstants.OF13_VERSION_ID, actionsLen,
                 rawMessage, keyMaker, registry);
         builder.setAction(actions);
@@ -49,7 +49,7 @@ public class PacketOutInputMessageFactory implements OFDeserializer<PacketOutInp
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry deserializerRegistry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
 }

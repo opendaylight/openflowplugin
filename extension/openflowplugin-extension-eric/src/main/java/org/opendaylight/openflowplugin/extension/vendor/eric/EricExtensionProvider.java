@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.eric;
 
 import static java.util.Objects.requireNonNull;
@@ -42,11 +41,11 @@ public class EricExtensionProvider implements AutoCloseable {
         this.extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
         registrations = List.of(
             extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
-                Icmpv6NdReservedKey.class, EncodeConstants.OF13_VERSION_ID), ICMPV6_ND_RESERVED_CONVERTOR),
+                Icmpv6NdReservedKey.class, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_RESERVED_CONVERTOR),
             extensionConverterRegistrator.registerMatchConvertor(
                 Icmpv6NDReservedCodec.SERIALIZER_KEY, ICMPV6_ND_RESERVED_CONVERTOR),
             extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
-                Icmpv6NdOptionsTypeKey.class, EncodeConstants.OF13_VERSION_ID), ICMPV6_ND_OPTIONS_TYPE_CONVERTOR),
+                Icmpv6NdOptionsTypeKey.class, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_OPTIONS_TYPE_CONVERTOR),
             extensionConverterRegistrator.registerMatchConvertor(
                 Icmpv6NDOptionsTypeCodec.SERIALIZER_KEY, ICMPV6_ND_OPTIONS_TYPE_CONVERTOR));
     }
@@ -63,5 +62,4 @@ public class EricExtensionProvider implements AutoCloseable {
         });
         registrations.clear();
     }
-
 }
