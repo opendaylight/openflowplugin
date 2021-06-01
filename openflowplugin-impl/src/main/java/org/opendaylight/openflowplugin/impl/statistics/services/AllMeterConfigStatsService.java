@@ -38,25 +38,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestMeterConfigCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.meter.config._case.MultipartRequestMeterConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 final class AllMeterConfigStatsService
         extends AbstractCompatibleStatService<GetAllMeterConfigStatisticsInput,
                                               GetAllMeterConfigStatisticsOutput,
                                               MeterConfigStatsUpdated> {
-
-    private static final MultipartRequestMeterConfigCase METER_CONFIG_CASE;
-
-
-    static {
-        MultipartRequestMeterConfigCaseBuilder caseBuilder =
-                new MultipartRequestMeterConfigCaseBuilder();
-        MultipartRequestMeterConfigBuilder mprMeterConfigBuild =
-                new MultipartRequestMeterConfigBuilder();
-        mprMeterConfigBuild.setMeterId(new MeterId(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue())));
-        caseBuilder.setMultipartRequestMeterConfig(mprMeterConfigBuild.build());
-
-        METER_CONFIG_CASE = caseBuilder.build();
-    }
+    private static final MultipartRequestMeterConfigCase METER_CONFIG_CASE =
+        new MultipartRequestMeterConfigCaseBuilder()
+            .setMultipartRequestMeterConfig(new MultipartRequestMeterConfigBuilder()
+                .setMeterId(new MeterId(Uint32.valueOf(BinContent.intToUnsignedLong(Meter.OFPMALL.getIntValue()))))
+                .build())
+            .build();
 
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;

@@ -41,7 +41,7 @@ public class OFDatagramPacketDecoderTest {
     public void test() {
         OFDatagramPacketDecoder decoder = new OFDatagramPacketDecoder();
         decoder.setDeserializationFactory(deserializationFactory);
-        msgWrapper = new VersionMessageUdpWrapper(EncodeConstants.OF13_VERSION_ID, messageBufferMock,
+        msgWrapper = new VersionMessageUdpWrapper(EncodeConstants.OF_VERSION_1_3, messageBufferMock,
                 new InetSocketAddress("10.0.0.1", 6653));
 
         decoder.channelRead0(ctx, msgWrapper);

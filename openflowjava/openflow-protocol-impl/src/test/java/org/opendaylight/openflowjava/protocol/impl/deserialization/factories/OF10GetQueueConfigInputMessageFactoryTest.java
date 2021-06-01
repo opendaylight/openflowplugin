@@ -34,7 +34,7 @@ public class OF10GetQueueConfigInputMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF10_VERSION_ID, 20, GetQueueConfigInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_0, 20, GetQueueConfigInput.class));
     }
 
     @Test

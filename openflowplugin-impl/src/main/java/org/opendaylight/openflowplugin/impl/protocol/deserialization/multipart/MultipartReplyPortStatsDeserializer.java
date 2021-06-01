@@ -42,7 +42,7 @@ public class MultipartReplyPortStatsDeserializer implements OFDeserializer<Multi
 
             final long port = message.readUnsignedInt();
             itemBuilder.setNodeConnectorId(new NodeConnectorId(OpenflowPortsUtil
-                    .getProtocolAgnosticPortUri(EncodeConstants.OF13_VERSION_ID, port)));
+                    .getProtocolAgnosticPortUri(EncodeConstants.OF_VERSION_1_3, port)));
 
             message.skipBytes(PADDING_IN_PORT_STATS_HEADER);
 

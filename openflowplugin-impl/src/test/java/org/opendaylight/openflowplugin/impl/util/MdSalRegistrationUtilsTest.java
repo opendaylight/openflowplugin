@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.O
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MdSalRegistrationUtilsTest {
@@ -66,6 +67,7 @@ public class MdSalRegistrationUtilsTest {
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
+        when(mockedDeviceInfo.getVersion()).thenReturn(Uint8.ONE);
         when(mockedDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(12345));
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
     }

@@ -59,7 +59,7 @@ public final class ActionDeserializerInitializer {
     public static void registerDeserializers(final DeserializerRegistry registry) {
         // register OF v1.0 action deserializers
         ActionDeserializerRegistryHelper helper =
-                new ActionDeserializerRegistryHelper(EncodeConstants.OF10_VERSION_ID, registry);
+                new ActionDeserializerRegistryHelper(EncodeConstants.OF_VERSION_1_0, registry);
         helper.registerDeserializer(ActionConstants.OUTPUT_CODE, new OF10OutputActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_VLAN_VID_CODE, new OF10SetVlanVidActionDeserializer());
         helper.registerDeserializer(ActionConstants.SET_VLAN_PCP_CODE, new OF10SetVlanPcpActionDeserializer());
@@ -74,7 +74,7 @@ public final class ActionDeserializerInitializer {
         helper.registerDeserializer(ActionConstants.SET_TP_DST_CODE, new OF10SetTpDstActionDeserializer());
         helper.registerDeserializer(ActionConstants.ENQUEUE_CODE, new OF10EnqueueActionDeserializer());
         // register OF v1.3 action deserializers
-        helper = new ActionDeserializerRegistryHelper(EncodeConstants.OF13_VERSION_ID, registry);
+        helper = new ActionDeserializerRegistryHelper(EncodeConstants.OF_VERSION_1_3, registry);
         helper.registerDeserializer(ActionConstants.OUTPUT_CODE, new OF13OutputActionDeserializer());
         helper.registerDeserializer(ActionConstants.COPY_TTL_OUT_CODE,
             new EmptyActionDeserializer<>(new CopyTtlOutCaseBuilder().build()));

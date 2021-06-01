@@ -31,7 +31,7 @@ public class GetFeaturesInputFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         factory = registry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 5, GetFeaturesInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 5, GetFeaturesInput.class));
     }
 
     @Test

@@ -95,7 +95,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
             return null;
         };
 
-        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(Uint8.valueOf(OFConstants.OFP_VERSION_1_3));
+        Mockito.lenient().when(featuresOutput.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         Mockito.when(rqContextStack.createRequestContext()).thenReturn(rqContext);
         Mockito.lenient().when(deviceContext.getDeviceState()).thenReturn(deviceState);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
@@ -106,7 +106,7 @@ public class AbstractCompatibleStatServiceTest extends AbstractStatsServiceTest 
                 .endCollecting(any(EventIdentifier.class));
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
+                .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
 
         Mockito.when(translatorLibrary.lookupTranslator(any(TranslatorKey.class))).thenReturn(translator);
 

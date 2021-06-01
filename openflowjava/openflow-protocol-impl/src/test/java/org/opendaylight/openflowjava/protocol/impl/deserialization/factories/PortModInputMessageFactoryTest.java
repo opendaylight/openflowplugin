@@ -37,7 +37,7 @@ public class PortModInputMessageFactoryTest {
         DeserializerRegistry desRegistry = new DeserializerRegistryImpl();
         desRegistry.init();
         factory = desRegistry
-                .getDeserializer(new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 16, PortModInput.class));
+                .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 16, PortModInput.class));
     }
 
     @Test

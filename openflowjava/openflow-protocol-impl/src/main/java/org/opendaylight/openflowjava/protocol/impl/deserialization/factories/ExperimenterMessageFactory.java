@@ -39,7 +39,7 @@ public class ExperimenterMessageFactory implements OFDeserializer<ExperimenterMe
 
         final OFDeserializer<ExperimenterDataOfChoice> deserializer = deserializerRegistry.getDeserializer(
                 ExperimenterDeserializerKeyFactory.createExperimenterMessageDeserializerKey(
-                        EncodeConstants.OF13_VERSION_ID, expId.toJava(), expType.toJava()));
+                        EncodeConstants.OF_VERSION_1_3, expId, expType.toJava()));
 
         return new ExperimenterMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_3)

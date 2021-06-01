@@ -31,8 +31,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.experimenter.id._case.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
@@ -40,8 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Expe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegLoad2;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegLoad2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2Builder;
 
@@ -73,7 +73,7 @@ public class RegLoad2CodecTest {
                 + " FF FF 02 00 00 5A D6 50"                       // OXM field
                 + " 00 00 00 00 00 00");                           // padding
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
-                EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_3,
                 EncodeConstants.EXPERIMENTER_VALUE,
                 1);
         key.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
@@ -96,7 +96,7 @@ public class RegLoad2CodecTest {
         final ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
         final Action action = createAction();
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_3,
                 ExperimenterClass.class,
                 OxmMatchFieldClass.class);
         key.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);

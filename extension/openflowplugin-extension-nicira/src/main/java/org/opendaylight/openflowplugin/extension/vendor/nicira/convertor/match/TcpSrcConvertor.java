@@ -16,9 +16,9 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm0Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.TcpSrcCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.TcpSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.tcp.src.grouping.TcpSrcValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpSrcCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.TcpSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
@@ -44,17 +44,16 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
  */
 public class TcpSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         TcpSrcCaseValue tcpSrcCaseValue = (TcpSrcCaseValue) input.getMatchEntryValue();
         NxmOfTcpSrcBuilder tcpSrcBuilder = new NxmOfTcpSrcBuilder();
         tcpSrcBuilder.setPort(tcpSrcCaseValue.getTcpSrcValues().getPort());
         tcpSrcBuilder.setMask(tcpSrcCaseValue.getTcpSrcValues().getMask());
-        return resolveAugmentation(tcpSrcBuilder.build(), path,
-                NxmOfTcpSrcKey.class);
+        return resolveAugmentation(tcpSrcBuilder.build(), path, NxmOfTcpSrcKey.class);
     }
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<NxmOfTcpSrcGrouping> matchGrouping = MatchUtil.TCP_SRC_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
@@ -72,8 +71,8 @@ public class TcpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         return ofMatch.build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmOfTcpSrc value,
-                                                                   MatchPath path, Class<? extends ExtensionKey> key) {
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfTcpSrc value,
+            final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

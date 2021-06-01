@@ -70,8 +70,7 @@ public class GroupMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.setShort(index, buffer.writerIndex() - index);
 
         // Deserialize and check everything
-        final GroupMessage message = (GroupMessage) getFactory()
-            .deserialize(buffer, EncodeConstants.OF13_VERSION_ID);
+        final GroupMessage message = (GroupMessage) getFactory().deserialize(buffer, EncodeConstants.OF_VERSION_1_3);
 
         assertEquals(XID, message.getXid().intValue());
         assertEquals(COMMAND.getIntValue(), message.getCommand().getIntValue());

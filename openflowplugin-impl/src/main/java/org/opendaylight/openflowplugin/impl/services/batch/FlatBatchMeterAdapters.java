@@ -14,14 +14,16 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.add.meter._case.FlatBatchAddMeter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.remove.meter._case.FlatBatchRemoveMeter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.input.batch.batch.choice.flat.batch.update.meter._case.FlatBatchUpdateMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.failure.ids.aug.FlatBatchFailureMeterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.meter.crud._case.aug.flat.batch.add.meter._case.FlatBatchAddMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.meter.crud._case.aug.flat.batch.remove.meter._case.FlatBatchRemoveMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.meter.crud._case.aug.flat.batch.update.meter._case.FlatBatchUpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailure;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.batch.failure.batch.item.id.choice.FlatBatchFailureMeterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchInputBuilder;
@@ -121,9 +123,8 @@ public final class FlatBatchMeterAdapters {
     static <T extends BatchMeterOutputListGrouping> Function<RpcResult<T>, RpcResult<ProcessFlatBatchOutput>>
         convertBatchMeterResult(final int stepOffset) {
         return input -> {
-            List<BatchFailure> batchFailures = wrapBatchMeterFailuresForFlat(input, stepOffset);
-            ProcessFlatBatchOutputBuilder outputBuilder =
-                    new ProcessFlatBatchOutputBuilder().setBatchFailure(batchFailures);
+            ProcessFlatBatchOutputBuilder outputBuilder = new ProcessFlatBatchOutputBuilder()
+                .setBatchFailure(wrapBatchMeterFailuresForFlat(input, stepOffset));
             return RpcResultBuilder.<ProcessFlatBatchOutput>status(input.isSuccessful())
                     .withRpcErrors(input.getErrors())
                     .withResult(outputBuilder.build())
@@ -131,9 +132,10 @@ public final class FlatBatchMeterAdapters {
         };
     }
 
-    private static <T extends BatchMeterOutputListGrouping> List<BatchFailure> wrapBatchMeterFailuresForFlat(
-            final RpcResult<T> input, final int stepOffset) {
-        final List<BatchFailure> batchFailures = new ArrayList<>();
+    private static <T extends BatchMeterOutputListGrouping>
+            Map<BatchFailureKey, BatchFailure> wrapBatchMeterFailuresForFlat(final RpcResult<T> input,
+                final int stepOffset) {
+        final BindingMap.Builder<BatchFailureKey, BatchFailure> batchFailures = BindingMap.orderedBuilder();
         if (input.getResult().getBatchFailedMetersOutput() != null) {
             for (BatchFailedMetersOutput stepOutput : input.getResult().nonnullBatchFailedMetersOutput().values()) {
                 final BatchFailure batchFailure = new BatchFailureBuilder()
@@ -145,7 +147,7 @@ public final class FlatBatchMeterAdapters {
                 batchFailures.add(batchFailure);
             }
         }
-        return batchFailures;
+        return batchFailures.build();
     }
 
     /**

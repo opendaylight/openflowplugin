@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
 import static org.junit.Assert.assertEquals;
@@ -28,10 +27,9 @@ public class WriteActionsInstructionDeserializerTest extends AbstractInstruction
     private OFDeserializer<Instruction> deserializer;
 
     @Override
-    @SuppressWarnings("checkstyle:LineLength")
     protected void init() {
         deserializer = getRegistry().getDeserializer(
-                new MessageCodeActionExperimenterKey(EncodeConstants.OF13_VERSION_ID, getType(), Instruction.class,
+                new MessageCodeActionExperimenterKey(EncodeConstants.OF_VERSION_1_3, getType(), Instruction.class,
                         ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
                         null));
     }
@@ -72,5 +70,4 @@ public class WriteActionsInstructionDeserializerTest extends AbstractInstruction
     protected short getLength() {
         return EncodeConstants.EMPTY_LENGTH;
     }
-
 }

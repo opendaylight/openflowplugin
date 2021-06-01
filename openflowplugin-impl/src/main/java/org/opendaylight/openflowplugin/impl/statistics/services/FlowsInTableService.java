@@ -31,6 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 public final class FlowsInTableService extends AbstractCompatibleStatService<GetFlowStatisticsFromFlowTableInput,
         GetFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
@@ -40,8 +41,8 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
 
     public FlowsInTableService(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
-                               AtomicLong compatibilityXidSeed,
-                               ConvertorExecutor convertorExecutor) {
+                               final AtomicLong compatibilityXidSeed,
+                               final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
         this.data = new VersionConvertorData(getVersion());
@@ -60,7 +61,7 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
         }
 
         if (input.getOutPort() != null) {
-            mprFlowRequestBuilder.setOutPort(input.getOutPort().longValue());
+            mprFlowRequestBuilder.setOutPort(Uint32.valueOf(input.getOutPort().longValue()));
         } else {
             mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
         }
@@ -97,12 +98,13 @@ public final class FlowsInTableService extends AbstractCompatibleStatService<Get
     }
 
     @Override
-    public GetFlowStatisticsFromFlowTableOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetFlowStatisticsFromFlowTableOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetFlowStatisticsFromFlowTableOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
+    public FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> result,
+            final TransactionId emulatedTxId) {
         return FlowStatisticsToNotificationTransformer.transformToNotification(result,
                                                                                getDeviceInfo(),
                                                                                getOfVersion(),

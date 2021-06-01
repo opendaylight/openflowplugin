@@ -19,28 +19,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtTpSrcCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtTpSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.tp.src.grouping.CtTpSrcValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpSrcCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpSrcCaseValueBuilder;
 
 public class CtTpSrcCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 124;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxCtTpSrc> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxCtTpSrc.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxCtTpSrc.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
+            EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         CtTpSrcCaseValue ctTpSrcCase = (CtTpSrcCaseValue)input.getMatchEntryValue();
         outBuffer.writeShort(ctTpSrcCase.getCtTpSrcValues().getCtTpSrc().toJava());
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         return deserializeHeaderToBuilder(message)
                 .setMatchEntryValue(new CtTpSrcCaseValueBuilder()
                     .setCtTpSrcValues(new CtTpSrcValuesBuilder().setCtTpSrc(readUint16(message)).build())

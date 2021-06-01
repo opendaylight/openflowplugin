@@ -14,8 +14,8 @@ import org.opendaylight.openflowjava.protocol.api.keys.InstructionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.experimenter.id._case.ExperimenterBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.experimenter.id._case.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCase;
@@ -49,7 +49,7 @@ public class TypeKeyMakerFactoryTest {
      */
     @Test
     public void testActionKeyMaker() {
-        TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         ActionBuilder builder = new ActionBuilder();
@@ -58,7 +58,7 @@ public class TypeKeyMakerFactoryTest {
         MessageTypeKey<?> key = keyMaker.make(action);
 
         Assert.assertNotNull("Null key", key);
-        Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                         OutputActionCase.class, null), key);
     }
 
@@ -67,7 +67,7 @@ public class TypeKeyMakerFactoryTest {
      */
     @Test
     public void testExperimenterActionKeyMaker() {
-        TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        TypeKeyMaker<Action> keyMaker = TypeKeyMakerFactory.createActionKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping
@@ -78,7 +78,7 @@ public class TypeKeyMakerFactoryTest {
         MessageTypeKey<?> key = keyMaker.make(action);
 
         Assert.assertNotNull("Null key", key);
-        Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                 CopyTtlInCase.class, Uint32.valueOf(42)), key);
     }
 
@@ -88,7 +88,7 @@ public class TypeKeyMakerFactoryTest {
     @Test
     public void testInstructionKeyMaker() {
         TypeKeyMaker<Instruction> keyMaker =
-                TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         InstructionBuilder builder = new InstructionBuilder();
@@ -97,7 +97,7 @@ public class TypeKeyMakerFactoryTest {
         MessageTypeKey<?> key = keyMaker.make(instruction);
 
         Assert.assertNotNull("Null key", key);
-        Assert.assertEquals("Wrong key", new InstructionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                         GotoTableCase.class, null), key);
     }
 
@@ -107,7 +107,7 @@ public class TypeKeyMakerFactoryTest {
     @Test
     public void testExperimenterInstructionKeyMaker() {
         TypeKeyMaker<Instruction> keyMaker =
-                TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                TypeKeyMakerFactory.createInstructionKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         InstructionBuilder builder = new InstructionBuilder();
@@ -117,7 +117,7 @@ public class TypeKeyMakerFactoryTest {
         MessageTypeKey<?> key = keyMaker.make(instruction);
 
         Assert.assertNotNull("Null key", key);
-        Assert.assertEquals("Wrong key", new InstructionSerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new InstructionSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                         ClearActionsCase.class, 42L), key);
     }
 
@@ -127,7 +127,7 @@ public class TypeKeyMakerFactoryTest {
     @Test
     public void testMatchEntriesKeyMaker() {
         TypeKeyMaker<MatchEntry> keyMaker =
-                TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         MatchEntryBuilder builder = new MatchEntryBuilder();
@@ -138,7 +138,7 @@ public class TypeKeyMakerFactoryTest {
         MessageTypeKey<?> key = keyMaker.make(entry);
 
         Assert.assertNotNull("Null key", key);
-        MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+        MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                 OpenflowBasicClass.class, InPort.class);
         Assert.assertEquals("Wrong key", comparationKey, key);
     }
@@ -149,7 +149,7 @@ public class TypeKeyMakerFactoryTest {
     @Test
     public void testExperimenterMatchEntriesKeyMaker() {
         TypeKeyMaker<MatchEntry> keyMaker =
-                TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+                TypeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         MatchEntryBuilder builder = new MatchEntryBuilder();
@@ -165,7 +165,7 @@ public class TypeKeyMakerFactoryTest {
         MessageTypeKey<?> key = keyMaker.make(entry);
 
         Assert.assertNotNull("Null key", key);
-        MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF13_VERSION_ID,
+        MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
                 ExperimenterClass.class, OxmMatchFieldClass.class);
         comparationKey.setExperimenterId(Uint32.valueOf(42L));
         Assert.assertEquals("Wrong key", comparationKey, key);

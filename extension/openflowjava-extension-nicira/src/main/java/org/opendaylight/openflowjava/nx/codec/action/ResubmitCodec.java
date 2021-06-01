@@ -16,8 +16,8 @@ import org.opendaylight.openflowjava.nx.api.NiciraActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmit;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionResubmitBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionResubmit;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionResubmitBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.resubmit.grouping.NxActionResubmitBuilder;
 
 /**
@@ -29,11 +29,11 @@ public class ResubmitCodec extends AbstractActionCodec {
     public static final byte NXAST_RESUBMIT_SUBTYPE = 1;
     public static final byte NXAST_RESUBMIT_TABLE_SUBTYPE = 14;
     public static final NiciraActionSerializerKey SERIALIZER_KEY =
-            new NiciraActionSerializerKey(EncodeConstants.OF13_VERSION_ID, ActionResubmit.class);
+            new NiciraActionSerializerKey(EncodeConstants.OF_VERSION_1_3, ActionResubmit.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY =
-            new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_RESUBMIT_SUBTYPE);
+            new NiciraActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, NXAST_RESUBMIT_SUBTYPE);
     public static final NiciraActionDeserializerKey TABLE_DESERIALIZER_KEY =
-            new NiciraActionDeserializerKey(EncodeConstants.OF13_VERSION_ID, NXAST_RESUBMIT_TABLE_SUBTYPE);
+            new NiciraActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, NXAST_RESUBMIT_TABLE_SUBTYPE);
 
     private static final byte OFP_TABLE_ALL = (byte) 255;
     private static final short OFP_IN_PORT = (short) 0xfff8;

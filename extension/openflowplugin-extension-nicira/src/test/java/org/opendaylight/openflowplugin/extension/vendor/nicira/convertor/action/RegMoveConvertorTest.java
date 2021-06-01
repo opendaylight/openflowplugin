@@ -19,7 +19,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegMove;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.move.grouping.NxActionRegMove;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.dst.choice.grouping.dst.choice.DstNxTunIdCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.flows.statistics.update.flow.and.statistics.map.list.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegMoveNotifFlowsStatisticsUpdateApplyActionsCase;
@@ -83,7 +83,6 @@ public class RegMoveConvertorTest {
         when(action.getActionChoice()).thenReturn(actionRegMove);
 
         regMoveConvertor = new RegMoveConvertor();
-
     }
 
     @Test

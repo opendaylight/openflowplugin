@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Base class for a conversion reactor.
@@ -19,10 +20,10 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
  */
 public abstract class ConvertReactor<F> {
     private final Map<ConvertorKey, ResultInjector<?, ?>> injectionMapping;
-    private final Map<Short, ConvertReactorConvertor<F, ?>> conversionMapping;
+    private final Map<Uint8, ConvertReactorConvertor<F, ?>> conversionMapping;
 
     protected ConvertReactor() {
-        final Map<Short, ConvertReactorConvertor<F, ?>> conversions = new HashMap<>();
+        final Map<Uint8, ConvertReactorConvertor<F, ?>> conversions = new HashMap<>();
         final Map<ConvertorKey, ResultInjector<?, ?>> injections = new HashMap<>();
         initMappings(conversions, injections);
 
@@ -37,7 +38,7 @@ public abstract class ConvertReactor<F> {
      * @param conversions convert from
      * @param injections injection
      */
-    protected abstract void initMappings(Map<Short, ConvertReactorConvertor<F, ?>> conversions,
+    protected abstract void initMappings(Map<Uint8, ConvertReactorConvertor<F, ?>> conversions,
             Map<ConvertorKey, ResultInjector<?, ?>> injections);
 
     /**
@@ -51,7 +52,7 @@ public abstract class ConvertReactor<F> {
      * @param convertorExecutor the convertor executor
      */
     @SuppressWarnings("unchecked")
-    public <R, T> void convert(final F source, final short version, final T target,
+    public <R, T> void convert(final F source, final Uint8 version, final T target,
             final ConvertorExecutor convertorExecutor) {
 
         //lookup converter
@@ -78,7 +79,7 @@ public abstract class ConvertReactor<F> {
      * @param target object
      * @return injection key
      */
-    protected ConvertorKey buildInjectionKey(final short version, final Object convertedItem, final Object target) {
+    protected ConvertorKey buildInjectionKey(final Uint8 version, final Object convertedItem, final Object target) {
         return new ConvertorKey(version, target.getClass());
     }
 

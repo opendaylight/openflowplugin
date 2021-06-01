@@ -41,7 +41,7 @@ public class OF10QueueGetConfigInputMessageFactoryTest {
         registry = new SerializerRegistryImpl();
         registry.init();
         queueFactory = registry.getSerializer(
-                new MessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, GetQueueConfigInput.class));
+                new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, GetQueueConfigInput.class));
     }
 
     /**
@@ -61,5 +61,4 @@ public class OF10QueueGetConfigInputMessageFactoryTest {
         Assert.assertEquals("Wrong port", 6653L, out.readUnsignedShort());
         out.skipBytes(2);
     }
-
 }

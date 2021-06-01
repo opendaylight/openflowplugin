@@ -8,7 +8,6 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -130,7 +129,7 @@ public class OFEncoderStatisticsTest {
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getListener()).thenReturn(listener);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
-        doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(anyShort(),
+        doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(any(Uint8.class),
                 any(ByteBuf.class), any(DataObject.class));
 
         int count = 2;

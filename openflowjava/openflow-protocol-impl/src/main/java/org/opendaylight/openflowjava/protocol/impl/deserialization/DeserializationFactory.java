@@ -15,6 +15,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.TypeToClassKey;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Factory for deserialization.
@@ -44,7 +45,7 @@ public class DeserializationFactory {
      *            version decoded from OpenFlow protocol message
      * @return correct POJO as DataObject
      */
-    public DataObject deserialize(final ByteBuf rawMessage, final short version) {
+    public DataObject deserialize(final ByteBuf rawMessage, final Uint8 version) {
         DataObject dataObject = null;
         int type = rawMessage.readUnsignedByte();
         Class<?> clazz = messageClassMap.get(new TypeToClassKey(version, type));

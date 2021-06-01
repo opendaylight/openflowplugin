@@ -29,24 +29,24 @@ public class EnhancedMessageTypeKeyTest {
     @Test
     public void test() {
         EnhancedMessageTypeKey<?,?> key1 =
-                new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, OutputActionCase.class);
+                new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, OutputActionCase.class);
         EnhancedMessageTypeKey<?,?> key2 =
-                new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, OutputActionCase.class);
+                new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, OutputActionCase.class);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Action.class, OutputActionCase.class);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Action.class, OutputActionCase.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, null, OutputActionCase.class);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, null, OutputActionCase.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Instruction.class, OutputActionCase.class);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Instruction.class, OutputActionCase.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Action.class, null);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Action.class, null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, Action.class, SetFieldCase.class);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Action.class, SetFieldCase.class);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
     }
@@ -58,16 +58,16 @@ public class EnhancedMessageTypeKeyTest {
     public void testEquals() {
         EnhancedMessageTypeKey<?,?> key1;
         EnhancedMessageTypeKey<?,?> key2;
-        key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, OutputActionCase.class);
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, OutputActionCase.class);
+        key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, OutputActionCase.class);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, OutputActionCase.class);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
-        key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, null);
+        key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, null);
         Assert.assertFalse("Wrong equal by msgType2.", key1.equals(key2));
-        key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, OutputActionCase.class);
-        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID, Action.class, SetFieldCase.class);
+        key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, OutputActionCase.class);
+        key2 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0, Action.class, SetFieldCase.class);
         Assert.assertFalse("Wrong equal by msgType2 class name.", key1.equals(key2));
     }
 
@@ -76,7 +76,7 @@ public class EnhancedMessageTypeKeyTest {
      */
     @Test
     public void testToString() {
-        EnhancedMessageTypeKey<?,?> key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF10_VERSION_ID,
+        EnhancedMessageTypeKey<?,?> key1 = new EnhancedMessageTypeKey<>(EncodeConstants.OF_VERSION_1_0,
                 Action.class, OutputActionCase.class);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 1 objectType: org.opendaylight.yang.gen.v1.urn"

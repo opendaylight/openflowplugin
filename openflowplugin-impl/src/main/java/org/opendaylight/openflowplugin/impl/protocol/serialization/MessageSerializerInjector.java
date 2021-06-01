@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Util class for injecting new message serializers into OpenflowJava.
@@ -46,7 +47,7 @@ final class MessageSerializerInjector {
     static void injectSerializers(final SerializerExtensionProvider provider, final boolean isGroupAddModEnabled) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(FlowMessage.class).accept(new FlowMessageSerializer());
         injector.apply(MeterMessage.class).accept(new MeterMessageSerializer());
@@ -66,12 +67,9 @@ final class MessageSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<?>, Consumer<OFSerializer<? extends OfHeader>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
+            final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+                provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
 
 }

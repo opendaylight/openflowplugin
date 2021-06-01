@@ -5,16 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class DeviceInitializerProvider {
-
-    private final Map<Short, AbstractDeviceInitializer> initializers = new HashMap<>();
+    private final Map<Uint8, AbstractDeviceInitializer> initializers = new HashMap<>();
 
     /**
      * Register device initializer.
@@ -22,7 +21,7 @@ public class DeviceInitializerProvider {
      * @param version     the initializer version
      * @param initializer the initializer instance
      */
-    void register(final Short version, final AbstractDeviceInitializer initializer) {
+    void register(final Uint8 version, final AbstractDeviceInitializer initializer) {
         initializers.put(version, initializer);
     }
 
@@ -32,7 +31,7 @@ public class DeviceInitializerProvider {
      * @param version the initializer version
      * @return the initializer instance
      */
-    public Optional<AbstractDeviceInitializer> lookup(final Short version) {
+    public Optional<AbstractDeviceInitializer> lookup(final Uint8 version) {
         return Optional.ofNullable(initializers.get(version));
     }
 

@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -26,6 +25,7 @@ import org.opendaylight.yangtools.yang.binding.DataContainer;
 import org.opendaylight.yangtools.yang.binding.Notification;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,7 @@ public abstract class AbstractCompatibleStatService<I extends DataContainer, O, 
                                                           final NotificationPublishService notificationPublishService) {
         // prepare emulated xid
         final long emulatedXid = compatibilityXidSeed.incrementAndGet();
-        final TransactionId emulatedTxId = new TransactionId(BigInteger.valueOf(emulatedXid));
+        final TransactionId emulatedTxId = new TransactionId(Uint64.valueOf(emulatedXid));
 
         // do real processing
         final ListenableFuture<RpcResult<List<MultipartReply>>> rpcResultListenableFuture = handleServiceCall(input);

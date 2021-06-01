@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.api.keys;
 
 import org.junit.Assert;
@@ -25,24 +24,24 @@ public class MatchEntryDeserializerKeyTest {
      */
     @Test
     public void test() {
-        MatchEntryDeserializerKey key1 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
-        MatchEntryDeserializerKey key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
+        MatchEntryDeserializerKey key1 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
+        MatchEntryDeserializerKey key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0, 42);
+        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0, 42);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 0);
+        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 0);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 0x8000, 42);
+        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0x8000, 42);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 0x8000, 42);
+        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0x8000, 42);
         key2.setExperimenterId(Uint32.valueOf(158L));
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashcode", key1.hashCode() == key2.hashCode());
-        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
+        key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
         key2.setExperimenterId(Uint32.valueOf(158L));
         key1.setExperimenterId(Uint32.valueOf(158L));
         Assert.assertTrue("Wrong equals", key1.equals(key2));
@@ -54,12 +53,12 @@ public class MatchEntryDeserializerKeyTest {
      */
     @Test
     public void testEquals() {
-        MatchEntryDeserializerKey key1 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
+        MatchEntryDeserializerKey key1 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
 
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
-        MatchEntryDeserializerKey key2 = new MatchEntryDeserializerKey(EncodeConstants.OF10_VERSION_ID, 0x8000, 42);
+        MatchEntryDeserializerKey key2 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
 
         key1.setExperimenterId(null);
         key2.setExperimenterId(Uint32.valueOf(654321L));
@@ -75,7 +74,7 @@ public class MatchEntryDeserializerKeyTest {
      */
     @Test
     public void testToString() {
-        MatchEntryDeserializerKey key1 = new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 0x8000, 42);
+        MatchEntryDeserializerKey key1 = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0x8000, 42);
 
         Assert.assertEquals("Wrong toString()", "msgVersion: 4 objectClass: org.opendaylight.yang.gen.v1.urn"
                 + ".opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry"

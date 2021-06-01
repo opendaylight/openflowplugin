@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +120,7 @@ public abstract class PortTranslatorUtil {
                 pc.getNoFwd(), pc.getNoPacketIn(), pc.getNoRecv(), pc.getPortDown());
     }
 
-    public static NodeConnectorUpdated translatePort(final Short version, final Uint64 datapathId,
+    public static NodeConnectorUpdated translatePort(final Uint8 version, final Uint64 datapathId,
                                                      final Uint32 portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         final NodeConnectorUpdatedBuilder builder = InventoryDataServiceUtil
@@ -156,7 +157,7 @@ public abstract class PortTranslatorUtil {
         return builder.addAugmentation(fcncub.build()).build();
     }
 
-    public static NodeConnectorRemoved translatePortRemoved(final Short version, final Uint64 datapathId,
+    public static NodeConnectorRemoved translatePortRemoved(final Uint8 version, final Uint64 datapathId,
                                                             final Uint32 portNumber, final PortGrouping port) {
         OpenflowVersion ofVersion = OpenflowVersion.get(version);
         NodeConnectorRemovedBuilder builder = new NodeConnectorRemovedBuilder();

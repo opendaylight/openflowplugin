@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
+import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.writeUint32;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.buffer.ByteBuf;
 import java.util.Objects;
@@ -34,6 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.port.stats._case.MultipartRequestPortStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.queue._case.MultipartRequestQueue;
+import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
  * Translates StatsRequest messages.
@@ -92,7 +95,7 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
         MultipartRequestFlowCase flowCase = (MultipartRequestFlowCase) multipartRequestBody;
         MultipartRequestFlow flow = flowCase.getMultipartRequestFlow();
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF10_VERSION_ID, MatchV10.class));
+                EncodeConstants.OF_VERSION_1_0, MatchV10.class));
         matchSerializer.serialize(flow.getMatchV10(), output);
         output.writeByte(flow.getTableId().shortValue());
         output.writeZero(PADDING_IN_MULTIPART_REQUEST_FLOW_BODY);
@@ -103,7 +106,7 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
         MultipartRequestAggregateCase aggregateCase = (MultipartRequestAggregateCase) multipartRequestBody;
         MultipartRequestAggregate aggregate = aggregateCase.getMultipartRequestAggregate();
         OFSerializer<MatchV10> matchSerializer = registry.getSerializer(new MessageTypeKey<>(
-                EncodeConstants.OF10_VERSION_ID, MatchV10.class));
+                EncodeConstants.OF_VERSION_1_0, MatchV10.class));
         matchSerializer.serialize(aggregate.getMatchV10(), output);
         output.writeByte(aggregate.getTableId().shortValue());
         output.writeZero(PADDING_IN_MULTIPART_REQUEST_AGGREGATE_BODY);
@@ -128,14 +131,14 @@ public class OF10StatsRequestInputFactory implements OFSerializer<MultipartReque
     private void serializeExperimenterBody(final MultipartRequestBody multipartRequestBody, final ByteBuf output) {
         MultipartRequestExperimenterCase expCase = (MultipartRequestExperimenterCase) multipartRequestBody;
         MultipartRequestExperimenter experimenter = expCase.getMultipartRequestExperimenter();
-        final long expId = experimenter.getExperimenter().getValue().longValue();
+        final Uint32 expId = experimenter.getExperimenter().getValue();
 
         // write experimenterId
-        output.writeInt((int) expId);
+        writeUint32(output, expId);
 
         OFSerializer<ExperimenterDataOfChoice> serializer = registry.getSerializer(
                 ExperimenterSerializerKeyFactory.createMultipartRequestSerializerKey(
-                        EncodeConstants.OF10_VERSION_ID, expId,
+                        EncodeConstants.OF_VERSION_1_0, expId,
                         -1 /* in order not to collide with OF >= 1.3 codecs*/));
         serializer.serialize(experimenter.getExperimenterDataOfChoice(), output);
     }

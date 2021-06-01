@@ -45,7 +45,7 @@ public class PortStatusMessageFactoryTest {
         SerializerRegistry registry = new SerializerRegistryImpl();
         registry.init();
         factory = registry
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, PortStatusMessage.class));
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, PortStatusMessage.class));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class PortStatusMessageFactoryTest {
         Assert.assertEquals("Wrong Max speed", message.getMaxSpeed().longValue(), serializedBuffer.readInt());
     }
 
-    private static PortConfig createPortConfig(long input) {
+    private static PortConfig createPortConfig(final long input) {
         final Boolean _portDown = (input & 1 << 0) > 0;
         final Boolean _noRecv = (input & 1 << 2) > 0;
         final Boolean _noFwd = (input & 1 << 5) > 0;
@@ -106,7 +106,7 @@ public class PortStatusMessageFactoryTest {
         return new PortConfig(_noFwd, _noPacketIn, _noRecv, _portDown);
     }
 
-    private static PortFeatures createPortFeatures(long input) {
+    private static PortFeatures createPortFeatures(final long input) {
         final Boolean _10mbHd = (input & 1 << 0) > 0;
         final Boolean _10mbFd = (input & 1 << 1) > 0;
         final Boolean _100mbHd = (input & 1 << 2) > 0;
@@ -127,7 +127,7 @@ public class PortStatusMessageFactoryTest {
                 _40gbFd, _autoneg, _copper, _fiber, _other, _pause, _pauseAsym);
     }
 
-    private static PortState createPortState(long input) {
+    private static PortState createPortState(final long input) {
         final Boolean one = (input & 1 << 0) > 0;
         final Boolean two = (input & 1 << 1) > 0;
         final Boolean three = (input & 1 << 2) > 0;

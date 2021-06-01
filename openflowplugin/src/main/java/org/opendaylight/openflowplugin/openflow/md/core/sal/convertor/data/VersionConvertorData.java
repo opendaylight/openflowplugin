@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Convertor data implementation containing only Openflow version.
@@ -19,7 +19,7 @@ public class VersionConvertorData extends ConvertorData {
      *
      * @param version the version
      */
-    public VersionConvertorData(short version) {
+    public VersionConvertorData(final Uint8 version) {
         super(version);
     }
 }

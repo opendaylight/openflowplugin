@@ -39,7 +39,7 @@ public class SetFieldActionDeserializerTest extends AbstractActionDeserializerTe
         assertTrue(action instanceof SetFieldCase);
         assertEquals(
                 OpenflowPortsUtil
-                        .getPortLogicalName(EncodeConstants.OF13_VERSION_ID, BinContent.intToUnsignedLong(portNum)),
+                        .getPortLogicalName(EncodeConstants.OF_VERSION_1_3, BinContent.intToUnsignedLong(portNum)),
                 ((SetFieldCase) action).getSetField().getInPort().getValue());
         assertEquals(0, in.readableBytes());
     }

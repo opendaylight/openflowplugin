@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.match;
 
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
@@ -20,9 +19,9 @@ public class Reg4Codec extends AbstractRegCodec {
 
     private static final int NXM_FIELD_CODE = 4;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxReg4> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm1Class.class, NxmNxReg4.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxReg4.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
+            EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
     @Override
     public int getNxmFieldCode() {
@@ -33,5 +32,4 @@ public class Reg4Codec extends AbstractRegCodec {
     public Class<? extends MatchField> getNxmField() {
         return NxmNxReg4.class;
     }
-
 }

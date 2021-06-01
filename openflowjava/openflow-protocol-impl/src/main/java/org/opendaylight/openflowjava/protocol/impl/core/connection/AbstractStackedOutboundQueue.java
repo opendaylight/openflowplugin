@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
     }
 
     @Override
-    public void commitEntry(final Long xid, final OfHeader message, final FutureCallback<OfHeader> callback) {
+    public void commitEntry(final Uint32 xid, final OfHeader message, final FutureCallback<OfHeader> callback) {
         commitEntry(xid, message, callback, OutboundQueueEntry.DEFAULT_IS_COMPLETE);
     }
 
@@ -82,7 +83,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * This method is expected to be called from multiple threads concurrently.
      */
     @Override
-    public Long reserveEntry() {
+    public Uint32 reserveEntry() {
         final long xid = LAST_XID_OFFSET_UPDATER.incrementAndGet(this);
         final StackedSegment fastSegment = firstSegment;
 
@@ -116,7 +117,8 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
         }
 
         LOG.trace("Queue {} allocated XID {}", this, xid);
-        return xid;
+        // FIXME: reconcile uint32 vs. long overflows
+        return Uint32.valueOf(xid);
     }
 
     /**
@@ -299,7 +301,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
         return !needsFlush;
     }
 
-    protected OutboundQueueEntry getEntry(final Long xid) {
+    protected OutboundQueueEntry getEntry(final long xid) {
         final StackedSegment fastSegment = firstSegment;
         final long calcOffset = xid - fastSegment.getBaseXid();
         checkArgument(calcOffset >= 0, "Commit of XID %s does not match up with base XID %s",
@@ -338,7 +340,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * @return number of failed entries
      */
     @GuardedBy("unflushedSegments")
-    private long lockedFailSegments(Iterator<StackedSegment> iterator) {
+    private long lockedFailSegments(final Iterator<StackedSegment> iterator) {
         long entries = 0;
 
         // Fail all queues

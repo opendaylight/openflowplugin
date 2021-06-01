@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Test;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -99,7 +100,7 @@ public class ActionConvertorTest {
         setExperimenterData();
         dropActionData();
 
-        ActionConvertorData data = new ActionConvertorData((short) 0X4);
+        ActionConvertorData data = new ActionConvertorData(OFConstants.OFP_VERSION_1_3);
         data.setDatapathId(Uint64.ONE);
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 

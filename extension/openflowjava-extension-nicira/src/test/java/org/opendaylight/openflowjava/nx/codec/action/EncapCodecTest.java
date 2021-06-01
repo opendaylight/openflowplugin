@@ -20,8 +20,8 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionEncap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionEncapBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionEncap;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionEncapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.encap.grouping.NxActionEncapBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -71,7 +71,7 @@ public class EncapCodecTest {
         assertFalse(buffer.isReadable());
     }
 
-    private static void createBuffer(ByteBuf message) {
+    private static void createBuffer(final ByteBuf message) {
         message.writeShort(EncodeConstants.EXPERIMENTER_VALUE);
         message.writeShort(LENGTH);
         message.writeInt(NiciraConstants.NX_VENDOR_ID.intValue());

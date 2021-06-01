@@ -63,6 +63,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,12 +246,12 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                     break;
                 case OFPTFPTEXPERIMENTER:
                 case OFPTFPTEXPERIMENTERMISS:
-                    final long expId = message.readUnsignedInt();
+                    final Uint32 expId = readUint32(message);
                     message.readerIndex(propStartIndex);
 
                     final OFDeserializer<TableFeatureProperties> propDeserializer = registry
                         .getDeserializer(ExperimenterDeserializerKeyFactory
-                                .createMultipartReplyTFDeserializerKey(EncodeConstants.OF13_VERSION_ID, expId));
+                                .createMultipartReplyTFDeserializerKey(EncodeConstants.OF_VERSION_1_3, expId));
 
                     // TODO: Finish experimenter table features (currently using OFJava deserialization only to skip
                     // bytes)
@@ -315,7 +316,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
                 instructions.add(new InstructionBuilder()
                         .setOrder(offset)
                         .setInstruction(InstructionUtil
-                                .readInstructionHeader(EncodeConstants.OF13_VERSION_ID, message, registry))
+                                .readInstructionHeader(EncodeConstants.OF_VERSION_1_3, message, registry))
                         .build());
 
                 offset++;
@@ -337,7 +338,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             try {
                 actions.add(new ActionBuilder()
                         .setOrder(offset)
-                        .setAction(ActionUtil.readActionHeader(EncodeConstants.OF13_VERSION_ID, message, registry,
+                        .setAction(ActionUtil.readActionHeader(EncodeConstants.OF_VERSION_1_3, message, registry,
                                 ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS))
                         .build());
 

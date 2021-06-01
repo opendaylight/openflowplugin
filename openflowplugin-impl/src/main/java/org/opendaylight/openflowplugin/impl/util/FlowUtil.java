@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -36,8 +37,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.yang.binding.Identifiable;
+import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -79,7 +83,7 @@ public final class FlowUtil {
         RpcResult<RemoveFlowsBatchOutput>> FLOW_REMOVE_TRANSFORM =
             batchFlowsCumulativeResult -> {
                 final RemoveFlowsBatchOutput batchOutput = new RemoveFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
+                        .setBatchFailedFlowsOutput(index(batchFlowsCumulativeResult.getResult())).build();
 
                 final RpcResultBuilder<RemoveFlowsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
@@ -93,7 +97,7 @@ public final class FlowUtil {
         RpcResult<AddFlowsBatchOutput>> FLOW_ADD_TRANSFORM =
             batchFlowsCumulativeResult -> {
                 final AddFlowsBatchOutput batchOutput = new AddFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
+                        .setBatchFailedFlowsOutput(index(batchFlowsCumulativeResult.getResult())).build();
 
                 final RpcResultBuilder<AddFlowsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
@@ -107,7 +111,7 @@ public final class FlowUtil {
         RpcResult<UpdateFlowsBatchOutput>> FLOW_UPDATE_TRANSFORM =
             batchFlowsCumulativeResult -> {
                 final UpdateFlowsBatchOutput batchOutput = new UpdateFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(batchFlowsCumulativeResult.getResult()).build();
+                        .setBatchFailedFlowsOutput(index(batchFlowsCumulativeResult.getResult())).build();
 
                 final RpcResultBuilder<UpdateFlowsBatchOutput> resultBld =
                         createCumulativeRpcResult(batchFlowsCumulativeResult, batchOutput);
@@ -116,6 +120,10 @@ public final class FlowUtil {
 
     private FlowUtil() {
         throw new IllegalStateException("This class should not be instantiated.");
+    }
+
+    static <K extends Identifier<V>, V extends Identifiable<K>> Map<K, V> index(final List<V> list) {
+        return list == null ? null : BindingMap.ordered(list);
     }
 
     /**

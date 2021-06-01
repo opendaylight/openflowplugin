@@ -52,7 +52,7 @@ public final class MeterUtil {
     public static final Function<RpcResult<List<BatchFailedMetersOutput>>, RpcResult<AddMetersBatchOutput>>
         METER_ADD_TRANSFORM = batchMetersCumulatedResult -> {
             final AddMetersBatchOutput batchOutput = new AddMetersBatchOutputBuilder()
-                    .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+                    .setBatchFailedMetersOutput(FlowUtil.index(batchMetersCumulatedResult.getResult())).build();
 
             final RpcResultBuilder<AddMetersBatchOutput> resultBld =
                     createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
@@ -67,7 +67,7 @@ public final class MeterUtil {
         METER_REMOVE_TRANSFORM =
             batchMetersCumulatedResult -> {
                 final RemoveMetersBatchOutput batchOutput = new RemoveMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+                        .setBatchFailedMetersOutput(FlowUtil.index(batchMetersCumulatedResult.getResult())).build();
 
                 final RpcResultBuilder<RemoveMetersBatchOutput> resultBld =
                         createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);
@@ -82,7 +82,7 @@ public final class MeterUtil {
         METER_UPDATE_TRANSFORM =
             batchMetersCumulatedResult -> {
                 final UpdateMetersBatchOutput batchOutput = new UpdateMetersBatchOutputBuilder()
-                        .setBatchFailedMetersOutput(batchMetersCumulatedResult.getResult()).build();
+                        .setBatchFailedMetersOutput(FlowUtil.index(batchMetersCumulatedResult.getResult())).build();
 
                 final RpcResultBuilder<UpdateMetersBatchOutput> resultBld =
                         createCumulativeRpcResult(batchMetersCumulatedResult, batchOutput);

@@ -29,7 +29,7 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(PacketInMessage message, ByteBuf outBuffer) {
+    public void serialize(final PacketInMessage message, final ByteBuf outBuffer) {
         Objects.requireNonNull(registry);
 
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
@@ -39,7 +39,7 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
         outBuffer.writeByte(message.getTableId().getValue().byteValue());
         outBuffer.writeLong(message.getCookie().longValue());
         OFSerializer<Match> matchSerializer = registry.getSerializer(
-                new MessageTypeKey<>(message.getVersion().toJava(), Match.class));
+                new MessageTypeKey<>(message.getVersion(), Match.class));
         matchSerializer.serialize(message.getMatch(), outBuffer);
         outBuffer.writeZero(PADDING);
 
@@ -55,5 +55,4 @@ public class PacketInMessageFactory implements OFSerializer<PacketInMessage>, Se
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
         this.registry = serializerRegistry;
     }
-
 }

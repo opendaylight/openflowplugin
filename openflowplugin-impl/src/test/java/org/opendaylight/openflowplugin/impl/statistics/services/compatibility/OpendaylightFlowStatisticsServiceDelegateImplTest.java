@@ -86,7 +86,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 rqContextStack, deviceContext, notificationPublishService, new AtomicLong(21), convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
+                .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
         Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.any())).thenReturn(translator);
     }
 

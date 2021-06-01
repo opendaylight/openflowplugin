@@ -14,14 +14,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.PopVlanCase;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NiciraActionSerializerKeyTest {
-
+    private static final Uint8 VERSION = Uint8.valueOf(4);
 
     NiciraActionSerializerKey niciraActionSerializerKey;
-
-    private static final short VERSION = 4;
-
 
     @Test
     public void niciraActionSerializerKeyTest() {
@@ -80,7 +78,7 @@ public class NiciraActionSerializerKeyTest {
      */
     @Test
     public void equalsTest5() {
-        NiciraActionSerializerKey obj = new NiciraActionSerializerKey((short)5, SubtypeClass.class);
+        NiciraActionSerializerKey obj = new NiciraActionSerializerKey(Uint8.valueOf(5), SubtypeClass.class);
         niciraActionSerializerKey = new NiciraActionSerializerKey(VERSION, SubtypeClass.class);
 
         assertFalse(niciraActionSerializerKey.equals(obj));

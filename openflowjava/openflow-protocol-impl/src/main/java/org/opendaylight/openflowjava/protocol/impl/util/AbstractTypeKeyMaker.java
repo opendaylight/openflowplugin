@@ -5,9 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Base class for a TypeKeyMaker.
@@ -16,23 +18,22 @@ package org.opendaylight.openflowjava.protocol.impl.util;
  * @param <T> type the key maker is based on
  */
 public abstract class AbstractTypeKeyMaker<T> implements TypeKeyMaker<T> {
-
-    private final short version;
+    private final Uint8 version;
 
     /**
      * Constructor.
      *
      * @param version openflow wire version
      */
-    public AbstractTypeKeyMaker(short version) {
-        this.version = version;
+    public AbstractTypeKeyMaker(final Uint8 version) {
+        this.version = requireNonNull(version);
 
     }
 
     /**
      * Returns the version.
      */
-    public short getVersion() {
+    public final Uint8 getVersion() {
         return version;
     }
 }

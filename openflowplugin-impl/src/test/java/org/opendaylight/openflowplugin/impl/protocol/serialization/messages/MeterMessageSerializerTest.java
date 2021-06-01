@@ -110,7 +110,7 @@ public class MeterMessageSerializerTest extends AbstractSerializerTest {
     @Override
     protected void init() {
         serializer = getRegistry()
-                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID, MeterMessage.class)) ;
+                .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, MeterMessage.class)) ;
     }
 
     @Test

@@ -31,7 +31,7 @@ public class MultipartRequestGroupStatsSerializerTest extends AbstractSerializer
 
     @Override
     protected void init() {
-        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF13_VERSION_ID,
+        serializer = getRegistry().getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3,
                 MultipartRequestGroupStats.class)) ;
     }
 
@@ -44,5 +44,4 @@ public class MultipartRequestGroupStatsSerializerTest extends AbstractSerializer
         out.skipBytes(PADDING_IN_MULTIPART_REQUEST_GROUP_BODY);
         assertEquals(out.readableBytes(), 0);
     }
-
 }

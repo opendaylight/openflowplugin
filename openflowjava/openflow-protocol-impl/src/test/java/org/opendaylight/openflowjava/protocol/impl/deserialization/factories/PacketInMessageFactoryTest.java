@@ -40,7 +40,7 @@ public class PacketInMessageFactoryTest {
         DeserializerRegistry registry = new DeserializerRegistryImpl();
         registry.init();
         packetInFactory = registry.getDeserializer(
-                new MessageCodeKey(EncodeConstants.OF13_VERSION_ID, 10, PacketInMessage.class));
+                new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, 10, PacketInMessage.class));
     }
 
     /**

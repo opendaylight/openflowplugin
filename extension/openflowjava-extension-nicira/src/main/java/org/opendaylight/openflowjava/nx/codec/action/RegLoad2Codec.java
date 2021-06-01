@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
@@ -23,13 +22,13 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ExperimenterClass;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.action.container.action.choice.ActionRegLoad2Builder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegLoad2;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionRegLoad2Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.reg.load2.grouping.NxActionRegLoad2Builder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -40,15 +39,15 @@ public class RegLoad2Codec
 
     public static final byte SUBTYPE = 33; // NXAST_REG_LOAD2
     public static final NiciraActionSerializerKey SERIALIZER_KEY = new NiciraActionSerializerKey(
-            EncodeConstants.OF13_VERSION_ID, ActionRegLoad2.class);
+            EncodeConstants.OF_VERSION_1_3, ActionRegLoad2.class);
     public static final NiciraActionDeserializerKey DESERIALIZER_KEY = new NiciraActionDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, SUBTYPE);
+            EncodeConstants.OF_VERSION_1_3, SUBTYPE);
     private SerializerRegistry serializerRegistry;
     private DeserializerRegistry deserializerRegistry;
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public Action deserialize(ByteBuf message) {
+    public Action deserialize(final ByteBuf message) {
         Objects.requireNonNull(deserializerRegistry);
 
         final int startIndex = message.readerIndex();
@@ -57,7 +56,7 @@ public class RegLoad2Codec
         int oxmClass = message.getUnsignedShort(message.readerIndex());
         int oxmField = message.getUnsignedByte(message.readerIndex() + Short.BYTES) >>> 1;
         MatchEntryDeserializerKey key = new MatchEntryDeserializerKey(
-                EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_3,
                 oxmClass,
                 oxmField);
         if (oxmClass == EncodeConstants.EXPERIMENTER_VALUE) {
@@ -78,7 +77,7 @@ public class RegLoad2Codec
 
     @Override
     @SuppressFBWarnings("UWF_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR") // FB doesn't recognize Objects.requireNonNull
-    public void serialize(Action input, ByteBuf outBuffer) {
+    public void serialize(final Action input, final ByteBuf outBuffer) {
         Objects.requireNonNull(serializerRegistry);
 
         final int startIndex = outBuffer.writerIndex();
@@ -88,7 +87,7 @@ public class RegLoad2Codec
         NxActionRegLoad2 nxActionRegLoad2 = actionRegLoad2.getNxActionRegLoad2();
         MatchEntry matchEntry = nxActionRegLoad2.getMatchEntry().get(0);
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF13_VERSION_ID,
+                EncodeConstants.OF_VERSION_1_3,
                 matchEntry.getOxmClass(),
                 matchEntry.getOxmMatchField());
         if (matchEntry.getOxmClass().equals(ExperimenterClass.class)) {
@@ -102,12 +101,12 @@ public class RegLoad2Codec
     }
 
     @Override
-    public void injectSerializerRegistry(SerializerRegistry registry) {
+    public void injectSerializerRegistry(final SerializerRegistry registry) {
         this.serializerRegistry = registry;
     }
 
     @Override
-    public void injectDeserializerRegistry(DeserializerRegistry registry) {
+    public void injectDeserializerRegistry(final DeserializerRegistry registry) {
         this.deserializerRegistry = registry;
     }
 }

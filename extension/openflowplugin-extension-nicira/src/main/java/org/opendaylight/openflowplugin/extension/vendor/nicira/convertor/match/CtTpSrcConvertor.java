@@ -16,9 +16,9 @@ import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPr
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtTpSrcCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtTpSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.tp.src.grouping.CtTpSrcValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpSrcCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.CtTpSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchNodesNodeTableFlow;
@@ -40,7 +40,7 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public MatchEntry convert(Extension extension) {
+    public MatchEntry convert(final Extension extension) {
         Optional<NxmNxCtTpSrcGrouping> matchGrouping = MatchUtil.CT_TP_SRC_RESOLVER.findExtension(extension);
         if (!matchGrouping.isPresent()) {
             throw new CodecPreconditionException(extension);
@@ -57,7 +57,7 @@ public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Converto
     }
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(MatchEntry input, MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         CtTpSrcCaseValue ctTpSrcCaseValue = (CtTpSrcCaseValue) input.getMatchEntryValue();
         NxmNxCtTpSrcBuilder ctTpSrcBuilder = new NxmNxCtTpSrcBuilder();
         ctTpSrcBuilder.setCtTpSrc(ctTpSrcCaseValue.getCtTpSrcValues().getCtTpSrc());
@@ -65,8 +65,8 @@ public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Converto
                 NxmNxCtTpSrcKey.class);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(NxmNxCtTpSrc value,
-                                                                   MatchPath path, Class<? extends ExtensionKey> key) {
+    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtTpSrc value,
+            final MatchPath path, final Class<? extends ExtensionKey> key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

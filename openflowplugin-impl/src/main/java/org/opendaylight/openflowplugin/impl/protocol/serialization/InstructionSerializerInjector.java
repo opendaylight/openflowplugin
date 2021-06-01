@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -28,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.MeterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCase;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Util class for injecting new instruction serializers into OpenflowJava.
@@ -46,7 +46,7 @@ public final class  InstructionSerializerInjector {
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new instruction serializers here using injector created by createInjector method
         final Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
         injector.apply(ApplyActionsCase.class).accept(new ApplyActionsInstructionSerializer());
         injector.apply(ClearActionsCase.class).accept(new ClearActionsInstructionSerializer());
         injector.apply(GoToTableCase.class).accept(new GoToTableInstructionSerializer());
@@ -65,11 +65,8 @@ public final class  InstructionSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends Instruction>, Consumer<OFSerializer<? extends Instruction>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
+            final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+                provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
 }

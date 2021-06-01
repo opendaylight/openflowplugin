@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteActionsMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Util class for injecting new multipart table features serializers into OpenflowJava.
@@ -62,7 +63,7 @@ final class MultipartTableFeaturesSerializerInjector {
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
         final Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> injector =
-                createInjector(provider, EncodeConstants.OF13_VERSION_ID);
+                createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(Instructions.class).accept(new InstructionsTablePropertySerializer());
         injector.apply(InstructionsMiss.class).accept(new InstructionsMissTablePropertySerializer());
@@ -91,12 +92,9 @@ final class MultipartTableFeaturesSerializerInjector {
      */
     @VisibleForTesting
     static Function<Class<? extends TableFeaturePropType>, Consumer<OFSerializer<TableFeaturePropType>>> createInjector(
-            final SerializerExtensionProvider provider,
-            final byte version) {
+            final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
-                provider.registerSerializer(
-                        new MessageTypeKey<>(version, type),
-                        serializer);
+                provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
 
 }

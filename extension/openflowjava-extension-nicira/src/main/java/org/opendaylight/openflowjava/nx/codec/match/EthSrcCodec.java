@@ -19,27 +19,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmC
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthSrc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.EthSrcCaseValue;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.EthSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.of.match.eth.src.grouping.EthSrcValuesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthSrcCaseValue;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.oxm.container.match.entry.value.EthSrcCaseValueBuilder;
 
 public class EthSrcCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 2;
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfEthSrc> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF13_VERSION_ID, Nxm0Class.class, NxmOfEthSrc.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfEthSrc.class);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
-            EncodeConstants.OF13_VERSION_ID, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
+            EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
     @Override
-    public void serialize(MatchEntry input, ByteBuf outBuffer) {
+    public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         EthSrcCaseValue ethSrcCase = (EthSrcCaseValue) input.getMatchEntryValue();
         outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethSrcCase.getEthSrcValues().getMacAddress()));
     }
 
     @Override
-    public MatchEntry deserialize(ByteBuf message) {
+    public MatchEntry deserialize(final ByteBuf message) {
         MatchEntryBuilder matchEntryBuilder = deserializeHeaderToBuilder(message);
         byte[] address = new byte[VALUE_LENGTH];
         message.readBytes(address);

@@ -51,7 +51,6 @@ public class OFDatagramPacketHandlerTest {
     @Test
     public void test() {
         OFDatagramPacketHandler handler = new OFDatagramPacketHandler(switchConnHandler, CHANNEL_OUTBOUND_QUEUE_SIZE);
-        byte version = EncodeConstants.OF13_VERSION_ID;
         ByteBuf messageBuffer = ByteBufUtils.hexStringToByteBuf("04 02 00 08 01 02 03 04");
         InetSocketAddress recipientISA = InetSocketAddress.createUnresolved("localhost", 9876);
         InetSocketAddress senderISA = InetSocketAddress.createUnresolved("192.168.15.24", 21021);
@@ -62,7 +61,8 @@ public class OFDatagramPacketHandlerTest {
         handler.decode(ctxMock, datagramPacket, outList);
 
         VersionMessageUdpWrapper versionUdpWrapper = (VersionMessageUdpWrapper) outList.get(0);
-        Assert.assertEquals("Wrong - incorrect version has been decoded",version, versionUdpWrapper.getVersion());
+        Assert.assertEquals("Wrong - incorrect version has been decoded", EncodeConstants.OF_VERSION_1_3,
+            versionUdpWrapper.getVersion());
         Assert.assertEquals("Wrong - sender addresses are different", senderISA, versionUdpWrapper.getAddress());
         messageBuffer.readerIndex(1);
         Assert.assertEquals("Wrong - undecoded part of input ByteBuff is differnt to output", 0,

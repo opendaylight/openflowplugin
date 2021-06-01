@@ -20,6 +20,7 @@ import org.opendaylight.openflowplugin.api.openflow.protocol.deserialization.Mes
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Utility class for action deserialization.
@@ -38,8 +39,8 @@ public final class ActionUtil {
      * @param registry deserializer registry
      * @param path     Action path
      */
-    public static Action readAction(short version, ByteBuf message, DeserializerRegistry registry,
-                                    ActionPath path) {
+    public static Action readAction(final Uint8 version, final ByteBuf message, final DeserializerRegistry registry,
+                                    final ActionPath path) {
         int type = message.getUnsignedShort(message.readerIndex());
         final Long expId;
 
@@ -76,8 +77,8 @@ public final class ActionUtil {
      * @param registry deserializer registry
      * @param path     Action path
      */
-    public static Action readActionHeader(short version, ByteBuf message, DeserializerRegistry registry,
-                                          ActionPath path) {
+    public static Action readActionHeader(final Uint8 version, final ByteBuf message,
+                                          final DeserializerRegistry registry, final ActionPath path) {
         int type = message.getUnsignedShort(message.readerIndex());
         final Long expId;
 
@@ -105,7 +106,7 @@ public final class ActionUtil {
         }
     }
 
-    private static MessageCodeKey getCodeKey(short version, int type, Long expId) {
+    private static MessageCodeKey getCodeKey(final Uint8 version, final int type, final Long expId) {
         return expId != null ? new ExperimenterActionDeserializerKey(version, expId)
                 : new ActionDeserializerKey(version, type, null);
     }

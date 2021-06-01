@@ -77,7 +77,7 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
                 new AtomicLong(), notificationPublishService, convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
-                .commitEntry(eq(42L), requestInput.capture(), any(FutureCallback.class));
+                .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
     }
 
     @After

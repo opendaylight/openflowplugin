@@ -38,13 +38,13 @@ public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
      * @param versions supported OF versions
      * @param buffer byte buffer to deserialze
      */
-    protected void testHeaderVersions(final List<Byte> versions, final ByteBuf buffer) {
-        for (short version : versions) {
+    protected void testHeaderVersions(final List<Uint8> versions, final ByteBuf buffer) {
+        for (Uint8 version : versions) {
             ByteBuf bb = buffer.copy();
             OFDeserializer<T> serializer = registry.getDeserializer(
                     new MessageCodeKey(version, messageCodeKey.getMsgType(), messageCodeKey.getClazz()));
             T builtByFactory = BufferHelper.deserialize(serializer, bb);
-            BufferHelper.checkHeader((OfHeader) builtByFactory, Uint8.valueOf(version));
+            BufferHelper.checkHeader((OfHeader) builtByFactory, version);
         }
     }
 }

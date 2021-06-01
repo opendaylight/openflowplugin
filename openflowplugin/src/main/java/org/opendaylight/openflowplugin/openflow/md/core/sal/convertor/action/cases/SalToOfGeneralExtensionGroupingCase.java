@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
@@ -21,22 +20,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class SalToOfGeneralExtensionGroupingCase
         extends ConvertorCase<GeneralExtensionGrouping, Action, ActionConvertorData> {
-    private static final Logger LOG = LoggerFactory.getLogger(SalToOfGeneralExtensionGroupingCase.class);
-
     public SalToOfGeneralExtensionGroupingCase() {
         super(GeneralExtensionGrouping.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
     public Optional<Action> process(@NonNull final GeneralExtensionGrouping source, final ActionConvertorData data,
-            ConvertorExecutor convertorExecutor) {
-        final short version = data.getVersion();
+            final ConvertorExecutor convertorExecutor) {
+        final Uint8 version = data.getVersion();
 
         /*
          * TODO: EXTENSION PROPOSAL (action, MD-SAL to OFJava)

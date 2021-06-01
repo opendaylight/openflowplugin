@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorData;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public interface ConvertorRegistrator {
     /**
@@ -17,5 +17,5 @@ public interface ConvertorRegistrator {
      *
      * @param convertor the convertor
      */
-    ConvertorManager registerConvertor(short version, Convertor<?, ?, ? extends ConvertorData> convertor);
+    ConvertorManager registerConvertor(Uint8 version, Convertor<?, ?, ? extends ConvertorData> convertor);
 }

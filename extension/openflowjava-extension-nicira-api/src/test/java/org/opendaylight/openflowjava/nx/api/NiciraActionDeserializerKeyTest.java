@@ -12,13 +12,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class NiciraActionDeserializerKeyTest {
+    private static final Uint8 VERSION = Uint8.valueOf(4);
 
     NiciraActionDeserializerKey niciraActionDeserializerKey;
-
-    private static final short VERSION = 4;
-
 
     /**
      * If SUBTYPE is not Uint16 exception should be thrown.
@@ -83,7 +82,7 @@ public class NiciraActionDeserializerKeyTest {
      */
     @Test
     public void equalsTest4() {
-        NiciraActionDeserializerKey obj = new NiciraActionDeserializerKey((short)5, 10);
+        NiciraActionDeserializerKey obj = new NiciraActionDeserializerKey(Uint8.valueOf(5), 10);
         niciraActionDeserializerKey = new NiciraActionDeserializerKey(VERSION, 10);
 
         assertFalse(niciraActionDeserializerKey.equals(obj));

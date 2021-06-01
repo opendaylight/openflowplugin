@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.util;
 
 import io.netty.buffer.ByteBuf;
@@ -30,7 +29,7 @@ public class CodeKeyMakerFactoryTest {
      */
     @Test
     public void testMatchEntriesKeyMaker() {
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null key maker", keyMaker);
 
         ByteBuf buffer = BufferHelper.buildBuffer("80 00 00 04 00 00 00 01");
@@ -38,7 +37,7 @@ public class CodeKeyMakerFactoryTest {
         MessageCodeKey codeKey = keyMaker.make(buffer);
 
         Assert.assertNotNull("Null key", codeKey);
-        Assert.assertEquals("Wrong key", new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                         32768, 0), codeKey);
         Assert.assertEquals("Buffer index modified", 8, buffer.readableBytes());
     }
@@ -48,7 +47,7 @@ public class CodeKeyMakerFactoryTest {
      */
     @Test
     public void testExperimenterMatchEntriesKeyMaker() {
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createMatchEntriesKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null key maker", keyMaker);
 
         ByteBuf buffer = BufferHelper.buildBuffer("FF FF 00 04 00 00 00 01");
@@ -57,7 +56,7 @@ public class CodeKeyMakerFactoryTest {
 
         Assert.assertNotNull("Null key", codeKey);
         MatchEntryDeserializerKey comparationKey =
-                new MatchEntryDeserializerKey(EncodeConstants.OF13_VERSION_ID, 65535, 0);
+                new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, 65535, 0);
         comparationKey.setExperimenterId(Uint32.ONE);
         Assert.assertEquals("Wrong key", comparationKey, codeKey);
         Assert.assertEquals("Buffer index modified", 8, buffer.readableBytes());
@@ -68,7 +67,7 @@ public class CodeKeyMakerFactoryTest {
      */
     @Test
     public void testActionKeyMaker() {
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null key maker", keyMaker);
 
         ByteBuf buffer = BufferHelper.buildBuffer("00 00 00 10 00 00 00 01 00 02 00 00 00 00 00 00");
@@ -76,8 +75,7 @@ public class CodeKeyMakerFactoryTest {
         MessageCodeKey codeKey = keyMaker.make(buffer);
 
         Assert.assertNotNull("Null key", codeKey);
-        Assert.assertEquals("Wrong key", new ActionDeserializerKey(EncodeConstants.OF13_VERSION_ID,
-                        0, null), codeKey);
+        Assert.assertEquals("Wrong key", new ActionDeserializerKey(EncodeConstants.OF_VERSION_1_3, 0, null), codeKey);
         Assert.assertEquals("Buffer index modified", 16, buffer.readableBytes());
     }
 
@@ -86,7 +84,7 @@ public class CodeKeyMakerFactoryTest {
      */
     @Test
     public void testExperimenterActionKeyMaker() {
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createActionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null key maker", keyMaker);
 
         ByteBuf buffer = BufferHelper.buildBuffer("FF FF 00 08 00 00 00 01");
@@ -94,7 +92,7 @@ public class CodeKeyMakerFactoryTest {
         MessageCodeKey codeKey = keyMaker.make(buffer);
 
         Assert.assertNotNull("Null key", codeKey);
-        Assert.assertEquals("Wrong key", new ActionDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new ActionDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                         65535, 1L), codeKey);
         Assert.assertEquals("Buffer index modified", 8, buffer.readableBytes());
     }
@@ -104,7 +102,7 @@ public class CodeKeyMakerFactoryTest {
      */
     @Test
     public void testInstructionKeyMaker() {
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null key maker", keyMaker);
 
         ByteBuf buffer = BufferHelper.buildBuffer("00 00 00 08");
@@ -112,7 +110,7 @@ public class CodeKeyMakerFactoryTest {
         MessageCodeKey codeKey = keyMaker.make(buffer);
 
         Assert.assertNotNull("Null key", codeKey);
-        Assert.assertEquals("Wrong key", new InstructionDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new InstructionDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                         0, null), codeKey);
         Assert.assertEquals("Buffer index modified", 4, buffer.readableBytes());
     }
@@ -122,7 +120,7 @@ public class CodeKeyMakerFactoryTest {
      */
     @Test
     public void testExperimenterInstructionKeyMaker() {
-        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF13_VERSION_ID);
+        CodeKeyMaker keyMaker = CodeKeyMakerFactory.createInstructionsKeyMaker(EncodeConstants.OF_VERSION_1_3);
         Assert.assertNotNull("Null key maker", keyMaker);
 
         ByteBuf buffer = BufferHelper.buildBuffer("FF FF 00 08 00 00 00 01");
@@ -130,7 +128,7 @@ public class CodeKeyMakerFactoryTest {
         MessageCodeKey codeKey = keyMaker.make(buffer);
 
         Assert.assertNotNull("Null key", codeKey);
-        Assert.assertEquals("Wrong key", new InstructionDeserializerKey(EncodeConstants.OF13_VERSION_ID,
+        Assert.assertEquals("Wrong key", new InstructionDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                         65535, 1L), codeKey);
         Assert.assertEquals("Buffer index modified", 8, buffer.readableBytes());
     }

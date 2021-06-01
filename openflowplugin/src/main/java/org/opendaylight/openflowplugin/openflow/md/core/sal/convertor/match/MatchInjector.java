@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorKey;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ResultInjector;
@@ -24,17 +23,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.aggregate._case.MultipartRequestAggregateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class MatchInjector {
     private MatchInjector() {
     }
 
     @SuppressWarnings("unchecked")
-    public static <F, T> void inject(Optional<F> source, T target, short version) {
+    public static <F, T> void inject(final Optional<F> source, final T target, final Uint8 version) {
         F sourceResult;
         if (source.isPresent()) {
             sourceResult = source.get();
-        } else if (version == EncodeConstants.OF10_VERSION_ID) {
+        } else if (OFConstants.OFP_VERSION_1_0.equals(version)) {
             sourceResult = (F) MatchV10Convertor.defaultResult();
         } else {
             sourceResult = (F) MatchConvertor.defaultResult();
