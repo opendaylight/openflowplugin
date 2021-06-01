@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -22,6 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Ipv6ExthdrFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.Ipv6ExthdrCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ipv6.exthdr._case.Ipv6Exthdr;
+import org.opendaylight.yangtools.yang.common.Uint16;
 
 public class OfToSalIpv6ExthdrCase extends ConvertorCase<Ipv6ExthdrCase, MatchBuilder, MatchResponseConvertorData> {
     public OfToSalIpv6ExthdrCase() {
@@ -29,8 +28,8 @@ public class OfToSalIpv6ExthdrCase extends ConvertorCase<Ipv6ExthdrCase, MatchBu
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull Ipv6ExthdrCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(final Ipv6ExthdrCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv6MatchBuilder ipv6MatchBuilder = data.getIpv6MatchBuilder();
 
@@ -44,7 +43,7 @@ public class OfToSalIpv6ExthdrCase extends ConvertorCase<Ipv6ExthdrCase, MatchBu
             byte[] mask = ipv6Exthdr.getMask();
 
             if (mask != null) {
-                ipv6ExtHeaderBuilder.setIpv6ExthdrMask(ByteUtil.bytesToUnsignedShort(mask));
+                ipv6ExtHeaderBuilder.setIpv6ExthdrMask(Uint16.valueOf(ByteUtil.bytesToUnsignedShort(mask)));
             }
 
             ipv6MatchBuilder.setIpv6ExtHeader(ipv6ExtHeaderBuilder.build());

@@ -307,7 +307,7 @@ public class TableFeaturesConvertorTest {
         }
 
         TableFeatures tableFeatures = new UpdatedTableBuilder()
-                .setTableFeatures(tableFeaturesList)
+                .setTableFeatures(BindingMap.ordered(tableFeaturesList))
                 .build();
 
         // FIXME: this seems to be completely unused!
@@ -318,7 +318,7 @@ public class TableFeaturesConvertorTest {
                     convertorManager.convert(tableFeatures, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
 
         assertNotNull(tableFeatures);
-        assertEquals(10, tableFeatures.getTableFeatures().size());
+        assertEquals(10, tableFeatures.nonnullTableFeatures().size());
         Collection<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.nonnullTableFeatures().values()
                 .iterator().next().getTableProperties().nonnullTableFeatureProperties().values();
         assertEquals(AUGMENTATIONS_MAP.size() + 1, tableFeaturePropertieses.size());

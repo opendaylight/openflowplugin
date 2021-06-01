@@ -5,12 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.math.BigInteger;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -26,8 +24,8 @@ public class OfToSalMetadataCase extends ConvertorCase<MetadataCase, MatchBuilde
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull MetadataCase source, MatchResponseConvertorData data,
-            ConvertorExecutor convertorExecutor) {
+    public Optional<MatchBuilder> process(final MetadataCase source, final MatchResponseConvertorData data,
+            final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final MetadataBuilder metadataBuilder = new MetadataBuilder();
         final Metadata metadata = source.getMetadata();

@@ -12,7 +12,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.ActionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.InstructionSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.oxm.container.match.entry.value.ExperimenterIdCase;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.InstructionChoice;
