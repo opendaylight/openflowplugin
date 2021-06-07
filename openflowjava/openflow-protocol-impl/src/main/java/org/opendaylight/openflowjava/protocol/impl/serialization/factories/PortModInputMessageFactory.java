@@ -16,7 +16,7 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod$G;
 
 /**
  * Translates PortMod messages. OF protocol versions: 1.3.
@@ -24,14 +24,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class PortModInputMessageFactory implements OFSerializer<PortMod> {
+public class PortModInputMessageFactory implements OFSerializer<PortMod$G> {
     private static final byte MESSAGE_TYPE = 16;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_01 = 4;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_02 = 2;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_03 = 4;
 
     @Override
-    public void serialize(final PortMod message, final ByteBuf outBuffer) {
+    public void serialize(final PortMod$G message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeInt(message.getPortNo().getValue().intValue());
