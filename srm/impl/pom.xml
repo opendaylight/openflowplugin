@@ -46,9 +46,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <artifactId>mdsal-binding-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>javax.inject</groupId>
+      <groupId>com.guicedee.services</groupId>
       <artifactId>javax.inject</artifactId>
-      <scope>provided</scope>
       <optional>true</optional>
     </dependency>
     <dependency>
