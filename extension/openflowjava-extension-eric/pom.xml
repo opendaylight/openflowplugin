@@ -26,14 +26,6 @@
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
-            <artifactId>openflowjava-util</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openflowjava-extension-nicira-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
         </dependency>

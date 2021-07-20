@@ -11,15 +11,6 @@
     <artifactId>sample-consumer</artifactId>
     <packaging>bundle</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
@@ -31,15 +22,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-flow-statistics</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-inventory</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>

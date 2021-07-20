@@ -13,11 +13,6 @@
     <packaging>bundle</packaging>
 
     <dependencies>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-model-api</artifactId>
-        </dependency>
-
         <!-- OpenFlowJava-API models -->
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>

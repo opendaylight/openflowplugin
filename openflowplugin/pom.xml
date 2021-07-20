@@ -21,11 +21,6 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openflowplugin-api</artifactId>
         </dependency>
@@ -49,18 +44,10 @@
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-inventory</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-api</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
-            <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
 
         <dependency>

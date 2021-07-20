@@ -18,22 +18,7 @@
     <artifactId>sample-bundles</artifactId>
     <packaging>bundle</packaging>
 
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
-        <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-base</artifactId>
@@ -56,22 +41,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-        </dependency>
-
-
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-extension-onf</artifactId>
+            <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
     </dependencies>
 </project>

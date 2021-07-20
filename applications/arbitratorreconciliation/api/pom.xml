@@ -15,15 +15,7 @@
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>reconciliation-framework</artifactId>
         </dependency>
     </dependencies>
 </project>
