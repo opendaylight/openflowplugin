@@ -46,9 +46,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  * Provides flat batch util methods.
  */
 public final class FlatBatchUtil {
-
     private FlatBatchUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     public static void markBarriersWhereNeeded(final List<BatchPlanStep> batchPlan) {

@@ -15,13 +15,11 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 
 public final class RequestContextUtil {
-
     private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(RequestContextUtil.class);
 
     private RequestContextUtil() {
-        throw new UnsupportedOperationException();
+        // Hidden on purpose
     }
-
 
     public static <T> ListenableFuture<RpcResult<T>> closeRequestContextWithRpcError(
                                                                                 final RequestContext<T> requestContext,

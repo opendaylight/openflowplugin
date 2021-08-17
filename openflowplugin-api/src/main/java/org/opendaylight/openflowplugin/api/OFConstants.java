@@ -20,11 +20,6 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * OFP related constants.
  */
 public final class OFConstants {
-
-    private OFConstants() {
-        throw new UnsupportedOperationException("OF plugin Constants holder class");
-    }
-
     /** enum ofp_port_no, reserved port: process with normal L2/L3 switching.  */
     public static final short OFPP_NORMAL = (short)0xfffa;
     /** enum ofp_port_no, reserved port: all physical ports except input port.  */
@@ -82,4 +77,8 @@ public final class OFConstants {
 
     /** supported version ordered by height (highest version is at the beginning). */
     public static final List<Uint8> VERSION_ORDER = List.of(OFP_VERSION_1_3, OFP_VERSION_1_0);
+
+    private OFConstants() {
+        // Hidden on purpose
+    }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Function;
@@ -25,12 +24,9 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * Provides barrier message chaining and factory methods.
  */
 public final class BarrierUtil {
-
-
     private BarrierUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
-
 
     /**
      * Chain a barrier message - regardless of previous result and use given {@link Function} to combine

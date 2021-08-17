@@ -22,13 +22,11 @@ import org.slf4j.LoggerFactory;
  * Util methods for {@link com.google.common.util.concurrent.ListenableFuture} chaining.
  */
 public final class FxChainUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(FxChainUtil.class);
 
     private FxChainUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
-
 
     public static FutureCallback<RpcResult<Void>> logResultCallback(final NodeId nodeId, final String prefix) {
         return new FutureCallback<>() {

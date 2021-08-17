@@ -18,9 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
  * @author michal.polkorab
  */
 public final class OxmDeserializerHelper {
-
     private OxmDeserializerHelper() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

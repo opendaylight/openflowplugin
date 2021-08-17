@@ -15,7 +15,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class RequestInputUtils {
     private RequestInputUtils() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     public static MultipartRequestInputBuilder createMultipartHeader(final MultipartType multipart,

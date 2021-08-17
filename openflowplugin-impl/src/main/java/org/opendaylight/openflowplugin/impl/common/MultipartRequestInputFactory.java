@@ -67,9 +67,8 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * without touch OF specification 1.3.2  - a section 7.3.5. Multipart Messages
  */
 public final class MultipartRequestInputFactory {
-
     private MultipartRequestInputFactory() {
-        throw new UnsupportedOperationException("Factory class");
+        // Hidden on purpose
     }
 
     /**

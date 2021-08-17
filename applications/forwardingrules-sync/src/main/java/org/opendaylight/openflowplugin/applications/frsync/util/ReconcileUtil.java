@@ -52,11 +52,10 @@ import org.slf4j.LoggerFactory;
  * Util methods for group reconcil task (future chaining, transforms).
  */
 public final class ReconcileUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(ReconcileUtil.class);
 
     private ReconcileUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     /**

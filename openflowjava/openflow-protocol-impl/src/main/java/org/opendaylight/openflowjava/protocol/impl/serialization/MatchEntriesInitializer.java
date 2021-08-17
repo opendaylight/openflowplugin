@@ -101,9 +101,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Vlan
  * @author michal.polkorab
  */
 public final class MatchEntriesInitializer {
-
     private MatchEntriesInitializer() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

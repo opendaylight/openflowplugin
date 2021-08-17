@@ -13,9 +13,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController;
 
 public final class PacketInUtil {
-
     private PacketInUtil() {
-        throw new AssertionError("PacketInUtil is not expected to be instantiated.");
+        // Hidden on purpose
     }
 
     /**

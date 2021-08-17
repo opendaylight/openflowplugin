@@ -17,19 +17,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
  * Basic {@link DataTreeModification} related tools.
  */
 public final class ModificationUtil {
-
     private ModificationUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     public static String nodeIdValue(DataTreeModification<Node> modification) {
         final NodeId nodeId = nodeId(modification);
-
-        if (nodeId == null) {
-            return null;
-        }
-
-        return nodeId.getValue();
+        return nodeId == null ? null : nodeId.getValue();
     }
 
     public static NodeId nodeId(DataTreeModification<Node> modification) {

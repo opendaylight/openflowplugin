@@ -58,7 +58,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 public final class AdditionalMessageFactoryInitializer {
     private AdditionalMessageFactoryInitializer() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

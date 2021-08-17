@@ -72,7 +72,7 @@ public final class MdSalRegistrationUtils {
 
     //TODO: Make one register and one unregister method for all services
     private MdSalRegistrationUtils() {
-        throw new IllegalStateException();
+        // Hidden on purpose
     }
 
     /**

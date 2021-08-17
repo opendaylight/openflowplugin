@@ -104,9 +104,8 @@ public final class MatchUtil {
             .build();
 
     private MatchUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
-
 
     public static MatchV10Builder createEmptyV10Match() {
         return new MatchV10Builder()

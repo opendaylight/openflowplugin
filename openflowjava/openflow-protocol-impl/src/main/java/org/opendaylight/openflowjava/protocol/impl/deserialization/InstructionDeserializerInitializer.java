@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization;
 
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -24,9 +23,8 @@ import org.opendaylight.openflowjava.protocol.impl.util.InstructionDeserializerR
  * @author michal.polkorab
  */
 public final class InstructionDeserializerInitializer {
-
     private InstructionDeserializerInitializer() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

@@ -57,13 +57,12 @@ import org.slf4j.LoggerFactory;
  * Utils for gathering statistics.
  */
 public final class StatisticsGatheringUtils {
-
     private static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
     private static final String QUEUE2_REQCTX = "QUEUE2REQCTX-";
 
     private StatisticsGatheringUtils() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     static <T extends OfHeader> ListenableFuture<Boolean> gatherStatistics(

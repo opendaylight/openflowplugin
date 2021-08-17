@@ -19,9 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 public final class ActionExtensionHelper {
-
     private ActionExtensionHelper() {
-        throw new IllegalAccessError("singleton enforcement");
+        // Hidden on purpose
     }
 
     /**

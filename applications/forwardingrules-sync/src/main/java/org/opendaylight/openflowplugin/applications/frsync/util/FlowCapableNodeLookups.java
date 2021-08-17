@@ -28,11 +28,10 @@ import org.slf4j.LoggerFactory;
  * Helpers for flow lookups in {@link FlowCapableNode}.
  */
 public final class FlowCapableNodeLookups {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableNodeLookups.class);
 
     private FlowCapableNodeLookups() {
-        throw new IllegalAccessError("non instantiable util class");
+        // Hidden on purpose
     }
 
     @NonNull

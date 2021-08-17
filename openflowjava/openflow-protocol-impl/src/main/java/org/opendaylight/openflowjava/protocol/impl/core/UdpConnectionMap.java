@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import java.net.InetSocketAddress;
@@ -20,11 +19,10 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsum
  * @author michal.polkorab
  */
 public final class UdpConnectionMap {
-
     private static Map<InetSocketAddress, MessageConsumer> connectionMap = new ConcurrentHashMap<>();
 
     private UdpConnectionMap() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

@@ -14,9 +14,8 @@ import org.opendaylight.yangtools.yang.common.RpcError;
  * Util class for {@link RpcError}.
  */
 public final class ErrorUtil {
-
     private ErrorUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     public static String errorsToString(final Collection<RpcError> rpcErrors) {

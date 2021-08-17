@@ -38,7 +38,7 @@ public final class FlowCreatorUtil {
             FlowConvertor.DEFAULT_OFPFF_FLOW_REM);
 
     private FlowCreatorUtil() {
-        throw new AssertionError("FlowCreatorUtil is not expected to be instantiated.");
+        // Hidden on purpose
     }
 
     public static void setWildcardedFlowMatch(final Uint8 version, final MultipartRequestFlowBuilder flowBuilder) {

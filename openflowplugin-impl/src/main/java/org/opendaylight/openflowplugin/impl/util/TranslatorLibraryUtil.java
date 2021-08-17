@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -25,16 +24,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 
 public final class TranslatorLibraryUtil {
-
-
-    private TranslatorLibraryUtil() {
-        throw new IllegalStateException("This class should not be instantiated");
-    }
-
     private static final TranslatorKeyFactory OF_13_TRANSLATOR_KEY_FACTORY =
             new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_3);
     private static final TranslatorKeyFactory OF_10_TRANSLATOR_KEY_FACTORY =
             new TranslatorKeyFactory(OFConstants.OFP_VERSION_1_0);
+
+    private TranslatorLibraryUtil() {
+        // Hidden on purpose
+    }
 
     public static void injectBasicTranslatorLibrary(final TranslatorLibrarian librarian,
                                                     final ConvertorExecutor convertorExecutor) {

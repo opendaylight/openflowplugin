@@ -18,9 +18,8 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
  * @author michal.polkorab
  */
 public final class ScenarioFactory {
-
     private ScenarioFactory() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

@@ -17,7 +17,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  */
 public final class PathUtil {
     private PathUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     public static NodeId digNodeId(final InstanceIdentifier<?> nodeIdent) {

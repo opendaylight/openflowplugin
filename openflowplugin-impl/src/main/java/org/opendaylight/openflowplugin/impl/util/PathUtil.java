@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -17,9 +16,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Purpose: utility class providing path and {@link InstanceIdentifier} tools.
  */
 public final class PathUtil {
-
     private PathUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     /**

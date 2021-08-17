@@ -27,7 +27,7 @@ public final class ListDeserializer {
     private static final Logger LOG = LoggerFactory.getLogger(ListDeserializer.class);
 
     private ListDeserializer() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

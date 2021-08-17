@@ -91,7 +91,7 @@ public final class IpConversionUtil {
 
 
     private IpConversionUtil() {
-        throw new UnsupportedOperationException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     public static Iterator<String> splitToParts(final Ipv4Prefix ipv4Prefix) {

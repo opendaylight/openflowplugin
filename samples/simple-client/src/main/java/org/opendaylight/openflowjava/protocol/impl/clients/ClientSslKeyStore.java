@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import java.io.InputStream;
@@ -16,11 +15,10 @@ import java.io.InputStream;
  * @author michal.polkorab
  */
 public final class ClientSslKeyStore {
-
     private static final String KEY_STORE_FILENAME = "/selfSignedSwitch";
 
     private ClientSslKeyStore() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

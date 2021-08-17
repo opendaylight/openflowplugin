@@ -59,9 +59,8 @@ import org.opendaylight.openflowjava.protocol.impl.util.MatchEntryDeserializerRe
  * @author michal.polkorab
  */
 public final class MatchEntryDeserializerInitializer {
-
     private MatchEntryDeserializerInitializer() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     /**

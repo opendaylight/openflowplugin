@@ -26,9 +26,8 @@ import javax.net.ssl.TrustManagerFactory;
  * @author michal.polkorab
  */
 public final class ClientSslContextFactory {
-
     private ClientSslContextFactory() {
-        throw new UnsupportedOperationException("Utility class shouldn't be instantiated");
+        // Hidden on purpose
     }
 
     // "TLS" - supports some version of TLS

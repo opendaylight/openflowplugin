@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import static org.opendaylight.openflowplugin.impl.util.AddressNormalizationUtil.normalizeIpv4Arbitrary;
@@ -61,7 +60,7 @@ public final class MatchNormalizationUtil {
             .build();
 
     private MatchNormalizationUtil() {
-        throw new RuntimeException("Creating instance of util classes is prohibited");
+        // Hidden on purpose
     }
 
     /**

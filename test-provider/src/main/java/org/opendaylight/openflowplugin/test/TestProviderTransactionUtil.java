@@ -20,11 +20,10 @@ import org.slf4j.LoggerFactory;
  * Created by Martin Bobak mbobak@cisco.com on 8/20/14.
  */
 public final class TestProviderTransactionUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(TestProviderTransactionUtil.class);
 
     private TestProviderTransactionUtil() {
-        throw new AssertionError("TestProviderTransactionUtil was not meant to be instantiated.");
+        // Hidden on purpose
     }
 
     public static <T extends DataObject> T getDataObject(ReadTransaction readOnlyTransaction,

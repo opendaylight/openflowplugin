@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -119,7 +118,7 @@ public final class FlowUtil {
             };
 
     private FlowUtil() {
-        throw new IllegalStateException("This class should not be instantiated.");
+        // Hidden on purpose
     }
 
     static <K extends Identifier<V>, V extends Identifiable<K>> Map<K, V> index(final List<V> list) {
