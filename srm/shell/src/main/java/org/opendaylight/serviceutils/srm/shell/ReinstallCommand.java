@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.serviceutils.srm.shell;
 
 import java.util.concurrent.Future;
@@ -26,8 +25,11 @@ import org.slf4j.LoggerFactory;
 
 @Command(scope = "srm", name = "reinstall", description = "Reinstall service or instance")
 public class ReinstallCommand extends OsgiCommandSupport {
-
     private static final Logger LOG = LoggerFactory.getLogger(ReinstallCommand.class);
+
+    @Argument(index = 0, name = "name", description = "EntityName of type service, required",
+        required = false, multiValued = false)
+    String name;
 
     private final OdlSrmRpcsService srmRpcService;
     private final Class<? extends EntityTypeBase> entityType = EntityTypeService.class;
@@ -36,11 +38,8 @@ public class ReinstallCommand extends OsgiCommandSupport {
         this.srmRpcService = srmRpcService;
     }
 
-    @Argument(index = 0, name = "name", description = "EntityName of type service, required",
-        required = false, multiValued = false)
-    String name;
-
     @Override
+    @Deprecated
     protected @Nullable Object doExecute() throws Exception {
         ReinstallInput input = getInput();
         if (input == null) {
@@ -77,5 +76,4 @@ public class ReinstallCommand extends OsgiCommandSupport {
         inputBuilder.setEntityName(entityName);
         return inputBuilder.build();
     }
-
 }

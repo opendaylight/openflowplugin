@@ -19,4 +19,6 @@ public interface ServiceRecoveryRegistry {
     void removeRecoverableListener(String serviceName, RecoverableListener recoverableListener);
 
     Queue<RecoverableListener> getRecoverableListeners(String serviceName);
+
+    ServiceRecoveryInterface getRegisteredServiceRecoveryHandler(String entityName);
 }

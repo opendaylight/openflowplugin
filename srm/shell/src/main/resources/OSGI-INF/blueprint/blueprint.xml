@@ -5,25 +5,21 @@
         * and is available at http://www.eclipse.org/legal/epl-v10.html
 -->
 
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
-           odl:use-default-for-reference-types="true">
-
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
     <reference id="dataBroker"
                interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-
-    <odl:rpc-service id="srmRpcService"
-             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.OdlSrmRpcsService" />
+    <reference id="srmRpcService"
+               interface="org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.OdlSrmRpcsService"/>
 
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
         <command>
             <action class="org.opendaylight.serviceutils.srm.shell.RecoverCommand">
-                <argument ref="srmRpcService" />
+                <argument ref="srmRpcService"/>
             </action>
         </command>
         <command>
             <action class="org.opendaylight.serviceutils.srm.shell.ReinstallCommand">
-                <argument ref="srmRpcService" />
+                <argument ref="srmRpcService"/>
             </action>
         </command>
         <command>

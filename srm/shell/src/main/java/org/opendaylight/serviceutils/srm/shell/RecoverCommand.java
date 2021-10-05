@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.serviceutils.srm.shell;
 
 import java.util.concurrent.Future;
@@ -25,25 +24,22 @@ import org.slf4j.LoggerFactory;
 
 @Command(scope = "srm", name = "recover", description = "Recover service or instance")
 public class RecoverCommand extends OsgiCommandSupport {
-
     private static final Logger LOG = LoggerFactory.getLogger(RecoverCommand.class);
 
+    @Argument(index = 0, name = "type", description = "EntityType, required", required = false, multiValued = false)
+    String type;
+    @Argument(index = 1, name = "name", description = "EntityName, required", required = false, multiValued = false)
+    String name;
+    @Argument(index = 2, name = "id", description = "EntityId, optional", required = false, multiValued = false)
+    String id;
     private final OdlSrmRpcsService srmRpcService;
 
     public RecoverCommand(OdlSrmRpcsService srmRpcService) {
         this.srmRpcService = srmRpcService;
     }
 
-    @Argument(index = 0, name = "type", description = "EntityType, required", required = false, multiValued = false)
-    String type;
-
-    @Argument(index = 1, name = "name", description = "EntityName, required", required = false, multiValued = false)
-    String name;
-
-    @Argument(index = 2, name = "id", description = "EntityId, optional", required = false, multiValued = false)
-    String id;
-
     @Override
+    @Deprecated
     protected @Nullable Object doExecute() throws Exception {
         RecoverInput input = getInput();
         if (input == null) {
@@ -92,5 +88,4 @@ public class RecoverCommand extends OsgiCommandSupport {
         }
         return inputBuilder.build();
     }
-
 }
