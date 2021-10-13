@@ -44,6 +44,11 @@ committers:
       company: 'PANTHEON.tech'
       id: 'rovarga'
       timezone: 'Europe/Bratislava'
+    - name: 'Sangwook Ha'
+      email: 'sangwook.ha@verizon.com'
+      company: 'Verizon'
+      id: 'sangwookha'
+      timezone: 'Americas/Los_Angeles'
 tsc:
     # yamllint disable rule:line-length
     approval: 'NA'
