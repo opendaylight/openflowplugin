@@ -41,9 +41,9 @@ committers:
       timezone: 'Unknown/Unknown'
     - name: 'Robert Varga'
       email: 'nite@hq.sk'
-      company: 'hq'
+      company: 'PANTHEON.tech'
       id: 'rovarga'
-      timezone: 'Unknown/Unknown'
+      timezone: 'Europe/Bratislava'
 tsc:
     # yamllint disable rule:line-length
     approval: 'NA'
