@@ -12,12 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class SalMeterServiceMock implements SalMeterService {
     private final List<AddMeterInput> addMeterCalls = new ArrayList<>();
@@ -27,19 +31,19 @@ public class SalMeterServiceMock implements SalMeterService {
     @Override
     public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
         addMeterCalls.add(input);
-        return null;
+        return RpcResultBuilder.success(new AddMeterOutputBuilder().build()).buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(RemoveMeterInput input) {
         removeMeterCalls.add(input);
-        return null;
+        return RpcResultBuilder.success(new RemoveMeterOutputBuilder().build()).buildFuture();
     }
 
     @Override
     public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(UpdateMeterInput input) {
         updateMeterCalls.add(input);
-        return null;
+        return RpcResultBuilder.success(new UpdateMeterOutputBuilder().build()).buildFuture();
     }
 
     public List<AddMeterInput> getAddMeterCalls() {
