@@ -16,19 +16,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
-import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
-import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
-import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Dscp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -56,41 +46,18 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import test.mock.util.FRMTest;
-import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalFlowServiceMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowListenerTest extends FRMTest {
-    private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistryMock rpcProviderRegistryMock = new RpcProviderRegistryMock();
     TableKey tableKey = new TableKey(Uint8.TWO);
-    @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
-    @Mock
-    DeviceMastershipManager deviceMastershipManager;
-    @Mock
-    private ReconciliationManager reconciliationManager;
-    @Mock
-    private OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
-    @Mock
-    private ServiceRecoveryRegistry serviceRecoveryRegistry;
-    @Mock
-    private MastershipChangeServiceManager mastershipChangeServiceManager;
-    @Mock
-    private FlowGroupCacheManager flowGroupCacheManager;
 
     @Before
     public void setUp() {
-        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
-                rpcProviderRegistryMock, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
-                getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry, flowGroupCacheManager, getRegistrationHelper());
-        forwardingRulesManager.start();
-        // TODO consider tests rewrite (added because of complicated access)
-        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
-        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+        setUpForwardingRulesManager();
+        setDeviceMastership(NODE_ID);
     }
 
     @Test
@@ -109,7 +76,7 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
+        SalFlowServiceMock salFlowService = (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());
@@ -147,7 +114,7 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
+        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
 
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
@@ -188,7 +155,7 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
+        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());
@@ -227,7 +194,8 @@ public class FlowListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) forwardingRulesManager.getSalFlowService();
+        final SalFlowServiceMock salFlowService =
+                (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());
@@ -264,6 +232,6 @@ public class FlowListenerTest extends FRMTest {
 
     @After
     public void tearDown() throws Exception {
-        forwardingRulesManager.close();
+        getForwardingRulesManager().close();
     }
 }
