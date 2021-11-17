@@ -7,35 +7,100 @@
  */
 package test.mock.util;
 
-import com.google.common.util.concurrent.FluentFuture;
-import com.google.common.util.concurrent.ListenableFuture;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import org.mockito.Mock;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.binding.dom.adapter.test.AbstractDataBrokerTest;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
+import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
 import org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
+import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
+import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfigBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 public abstract class FRMTest extends AbstractDataBrokerTest {
+    private ForwardingRulesManagerImpl forwardingRulesManager;
 
-    public void addFlowCapableNode(final NodeKey nodeKey) {
+    @Mock
+    private RpcConsumerRegistry rpcConsumerRegistry;
+    @Mock
+    private RpcProviderService rpcProviderService;
+    @Mock
+    private ClusterSingletonServiceProvider clusterSingletonService;
+    @Mock
+    private DeviceMastershipManager deviceMastershipManager;
+    @Mock
+    private ReconciliationManager reconciliationManager;
+    @Mock
+    private OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
+    @Mock
+    private ServiceRecoveryRegistry serviceRecoveryRegistry;
+    @Mock
+    private MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    private FlowGroupCacheManager flowGroupCacheManager;
+
+    protected void setUpForwardingRulesManager() {
+        when(rpcConsumerRegistry.getRpcService(SalFlowService.class))
+                .thenReturn(new SalFlowServiceMock());
+        when(rpcConsumerRegistry.getRpcService(SalGroupService.class))
+                .thenReturn(new SalGroupServiceMock());
+        when(rpcConsumerRegistry.getRpcService(SalMeterService.class))
+                .thenReturn(new SalMeterServiceMock());
+        when(rpcConsumerRegistry.getRpcService(SalTableService.class))
+                .thenReturn(new SalTableServiceMock());
+        when(rpcConsumerRegistry.getRpcService(SalBundleService.class))
+                .thenReturn(new SalBundleServiceMock());
+        when(rpcConsumerRegistry.getRpcService(ArbitratorReconcileService.class))
+                .thenReturn(new ArbitratorReconcileServiceMock());
+
+        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcConsumerRegistry,
+                rpcProviderService, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
+                getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
+                serviceRecoveryRegistry, flowGroupCacheManager, getRegistrationHelper());
+        forwardingRulesManager.start();
+    }
+
+    protected void setDeviceMastership(final NodeId nodeId) {
+        // TODO consider tests rewrite (added because of complicated access)
+        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
+        when(deviceMastershipManager.isDeviceMastered(nodeId)).thenReturn(true);
+    }
+
+    protected ForwardingRulesManagerImpl getForwardingRulesManager() {
+        return forwardingRulesManager;
+    }
+
+    protected void addFlowCapableNode(final NodeKey nodeKey) {
         Nodes nodes = new NodesBuilder().build();
 
         NodeBuilder nodeBuilder = new NodeBuilder();
@@ -52,30 +117,7 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
         assertCommit(writeTx.commit());
     }
 
-    // TODO: remove with mdsal-3.0.7 or later
-    @SuppressWarnings("unchecked")
-    protected static final void assertCommit(final FluentFuture<?> future) {
-        assertCommit((ListenableFuture<Void>) future);
-    }
-
-    public void removeNode(final NodeKey nodeKey) throws ExecutionException, InterruptedException {
-        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
-        writeTx.delete(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey));
-        writeTx.commit().get();
-    }
-
-    public void addTable(final TableKey tableKey, final NodeKey nodeKey) {
-        addFlowCapableNode(nodeKey);
-        final Table table = new TableBuilder().withKey(tableKey).build();
-        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
-        InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, nodeKey)
-                .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
-        writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
-        assertCommit(writeTx.commit());
-    }
-
-    public ForwardingRulesManagerConfig getConfig() {
+    private static ForwardingRulesManagerConfig getConfig() {
         return new ForwardingRulesManagerConfigBuilder()
                 .setDisableReconciliation(false)
                 .setStaleMarkingEnabled(false)
@@ -84,35 +126,29 @@ public abstract class FRMTest extends AbstractDataBrokerTest {
                 .build();
     }
 
-    public ConfigurationService getConfigurationService() {
-        final ConfigurationService configurationService = Mockito.mock(ConfigurationService.class);
+    private static ConfigurationService getConfigurationService() {
+        final ConfigurationService configurationService = mock(ConfigurationService.class);
         final ForwardingRulesManagerConfig config = getConfig();
 
-        Mockito.when(configurationService.registerListener(Mockito.any())).thenReturn(() -> {
+        when(configurationService.registerListener(any())).thenReturn(() -> {
         });
 
-        Mockito.lenient().when(configurationService.getProperty(Mockito.eq("disable-reconciliation"), Mockito.any()))
+        lenient().when(configurationService.getProperty(eq("disable-reconciliation"), any()))
                 .thenReturn(config.getDisableReconciliation());
 
-        Mockito.lenient().when(configurationService.getProperty(Mockito.eq("stale-marking-enabled"), Mockito.any()))
+        lenient().when(configurationService.getProperty(eq("stale-marking-enabled"), any()))
                 .thenReturn(config.getStaleMarkingEnabled());
 
-        Mockito.lenient().when(configurationService.getProperty(Mockito.eq("reconciliation-retry-count"),
-                Mockito.any())).thenReturn(config.getReconciliationRetryCount());
+        lenient().when(configurationService.getProperty(eq("reconciliation-retry-count"),
+                any())).thenReturn(config.getReconciliationRetryCount());
 
-        Mockito.lenient().when(configurationService.getProperty(Mockito.eq("bundle-based-reconciliation-enabled"),
-                Mockito.any())).thenReturn(config.getBundleBasedReconciliationEnabled());
+        lenient().when(configurationService.getProperty(eq("bundle-based-reconciliation-enabled"),
+                any())).thenReturn(config.getBundleBasedReconciliationEnabled());
 
         return configurationService;
     }
 
-    protected Callable<Integer> listSize(final List<?> list) {
-        // The condition supplier part
-        return list::size;
-    }
-
-    public ListenerRegistrationHelper getRegistrationHelper() {
-        ListenerRegistrationHelper registrationHelper = new ListenerRegistrationHelper(getDataBroker());
-        return registrationHelper;
+    private ListenerRegistrationHelper getRegistrationHelper() {
+        return new ListenerRegistrationHelper(getDataBroker());
     }
 }

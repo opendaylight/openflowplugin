@@ -16,20 +16,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
-import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
-import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
-import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -42,42 +34,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import test.mock.util.FRMTest;
-import test.mock.util.RpcProviderRegistryMock;
 import test.mock.util.SalTableServiceMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesListenerTest extends FRMTest {
-    private ForwardingRulesManagerImpl forwardingRulesManager;
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
-    RpcProviderRegistryMock rpcProviderRegistryMock = new RpcProviderRegistryMock();
-    @Mock
-    ClusterSingletonServiceProvider clusterSingletonService;
-    @Mock
-    DeviceMastershipManager deviceMastershipManager;
-    @Mock
-    private ReconciliationManager reconciliationManager;
-    @Mock
-    private OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
-    @Mock
-    private ServiceRecoveryRegistry serviceRecoveryRegistry;
-    @Mock
-    private MastershipChangeServiceManager mastershipChangeServiceManager;
-    @Mock
-    private FlowGroupCacheManager flowGroupCacheManager;
 
     @Before
     public void setUp() {
-        forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcProviderRegistryMock,
-                rpcProviderRegistryMock, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
-                getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry, flowGroupCacheManager, getRegistrationHelper());
-
-
-        forwardingRulesManager.start();
-        // TODO consider tests rewrite (added because of complicated access)
-        forwardingRulesManager.setDeviceMastershipManager(deviceMastershipManager);
-        Mockito.when(deviceMastershipManager.isDeviceMastered(NODE_ID)).thenReturn(true);
+        setUpForwardingRulesManager();
+        setDeviceMastership(NODE_ID);
     }
 
     @Test
@@ -85,7 +52,7 @@ public class TableFeaturesListenerTest extends FRMTest {
         TableKey tableKey = new TableKey(Uint8.TWO);
         TableFeaturesKey tableFeaturesKey = new TableFeaturesKey(tableKey.getId());
 
-        addTable(tableKey, NODE_KEY);
+        addTable(tableKey);
 
         TableFeatures tableFeaturesData = new TableFeaturesBuilder().withKey(tableFeaturesKey).build();
         InstanceIdentifier<TableFeatures> tableFeaturesII = InstanceIdentifier.create(Nodes.class)
@@ -100,7 +67,8 @@ public class TableFeaturesListenerTest extends FRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.commit());
 
-        SalTableServiceMock salTableServiceMock = (SalTableServiceMock) forwardingRulesManager.getSalTableService();
+        SalTableServiceMock salTableServiceMock =
+                (SalTableServiceMock) getForwardingRulesManager().getSalTableService();
         await().atMost(10, SECONDS).until(() -> salTableServiceMock.getUpdateTableInput().size() == 1);
         List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();
         assertEquals(1, updateTableInputs.size());
@@ -109,6 +77,16 @@ public class TableFeaturesListenerTest extends FRMTest {
 
     @After
     public void tearDown() throws Exception {
-        forwardingRulesManager.close();
+        getForwardingRulesManager().close();
+    }
+
+    private void addTable(final TableKey tableKey) {
+        addFlowCapableNode(NODE_KEY);
+        final Table table = new TableBuilder().withKey(tableKey).build();
+        WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
+        InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
+                .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+        writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
+        assertCommit(writeTx.commit());
     }
 }
