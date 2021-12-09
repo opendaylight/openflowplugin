@@ -19,7 +19,7 @@ module sal-meter {
         uses meter-type:meter;
     }
 
-    /** Base configuration structure **/
+    // Base configuration structure
     grouping meter-update {
         description "DataStore aware update openflow meter structure suitable for rpc input (contains node-context-ref)";
         uses "inv:node-context-ref";
@@ -74,38 +74,5 @@ module sal-meter {
         output {
             uses tr:transaction-aware;
         }
-    }
-        
-    notification meter-added {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf meter-ref {
-            type meter-type:meter-ref;
-        }
-        uses node-meter;
-        uses tr:transaction-aware;
-    }
-
-    notification meter-updated {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf meter-ref {
-            type meter-type:meter-ref;
-        }
-        uses node-meter;
-        uses tr:transaction-aware;
-    }
-
-    notification meter-removed {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf meter-ref {
-            type meter-type:meter-ref;
-        }
-        uses node-meter;
-        uses tr:transaction-aware;
     }
 }

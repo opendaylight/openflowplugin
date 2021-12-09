@@ -13,7 +13,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -25,10 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterAdded;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.MeterUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.BandId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterFlags;
@@ -37,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
-import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -57,22 +51,14 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private Node testNode;
     private final String originalMeterName = "Foo";
     private final String updatedMeterName = "Bar";
-    private final MeterEventListener meterEventListener = new MeterEventListener();
-    private final NotificationService notificationService;
-    private Registration listener1Reg;
 
-    public OpenflowpluginMeterTestCommandProvider(final DataBroker dataBroker,
-            final NotificationService notificationService, final BundleContext ctx) {
+    public OpenflowpluginMeterTestCommandProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
-        this.notificationService = notificationService;
         this.ctx = ctx;
     }
 
     public void init() {
         ctx.registerService(CommandProvider.class.getName(), this, null);
-        // For switch events
-        listener1Reg = notificationService.registerNotificationListener(meterEventListener);
-
         createTestNode();
         createTestMeter();
     }
@@ -87,29 +73,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
 
     private static @NonNull InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
         return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
-    }
-
-    private static final class MeterEventListener implements SalMeterListener {
-        @Override
-        @Deprecated
-        public void onMeterAdded(final MeterAdded notification) {
-            LOG.info("Meter to be added {}", notification.toString());
-            LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
-        }
-
-        @Override
-        @Deprecated
-        public void onMeterRemoved(final MeterRemoved notification) {
-            LOG.info("Meter to be removed {}", notification.toString());
-            LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
-        }
-
-        @Override
-        @Deprecated
-        public void onMeterUpdated(final MeterUpdated notification) {
-            LOG.info("Meter to be updated {}", notification.toString());
-            LOG.info("Meter  Xid {}", notification.getTransactionId().getValue());
-        }
     }
 
     private MeterBuilder createTestMeter() {
