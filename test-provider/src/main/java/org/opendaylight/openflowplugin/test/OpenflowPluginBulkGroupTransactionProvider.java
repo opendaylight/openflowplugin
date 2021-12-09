@@ -13,7 +13,6 @@ import java.util.Map;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -87,7 +86,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -103,20 +101,15 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
     private final DataBroker dataBroker;
     private final BundleContext ctx;
     private final String originalFlowName = "Foo";
-    private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private Node testNode12;
     private final String originalGroupName = "Foo";
-    private final NotificationService notificationService;
 
-    public OpenflowPluginBulkGroupTransactionProvider(final DataBroker dataBroker,
-            final NotificationService notificationService, final BundleContext ctx) {
+    public OpenflowPluginBulkGroupTransactionProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
-        this.notificationService = notificationService;
         this.ctx = ctx;
     }
 
     public void init() {
-        notificationService.registerNotificationListener(nodeErrorListener);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
