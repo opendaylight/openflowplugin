@@ -10,16 +10,9 @@ module sal-port {
 
     revision "2013-11-07" {
         description "Initial revision of port service";
-    }        
-    
-    grouping node-port {
-        description "Openflow port configuration structure suitable for rpc (contains node-context-ref).";
-
-        uses "inv:node-context-ref";
-        uses port-type:flow-port-status;
     }
 
-    /** Base configuration structure **/
+    // Base configuration structure
     grouping port-update {
         description "DataStore aware openflow port configuration update structure suitable for rpc (contains node-context-ref).";
 
@@ -42,18 +35,5 @@ module sal-port {
         output {
             uses tr:transaction-aware;
         }
-    }
-    
-    notification port-updated {
-        status deprecated;
-
-        uses port-update;
-        uses tr:transaction-aware;
-    }
-    
-    notification port-removed {
-        status deprecated;
-
-        uses node-port;       
     }
 }
