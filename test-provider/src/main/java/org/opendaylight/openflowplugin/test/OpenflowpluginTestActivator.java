@@ -77,10 +77,10 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
                 new OpenflowpluginTestTopologyNotification(notificationService);
         this.cmdTopologyNotification = openflowpluginTestTopologyNotification;
         OpenflowPluginBulkTransactionProvider openflowPluginBulkTransactionProvider =
-                new OpenflowPluginBulkTransactionProvider(dataBroker, notificationService, ctx);
+                new OpenflowPluginBulkTransactionProvider(dataBroker, ctx);
         this.bulkCmdProvider = openflowPluginBulkTransactionProvider;
         OpenflowPluginBulkGroupTransactionProvider openflowPluginBulkGroupTransactionProvider =
-                new OpenflowPluginBulkGroupTransactionProvider(dataBroker, notificationService, ctx);
+                new OpenflowPluginBulkGroupTransactionProvider(dataBroker, ctx);
         this.groupCmdProvider = openflowPluginBulkGroupTransactionProvider;
     }
 

@@ -160,7 +160,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.node.error.service.rev140410.NodeErrorListener;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -183,7 +182,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static final String DEST_MAC_ADDRESS = "ff:ff:ff:ff:ff:ff";
     private static final String SRC_MAC_ADDRESS = "00:00:00:00:23:ae";
     private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
-    private final NodeErrorListener nodeErrorListener = new NodeErrorListenerLoggingImpl();
     private final NotificationService notificationService;
 
     public OpenflowpluginTestCommandProvider(final DataBroker dataBroker, final NotificationService notificationService,
@@ -196,7 +194,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     public void init() {
         // For switch events
         notificationService.registerNotificationListener(flowEventListener);
-        notificationService.registerNotificationListener(nodeErrorListener);
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
