@@ -71,37 +71,4 @@ module sal-group {
             uses tr:transaction-aware;
         }
     } 
-
-    notification group-added {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }
-
-    notification group-updated {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }
-
-    notification group-removed {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }    
 }
