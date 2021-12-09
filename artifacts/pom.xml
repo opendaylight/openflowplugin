@@ -214,11 +214,6 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
-                <artifactId>notification-supplier</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>device-ownership-status-service</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -340,13 +335,6 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-app-bulk-o-matic</artifactId>
-                <classifier>features</classifier>
-                <type>xml</type>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${project.groupId}</groupId>
-                <artifactId>odl-openflowplugin-app-notifications</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
                 <version>${project.version}</version>

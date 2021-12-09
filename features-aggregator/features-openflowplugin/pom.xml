@@ -44,13 +44,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>odl-openflowplugin-app-notifications</artifactId>
-            <version>${project.version}</version>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>odl-openflowplugin-app-table-miss-enforcer</artifactId>
             <version>${project.version}</version>
             <type>xml</type>

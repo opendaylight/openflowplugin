@@ -23,8 +23,6 @@
         <module>table-miss-enforcer</module>
         <module>of-switch-config-pusher</module>
         <module>lldp-speaker</module>
-        <!-- deprecated apps -->
-        <module>notification-supplier</module>
         <!-- nsf apps -->
         <module>topology-manager</module>
         <module>forwardingrules-manager</module>
