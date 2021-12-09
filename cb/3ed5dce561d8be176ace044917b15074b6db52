@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng
+Code-Review+2: Sangwook Ha <sangwook.ha@verizon.com>
+Submitted-by: Sangwook Ha <sangwook.ha@verizon.com>
+Submitted-at: Thu, 09 Dec 2021 18:00:45 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/98554
+Project: openflowplugin
+Branch: refs/heads/stable/silicon
