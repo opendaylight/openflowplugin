@@ -62,7 +62,7 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
                 new OpenflowpluginGroupTestCommandProvider(dataBroker, ctx);
         this.cmdGroupProvider = openflowpluginGroupTestCommandProvider;
         OpenflowpluginMeterTestCommandProvider openflowpluginMeterTestCommandProvider =
-                new OpenflowpluginMeterTestCommandProvider(dataBroker, notificationService, ctx);
+                new OpenflowpluginMeterTestCommandProvider(dataBroker, ctx);
         this.cmdMeterProvider = openflowpluginMeterTestCommandProvider;
         OpenflowpluginTableFeaturesTestCommandProvider openflowpluginTableFeaturesTestCommandProvider =
                 new OpenflowpluginTableFeaturesTestCommandProvider(dataBroker, ctx);
