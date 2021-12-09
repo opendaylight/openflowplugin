@@ -27,7 +27,6 @@
         <module>odl-openflowplugin-app-topology-lldp-discovery</module>
         <module>odl-openflowplugin-app-topology-manager</module>
         <module>odl-openflowplugin-app-bulk-o-matic</module>
-        <module>odl-openflowplugin-app-notifications</module>
         <module>odl-openflowplugin-app-forwardingrules-manager</module>
         <module>odl-openflowplugin-app-forwardingrules-sync</module>
         <module>odl-openflowplugin-app-reconciliation-framework</module>
