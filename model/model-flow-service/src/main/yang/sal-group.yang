@@ -10,18 +10,18 @@ module sal-group {
 
     revision "2013-09-18" {
         description "Initial revision of group service";
-    }        
-    
+    }
+
     grouping node-group {
         description "Basic group structure suitable for rpc input (contains node-context).";
-        uses "inv:node-context-ref";        
+        uses "inv:node-context-ref";
         uses group-type:group;
     }
 
     grouping group-update {
         description "DataStore aware update group structure suitable for rpc input (contains node-context).";
         uses "inv:node-context-ref";
-        
+
         container original-group {
             uses group-type:group;
         }
@@ -37,7 +37,7 @@ module sal-group {
             leaf group-ref {
                 type group-type:group-ref;
             }
-            uses node-group;            
+            uses node-group;
         }
         output {
             uses tr:transaction-aware;
@@ -51,7 +51,7 @@ module sal-group {
             leaf group-ref {
                 type group-type:group-ref;
             }
-            uses node-group;            
+            uses node-group;
         }
         output {
             uses tr:transaction-aware;
@@ -65,43 +65,10 @@ module sal-group {
             leaf group-ref {
                 type group-type:group-ref;
             }
-            uses group-update;            
+            uses group-update;
         }
         output {
             uses tr:transaction-aware;
         }
-    } 
-
-    notification group-added {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
     }
-
-    notification group-updated {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }
-
-    notification group-removed {
-        status deprecated;
-
-        uses tr:transaction-metadata;
-        leaf group-ref {
-            type group-type:group-ref;
-        }
-        uses node-group;
-        uses tr:transaction-aware;
-    }    
 }
