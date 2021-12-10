@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Sangwook Ha <sangwook.ha@verizon.com>
+Submitted-at: Fri, 10 Dec 2021 18:30:43 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/98933
+Project: openflowplugin
+Branch: refs/heads/master
