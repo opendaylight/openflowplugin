@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
 import com.google.common.net.InetAddresses;
@@ -154,7 +153,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         try {
             String getReconcilationRemoteResponse = invokeRemoteRestOperation(ipAddress);
             if (getReconcilationRemoteResponse != null) {
-                JsonElement rootObj = new JsonParser().parse(getReconcilationRemoteResponse);
+                JsonElement rootObj = JsonParser.parseString(getReconcilationRemoteResponse);
                 String remoteJMXOperationResult = rootObj.getAsJsonObject().get("value").toString();
                 Type type = new TypeToken<HashMap<String, String>>() {}.getType();
                 jmxReconciliationStates.putAll(new Gson().fromJson(remoteJMXOperationResult, type));
