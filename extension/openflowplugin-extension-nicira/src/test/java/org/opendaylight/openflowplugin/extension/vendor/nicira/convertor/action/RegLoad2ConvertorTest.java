@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -15,9 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match.NshFlagsConvertor;
@@ -45,9 +44,6 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(JUnitParamsRunner.class)
 public class RegLoad2ConvertorTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     public static Iterable<Object[]> commonData() {
         return Arrays.asList(new Object[][] {
@@ -90,10 +86,6 @@ public class RegLoad2ConvertorTest {
                                    final Integer mask,
                                    final Class<? extends Exception> expectedException) {
 
-        if (expectedException != null) {
-            thrown.expect(expectedException);
-        }
-
         Dst dst = mock(Dst.class);
         when(dst.getStart()).thenReturn(rangeStart);
         when(dst.getEnd()).thenReturn(rangeEnd);
@@ -106,6 +98,12 @@ public class RegLoad2ConvertorTest {
         when(actionsCase.getNxRegLoad()).thenReturn(nxRegLoad);
 
         RegLoad2Convertor regLoad2Convertor = new RegLoad2Convertor();
+
+        if (expectedException != null) {
+            assertThrows(expectedException, () -> regLoad2Convertor.convert(actionsCase).getActionChoice());
+            return;
+        }
+
         ActionRegLoad2 actionRegLoad = (ActionRegLoad2) regLoad2Convertor.convert(actionsCase).getActionChoice();
 
         MatchEntry matchEntry = actionRegLoad.getNxActionRegLoad2().getMatchEntry().get(0);
@@ -127,10 +125,6 @@ public class RegLoad2ConvertorTest {
                                    final Integer mask,
                                    final Class<? extends Exception> expectedException) {
 
-        if (expectedException != null) {
-            thrown.expect(expectedException);
-        }
-
         NxActionRegLoad2 nxActionRegLoad2 = mock(NxActionRegLoad2.class);
         when(nxActionRegLoad2.getMatchEntry()).thenReturn(Collections.singletonList(
                 NshFlagsConvertor.buildMatchEntry(Uint8.valueOf(value), mask == null ? null : Uint8.valueOf(mask))));
@@ -140,6 +134,12 @@ public class RegLoad2ConvertorTest {
         when(action.getActionChoice()).thenReturn(actionRegLoad2);
 
         RegLoad2Convertor regLoad2Convertor = new RegLoad2Convertor();
+
+        if (expectedException != null) {
+            assertThrows(expectedException,
+                () -> regLoad2Convertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS));
+            return;
+        }
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionResult
                 = regLoad2Convertor.convert(action, ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS);
