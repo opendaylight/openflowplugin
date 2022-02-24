@@ -30,7 +30,7 @@ public class VlanVidEntrySerializer extends AbstractMatchEntrySerializer<VlanId,
     @Override
     protected Empty extractEntryMask(final VlanId entry) {
         return Boolean.TRUE.equals(entry.getVlanIdPresent())
-                && (entry.getVlanId() == null || entry.getVlanId().getValue().shortValue() == 0) ? Empty.getInstance()
+                && (entry.getVlanId() == null || entry.getVlanId().getValue().shortValue() == 0) ? Empty.value()
                         : null;
     }
 

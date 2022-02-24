@@ -54,7 +54,7 @@ public class OF10StatsRequestInputDescFactoryTest {
     private static MultipartRequestBody createMultipartRequestBody() {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
-        descBuilder.setEmpty(Empty.getInstance());
+        descBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }

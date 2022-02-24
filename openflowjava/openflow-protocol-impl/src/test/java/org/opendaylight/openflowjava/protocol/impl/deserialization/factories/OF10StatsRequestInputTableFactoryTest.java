@@ -54,7 +54,7 @@ public class OF10StatsRequestInputTableFactoryTest {
     private static MultipartRequestBody createMultipartRequestBody() {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
-        tableBuilder.setEmpty(Empty.getInstance());
+        tableBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestTable(tableBuilder.build());
         return caseBuilder.build();
     }
