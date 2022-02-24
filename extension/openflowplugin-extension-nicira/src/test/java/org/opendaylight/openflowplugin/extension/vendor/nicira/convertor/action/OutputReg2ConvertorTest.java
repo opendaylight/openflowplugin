@@ -41,7 +41,7 @@ public class OutputReg2ConvertorTest {
     private static final Uint16 OFS_N_BITS = Uint16.ONE;
     private static final Uint16 MAX_LEN = Uint16.valueOf(2);
     private static final SrcNxTunIdCase SRC_NX_TUN_ID_CASE = new SrcNxTunIdCaseBuilder()
-        .setNxTunId(Empty.getInstance()).build();
+        .setNxTunId(Empty.value()).build();
 
     @Mock
     private NxActionOutputRegNodesNodeGroupBucketsBucketActionsCase actionsCase;
