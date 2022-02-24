@@ -56,7 +56,7 @@ public class MultipartRequestDescInputMessageFactoryTest {
     private static MultipartRequestDescCase createRequestDesc() {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder builder = new MultipartRequestDescBuilder();
-        builder.setEmpty(Empty.getInstance());
+        builder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestDesc(builder.build());
         return caseBuilder.build();
     }
