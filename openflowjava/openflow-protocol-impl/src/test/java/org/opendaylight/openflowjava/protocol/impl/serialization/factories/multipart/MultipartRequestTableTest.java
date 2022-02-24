@@ -59,7 +59,7 @@ public class MultipartRequestTableTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tablesBuilder = new MultipartRequestTableBuilder();
-        tablesBuilder.setEmpty(Empty.getInstance());
+        tablesBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestTable(tablesBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();

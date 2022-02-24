@@ -126,7 +126,7 @@ public class OF10StatsRequestInputFactory
     private static MultipartRequestTableCase setTable(final ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
-        tableBuilder.setEmpty(Empty.getInstance());
+        tableBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestTable(tableBuilder.build());
         return caseBuilder.build();
     }
@@ -160,7 +160,7 @@ public class OF10StatsRequestInputFactory
     private static MultipartRequestDescCase setDesc(final ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
-        descBuilder.setEmpty(Empty.getInstance());
+        descBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }

@@ -59,7 +59,7 @@ public class MultipartRequestGroupDescTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestGroupDescCaseBuilder caseBuilder = new MultipartRequestGroupDescCaseBuilder();
         MultipartRequestGroupDescBuilder descBuilder = new MultipartRequestGroupDescBuilder();
-        descBuilder.setEmpty(Empty.getInstance());
+        descBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestGroupDesc(descBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();

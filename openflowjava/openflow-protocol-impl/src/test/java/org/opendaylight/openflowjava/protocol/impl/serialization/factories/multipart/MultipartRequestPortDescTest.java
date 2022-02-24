@@ -59,7 +59,7 @@ public class MultipartRequestPortDescTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestPortDescCaseBuilder caseBuilder = new MultipartRequestPortDescCaseBuilder();
         MultipartRequestPortDescBuilder descBuilder = new MultipartRequestPortDescBuilder();
-        descBuilder.setEmpty(Empty.getInstance());
+        descBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestPortDesc(descBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
