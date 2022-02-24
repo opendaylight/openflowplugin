@@ -295,7 +295,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestDescCase setDesc(final ByteBuf input) {
         MultipartRequestDescCaseBuilder caseBuilder = new MultipartRequestDescCaseBuilder();
         MultipartRequestDescBuilder descBuilder = new MultipartRequestDescBuilder();
-        descBuilder.setEmpty(Empty.getInstance());
+        descBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestDesc(descBuilder.build());
         return caseBuilder.build();
     }
@@ -337,7 +337,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestPortDescCase setPortDesc(final ByteBuf input) {
         MultipartRequestPortDescCaseBuilder caseBuilder = new MultipartRequestPortDescCaseBuilder();
         MultipartRequestPortDescBuilder portBuilder = new MultipartRequestPortDescBuilder();
-        portBuilder.setEmpty(Empty.getInstance());
+        portBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestPortDesc(portBuilder.build());
         return caseBuilder.build();
     }
@@ -370,7 +370,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestGroupDescCase setGroupDesc(final ByteBuf input) {
         MultipartRequestGroupDescCaseBuilder caseBuilder = new MultipartRequestGroupDescCaseBuilder();
         MultipartRequestGroupDescBuilder groupBuilder = new MultipartRequestGroupDescBuilder();
-        groupBuilder.setEmpty(Empty.getInstance());
+        groupBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestGroupDesc(groupBuilder.build());
         return caseBuilder.build();
     }
@@ -378,7 +378,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestGroupFeaturesCase setGroupFeatures(final ByteBuf input) {
         MultipartRequestGroupFeaturesCaseBuilder caseBuilder = new MultipartRequestGroupFeaturesCaseBuilder();
         MultipartRequestGroupFeaturesBuilder groupBuilder = new MultipartRequestGroupFeaturesBuilder();
-        groupBuilder.setEmpty(Empty.getInstance());
+        groupBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestGroupFeatures(groupBuilder.build());
         return caseBuilder.build();
     }
@@ -402,7 +402,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestMeterFeaturesCase setMeterFeatures(final ByteBuf input) {
         MultipartRequestMeterFeaturesCaseBuilder caseBuilder = new MultipartRequestMeterFeaturesCaseBuilder();
         MultipartRequestMeterFeaturesBuilder meterBuilder = new MultipartRequestMeterFeaturesBuilder();
-        meterBuilder.setEmpty(Empty.getInstance());
+        meterBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestMeterFeatures(meterBuilder.build());
         return caseBuilder.build();
     }
@@ -410,7 +410,7 @@ public class MultipartRequestInputMessageFactory
     private static MultipartRequestTableCase setTable(final ByteBuf input) {
         MultipartRequestTableCaseBuilder caseBuilder = new MultipartRequestTableCaseBuilder();
         MultipartRequestTableBuilder tableBuilder = new MultipartRequestTableBuilder();
-        tableBuilder.setEmpty(Empty.getInstance());
+        tableBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestTable(tableBuilder.build());
         return caseBuilder.build();
     }
