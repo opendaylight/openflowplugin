@@ -88,7 +88,6 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         SettableFuture<Optional<Node>> readFutureNode = SettableFuture.create();
         readFutureNode.set(Optional.of(topoNode));
-        doReturn(FluentFuture.from(readFutureNode)).when(mockTx1).read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
         final CountDownLatch submitLatch1 = setupStubbedSubmit(mockTx1);
 
@@ -100,7 +99,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID);
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID, false);
         nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch1);
@@ -137,9 +136,6 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
                 .read(LogicalDatastoreType.OPERATIONAL, topologyIID);
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
 
-        doReturn(FluentFutures.immediateFluentFuture(Optional.of(topoNode))).when(mockTx)
-            .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
-
         CountDownLatch deleteLatch = new CountDownLatch(1);
         ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
                 ArgumentCaptor.forClass(InstanceIdentifier.class);
@@ -147,7 +143,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID);
+        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID, false);
         nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch);
@@ -170,7 +166,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeID);
+        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeID, false);
         nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
 
         waitForSubmit(submitLatch);
