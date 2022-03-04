@@ -13,8 +13,9 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -59,6 +60,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author madamjak
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SwitchConnectionProviderImpl02Test {
     @Mock SwitchConnectionHandler handler;
     @Mock OFGeneralSerializer serializer;
@@ -84,7 +86,6 @@ public class SwitchConnectionProviderImpl02Test {
      * @param protocol communication protocol
      */
     public void startUp(final TransportProtocol protocol) throws UnknownHostException {
-        MockitoAnnotations.initMocks(this);
         config = null;
         if (protocol != null) {
             createConfig(protocol);

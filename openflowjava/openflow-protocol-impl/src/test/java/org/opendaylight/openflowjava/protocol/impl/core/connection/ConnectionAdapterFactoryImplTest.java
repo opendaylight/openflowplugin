@@ -15,14 +15,16 @@ import java.net.InetSocketAddress;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * Unit tests for ConnectionAdapterFactoryImpl.
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ConnectionAdapterFactoryImplTest {
 
     private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
@@ -32,7 +34,6 @@ public class ConnectionAdapterFactoryImplTest {
 
     @Before
     public void startUp() {
-        MockitoAnnotations.initMocks(this);
         when(channel.pipeline()).thenReturn(channnelPipe);
     }
 

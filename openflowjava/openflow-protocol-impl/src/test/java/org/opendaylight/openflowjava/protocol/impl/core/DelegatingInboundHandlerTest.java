@@ -15,8 +15,9 @@ import static org.mockito.Mockito.verify;
 import io.netty.channel.ChannelHandlerContext;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
@@ -25,6 +26,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  *
  * @author jameshall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class DelegatingInboundHandlerTest {
 
     @Mock ChannelHandlerContext mockChHndlrCtx;
@@ -38,7 +40,6 @@ public class DelegatingInboundHandlerTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         dih = new DelegatingInboundHandler(mockMsgConsumer) ;
     }
 

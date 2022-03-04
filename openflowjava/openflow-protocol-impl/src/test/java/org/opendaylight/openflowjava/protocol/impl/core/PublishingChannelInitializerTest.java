@@ -25,11 +25,11 @@ import io.netty.handler.ssl.SslHandler;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import javax.net.ssl.SSLEngine;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -45,6 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.P
  *
  * @author james.hall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PublishingChannelInitializerTest {
 
     private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
@@ -54,8 +55,6 @@ public class PublishingChannelInitializerTest {
     @Mock ConnectionAdapterFactory mockConnAdaptorFactory;
     @Mock DefaultChannelGroup mockChGrp ;
     @Mock ConnectionFacade mockConnFacade ;
-    @Mock
-    SSLEngine sslEngine ;
 
     @Mock SerializationFactory mockSerializationFactory ;
     @Mock DeserializationFactory mockDeserializationFactory ;
@@ -69,7 +68,6 @@ public class PublishingChannelInitializerTest {
      */
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         pubChInitializer = new TcpChannelInitializer(mockChGrp, mockConnAdaptorFactory) ;
         pubChInitializer.setSerializationFactory(mockSerializationFactory);
         pubChInitializer.setDeserializationFactory(mockDeserializationFactory);
@@ -113,7 +111,7 @@ public class PublishingChannelInitializerTest {
      * Test channel initialization with null encryption config.
      */
     @Test
-    public void testinitChannelEncryptionSetNullTls()  {
+    public void testInitChannelEncryptionSetNullTls()  {
         pubChInitializer.setTlsConfiguration(null);
         pubChInitializer.initChannel(mockSocketCh) ;
 
@@ -125,7 +123,7 @@ public class PublishingChannelInitializerTest {
      * Test channel initialization without setting the encryption.
      */
     @Test
-    public void testinitChannelEncryptionNotSet()  {
+    public void testInitChannelEncryptionNotSet()  {
         // Without encryption, only the common
         pubChInitializer.initChannel(mockSocketCh) ;
 
@@ -136,7 +134,7 @@ public class PublishingChannelInitializerTest {
      * Test disconnect on new connection rejected.
      */
     @Test
-    public void testinitChannelNoEncryptionAcceptFails() throws UnknownHostException  {
+    public void testInitChannelNoEncryptionAcceptFails() throws UnknownHostException  {
         when(mockSwConnHandler.accept(eq(InetAddress.getLocalHost()))).thenReturn(false) ;
         pubChInitializer.initChannel(mockSocketCh) ;
 

@@ -11,10 +11,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.socket.DatagramPacket;
 import java.net.InetSocketAddress;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
 
 /**
@@ -22,15 +22,11 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsum
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class UdpConnectionMapTest {
 
     @Mock MessageConsumer consumerMock;
     @Mock ByteBuf messageBuffer;
-
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * Test {@link UdpConnectionMap} - sender address is not null.
