@@ -24,8 +24,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -64,6 +65,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author michal.polkorab
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ConnectionAdapterImplTest {
 
     private static final int RPC_RESPONSE_EXPIRATION = 1;
@@ -87,7 +89,6 @@ public class ConnectionAdapterImplTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(channel.pipeline()).thenReturn(pipeline);
         adapter = new ConnectionAdapterImpl(channel, InetSocketAddress.createUnresolved("10.0.0.1", 6653), true,
                 CHANNEL_OUTBOUND_QUEUE_SIZE);

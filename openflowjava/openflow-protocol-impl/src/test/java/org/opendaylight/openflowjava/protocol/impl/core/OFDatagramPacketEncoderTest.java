@@ -18,8 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.UdpMessageListenerWrapper;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
@@ -32,6 +33,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  *
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFDatagramPacketEncoderTest {
 
     @Mock ChannelHandlerContext ctx;
@@ -48,7 +50,6 @@ public class OFDatagramPacketEncoderTest {
      * @param version openflow protocol wire version
      */
     public void startUp(Uint8 version) {
-        MockitoAnnotations.initMocks(this);
         out = new ArrayList<>();
         HelloInputBuilder builder = new HelloInputBuilder();
         builder.setVersion(version);

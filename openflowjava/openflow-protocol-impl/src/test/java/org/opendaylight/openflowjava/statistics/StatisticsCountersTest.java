@@ -37,7 +37,7 @@ public class StatisticsCountersTest {
      * Stop counting after each test.
      */
     @After
-    public void tierDown() {
+    public void tearDown() {
         statCounters.stopCounting();
     }
 

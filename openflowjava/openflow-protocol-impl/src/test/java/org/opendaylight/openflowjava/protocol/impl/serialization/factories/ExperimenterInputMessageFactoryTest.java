@@ -11,9 +11,10 @@ import static org.mockito.ArgumentMatchers.any;
 
 import io.netty.buffer.ByteBuf;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistryInjector;
@@ -32,6 +33,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ExperimenterInputMessageFactoryTest {
 
     @Mock SerializerRegistry registry;
@@ -48,7 +50,6 @@ public class ExperimenterInputMessageFactoryTest {
      * @param real true if setup should use real registry, false when mock is desired
      */
     public void startUp(boolean real) {
-        MockitoAnnotations.initMocks(this);
         expFactory = new ExperimenterInputMessageFactory();
         if (real) {
             SerializerRegistry realRegistry = new SerializerRegistryImpl();

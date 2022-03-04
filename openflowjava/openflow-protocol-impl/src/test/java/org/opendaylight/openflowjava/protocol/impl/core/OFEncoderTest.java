@@ -20,8 +20,9 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageListenerWrapper;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
@@ -34,6 +35,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  *
  * @author jameshall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFEncoderTest {
 
     @Mock ChannelHandlerContext mockChHndlrCtx ;
@@ -51,7 +53,6 @@ public class OFEncoderTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ofEncoder = new OFEncoder() ;
         ofEncoder.setSerializationFactory(mockSerializationFactory);
     }
@@ -61,7 +62,6 @@ public class OFEncoderTest {
      */
     @Test
     public void testEncodeSuccess() throws Exception {
-        when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 
@@ -93,7 +93,6 @@ public class OFEncoderTest {
      */
     @Test
     public void testEncodeSerializesNoBytes() throws Exception {
-        when(mockOut.readableBytes()).thenReturn(0);
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 

@@ -13,10 +13,10 @@ import static org.mockito.Mockito.verify;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import java.net.InetSocketAddress;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 
@@ -25,17 +25,13 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.Deserializati
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFDatagramPacketDecoderTest {
     @Mock DeserializationFactory deserializationFactory;
     @Mock ChannelHandlerContext ctx;
     @Mock ByteBuf messageBufferMock;
 
     private VersionMessageUdpWrapper msgWrapper;
-
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void test() {

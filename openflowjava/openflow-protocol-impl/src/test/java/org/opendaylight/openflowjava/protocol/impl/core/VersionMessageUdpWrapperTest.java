@@ -10,10 +10,10 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import io.netty.buffer.ByteBuf;
 import java.net.InetSocketAddress;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -21,14 +21,10 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class VersionMessageUdpWrapperTest {
 
     @Mock ByteBuf byteBuff;
-
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void test() {
