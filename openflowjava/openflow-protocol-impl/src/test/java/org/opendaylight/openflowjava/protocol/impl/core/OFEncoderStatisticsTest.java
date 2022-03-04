@@ -19,8 +19,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageListenerWrapper;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
@@ -37,6 +38,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFEncoderStatisticsTest {
 
     @Mock ChannelHandlerContext mockChHndlrCtx ;
@@ -44,7 +46,6 @@ public class OFEncoderStatisticsTest {
     @Mock MessageListenerWrapper wrapper;
     @Mock OfHeader mockMsg ;
     @Mock ByteBuf mockOut ;
-    @Mock Future<Void> future;
     @Mock GenericFutureListener<Future<Void>> listener;
     @Mock FlowModInput mockFlowModInput;
 
@@ -55,8 +56,7 @@ public class OFEncoderStatisticsTest {
      * Initialize tests, start and reset counters before each test.
      */
     @Before
-    public void initTlest() {
-        MockitoAnnotations.initMocks(this);
+    public void initTest() {
         ofEncoder = new OFEncoder() ;
         ofEncoder.setSerializationFactory(mockSerializationFactory) ;
         statCounters = StatisticsCounters.getInstance();
@@ -67,7 +67,7 @@ public class OFEncoderStatisticsTest {
      * Stop counting after each test.
      */
     @After
-    public void tierDown() {
+    public void tearDown() {
         statCounters.stopCounting();
     }
 
@@ -81,7 +81,6 @@ public class OFEncoderStatisticsTest {
             Assert.fail("Counter " + cet + " is not enabled.");
         }
 
-        when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockMsg);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 
@@ -103,7 +102,6 @@ public class OFEncoderStatisticsTest {
         if (!statCounters.isCounterEnabled(cet)) {
             Assert.fail("Counter " + cet + " is not enabled.");
         }
-        when(mockOut.readableBytes()).thenReturn(1);
         when(wrapper.getMsg()).thenReturn(mockFlowModInput);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
 

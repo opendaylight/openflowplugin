@@ -23,8 +23,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
@@ -37,6 +38,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ChannelOutboundQueue02Test {
     private static int counter;
     private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
@@ -56,7 +58,6 @@ public class ChannelOutboundQueue02Test {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mockXid(echoInput);
         mockXid(barrierInput);
         mockXid(echoReplyInput);
@@ -71,7 +72,7 @@ public class ChannelOutboundQueue02Test {
      * Disconnect adapter after each test.
      */
     @After
-    public void tierDown() {
+    public void tearDown() {
         if (adapter != null && adapter.isAlive()) {
             adapter.disconnect();
         }

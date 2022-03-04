@@ -6,6 +6,7 @@
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
 package org.opendaylight.openflowjava.protocol.impl.serialization.action;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.ArrayList;
@@ -13,9 +14,10 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
@@ -39,6 +41,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OF13SetFieldActionSerializerTest {
 
     private SerializerRegistry registry;
@@ -49,7 +52,6 @@ public class OF13SetFieldActionSerializerTest {
      */
     @Before
     public void startUp() {
-        MockitoAnnotations.initMocks(this);
         registry = new SerializerRegistryImpl();
         registry.init();
     }

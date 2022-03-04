@@ -12,10 +12,10 @@ import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
 import java.net.InetSocketAddress;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
@@ -23,15 +23,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class UdpMessageListenerWrapperTest {
 
     @Mock GenericFutureListener<Future<Void>> listener;
     @Mock OfHeader msg;
-
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * Getters test.

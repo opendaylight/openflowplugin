@@ -10,24 +10,19 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import io.netty.channel.Channel;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 /**
  * UNit tests for ChannelOutboundQueue.
  *
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ChannelOutboundQueueTest {
 
     @Mock Channel channel;
-
-    /**
-     * Initialize mocks.
-     */
-    public ChannelOutboundQueueTest() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * Test incorrect queue creation handling.

@@ -24,8 +24,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
@@ -68,6 +69,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ConnectionAdapterImplStatisticsTest {
 
     private static final int RPC_RESPONSE_EXPIRATION = 1;
@@ -111,7 +113,6 @@ public class ConnectionAdapterImplStatisticsTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mockXid(barrierInput);
         mockXid(echoInput);
         mockXid(echoReplyInput);
@@ -138,7 +139,7 @@ public class ConnectionAdapterImplStatisticsTest {
      * Stop counting after each test.
      */
     @After
-    public void tierDown() {
+    public void tearDown() {
         if (adapter != null && adapter.isAlive()) {
             adapter.disconnect();
         }

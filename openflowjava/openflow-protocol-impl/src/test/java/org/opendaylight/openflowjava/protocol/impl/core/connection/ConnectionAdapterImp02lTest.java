@@ -22,8 +22,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
@@ -52,6 +53,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author madamjak
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ConnectionAdapterImp02lTest {
     private static final int RPC_RESPONSE_EXPIRATION = 1;
     private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
@@ -86,7 +88,6 @@ public class ConnectionAdapterImp02lTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mockXid(barrierInput);
         mockXid(echoInput);
         mockXid(echoReplyInput);
@@ -109,7 +110,7 @@ public class ConnectionAdapterImp02lTest {
      * Disconnect adapter.
      */
     @After
-    public void tierDown() {
+    public void tearDown() {
         if (adapter != null && adapter.isAlive()) {
             adapter.disconnect();
         }
