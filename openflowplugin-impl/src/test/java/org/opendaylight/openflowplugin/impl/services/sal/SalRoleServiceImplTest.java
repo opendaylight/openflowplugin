@@ -16,9 +16,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -50,6 +51,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SalRoleServiceImplTest {
 
     @Mock
@@ -95,17 +97,11 @@ public class SalRoleServiceImplTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         Mockito.when(mockDeviceInfo.getNodeId()).thenReturn(testNodeId);
         Mockito.when(mockDeviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
         Uint8 testVersion = Uint8.valueOf(4);
-        Mockito.when(mockFeaturesOutput.getVersion()).thenReturn(testVersion);
-        Mockito.when(mockDeviceContext.getDeviceState()).thenReturn(mockDeviceState);
         Mockito.when(mockDeviceContext.getDeviceInfo()).thenReturn(mockDeviceInfo);
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext()).thenReturn(mockConnectionContext);
-        Mockito.when(mockConnectionContext.getFeatures()).thenReturn(mockFeaturesReply);
-        Mockito.when(mockConnectionContext.getNodeId()).thenReturn(testNodeId);
-        Mockito.when(mockFeaturesReply.getVersion()).thenReturn(testVersion);
         Mockito.when(mockDeviceContext.getMessageSpy()).thenReturn(mockMessageSpy);
         Mockito.when(mockRequestContextStack.<RoleRequestOutput>createRequestContext()).thenReturn(mockRequestContext);
         Mockito.when(mockRequestContext.getXid()).thenReturn(new Xid(TEST_XID));
