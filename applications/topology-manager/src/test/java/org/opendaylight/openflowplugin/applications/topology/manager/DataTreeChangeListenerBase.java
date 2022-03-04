@@ -16,8 +16,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
@@ -38,6 +39,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
+@RunWith(MockitoJUnitRunner.class)
 public abstract class DataTreeChangeListenerBase {
 
     private OperationProcessor processor;
@@ -52,8 +54,6 @@ public abstract class DataTreeChangeListenerBase {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         doReturn(mockTxChain).when(mockDataBroker).createTransactionChain(any(TransactionChainListener.class));
 
         processor = new OperationProcessor(mockDataBroker);
@@ -80,13 +80,16 @@ public abstract class DataTreeChangeListenerBase {
     }
 
     protected <T extends DataObject> DataTreeModification<T> setupDataTreeChange(final ModificationType type,
-                                                                              final InstanceIdentifier<T> ii) {
+                                                                                 final InstanceIdentifier<T> ii,
+                                                                                 final boolean getDataAfter) {
         final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
         final DataTreeIdentifier<T> identifier = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
         when(dataTreeModification.getRootNode().getModificationType()).thenReturn(type);
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
-        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
+        if (getDataAfter) {
+            when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
+        }
         return dataTreeModification;
     }
 }
