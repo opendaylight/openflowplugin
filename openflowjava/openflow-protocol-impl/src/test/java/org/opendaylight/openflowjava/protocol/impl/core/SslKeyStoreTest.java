@@ -11,9 +11,7 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.InputStream;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.MockitoAnnotations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 
 /**
@@ -22,15 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.P
  * @author jameshall
  */
 public class SslKeyStoreTest {
-
-    /**
-     * Sets up test environment.
-     */
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     /**
      * Test keystore file access - via classpath.
      */

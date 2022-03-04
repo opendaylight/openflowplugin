@@ -19,7 +19,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionFacade;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -45,7 +44,6 @@ public class OFFrameDecoderTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         decoder = new OFFrameDecoder(connectionFacade, false);
         list.clear();
 
