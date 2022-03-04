@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -80,7 +79,6 @@ public class IntegrationTest {
 
     public void setUp(final TransportProtocol protocol) throws Exception {
         LOGGER.debug("\n starting test -------------------------------");
-        MockitoAnnotations.initMocks(this);
         Mockito.doAnswer(invocation -> {
             ((Runnable)invocation.getArguments()[0]).run();
             return null;
