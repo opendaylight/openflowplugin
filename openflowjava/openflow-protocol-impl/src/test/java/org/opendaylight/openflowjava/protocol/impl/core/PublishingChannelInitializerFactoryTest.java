@@ -13,8 +13,9 @@ import static org.junit.Assert.assertNotNull;
 import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -28,6 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.P
  *
  * @author jameshall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PublishingChannelInitializerFactoryTest {
 
     TlsConfiguration tlsConfiguration ;
@@ -42,7 +44,6 @@ public class PublishingChannelInitializerFactoryTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         factory = new ChannelInitializerFactory();
         tlsConfiguration = new TlsConfigurationImpl(KeystoreType.JKS, "/exemplary-ctlTrustStore",
                 PathType.CLASSPATH, KeystoreType.JKS, "/exemplary-ctlKeystore", PathType.CLASSPATH,

@@ -18,8 +18,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
@@ -33,6 +34,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFDecoderStatisticsTest {
 
     @Mock ChannelHandlerContext mockChHndlrCtx;
@@ -50,7 +52,6 @@ public class OFDecoderStatisticsTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ofDecoder = new OFDecoder();
         ofDecoder.setDeserializationFactory(mockDeserializationFactory);
         outList = new ArrayList<>();
@@ -62,7 +63,7 @@ public class OFDecoderStatisticsTest {
      * Stop counting after each test.
      */
     @After
-    public void tierDown() {
+    public void tearDown() {
         statCounters.stopCounting();
     }
 
@@ -70,7 +71,7 @@ public class OFDecoderStatisticsTest {
      * Test decode success counter.
      */
     @Test
-    public void testDecodeSuccesfullCounter() {
+    public void testDecodeSuccessfulCounter() {
         if (!statCounters.isCounterEnabled(CounterEventTypes.US_DECODE_SUCCESS)) {
             Assert.fail("Counter " + CounterEventTypes.US_DECODE_SUCCESS + " is not enable");
         }

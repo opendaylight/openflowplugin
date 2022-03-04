@@ -16,9 +16,10 @@ import io.netty.channel.ChannelHandlerContext;
 import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 
 /**
@@ -26,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
  *
  * @author jameshall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class IdleHandlerTest {
 
     @Mock ChannelHandlerContext mockChHndlrCtx ;
@@ -37,7 +39,6 @@ public class IdleHandlerTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         idleHandler = new IdleHandler(60L, TimeUnit.MINUTES);
     }
 

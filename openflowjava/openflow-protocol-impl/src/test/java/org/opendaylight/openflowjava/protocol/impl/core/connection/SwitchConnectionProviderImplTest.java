@@ -17,8 +17,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SwitchConnectionProviderImplTest {
 
     @Mock SwitchConnectionHandler handler;
@@ -53,7 +55,6 @@ public class SwitchConnectionProviderImplTest {
      */
 
     public void startUp(final TransportProtocol protocol) throws UnknownHostException {
-        MockitoAnnotations.initMocks(this);
         config = null;
         if (protocol != null) {
             createConfig(protocol);
