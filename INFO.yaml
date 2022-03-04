@@ -4,11 +4,11 @@ project_creation_date: '2013-07-18'
 project_category: ''
 lifecycle_state: 'Incubation'
 project_lead: &odl_openflowplugin_ptl
-    name: 'Arunprakash D'
-    email: 'd.arunprakash@ericsson.com'
-    company: 'Ericsson'
-    id: 'Arunprakash'
-    timezone: 'Unknown/Unknown'
+    name: 'Sangwook Ha'
+    email: 'sangwook.ha@verizon.com'
+    company: 'Verizon'
+    id: 'sangwookha'
+    timezone: 'Americas/Los_Angeles'
 primary_contact: *odl_openflowplugin_ptl
 issue_tracking:
     type: 'jira'
@@ -43,7 +43,11 @@ committers:
       email: 'nite@hq.sk'
       company: 'hq'
       id: 'rovarga'
+<<<<<<< HEAD   (249faa Bump versions by x.y.(z+1))
       timezone: 'Unknown/Unknown'
+=======
+      timezone: 'Europe/Bratislava'
+>>>>>>> CHANGE (23fa5f Update PTL info)
 tsc:
     # yamllint disable rule:line-length
     approval: 'NA'
