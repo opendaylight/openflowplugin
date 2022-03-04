@@ -16,10 +16,10 @@ import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.concurrent.Future;
 import java.util.concurrent.ExecutionException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -28,17 +28,10 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  *
  * @author michal.polkorab
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SimpleRpcListenerTest {
 
     @Mock Future<Void> future;
-
-    /**
-     * Initializes mocks.
-     */
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * Test SimpleRpcListener creation.

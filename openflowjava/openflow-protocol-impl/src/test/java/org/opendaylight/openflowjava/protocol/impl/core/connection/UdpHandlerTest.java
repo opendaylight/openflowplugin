@@ -13,10 +13,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.core.UdpChannelInitializer;
 import org.opendaylight.openflowjava.protocol.impl.core.UdpHandler;
 import org.slf4j.Logger;
@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class UdpHandlerTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(UdpHandlerTest.class);
@@ -34,14 +35,6 @@ public class UdpHandlerTest {
     @Mock
     private UdpChannelInitializer udpChannelInitializerMock;
     private UdpHandler udpHandler;
-
-    /**
-     * Mock init.
-     */
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * Test to create UdpHandler with empty address and zero port.

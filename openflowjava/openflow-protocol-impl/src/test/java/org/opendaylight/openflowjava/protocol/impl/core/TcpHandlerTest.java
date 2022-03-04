@@ -21,8 +21,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.concurrent.ExecutionException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
@@ -32,6 +33,7 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFa
  *
  * @author jameshall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class TcpHandlerTest {
 
     private final InetAddress serverAddress = InetAddress.getLoopbackAddress() ;
@@ -42,13 +44,6 @@ public class TcpHandlerTest {
     @Mock DeserializationFactory mockDeserializationFactory ;
 
     TcpHandler tcpHandler ;
-
-    /**
-     * Initialize mocks.
-     */
-    public TcpHandlerTest() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     /**
      * Test run with null address set.

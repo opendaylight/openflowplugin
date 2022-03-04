@@ -18,8 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yangtools.yang.binding.DataObject;
@@ -30,6 +31,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  *
  * @author jameshall
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFDecoderTest {
 
     @Mock ChannelHandlerContext mockChHndlrCtx ;
@@ -46,7 +48,6 @@ public class OFDecoderTest {
      */
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ofDecoder = new OFDecoder();
         ofDecoder.setDeserializationFactory(mockDeserializationFactory);
         writeObj = ByteBufUtils.hexStringToByteBuf("16 03 01 00");

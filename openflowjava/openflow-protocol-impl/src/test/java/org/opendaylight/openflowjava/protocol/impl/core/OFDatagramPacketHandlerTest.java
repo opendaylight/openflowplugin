@@ -7,20 +7,17 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import static org.mockito.Mockito.when;
-
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
@@ -31,19 +28,13 @@ import org.opendaylight.openflowjava.util.ByteBufUtils;
  *
  * @author madamjak
  */
+@RunWith(MockitoJUnitRunner.class)
 public class OFDatagramPacketHandlerTest {
 
     private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     @Mock ChannelHandlerContext ctxMock;
     @Mock SwitchConnectionHandler switchConnHandler;
     @Mock MessageConsumer consumerMock;
-    @Mock Channel channelMock;
-
-    @Before
-    public void startUp() {
-        MockitoAnnotations.initMocks(this);
-        when(ctxMock.channel()).thenReturn(channelMock);
-    }
 
     /**
      * Test {@link OFDatagramPacketHandler}.
