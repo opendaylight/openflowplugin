@@ -26,7 +26,6 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <dependency>
       <groupId>org.opendaylight.serviceutils</groupId>
       <artifactId>srm-api</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
         <groupId>org.opendaylight.mdsal</groupId>
@@ -44,7 +43,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
-      <artifactId>osgi.core</artifactId>
+      <artifactId>org.osgi.framework</artifactId>
     </dependency>
   </dependencies>
 </project>
