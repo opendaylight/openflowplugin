@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getInventoryConfigDataStoreStatus;
@@ -18,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -38,7 +36,7 @@ public class ListenerRegistrationHelper {
     private final DataBroker dataBroker;
 
     @Inject
-    public ListenerRegistrationHelper(@Reference final DataBroker dataBroker) {
+    public ListenerRegistrationHelper(final DataBroker dataBroker) {
         this.dataBroker = dataBroker;
         listeningExecutorService = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor(
                  new ThreadFactoryBuilder()
