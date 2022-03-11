@@ -18,7 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -69,10 +68,10 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
     @Inject
     @SuppressWarnings("checkstyle:IllegalCatch")
     public LLDPLinkAger(final TopologyLldpDiscoveryConfig topologyLldpDiscoveryConfig,
-                        @Reference final NotificationPublishService notificationService,
-                        @Reference final ConfigurationService configurationService,
-                        @Reference final EntityOwnershipService entityOwnershipService,
-                        @Reference final DataBroker dataBroker) {
+                        final NotificationPublishService notificationService,
+                        final ConfigurationService configurationService,
+                        final EntityOwnershipService entityOwnershipService,
+                        final DataBroker dataBroker) {
         this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue().toJava();
         this.notificationService = notificationService;
         this.configurationServiceRegistration = configurationService.registerListener(this);
