@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
@@ -30,7 +29,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = MastershipChangeServiceManager.class)
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);

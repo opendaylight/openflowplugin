@@ -70,11 +70,6 @@
             <artifactId>diagstatus-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>blueprint-maven-plugin-annotation</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
@@ -126,15 +121,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>blueprint-maven-plugin</artifactId>
-                <configuration>
-                    <scanPaths>
-                        <scanPath>org.opendaylight.openflowplugin.impl</scanPath>
-                    </scanPaths>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
