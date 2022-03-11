@@ -15,10 +15,6 @@
     </scm>
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>test-common</artifactId>
         </dependency>
@@ -46,6 +42,10 @@
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.framework</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-lang</groupId>
