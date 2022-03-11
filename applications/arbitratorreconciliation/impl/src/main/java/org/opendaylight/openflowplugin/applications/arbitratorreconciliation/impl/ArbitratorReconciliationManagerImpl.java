@@ -32,7 +32,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -127,9 +126,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             ObjectRegistration<? extends RpcService>> rpcRegistrations = new ConcurrentHashMap<>();
 
     @Inject
-    public ArbitratorReconciliationManagerImpl(@Reference final ReconciliationManager reconciliationManager,
-            @Reference final RpcProviderService rpcProviderService, @Reference final RpcConsumerRegistry rpcRegistry,
-            @Reference final UpgradeState upgradeState) {
+    public ArbitratorReconciliationManagerImpl(final ReconciliationManager reconciliationManager,
+            final RpcProviderService rpcProviderService, final RpcConsumerRegistry rpcRegistry,
+            final UpgradeState upgradeState) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
         this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager cannot be null!");
         this.salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
