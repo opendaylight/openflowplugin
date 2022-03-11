@@ -234,6 +234,8 @@ module opendaylight-table-types {
                 container tables {
                     leaf-list table-ids {
                         type uint8;
+                        // FIXME: is this correct?
+                        ordered-by user;
                     }
                 }
             }
@@ -242,6 +244,8 @@ module opendaylight-table-types {
                 container tables-miss {
                     leaf-list table-ids {
                         type uint8;
+                        // FIXME: is this correct?
+                        ordered-by user;
                     }
                 }
             }

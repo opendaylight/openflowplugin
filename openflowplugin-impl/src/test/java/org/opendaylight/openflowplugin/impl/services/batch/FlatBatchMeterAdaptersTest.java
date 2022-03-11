@@ -41,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMeters;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -142,7 +142,7 @@ public class FlatBatchMeterAdaptersTest {
     @Test
     public void testCreateBatchMeterChainingFunction_failures() {
         final RpcResult<BatchMeterOutputListGrouping> input = RpcResultBuilder.<BatchMeterOutputListGrouping>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-meterError")
+                .withError(ErrorType.APPLICATION, "ut-meterError")
                 .withResult(new AddMetersBatchOutputBuilder()
                         .setBatchFailedMetersOutput(BindingMap.ordered(
                                 createBatchFailedMetersOutput(Uint16.ZERO, Uint32.ONE),

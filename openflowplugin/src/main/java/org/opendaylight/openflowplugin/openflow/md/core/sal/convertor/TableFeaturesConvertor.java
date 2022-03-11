@@ -13,7 +13,6 @@ import com.google.common.collect.Ordering;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
@@ -242,7 +241,7 @@ public class TableFeaturesConvertor extends Convertor<
             final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features
                 .TableProperties tableProperties) {
         if (tableProperties == null) {
-            return Collections.emptyList();
+            return List.of();
         }
 
         List<TableFeatureProperties> ofTablePropertiesList = new ArrayList<>();
@@ -314,7 +313,7 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS,
-                setFieldMatch == null ? Collections.emptyMap() : setFieldMatch);
+                setFieldMatch == null ? Map.of() : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final ApplySetfield propType,
@@ -330,7 +329,7 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYSETFIELD,
-                setFieldMatch == null ? Collections.emptyMap() : setFieldMatch);
+                setFieldMatch == null ? Map.of() : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final WriteSetfieldMiss propType,
@@ -346,7 +345,7 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS,
-                setFieldMatch == null ? Collections.emptyMap() : setFieldMatch);
+                setFieldMatch == null ? Map.of() : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final WriteSetfield propType,
@@ -362,7 +361,7 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITESETFIELD,
-                setFieldMatch == null ? Collections.emptyMap() : setFieldMatch);
+                setFieldMatch == null ? Map.of() : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final Wildcards propType,
@@ -377,7 +376,7 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWILDCARDS,
-                setFieldMatch == null ? Collections.emptyMap() : setFieldMatch);
+                setFieldMatch == null ? Map.of() : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final Match propType, final TableFeaturePropertiesBuilder propBuilder) {
@@ -391,7 +390,7 @@ public class TableFeaturesConvertor extends Convertor<
         setSetFieldTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTMATCH,
-                setFieldMatch == null ? Collections.emptyMap() : setFieldMatch);
+                setFieldMatch == null ? Map.of() : setFieldMatch);
     }
 
     private static void setTableFeatureProperty(final ApplyActionsMiss propType,
@@ -401,7 +400,7 @@ public class TableFeaturesConvertor extends Convertor<
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYACTIONSMISS,
-                applyActionsMiss == null ? Collections.emptyMap() : applyActionsMiss.nonnullAction());
+                applyActionsMiss == null ? Map.of() : applyActionsMiss.nonnullAction());
     }
 
     private static void setTableFeatureProperty(final ApplyActions propType,
@@ -411,7 +410,7 @@ public class TableFeaturesConvertor extends Convertor<
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTAPPLYACTIONS,
-                applyActions == null ? Collections.emptyMap() : applyActions.nonnullAction());
+                applyActions == null ? Map.of() : applyActions.nonnullAction());
     }
 
     private static void setTableFeatureProperty(final WriteActionsMiss propType,
@@ -421,7 +420,7 @@ public class TableFeaturesConvertor extends Convertor<
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITEACTIONSMISS,
-                writeActionsMiss == null ? Collections.emptyMap() : writeActionsMiss.nonnullAction());
+                writeActionsMiss == null ? Map.of() : writeActionsMiss.nonnullAction());
     }
 
     private static void setTableFeatureProperty(final WriteActions propType,
@@ -431,7 +430,7 @@ public class TableFeaturesConvertor extends Convertor<
         setActionTableFeatureProperty(
                 propBuilder,
                 TableFeaturesPropType.OFPTFPTWRITEACTIONS,
-                writeActions == null ? Collections.emptyMap() : writeActions.nonnullAction());
+                writeActions == null ? Map.of() : writeActions.nonnullAction());
     }
 
     private static void setTableFeatureProperty(final NextTableMiss propType,
@@ -454,7 +453,7 @@ public class TableFeaturesConvertor extends Convertor<
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
             .type.instructions.miss.InstructionsMiss instructions = propType.getInstructionsMiss();
         setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONSMISS,
-                instructions == null ? Collections.emptyMap() : instructions.nonnullInstruction());
+                instructions == null ? Map.of() : instructions.nonnullInstruction());
     }
 
     private static void setTableFeatureProperty(final Instructions propType,
@@ -462,7 +461,7 @@ public class TableFeaturesConvertor extends Convertor<
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
             .type.instructions.Instructions instructions = propType.getInstructions();
         setInstructionTableFeatureProperty(propBuilder, TableFeaturesPropType.OFPTFPTINSTRUCTIONS,
-                instructions == null ? Collections.emptyMap() : instructions.nonnullInstruction());
+                instructions == null ? Map.of() : instructions.nonnullInstruction());
     }
 
     private static void setInstructionTableFeatureProperty(final TableFeaturePropertiesBuilder builder,
@@ -511,9 +510,7 @@ public class TableFeaturesConvertor extends Convertor<
         List<NextTableIds> nextTableIdsList = new ArrayList<>();
 
         for (Uint8 tableId : tableIds) {
-            NextTableIdsBuilder nextTableId = new NextTableIdsBuilder();
-            nextTableId.setTableId(tableId);
-            nextTableIdsList.add(nextTableId.build());
+            nextTableIdsList.add(new NextTableIdsBuilder().setTableId(tableId).build());
         }
 
         builder.setType(type).addAugmentation(new NextTableRelatedTableFeaturePropertyBuilder()

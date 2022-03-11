@@ -71,7 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -159,7 +159,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             @Override
             public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<Void> rpcResultBld = RpcResultBuilder.<Void>failed()
-                        .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
+                        .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(ErrorType.APPLICATION,
                                 null, throwable.getMessage())));
                 rpcResult.set(rpcResultBld.build());
             }

@@ -165,6 +165,7 @@
 
                     leaf-list version-bitmap {
                         type boolean;
+                        ordered-by user;
                     }
                 }
             }
@@ -947,9 +948,13 @@
                             }
                             leaf-list max_groups {
                                 type uint32;
+                                ordered-by user;
+                                // FIXME: min-elements = max-elements = 4
                             }
                             leaf-list actions-bitmap {
                                 type oft:action-type;
+                                ordered-by user;
+                                // FIXME: min-elements = max-elements = 4
                             }
                         }
                     }

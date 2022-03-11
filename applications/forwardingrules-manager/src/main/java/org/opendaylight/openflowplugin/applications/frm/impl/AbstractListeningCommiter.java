@@ -12,6 +12,7 @@ import static java.util.Objects.requireNonNull;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collection;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -44,12 +45,15 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     protected final ListenerRegistrationHelper registrationHelper;
     protected ListenerRegistration<AbstractListeningCommiter> listenerRegistration;
 
-    public AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
+    @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "See FIXME below")
+    protected AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
                                      final ListenerRegistrationHelper registrationHelper) {
         this.provider = requireNonNull(provider, "ForwardingRulesManager can not be null!");
         this.nodeConfigurator = requireNonNull(provider.getNodeConfigurator(), "NodeConfigurator can not be null!");
         this.dataBroker = requireNonNull(dataBroker, "DataBroker can not be null!");
         this.registrationHelper = requireNonNull(registrationHelper, "registrationHelper can not be null!");
+
+        // FIXME: this may start listening on an uninitialized object: clean up the lifecycle here
         registerListener();
         provider.addRecoverableListener(this);
     }
@@ -112,7 +116,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     }
 
     @Override
-    public void registerListener() {
+    public final void registerListener() {
         final DataTreeIdentifier<T> treeId =
                 DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
         Futures.addCallback(registrationHelper.checkedRegisterListener(treeId, this),

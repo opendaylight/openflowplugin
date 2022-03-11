@@ -9,9 +9,11 @@ package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
+import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowRemovedReason;
@@ -32,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * @author giuseppex.petralia@intel.com
  */
 public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput> {
-
     private static final byte SEPARATE_ROLES = 2;
 
     @Override
@@ -47,7 +48,7 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
     }
 
     private static List<PacketInMask> decodePacketInMask(ByteBuf input) {
-        List<PacketInMask> inMasks = new ArrayList<>();
+        List<PacketInMask> inMasks = new ArrayList<>(SEPARATE_ROLES);
         PacketInMaskBuilder maskBuilder;
         for (int i = 0; i < SEPARATE_ROLES; i++) {
             maskBuilder = new PacketInMaskBuilder();
@@ -57,22 +58,22 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         return inMasks;
     }
 
-    private static List<PacketInReason> decodePacketInReasons(long input) {
-        List<PacketInReason> reasons = new ArrayList<>();
+    private static Set<PacketInReason> decodePacketInReasons(long input) {
+        final var builder = ImmutableSet.<PacketInReason>builder();
         if ((input & 1 << 0) != 0) {
-            reasons.add(PacketInReason.OFPRNOMATCH);
+            builder.add(PacketInReason.OFPRNOMATCH);
         }
         if ((input & 1 << 1) != 0) {
-            reasons.add(PacketInReason.OFPRACTION);
+            builder.add(PacketInReason.OFPRACTION);
         }
         if ((input & 1 << 2) != 0) {
-            reasons.add(PacketInReason.OFPRINVALIDTTL);
+            builder.add(PacketInReason.OFPRINVALIDTTL);
         }
-        return reasons;
+        return builder.build();
     }
 
     private static List<PortStatusMask> decodePortStatusMask(ByteBuf input) {
-        List<PortStatusMask> inMasks = new ArrayList<>();
+        List<PortStatusMask> inMasks = new ArrayList<>(SEPARATE_ROLES);
         PortStatusMaskBuilder maskBuilder;
         for (int i = 0; i < SEPARATE_ROLES; i++) {
             maskBuilder = new PortStatusMaskBuilder();
@@ -82,22 +83,22 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         return inMasks;
     }
 
-    private static List<PortReason> decodePortReasons(long input) {
-        List<PortReason> reasons = new ArrayList<>();
+    private static Set<PortReason> decodePortReasons(long input) {
+        final var builder = ImmutableSet.<PortReason>builder();
         if ((input & 1 << 0) != 0) {
-            reasons.add(PortReason.OFPPRADD);
+            builder.add(PortReason.OFPPRADD);
         }
         if ((input & 1 << 1) != 0) {
-            reasons.add(PortReason.OFPPRDELETE);
+            builder.add(PortReason.OFPPRDELETE);
         }
         if ((input & 1 << 2) != 0) {
-            reasons.add(PortReason.OFPPRMODIFY);
+            builder.add(PortReason.OFPPRMODIFY);
         }
-        return reasons;
+        return builder.build();
     }
 
     private static List<FlowRemovedMask> decodeFlowRemovedMask(ByteBuf input) {
-        List<FlowRemovedMask> inMasks = new ArrayList<>();
+        List<FlowRemovedMask> inMasks = new ArrayList<>(SEPARATE_ROLES);
         FlowRemovedMaskBuilder maskBuilder;
         for (int i = 0; i < SEPARATE_ROLES; i++) {
             maskBuilder = new FlowRemovedMaskBuilder();
@@ -107,20 +108,20 @@ public class SetAsyncInputMessageFactory implements OFDeserializer<SetAsyncInput
         return inMasks;
     }
 
-    private static List<FlowRemovedReason> decodeFlowRemovedReasons(long input) {
-        List<FlowRemovedReason> reasons = new ArrayList<>();
+    private static Set<FlowRemovedReason> decodeFlowRemovedReasons(long input) {
+        final var builder = ImmutableSet.<FlowRemovedReason>builder();
         if ((input & 1 << 0) != 0) {
-            reasons.add(FlowRemovedReason.OFPRRIDLETIMEOUT);
+            builder.add(FlowRemovedReason.OFPRRIDLETIMEOUT);
         }
         if ((input & 1 << 1) != 0) {
-            reasons.add(FlowRemovedReason.OFPRRHARDTIMEOUT);
+            builder.add(FlowRemovedReason.OFPRRHARDTIMEOUT);
         }
         if ((input & 1 << 2) != 0) {
-            reasons.add(FlowRemovedReason.OFPRRDELETE);
+            builder.add(FlowRemovedReason.OFPRRDELETE);
         }
         if ((input & 1 << 3) != 0) {
-            reasons.add(FlowRemovedReason.OFPRRGROUPDELETE);
+            builder.add(FlowRemovedReason.OFPRRGROUPDELETE);
         }
-        return reasons;
+        return builder.build();
     }
 }

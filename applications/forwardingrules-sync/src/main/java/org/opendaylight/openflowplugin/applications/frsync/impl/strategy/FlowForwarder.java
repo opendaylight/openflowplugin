@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -70,7 +70,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             return salFlowService.removeFlow(builder.build());
         } else {
             return RpcResultBuilder.<RemoveFlowOutput>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
+                    .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
         }
     }
 
@@ -97,7 +97,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             output = salFlowService.updateFlow(builder.build());
         } else {
             output = RpcResultBuilder.<UpdateFlowOutput>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
+                    .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
         }
 
         return output;
@@ -120,8 +120,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
             output = salFlowService.addFlow(builder.build());
         } else {
-            output = RpcResultBuilder.<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION,
-                    TABLE_ID_MISMATCH).buildFuture();
+            output = RpcResultBuilder.<AddFlowOutput>failed().withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)
+                .buildFuture();
         }
         return output;
     }

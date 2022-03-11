@@ -33,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -71,7 +71,7 @@ public class GroupUtilTest {
         final RpcResult<List<BatchFailedGroupsOutput>> summary = function.apply(Lists.newArrayList(
                 RpcResultBuilder.success("a").build(),
                 RpcResultBuilder.<String>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "action-failed reason")
+                        .withError(ErrorType.APPLICATION, "action-failed reason")
                         .build()));
 
         Assert.assertFalse(summary.isSuccessful());
@@ -136,8 +136,8 @@ public class GroupUtilTest {
 
     private static RpcResult<List<BatchFailedGroupsOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedGroupsOutput>>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
-                .withResult(Collections.singletonList(new BatchFailedGroupsOutputBuilder()
+                .withError(ErrorType.APPLICATION, "ut-flowAddFail")
+                .withResult(List.of(new BatchFailedGroupsOutputBuilder()
                         .setBatchOrder(Uint16.ZERO)
                         .setGroupId(DUMMY_GROUP_ID)
                         .build()))
@@ -230,7 +230,7 @@ public class GroupUtilTest {
 
     private static RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
         return RpcResultBuilder.<SendBarrierOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
+                .withError(ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }
 
