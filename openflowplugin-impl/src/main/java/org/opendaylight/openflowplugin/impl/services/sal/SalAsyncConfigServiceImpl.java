@@ -30,19 +30,19 @@ public class SalAsyncConfigServiceImpl implements SalAsyncConfigService {
 
     public SalAsyncConfigServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         setAsyncConfigService = new SingleLayerSetAsyncConfigService(requestContextStack, deviceContext);
-        this.getAsyncConfigService = new SingleLayerGetAsyncConfigService(requestContextStack, deviceContext);
+        getAsyncConfigService = new SingleLayerGetAsyncConfigService(requestContextStack, deviceContext);
     }
 
     @Override
-    public ListenableFuture<RpcResult<SetAsyncOutput>> setAsync(SetAsyncInput input) {
+    public ListenableFuture<RpcResult<SetAsyncOutput>> setAsync(final SetAsyncInput input) {
         return setAsyncConfigService.handleServiceCall(input);
     }
 
     @Override
-    public ListenableFuture<RpcResult<GetAsyncOutput>> getAsync(GetAsyncInput input) {
+    public ListenableFuture<RpcResult<GetAsyncOutput>> getAsync(final GetAsyncInput input) {
         return Futures.transform(getAsyncConfigService.handleServiceCall(input), result ->
                 result != null && result.isSuccessful()
-                        ? RpcResultBuilder.success(new GetAsyncOutputBuilder(result.getResult())).build()
+                        ? RpcResultBuilder.success(new GetAsyncOutputBuilder(result.getResult()).build()).build()
                         : RpcResultBuilder.<GetAsyncOutput>failed().build(),
                 MoreExecutors.directExecutor());
     }

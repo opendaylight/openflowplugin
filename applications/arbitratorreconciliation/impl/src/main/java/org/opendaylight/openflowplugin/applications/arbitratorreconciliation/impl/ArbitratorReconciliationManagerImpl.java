@@ -11,17 +11,15 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -81,6 +79,7 @@ import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -131,7 +130,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             final UpgradeState upgradeState) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
         this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager cannot be null!");
-        this.salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
+        salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundleService not found.");
         this.rpcProviderService = rpcProviderService;
         this.upgradeState = requireNonNull(upgradeState, "UpgradeState cannot be null!");
@@ -181,8 +180,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
         return RpcResultBuilder.success(new CommitActiveBundleOutputBuilder()
                 .setResult(null).build())
-                .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
-                        null, "No active bundle found for the node" + nodeId.toString()))).buildFuture();
+                .withRpcErrors(List.of(RpcResultBuilder.newError(ErrorType.APPLICATION,
+                        null, "No active bundle found for the node" + nodeId))).buildFuture();
     }
 
     @Override
@@ -198,9 +197,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         .setResult(bundleDetails.getBundleId())
                         .build())
                         .buildFuture();
-            } catch (InterruptedException | ExecutionException | NullPointerException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 return RpcResultBuilder.<GetActiveBundleOutput>failed()
-                        .withRpcErrors(Collections.singleton(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION,
+                        .withRpcErrors(List.of(RpcResultBuilder.newError(ErrorType.APPLICATION,
                                 null, e.getMessage()))).buildFuture();
             }
         }
@@ -249,8 +248,6 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         return executor.submit(upgradeReconTask);
     }
 
-    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
-            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private static Messages createMessages(final NodeRef nodeRef) {
         final List<Message> messages = new ArrayList<>();
         messages.add(new MessageBuilder()
@@ -365,7 +362,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 }
             } else {
                 resultSink = RpcResultBuilder.<CommitActiveBundleOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "action of " + action + " failed");
+                        .withError(ErrorType.APPLICATION, "action of " + action + " failed");
             }
             return resultSink.build();
         };
@@ -376,8 +373,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is registered : {}", path);
         ObjectRegistration<? extends RpcService> rpcRegistration =
-                rpcProviderService.registerRpcImplementation(ArbitratorReconcileService.class,
-                        this, ImmutableSet.of(path));
+                rpcProviderService.registerRpcImplementation(ArbitratorReconcileService.class, this, Set.of(path));
         rpcRegistrations.put(node.getNodeId().getValue(), rpcRegistration);
     }
 
@@ -410,8 +406,6 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
     }
 
-    @SuppressFBWarnings(value = "UPM_UNCALLED_PRIVATE_METHOD",
-            justification = "https://github.com/spotbugs/spotbugs/issues/811")
     private static Uint64 getDpnIdFromNodeName(final String nodeName) {
         String dpnId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
         return Uint64.valueOf(dpnId);

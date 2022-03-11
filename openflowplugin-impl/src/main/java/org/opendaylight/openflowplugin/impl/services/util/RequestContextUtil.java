@@ -9,7 +9,8 @@ package org.opendaylight.openflowplugin.impl.services.util;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorTag;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ public final class RequestContextUtil {
                                                                                 final RequestContext<T> requestContext,
                                                                                 final String errorMessage) {
         RpcResultBuilder<T> rpcResultBuilder = RpcResultBuilder.<T>failed().withRpcError(RpcResultBuilder
-                .newError(RpcError.ErrorType.APPLICATION, "", errorMessage));
+                .newError(ErrorType.APPLICATION, ErrorTag.OPERATION_FAILED, errorMessage));
         requestContext.setResult(rpcResultBuilder.build());
         closeRequestContext(requestContext);
         return requestContext.getFuture();

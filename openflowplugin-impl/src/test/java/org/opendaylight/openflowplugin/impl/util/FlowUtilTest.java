@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -68,7 +68,7 @@ public class FlowUtilTest {
         final RpcResult<List<BatchFailedFlowsOutput>> summary = function.apply(Lists.newArrayList(
                 RpcResultBuilder.success("a").build(),
                 RpcResultBuilder.<String>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "action-failed reason")
+                        .withError(ErrorType.APPLICATION, "action-failed reason")
                         .build()));
 
         Assert.assertFalse(summary.isSuccessful());
@@ -137,7 +137,7 @@ public class FlowUtilTest {
 
     private static RpcResult<List<BatchFailedFlowsOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
+                .withError(ErrorType.APPLICATION, "ut-flowAddFail")
                 .withResult(Collections.singletonList(new BatchFailedFlowsOutputBuilder()
                         .setFlowId(DUMMY_FLOW_ID)
                         .setBatchOrder(Uint16.ZERO)
@@ -225,7 +225,7 @@ public class FlowUtilTest {
 
     private static RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
         return RpcResultBuilder.<SendBarrierOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
+                .withError(ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }
 

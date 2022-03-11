@@ -40,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -83,7 +84,7 @@ public final class ReconcileUtil {
                 }
             } else {
                 resultSink = RpcResultBuilder.<Void>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "previous " + previousItemAction + " failed");
+                        .withError(ErrorType.APPLICATION, "previous " + previousItemAction + " failed");
             }
             return resultSink.build();
         };
@@ -110,7 +111,7 @@ public final class ReconcileUtil {
                 }
             } else {
                 resultSink = RpcResultBuilder.<Void>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "action of " + actionDescription + " failed");
+                        .withError(ErrorType.APPLICATION, "action of " + actionDescription + " failed");
             }
             return resultSink.build();
         };
@@ -183,21 +184,13 @@ public final class ReconcileUtil {
 
                 final Group existingGroup = installedGroups.get(group.getGroupId().getValue());
                 if (existingGroup != null) {
-                    if (!gatherUpdates) {
+                    if (!gatherUpdates || group.equals(existingGroup)) {
                         iterator.remove();
-                    } else {
+                    } else if (checkGroupPrecondition(installedGroups.keySet(), group)) {
                         // check buckets and eventually update
-                        if (group.equals(existingGroup)) {
-                            iterator.remove();
-                        } else {
-                            if (checkGroupPrecondition(installedGroups.keySet(), group)) {
-                                iterator.remove();
-                                LOG.trace("Group {} on device {} differs - planned for update", group.getGroupId(),
-                                        nodeId);
-                                stepPlan.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingGroup,
-                                        group));
-                            }
-                        }
+                        iterator.remove();
+                        LOG.trace("Group {} on device {} differs - planned for update", group.getGroupId(), nodeId);
+                        stepPlan.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingGroup, group));
                     }
                 } else if (checkGroupPrecondition(installedGroups.keySet(), group)) {
                     iterator.remove();

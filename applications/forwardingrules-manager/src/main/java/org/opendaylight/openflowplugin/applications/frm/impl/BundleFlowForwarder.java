@@ -55,7 +55,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -72,7 +72,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
 
     public BundleFlowForwarder(final ForwardingRulesManager forwardingRulesManager) {
         this.forwardingRulesManager = requireNonNull(forwardingRulesManager, "ForwardingRulesManager can not be null!");
-        this.nodeConfigurator = requireNonNull(forwardingRulesManager.getNodeConfigurator(),
+        nodeConfigurator = requireNonNull(forwardingRulesManager.getNodeConfigurator(),
                 "NodeConfigurator can not be null!");
     }
 
@@ -200,19 +200,19 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         }, MoreExecutors.directExecutor());
                     } else {
                         LOG.debug("Group {} not present in the config inventory", groupId);
-                        resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>failed()
-                                .withError(RpcError.ErrorType.APPLICATION,
-                                        "Group " + groupId + " not present in the config inventory").build());
+                        resultFuture = RpcResultBuilder.<AddBundleMessagesOutput>failed()
+                                .withError(ErrorType.APPLICATION,
+                                        "Group " + groupId + " not present in the config inventory").buildFuture();
                     }
                 } catch (InterruptedException | ExecutionException e) {
                     LOG.error("Error while reading group from config datastore for the group ID {}", groupId, e);
-                    resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>failed()
-                            .withError(RpcError.ErrorType.APPLICATION,
-                                    "Group " + groupId + " not present in the config inventory").build());
+                    resultFuture = RpcResultBuilder.<AddBundleMessagesOutput>failed()
+                            .withError(ErrorType.APPLICATION,
+                                    "Group " + groupId + " not present in the config inventory").buildFuture();
                 }
             }
         } else {
-            resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>success().build());
+            resultFuture = RpcResultBuilder.<AddBundleMessagesOutput>success().buildFuture();
         }
         return resultFuture;
     }
@@ -233,8 +233,8 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
             this.bundleId = bundleId;
             this.messages = messages;
             this.resultFuture = resultFuture;
-            this.flowId = getFlowId(identifier);
-            this.tableId = getTableId(identifier);
+            flowId = getFlowId(identifier);
+            tableId = getTableId(identifier);
             nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         }
 
