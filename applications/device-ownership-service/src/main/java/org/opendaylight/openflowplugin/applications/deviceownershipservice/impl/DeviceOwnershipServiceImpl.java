@@ -15,8 +15,6 @@ import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListener;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
@@ -27,7 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = DeviceOwnershipService.class)
 public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, EntityOwnershipListener {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipServiceImpl.class);
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
@@ -36,7 +33,7 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
     private final EntityOwnershipService eos;
     private final ConcurrentMap<String, EntityOwnershipState> ownershipStateCache = new ConcurrentHashMap<>();
 
-    public DeviceOwnershipServiceImpl(@Reference final EntityOwnershipService entityOwnershipService) {
+    public DeviceOwnershipServiceImpl(final EntityOwnershipService entityOwnershipService) {
         this.eos = entityOwnershipService;
     }
 
