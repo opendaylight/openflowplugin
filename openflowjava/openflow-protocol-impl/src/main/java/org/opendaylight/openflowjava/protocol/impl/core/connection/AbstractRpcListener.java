@@ -14,8 +14,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
+import org.opendaylight.yangtools.yang.common.ErrorTag;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
-import org.opendaylight.yangtools.yang.common.RpcError.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ abstract class AbstractRpcListener<T> implements GenericFutureListener<Future<Vo
         ChannelOutboundQueue.MessageHolder<Object> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractRpcListener.class);
     private static final String APPLICATION_TAG = "OPENFLOW_LIBRARY";
-    private static final String TAG = "OPENFLOW";
+    private static final ErrorTag TAG = new ErrorTag("OPENFLOW");
     private final SettableFuture<RpcResult<T>> result = SettableFuture.create();
     private final String failureInfo;
     private Object message;

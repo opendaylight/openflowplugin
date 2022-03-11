@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
  *
  * @author msunal
  */
-public class NxmHeader {
+public final class NxmHeader {
 
     // Full 4 or 8 byte header as big integer
     private final Uint64 header;
@@ -41,21 +41,21 @@ public class NxmHeader {
      * @see NxmHeader#NxmHeader(long)
      */
     public NxmHeader(final Uint64 header) {
-        this.headerAsLong = header.longValue();
+        headerAsLong = header.longValue();
         if (isExperimenter(header)) {
-            this.experimenterId = (int) this.headerAsLong;
-            this.shortHeader = this.headerAsLong >>> 32;
+            experimenterId = (int) headerAsLong;
+            shortHeader = headerAsLong >>> 32;
         } else {
-            this.shortHeader = this.headerAsLong;
-            this.experimenterId = -1;
+            shortHeader = headerAsLong;
+            experimenterId = -1;
         }
 
         this.header = header;
         try {
-            this.oxmClass = Math.toIntExact(extractSub(this.shortHeader, 16, 16));
-            this.nxmField = Math.toIntExact(extractSub(this.shortHeader, 7, 9));
-            this.hasMask = extractSub(this.shortHeader, 1, 8) == 1;
-            this.length = Math.toIntExact(extractSub(this.shortHeader, 8, 0));
+            oxmClass = Math.toIntExact(extractSub(shortHeader, 16, 16));
+            nxmField = Math.toIntExact(extractSub(shortHeader, 7, 9));
+            hasMask = extractSub(shortHeader, 1, 8) == 1;
+            length = Math.toIntExact(extractSub(shortHeader, 8, 0));
         } catch (ArithmeticException e) {
             throw new IllegalArgumentException(e);
         }
@@ -105,14 +105,14 @@ public class NxmHeader {
         this.nxmField = nxmField;
         this.hasMask = hasMask;
         this.length = length;
-        this.shortHeader = (long) oxmClass << 16 | nxmField << 9 | (hasMask ? 1 : 0) << 8 | length;
+        shortHeader = (long) oxmClass << 16 | nxmField << 9 | (hasMask ? 1 : 0) << 8 | length;
         this.experimenterId = experimenterId;
         if (isExperimenter()) {
-            this.header = Uint64.fromLongBits((this.shortHeader << 32) + experimenterId);
+            header = Uint64.fromLongBits((shortHeader << 32) + experimenterId);
         } else {
-            this.header = Uint64.valueOf(this.shortHeader);
+            header = Uint64.valueOf(shortHeader);
         }
-        this.headerAsLong = this.header.longValue();
+        headerAsLong = header.longValue();
     }
 
     private static long extractSub(final long value, final int nrBits, final int offset) {

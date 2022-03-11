@@ -28,7 +28,8 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FlowNodeConnectorInventoryTranslatorImpl extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector>
+public final class FlowNodeConnectorInventoryTranslatorImpl
+        extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector>
         implements FlowNodeConnectorInventoryTranslator {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeConnectorInventoryTranslatorImpl.class);

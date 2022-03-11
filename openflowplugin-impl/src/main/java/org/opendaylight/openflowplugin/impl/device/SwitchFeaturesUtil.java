@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.device;
 import static org.opendaylight.openflowplugin.api.OFConstants.OFP_VERSION_1_0;
 import static org.opendaylight.openflowplugin.api.OFConstants.OFP_VERSION_1_3;
 
-import java.util.HashMap;
 import java.util.Map;
 import org.opendaylight.openflowplugin.api.openflow.md.core.sal.BuildSwitchFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.flow.node.SwitchFeatures;
@@ -20,25 +19,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class SwitchFeaturesUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(SwitchFeaturesUtil.class);
 
-    private static SwitchFeaturesUtil instance = new SwitchFeaturesUtil();
-    private final Map<Uint8, BuildSwitchFeatures> swFeaturesBuilders;
+    private static final Map<Uint8, BuildSwitchFeatures> SWITCH_FEATURES_BUILDERS = Map.of(
+        OFP_VERSION_1_0, BuildSwitchCapabilitiesOF10.getInstance(),
+        OFP_VERSION_1_3, BuildSwitchCapabilitiesOF13.getInstance());
 
     private SwitchFeaturesUtil() {
-        swFeaturesBuilders = new HashMap<>();
-        swFeaturesBuilders.put(OFP_VERSION_1_0, BuildSwitchCapabilitiesOF10.getInstance());
-        swFeaturesBuilders.put(OFP_VERSION_1_3, BuildSwitchCapabilitiesOF13.getInstance());
-    }
-
-    /**
-     * Get singleton instance.
-     *
-     * @return instance
-     */
-    public static SwitchFeaturesUtil getInstance() {
-        return instance;
+        // Hidden on purpose
     }
 
     /**
@@ -48,18 +36,14 @@ public final class SwitchFeaturesUtil {
      *        {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput}
      * @return switch features
      */
-    public SwitchFeatures buildSwitchFeatures(final GetFeaturesOutput features) {
-        if (swFeaturesBuilders.containsKey(features.getVersion())) {
-            LOG.debug("map contains version {}", features.getVersion());
-            try {
-                return swFeaturesBuilders.get(features.getVersion()).build(features);
-            } catch (NullPointerException e) {
-                LOG.warn("error while building switch features: {}", e.getMessage());
-                LOG.debug("error while building switch features.. ", e);
-            }
-        } else {
-            LOG.warn("unknown version: {}", features.getVersion());
+    public static SwitchFeatures buildSwitchFeatures(final GetFeaturesOutput features) {
+        final var version = features.getVersion();
+        final var builder = SWITCH_FEATURES_BUILDERS.get(version);
+        if (builder != null) {
+            LOG.debug("map contains version {}", version);
+            return builder.build(features);
         }
+        LOG.warn("unknown version: {}", version);
         return null;
     }
 }

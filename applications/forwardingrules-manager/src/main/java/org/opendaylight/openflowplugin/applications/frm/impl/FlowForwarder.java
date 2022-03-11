@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -340,17 +340,17 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 builder.setGroupRef(new GroupRef(nodeIdent));
                 builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
                 AddGroupInput addGroupInput = builder.build();
-                resultFuture = this.provider.getSalGroupService().addGroup(addGroupInput);
+                resultFuture = provider.getSalGroupService().addGroup(addGroupInput);
             } else {
-                resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddGroupOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION,
-                                "Group " + groupId + " not present in the config inventory").build());
+                resultFuture = RpcResultBuilder.<AddGroupOutput>failed()
+                        .withError(ErrorType.APPLICATION,
+                                "Group " + groupId + " not present in the config inventory").buildFuture();
             }
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error while reading group from config datastore for the group ID {}", groupId, e);
-            resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddGroupOutput>failed()
-                    .withError(RpcError.ErrorType.APPLICATION,
-                            "Error while reading group " + groupId + " from inventory").build());
+            resultFuture = RpcResultBuilder.<AddGroupOutput>failed()
+                    .withError(ErrorType.APPLICATION,
+                            "Error while reading group " + groupId + " from inventory").buildFuture();
         }
         return resultFuture;
     }

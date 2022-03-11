@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
@@ -22,10 +24,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * @author jsebin
  */
 public class SwitchFeaturesUtilTest {
-
     private GetFeaturesOutputBuilder featuresOutputBuilder;
-    private SwitchFeaturesUtil swUtil;
-
 
     /**
      * Initialization of
@@ -36,13 +35,11 @@ public class SwitchFeaturesUtilTest {
     @Before
     public void setUp() {
         featuresOutputBuilder = new GetFeaturesOutputBuilder();
-        swUtil = SwitchFeaturesUtil.getInstance();
     }
 
     @After
     public void tearDown() {
         featuresOutputBuilder = null;
-        swUtil = null;
     }
 
     /**
@@ -56,7 +53,7 @@ public class SwitchFeaturesUtilTest {
         CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setVersion(Uint8.ONE);
 
-        Assert.assertNotNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
+        assertNotNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
 
     /**
@@ -70,7 +67,7 @@ public class SwitchFeaturesUtilTest {
         Capabilities capabilities = new Capabilities(true, false, true, false, true, false, true);
         featuresOutputBuilder.setCapabilities(capabilities).setCapabilitiesV10(null).setVersion(Uint8.valueOf(4));
 
-        Assert.assertNotNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
+        assertNotNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
 
     /**
@@ -84,7 +81,7 @@ public class SwitchFeaturesUtilTest {
         CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, null);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion(Uint8.ONE);
 
-        Assert.assertNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
+        assertNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
 
     /**
@@ -98,7 +95,7 @@ public class SwitchFeaturesUtilTest {
         CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion(Uint8.valueOf(4));
 
-        Assert.assertNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
+        assertNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
 
     /**
@@ -111,6 +108,6 @@ public class SwitchFeaturesUtilTest {
         CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion(Uint8.ZERO);
 
-        Assert.assertNull(swUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
+        assertNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
     }
 }

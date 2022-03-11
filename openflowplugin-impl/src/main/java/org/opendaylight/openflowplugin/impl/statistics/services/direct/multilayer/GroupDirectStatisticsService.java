@@ -32,8 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroupBuilder;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
-public class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsService<MultipartReply> {
-
+public final class GroupDirectStatisticsService extends AbstractGroupDirectStatisticsService<MultipartReply> {
     private final VersionConvertorData data;
 
     public GroupDirectStatisticsService(final RequestContextStack requestContextStack,

@@ -35,8 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsService<MultipartReply> {
-
+public final class FlowDirectStatisticsService extends AbstractFlowDirectStatisticsService<MultipartReply> {
     private final FlowStatsResponseConvertorData data;
 
     public FlowDirectStatisticsService(final RequestContextStack requestContextStack,

@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.process.flat.batch.output.BatchFailureKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -380,14 +380,14 @@ public class FlatBatchUtilTest {
                 = new ProcessFlatBatchOutputBuilder().setBatchFailure(BindingMap.of(batchFailure_1)).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResultFailed = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
+                .withError(ErrorType.APPLICATION, "ut-rpcError")
                 .withResult(output).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResultFailed_1 = RpcResultBuilder.<ProcessFlatBatchOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-rpcError")
+                .withError(ErrorType.APPLICATION, "ut-rpcError")
                 .withResult(output_1).build();
         final RpcResult<ProcessFlatBatchOutput> rpcResultSuccess = RpcResultBuilder.<ProcessFlatBatchOutput>success()
-                .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(Map.of())).build();
+                .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(Map.of()).build()).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult1
                 = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultSuccess));

@@ -5,12 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
-import java.util.ArrayList;
 import java.util.Formatter;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -46,9 +45,9 @@ public class Reconciliation extends OsgiCommandSupport {
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
     protected Object doExecute() throws Exception {
-        List<Uint64> nodes = nodeIds == null
-                ? new ArrayList<>()
-                : nodeIds.stream().distinct().map(Uint64::valueOf).collect(Collectors.toList());
+        Set<Uint64> nodes = nodeIds == null
+                ? Set.of()
+                : nodeIds.stream().distinct().map(Uint64::valueOf).collect(Collectors.toUnmodifiableSet());
         LOG.debug("Triggering reconciliation for nodes {}", nodes);
         ReconcileInput rpcInput = new ReconcileInputBuilder().setNodes(nodes)
                 .setReconcileAllNodes(reconcileAllNodes).build();
@@ -69,7 +68,7 @@ public class Reconciliation extends OsgiCommandSupport {
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     private static void printInProgressNodes(ReconcileOutput reconcileOutput) {
-        List<Uint64> inprogressNodes = reconcileOutput.getInprogressNodes();
+        Set<Uint64> inprogressNodes = reconcileOutput.getInprogressNodes();
         if (inprogressNodes.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder();
             final Formatter formatter = new Formatter(stringBuilder);

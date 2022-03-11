@@ -64,7 +64,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.up
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMetersBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -140,7 +140,7 @@ public class SalMetersBatchServiceImplTest {
     public void testUpdateMetersBatch_failure() throws Exception {
         Mockito.when(salMeterService.updateMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<UpdateMeterOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ur-groupUpdateError")
+                        .withError(ErrorType.APPLICATION, "ur-groupUpdateError")
                         .buildFuture());
 
         final UpdateMetersBatchInput input = new UpdateMetersBatchInputBuilder()
@@ -208,7 +208,7 @@ public class SalMetersBatchServiceImplTest {
     public void testAddMetersBatch_failure() throws Exception {
         Mockito.when(salMeterService.addMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<AddMeterOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
+                        .withError(ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
 
         final AddMetersBatchInput input = new AddMetersBatchInputBuilder()
@@ -274,7 +274,7 @@ public class SalMetersBatchServiceImplTest {
     public void testRemoveMetersBatch_failure() throws Exception {
         Mockito.when(salMeterService.removeMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<RemoveMeterOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupRemoveError")
+                        .withError(ErrorType.APPLICATION, "ut-groupRemoveError")
                         .buildFuture());
 
         final RemoveMetersBatchInput input = new RemoveMetersBatchInputBuilder()

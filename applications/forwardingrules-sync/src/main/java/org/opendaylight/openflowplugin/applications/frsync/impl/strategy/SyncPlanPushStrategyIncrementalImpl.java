@@ -45,7 +45,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -286,7 +286,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
         } catch (IllegalStateException e) {
             chainedResult = RpcResultBuilder.<Void>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "failed to add missing groups", e)
+                    .withError(ErrorType.APPLICATION, "failed to add missing groups", e)
                     .buildFuture();
         }
 
@@ -470,7 +470,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             }
         } catch (IllegalStateException e) {
             chainedResult = RpcResultBuilder.<Void>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "failed to add missing groups", e)
+                    .withError(ErrorType.APPLICATION, "failed to add missing groups", e)
                     .buildFuture();
         }
 

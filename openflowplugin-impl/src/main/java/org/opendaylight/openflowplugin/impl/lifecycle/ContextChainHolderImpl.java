@@ -66,7 +66,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker {
+public final class ContextChainHolderImpl implements ContextChainHolder, MasterChecker {
     private static final Logger LOG = LoggerFactory.getLogger(ContextChainHolderImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
@@ -105,7 +105,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
         this.ownershipChangeListener.setMasterChecker(this);
         this.entityOwnershipService = entityOwnershipService;
         this.config = config;
-        this.eosListenerRegistration = Objects
+        eosListenerRegistration = Objects
                 .requireNonNull(entityOwnershipService.registerListener(ASYNC_SERVICE_ENTITY_TYPE, this));
     }
 
@@ -361,7 +361,7 @@ public class ContextChainHolderImpl implements ContextChainHolder, MasterChecker
                         LOG.warn("Seems like device is still owned by other controller instance. Skip deleting {} "
                                 + "node from operational datastore.", entityName);
                     }
-                } catch (TimeoutException | ExecutionException | NullPointerException | InterruptedException e) {
+                } catch (TimeoutException | ExecutionException | InterruptedException e) {
                     LOG.warn("Not able to remove device {} from operational DS. ", entityName, e);
                 }
             }, config.getDeviceDatastoreRemovalDelay().getValue().toJava(), TimeUnit.MILLISECONDS);

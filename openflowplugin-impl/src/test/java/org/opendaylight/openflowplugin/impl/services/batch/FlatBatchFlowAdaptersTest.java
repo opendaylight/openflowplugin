@@ -43,7 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -129,7 +129,7 @@ public class FlatBatchFlowAdaptersTest {
     @Test
     public void testCreateBatchFlowChainingFunction_failures() {
         final RpcResult<BatchFlowOutputListGrouping> input = RpcResultBuilder.<BatchFlowOutputListGrouping>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-flowError")
+                .withError(ErrorType.APPLICATION, "ut-flowError")
                 .withResult(new AddFlowsBatchOutputBuilder()
                         .setBatchFailedFlowsOutput(BindingMap.ordered(
                                 createBatchFailedFlowsOutput(Uint16.ZERO, "f1"),

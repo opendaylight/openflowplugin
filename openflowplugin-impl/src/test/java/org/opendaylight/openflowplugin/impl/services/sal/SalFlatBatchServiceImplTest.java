@@ -92,7 +92,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -295,7 +295,7 @@ public class SalFlatBatchServiceImplTest {
                                                 .setFlowId(new FlowId("123"))
                                                 .build()))
                                 .build())
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-firstFlowAddError")
+                        .withError(ErrorType.APPLICATION, "ut-firstFlowAddError")
                         .buildFuture());
         Mockito.when(salFlowsBatchService.updateFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateFlowsBatchOutputBuilder().build()).buildFuture());
@@ -467,7 +467,7 @@ public class SalFlatBatchServiceImplTest {
                 FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
         final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> failedChainOutput =
                 RpcResultBuilder.<ProcessFlatBatchOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-chainError")
+                        .withError(ErrorType.APPLICATION, "ut-chainError")
                         .withResult(createFlatBatchOutput(createFlowBatchFailure(Uint16.ZERO, "f1"),
                                     createFlowBatchFailure(Uint16.ONE, "f2")))
                         .buildFuture();
@@ -576,7 +576,7 @@ public class SalFlatBatchServiceImplTest {
                                                 .setFlowId(new FlowId("f2"))
                                                 .build()))
                                 .build())
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-addFlowBatchError")
+                        .withError(ErrorType.APPLICATION, "ut-addFlowBatchError")
                         .buildFuture());
 
         final Future<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =

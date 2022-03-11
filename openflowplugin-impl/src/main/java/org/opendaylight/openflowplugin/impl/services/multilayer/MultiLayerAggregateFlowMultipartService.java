@@ -8,8 +8,9 @@
 
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -57,7 +58,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
         super(requestContextStack, deviceContext);
         this.convertorExecutor = convertorExecutor;
         this.translatorLibrary = translatorLibrary;
-        this.data = new VersionConvertorData(getVersion());
+        data = new VersionConvertorData(getVersion());
     }
 
 
@@ -118,7 +119,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input),
             result -> {
-                if (Preconditions.checkNotNull(result).isSuccessful()) {
+                if (requireNonNull(result).isSuccessful()) {
                     final MessageTranslator<MultipartReply, AggregatedFlowStatistics>
                              messageTranslator = translatorLibrary.lookupTranslator(
                                  new TranslatorKey(getVersion(),
@@ -133,8 +134,8 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
                                                                                           multipartReply,
                                                                                           getDeviceInfo(),
                                                                                           null))
-                                                                          .collect(Collectors
-                                                                                           .toList())))
+                                                                          .collect(Collectors.toList()))
+                                     .build())
                              .build();
                 }
 
