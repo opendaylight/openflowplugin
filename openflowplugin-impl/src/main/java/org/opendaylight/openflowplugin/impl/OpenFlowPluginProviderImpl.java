@@ -37,8 +37,6 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
-import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
@@ -90,8 +88,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = { OpenFlowPluginProvider.class, OpenFlowPluginExtensionRegistratorProvider.class,
-                     FlowGroupInfoHistories.class })
 public class OpenFlowPluginProviderImpl implements
         OpenFlowPluginProvider,
         OpenFlowPluginExtensionRegistratorProvider,
@@ -143,13 +139,13 @@ public class OpenFlowPluginProviderImpl implements
     public OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
                                final SwitchConnectionProviderList switchConnectionProviders,
                                final PingPongDataBroker pingPongDataBroker,
-                               final @Reference RpcProviderService rpcProviderRegistry,
-                               final @Reference NotificationPublishService notificationPublishService,
-                               final @Reference ClusterSingletonServiceProvider singletonServiceProvider,
-                               final @Reference EntityOwnershipService entityOwnershipService,
+                               final RpcProviderService rpcProviderRegistry,
+                               final NotificationPublishService notificationPublishService,
+                               final ClusterSingletonServiceProvider singletonServiceProvider,
+                               final EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final @Reference OpenflowDiagStatusProvider openflowDiagStatusProvider,
-                               final @Reference SystemReadyMonitor systemReadyMonitor) {
+                               final OpenflowDiagStatusProvider openflowDiagStatusProvider,
+                               final SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
         this.dataBroker = pingPongDataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
