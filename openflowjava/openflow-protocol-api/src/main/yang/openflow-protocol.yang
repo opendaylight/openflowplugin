@@ -165,6 +165,7 @@
 
                     leaf-list version-bitmap {
                         type boolean;
+                        ordered-by user;
                     }
                 }
             }
