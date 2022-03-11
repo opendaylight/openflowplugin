@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>9.0.13</version>
+        <version>10.0.0</version>
         <relativePath/>
     </parent>
 
@@ -25,11 +25,17 @@
             <type>xml</type>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>odl-openflowplugin-app-reconciliation-framework</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+
+        <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>arbitratorreconciliation-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
-
 </project>

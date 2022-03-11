@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import static java.util.Objects.requireNonNull;
@@ -13,7 +12,6 @@ import static java.util.Objects.requireNonNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
@@ -33,12 +31,12 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
     public static final String DEFAULT_DPN_NAME = "UNKNOWN";
     public static final String SEPARATOR = ":";
 
+    private final Map<Long, String> dpnIdToNameCache = new ConcurrentHashMap<>();
     private final DataBroker dataBroker;
     private ListenerRegistration<?> listenerReg;
-    private Map<Long, String> dpnIdToNameCache;
 
-    public NodeListener(DataBroker broker) {
-        this.dataBroker = broker;
+    public NodeListener(final DataBroker broker) {
+        dataBroker = broker;
     }
 
     public void start() {
@@ -47,7 +45,6 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
         final DataTreeIdentifier<FlowCapableNode> identifier =
                 DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, path);
         listenerReg = dataBroker.registerDataTreeChangeListener(identifier, NodeListener.this);
-        dpnIdToNameCache = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -58,7 +55,7 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull Collection<DataTreeModification<FlowCapableNode>> changes) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> changes) {
         requireNonNull(changes, "Changes may not be null!");
         for (DataTreeModification<FlowCapableNode> change : changes) {
             final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
@@ -84,7 +81,7 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
         }
     }
 
-    private void remove(InstanceIdentifier<FlowCapableNode> instId, FlowCapableNode delNode) {
+    private void remove(final InstanceIdentifier<FlowCapableNode> instId, final FlowCapableNode delNode) {
         LOG.trace("Received remove notification for {}", delNode);
         String[] node = instId.firstKeyOf(Node.class).getId().getValue().split(SEPARATOR);
         if (node.length < 2) {
@@ -96,44 +93,33 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
         dpnIdToNameCache.remove(dpnId);
     }
 
-    private void update(InstanceIdentifier<FlowCapableNode> instId, FlowCapableNode dataObjectModificationBefore,
-                          FlowCapableNode dataObjectModificationAfter) {
+    private void update(final InstanceIdentifier<FlowCapableNode> instId,
+            final FlowCapableNode dataObjectModificationBefore, final FlowCapableNode dataObjectModificationAfter) {
 
         LOG.trace("Received update notification {}", instId);
         String[] node = instId.firstKeyOf(Node.class).getId().getValue().split(SEPARATOR);
         if (node.length < 2) {
-            LOG.error("Failed to add Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId()
-                    .getValue());
+            LOG.error("Failed to add Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId().getValue());
             return;
         }
         long dpnId = Long.parseLong(node[1]);
-        try {
-            String nodeName = dataObjectModificationAfter.getDescription();
-            if (nodeName != null) {
-                dpnIdToNameCache.put(dpnId, nodeName);
-            } else {
-                dpnIdToNameCache.put(dpnId , DEFAULT_DPN_NAME);
-            }
-        } catch (NullPointerException e) {
-            LOG.error("Error while converting Node:{} to FlowCapableNode: ", dpnId, e);
+        String nodeName = dataObjectModificationAfter == null ? null : dataObjectModificationAfter.getDescription();
+        if (nodeName != null) {
+            dpnIdToNameCache.put(dpnId, nodeName);
+        } else {
+            dpnIdToNameCache.put(dpnId, DEFAULT_DPN_NAME);
         }
     }
 
-    private void add(InstanceIdentifier<FlowCapableNode> instId, FlowCapableNode addNode) {
+    private void add(final InstanceIdentifier<FlowCapableNode> instId, final FlowCapableNode addNode) {
         LOG.trace("Received ADD notification for {}", instId);
         String[] node = instId.firstKeyOf(Node.class).getId().getValue().split(SEPARATOR);
         if (node.length < 2) {
-            LOG.error("Failed to add Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId()
-                    .getValue());
+            LOG.error("Failed to add Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId().getValue());
             return;
         }
         long dpnId = Long.parseLong(node[1]);
-        String dpnName = null;
-        try {
-            dpnName = addNode.getDescription();
-        } catch (NullPointerException e) {
-            LOG.error("Error while converting Node:{} to FlowCapableNode: ", dpnId, e);
-        }
+        String dpnName = addNode == null ? null : addNode.getDescription();
         LOG.trace("Adding DPNID {} to cache", dpnId);
         if (dpnName == null) {
             dpnName = DEFAULT_DPN_NAME;

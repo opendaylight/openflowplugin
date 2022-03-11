@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -84,7 +84,7 @@ public class OpendaylightDirectStatisticsServiceImpl implements OpendaylightDire
 
     private static <T extends DataObject> ListenableFuture<RpcResult<T>> missingImplementation(Class service) {
         return RpcResultBuilder.<T>failed().withError(
-                RpcError.ErrorType.APPLICATION,
+                ErrorType.APPLICATION,
                 String.format("No implementation found for direct statistics service %s.", service.getCanonicalName()))
                 .buildFuture();
     }

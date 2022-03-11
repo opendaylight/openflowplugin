@@ -134,11 +134,8 @@ public final class DeviceInitializationUtil {
      * @return switch features
      */
     public static SwitchFeatures getSwitchFeatures(final ConnectionContext connectionContext) {
-        return SwitchFeaturesUtil
-                .getInstance()
-                .buildSwitchFeatures(new GetFeaturesOutputBuilder(connectionContext
-                        .getFeatures())
-                        .build());
+        return SwitchFeaturesUtil.buildSwitchFeatures(new GetFeaturesOutputBuilder(connectionContext.getFeatures())
+            .build());
     }
 
     private static @Nullable InetSocketAddress getRemoteAddress(final ConnectionContext connectionContext,

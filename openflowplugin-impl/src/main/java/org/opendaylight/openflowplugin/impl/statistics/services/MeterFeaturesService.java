@@ -9,8 +9,9 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -91,22 +92,21 @@ final class MeterFeaturesService
     }
 
     @VisibleForTesting
-    protected static List<Class<? extends MeterBand>> extractSupportedMeterBand(
+    protected static Set<Class<? extends MeterBand>> extractSupportedMeterBand(
             final MultipartReplyMeterFeatures replyBody, final MeterBandTypeBitmap bandTypes) {
-        List<Class<? extends MeterBand>> supportedMeterBand = new ArrayList<>();
+        final var supportedMeterBand = ImmutableSet.<Class<? extends MeterBand>>builder();
         if (bandTypes.getOFPMBTDROP()) {
             supportedMeterBand.add(MeterBandDrop.class);
         }
         if (replyBody.getBandTypes().getOFPMBTDSCPREMARK()) {
             supportedMeterBand.add(MeterBandDscpRemark.class);
         }
-        return supportedMeterBand;
+        return supportedMeterBand.build();
     }
 
     @VisibleForTesting
-    protected static List<Class<? extends MeterCapability>> extractMeterCapabilities(final MeterFlags capabilities) {
-        List<Class<? extends MeterCapability>> supportedCapabilities = new ArrayList<>();
-
+    protected static Set<Class<? extends MeterCapability>> extractMeterCapabilities(final MeterFlags capabilities) {
+        final var supportedCapabilities = ImmutableSet.<Class<? extends MeterCapability>>builder();
         if (capabilities.getOFPMFBURST()) {
             supportedCapabilities.add(MeterBurst.class);
         }
@@ -119,6 +119,6 @@ final class MeterFeaturesService
         if (capabilities.getOFPMFSTATS()) {
             supportedCapabilities.add(MeterStats.class);
         }
-        return supportedCapabilities;
+        return supportedCapabilities.build();
     }
 }

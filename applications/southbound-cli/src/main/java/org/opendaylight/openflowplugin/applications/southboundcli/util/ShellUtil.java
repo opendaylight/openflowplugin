@@ -122,7 +122,7 @@ public final class ShellUtil {
             if (result.isPresent()) {
                 output = result.get().nonnullReconcileCounter().values();
             }
-        } catch (ExecutionException | InterruptedException | NullPointerException e) {
+        } catch (ExecutionException | InterruptedException e) {
             LOG.error("Error reading reconciliation counter from datastore", e);
         }
         return output;

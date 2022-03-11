@@ -12,15 +12,16 @@ import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.R
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.FAILED;
 import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.ReconciliationStatus.STARTED;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -53,7 +54,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorTag;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -94,9 +96,9 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     @Override
     public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(final ReconcileInput input) {
         boolean reconcileAllNodes = input.getReconcileAllNodes();
-        List<Uint64> inputNodes = input.getNodes();
+        Set<Uint64> inputNodes = input.getNodes();
         if (inputNodes == null) {
-            inputNodes = new ArrayList<>();
+            inputNodes = Set.of();
         }
         if (reconcileAllNodes && inputNodes.size() > 0) {
             return buildErrorResponse("Error executing command reconcile. "
@@ -116,7 +118,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 return buildErrorResponse("Error executing command reconcile. "
                         + "Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
             }
-            List<Uint64> inprogressNodes = new ArrayList<>();
+            ImmutableSet.Builder<Uint64> inprogressNodes = ImmutableSet.builder();
             nodesToReconcile.parallelStream().forEach(nodeId -> {
                 ReconciliationState state = getReconciliationState(nodeId);
                 if (state != null && state.getState().equals(STARTED)) {
@@ -130,7 +132,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 }
             });
             ReconcileOutput reconcilingInProgress = new ReconcileOutputBuilder()
-                    .setInprogressNodes(inprogressNodes)
+                    .setInprogressNodes(inprogressNodes.build())
                     .build();
             result.set(RpcResultBuilder.success(reconcilingInProgress).build());
             return result;
@@ -147,7 +149,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(final String msg) {
         LOG.error("Error {}", msg);
         return RpcResultBuilder.<ReconcileOutput>failed()
-                .withError(RpcError.ErrorType.PROTOCOL, "reconcile", msg)
+                .withError(ErrorType.PROTOCOL, new ErrorTag("reconcile"), msg)
                 .buildFuture();
     }
 
@@ -180,22 +182,23 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
                 if (rpcResult.isSuccessful()) {
                     increaseReconcileCount(true);
                     updateReconciliationState(COMPLETED);
-                    LOG.info("Reconciliation successfully completed for node {}", this.nodeId);
+                    LOG.info("Reconciliation successfully completed for node {}", nodeId);
                 } else {
                     increaseReconcileCount(false);
                     updateReconciliationState(FAILED);
-                    LOG.error("Reconciliation failed for node {} with error {}", this.nodeId, rpcResult.getErrors());
+                    LOG.error("Reconciliation failed for node {} with error {}", nodeId, rpcResult.getErrors());
                 }
             } catch (ExecutionException | InterruptedException e) {
                 increaseReconcileCount(false);
                 updateReconciliationState(FAILED);
-                LOG.error("Error occurred while invoking reconcile RPC for node {}", this.nodeId, e);
+                LOG.error("Error occurred while invoking reconcile RPC for node {}", nodeId, e);
             } finally {
                 alarmAgent.clearNodeReconciliationAlarm(nodeId.longValue());
             }
         }
 
         private void increaseReconcileCount(final boolean isSuccess) {
+            // FIXME: do not use SimpleDateFormat
             final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
             InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier
                     .builder(ReconciliationCounter.class).child(ReconcileCounter.class,

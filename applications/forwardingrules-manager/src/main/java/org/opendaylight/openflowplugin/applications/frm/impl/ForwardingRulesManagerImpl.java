@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Singleton
-public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
+public final class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
 
     static final int STARTUP_LOOP_TICK = 1000;
@@ -127,10 +127,10 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         staleMarkingEnabled = config.getStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
         isBundleBasedReconciliationEnabled = config.getBundleBasedReconciliationEnabled();
-        this.configurationServiceRegistration = configurationService.registerListener(this);
+        configurationServiceRegistration = configurationService.registerListener(this);
         this.registrationHelper = requireNonNull(registrationHelper, "RegistrationHelper cannot be null");
-        this.dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
-        this.clusterSingletonServiceProvider = requireNonNull(clusterSingletonService,
+        dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
+        clusterSingletonServiceProvider = requireNonNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
         this.reconciliationManager = reconciliationManager;
         this.rpcProviderService = rpcProviderService;
@@ -139,21 +139,21 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
         Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
 
-        this.salFlowService = requireNonNull(rpcRegistry.getRpcService(SalFlowService.class),
+        salFlowService = requireNonNull(rpcRegistry.getRpcService(SalFlowService.class),
                 "RPC SalFlowService not found.");
-        this.salGroupService = requireNonNull(rpcRegistry.getRpcService(SalGroupService.class),
+        salGroupService = requireNonNull(rpcRegistry.getRpcService(SalGroupService.class),
                 "RPC SalGroupService not found.");
-        this.salMeterService = requireNonNull(rpcRegistry.getRpcService(SalMeterService.class),
+        salMeterService = requireNonNull(rpcRegistry.getRpcService(SalMeterService.class),
                 "RPC SalMeterService not found.");
-        this.salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
+        salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
                 "RPC SalTableService not found.");
-        this.salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
+        salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
                 "RPC SalBundlService not found.");
         this.openflowServiceRecoveryHandler = requireNonNull(openflowServiceRecoveryHandler,
                 "Openflow service recovery handler cannot be null");
         this.serviceRecoveryRegistry = requireNonNull(serviceRecoveryRegistry,
                 "Service recovery registry cannot be null");
-        this.arbitratorReconciliationManager =
+        arbitratorReconciliationManager =
                 requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
                         "ArbitratorReconciliationManager can not be null!");
     }
@@ -162,26 +162,26 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     @PostConstruct
     public void start() {
         nodeConfigurator = new NodeConfiguratorImpl();
-        this.devicesGroupRegistry = new DevicesGroupRegistry();
-        this.nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
+        devicesGroupRegistry = new DevicesGroupRegistry();
+        nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING, flowGroupCacheManager);
         if (this.isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {
-            this.reconciliationNotificationRegistration = reconciliationManager.registerService(this.nodeListener);
+            reconciliationNotificationRegistration = reconciliationManager.registerService(nodeListener);
             LOG.debug("Reconciliation is enabled by user and successfully registered to the reconciliation framework");
         }
-        this.deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, this.nodeListener,
+        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, nodeListener,
                 dataService, mastershipChangeServiceManager, rpcProviderService,
                 new FrmReconciliationServiceImpl(this));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
-        this.bundleFlowListener = new BundleFlowForwarder(this);
-        this.bundleGroupListener = new BundleGroupForwarder(this);
-        this.flowListener = new FlowForwarder(this, dataService, registrationHelper);
-        this.groupListener = new GroupForwarder(this, dataService, registrationHelper);
-        this.meterListener = new MeterForwarder(this, dataService, registrationHelper);
-        this.tableListener = new TableForwarder(this, dataService, registrationHelper);
+        bundleFlowListener = new BundleFlowForwarder(this);
+        bundleGroupListener = new BundleGroupForwarder(this);
+        flowListener = new FlowForwarder(this, dataService, registrationHelper);
+        groupListener = new GroupForwarder(this, dataService, registrationHelper);
+        meterListener = new MeterForwarder(this, dataService, registrationHelper);
+        tableListener = new TableForwarder(this, dataService, registrationHelper);
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 
@@ -190,32 +190,32 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     public void close() throws Exception {
         configurationServiceRegistration.close();
 
-        if (this.flowListener != null) {
-            this.flowListener.close();
-            this.flowListener = null;
+        if (flowListener != null) {
+            flowListener.close();
+            flowListener = null;
         }
-        if (this.groupListener != null) {
-            this.groupListener.close();
-            this.groupListener = null;
+        if (groupListener != null) {
+            groupListener.close();
+            groupListener = null;
         }
-        if (this.meterListener != null) {
-            this.meterListener.close();
-            this.meterListener = null;
+        if (meterListener != null) {
+            meterListener.close();
+            meterListener = null;
         }
-        if (this.tableListener != null) {
-            this.tableListener.close();
-            this.tableListener = null;
+        if (tableListener != null) {
+            tableListener.close();
+            tableListener = null;
         }
-        if (this.nodeListener != null) {
-            this.nodeListener.close();
-            this.nodeListener = null;
+        if (nodeListener != null) {
+            nodeListener.close();
+            nodeListener = null;
         }
         if (deviceMastershipManager != null) {
             deviceMastershipManager.close();
         }
-        if (this.reconciliationNotificationRegistration != null) {
-            this.reconciliationNotificationRegistration.close();
-            this.reconciliationNotificationRegistration = null;
+        if (reconciliationNotificationRegistration != null) {
+            reconciliationNotificationRegistration.close();
+            reconciliationNotificationRegistration = null;
         }
     }
 
@@ -276,7 +276,7 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
 
     @Override
     public DevicesGroupRegistry getDevicesGroupRegistry() {
-        return this.devicesGroupRegistry;
+        return devicesGroupRegistry;
     }
 
     @Override
@@ -375,16 +375,16 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
         if (forwardingRulesProperty != null) {
             switch (forwardingRulesProperty) {
                 case DISABLE_RECONCILIATION:
-                    disableReconciliation = Boolean.valueOf(propertyValue);
+                    disableReconciliation = Boolean.parseBoolean(propertyValue);
                     break;
                 case STALE_MARKING_ENABLED:
-                    staleMarkingEnabled = Boolean.valueOf(propertyValue);
+                    staleMarkingEnabled = Boolean.parseBoolean(propertyValue);
                     break;
                 case RECONCILIATION_RETRY_COUNT:
                     reconciliationRetryCount = Integer.parseInt(propertyValue);
                     break;
                 case BUNDLE_BASED_RECONCILIATION_ENABLED:
-                    isBundleBasedReconciliationEnabled = Boolean.valueOf(propertyValue);
+                    isBundleBasedReconciliationEnabled = Boolean.parseBoolean(propertyValue);
                     break;
                 default:
                     LOG.warn("No forwarding rule property found.");

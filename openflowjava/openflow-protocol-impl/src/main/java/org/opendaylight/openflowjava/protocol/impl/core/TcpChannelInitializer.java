@@ -88,8 +88,7 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
                 List<String> suitesList = getTlsConfiguration().getCipherSuites();
                 if (suitesList != null && !suitesList.isEmpty()) {
                     LOG.debug("Requested Cipher Suites are: {}", suitesList);
-                    String[] suites = suitesList.toArray(new String[suitesList.size()]);
-                    engine.setEnabledCipherSuites(suites);
+                    engine.setEnabledCipherSuites(suitesList.toArray(new String[0]));
                     LOG.debug("Cipher suites enabled in SSLEngine are: {}",
                             Arrays.toString(engine.getEnabledCipherSuites()));
                 }

@@ -37,17 +37,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfigBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link LLDPLinkAger}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPLinkAgerTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAgerTest.class);
-
     private static final Uint32 LLDP_INTERVAL = Uint32.valueOf(5);
     private static final Uint32 LINK_EXPIRATION_TIME = Uint32.TEN;
 

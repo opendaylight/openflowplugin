@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * {@link ClusterSingletonService} clusterSingletonServiceRegistration per connected device.
  */
-public class DeviceMastership implements ClusterSingletonService, AutoCloseable {
+public final class DeviceMastership implements ClusterSingletonService, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastership.class);
     private final NodeId nodeId;
     private final ServiceGroupIdentifier identifier;
@@ -33,9 +33,9 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
                             final ReconciliationRegistry reconciliationRegistry,
                             final ClusterSingletonServiceProvider clusterSingletonService) {
         this.nodeId = nodeId;
-        this.identifier = ServiceGroupIdentifier.create(nodeId.getValue());
+        identifier = ServiceGroupIdentifier.create(nodeId.getValue());
         this.reconciliationRegistry = reconciliationRegistry;
-        this.deviceMastered = false;
+        deviceMastered = false;
         clusterSingletonServiceRegistration = clusterSingletonService.registerClusterSingletonService(this);
     }
 

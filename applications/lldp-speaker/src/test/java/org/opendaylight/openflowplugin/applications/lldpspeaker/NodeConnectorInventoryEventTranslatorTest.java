@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.DELETE;
 import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.SUBTREE_MODIFIED;
@@ -81,7 +81,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, ID, fcnc);
         translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        verifyZeroInteractions(eventsObserver);
+        verifyNoInteractions(eventsObserver);
     }
 
     /**
@@ -92,7 +92,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, ID, fcnc);
         translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        verifyZeroInteractions(eventsObserver);
+        verifyNoInteractions(eventsObserver);
     }
 
     /**

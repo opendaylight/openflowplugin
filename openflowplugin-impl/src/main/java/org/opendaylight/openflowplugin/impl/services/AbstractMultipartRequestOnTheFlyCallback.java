@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.services;
 
 import com.google.common.util.concurrent.Service;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collections;
 import java.util.List;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -26,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,15 +35,19 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeader>
                                                         extends AbstractMultipartRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestOnTheFlyCallback.class);
+
     private final DeviceInfo deviceInfo;
     private final EventIdentifier doneEventIdentifier;
     private final TxFacade txFacade;
     private final MultipartWriterProvider statisticsWriterProvider;
     private final DeviceRegistry deviceRegistry;
-    private volatile Service.State gatheringState = Service.State.NEW;
     private final ConvertorExecutor convertorExecutor;
 
-    public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, Class<?> requestType,
+    private volatile Service.State gatheringState = Service.State.NEW;
+
+    @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
+        justification = "getMultipartType() should be okay to call")
+    public AbstractMultipartRequestOnTheFlyCallback(final RequestContext<List<T>> context, final Class<?> requestType,
                                                     final DeviceContext deviceContext,
                                                     final EventIdentifier eventIdentifier,
                                                     final MultipartWriterProvider statisticsWriterProvider,
@@ -75,7 +80,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
         if (!isMultipart(result)) {
             LOG.warn("Unexpected response type received: {}.", result.getClass());
-            setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
+            setResult(RpcResultBuilder.<List<T>>failed().withError(ErrorType.APPLICATION,
                     String.format("Unexpected response type received: %s.", result.getClass())).build());
             endCollecting(false);
         } else {
@@ -100,7 +105,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         });
             } catch (final Exception ex) {
                 LOG.warn("Unexpected exception occurred while translating response: {}.", result.getClass(), ex);
-                setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
+                setResult(RpcResultBuilder.<List<T>>failed().withError(ErrorType.APPLICATION,
                         String.format("Unexpected exception occurred while translating response: %s. %s",
                                       result.getClass(),
                                       ex)).build());
