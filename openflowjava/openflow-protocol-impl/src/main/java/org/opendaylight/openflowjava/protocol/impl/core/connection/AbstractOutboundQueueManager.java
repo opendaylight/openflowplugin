@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.Future;
@@ -83,6 +84,8 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
     // Passed to executor to request triggering of flush
     protected final Runnable flushRunnable = this::flush;
 
+    @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
+        justification = "Circular dependency on outbound queue")
     AbstractOutboundQueueManager(final ConnectionAdapterImpl parent, final InetSocketAddress address, final T handler) {
         this.parent = requireNonNull(parent);
         this.handler = requireNonNull(handler);

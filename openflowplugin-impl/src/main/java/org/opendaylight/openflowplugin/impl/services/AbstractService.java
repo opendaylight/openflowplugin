@@ -29,7 +29,8 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorTag;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -129,7 +130,7 @@ public abstract class AbstractService<I, O> {
             getMessageSpy().spyMessage(AbstractService.class, MessageSpy.StatisticsGroup.TO_SWITCH_DISREGARDED);
             return Futures.immediateFuture(RpcResultBuilder
                     .<O>failed()
-                    .withError(RpcError.ErrorType.APPLICATION, "", "Request quota exceeded")
+                    .withError(ErrorType.APPLICATION, ErrorTag.ACCESS_DENIED, "Request quota exceeded")
                     .build());
         }
 

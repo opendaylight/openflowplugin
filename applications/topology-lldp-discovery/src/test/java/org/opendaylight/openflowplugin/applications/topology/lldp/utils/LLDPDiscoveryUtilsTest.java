@@ -18,17 +18,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link LLDPDiscoveryUtils}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPDiscoveryUtilsTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(LLDPDiscoveryUtilsTest.class);
-
     @Test
     public void testLldpToNodeConnectorRefLLDP() {
         byte[] packetLLDP = {

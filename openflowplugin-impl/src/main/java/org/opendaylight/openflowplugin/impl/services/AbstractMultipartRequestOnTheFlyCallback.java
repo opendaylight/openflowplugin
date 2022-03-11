@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +75,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
         if (!isMultipart(result)) {
             LOG.warn("Unexpected response type received: {}.", result.getClass());
-            setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
+            setResult(RpcResultBuilder.<List<T>>failed().withError(ErrorType.APPLICATION,
                     String.format("Unexpected response type received: %s.", result.getClass())).build());
             endCollecting(false);
         } else {
@@ -100,7 +100,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
                         });
             } catch (final Exception ex) {
                 LOG.warn("Unexpected exception occurred while translating response: {}.", result.getClass(), ex);
-                setResult(RpcResultBuilder.<List<T>>failed().withError(RpcError.ErrorType.APPLICATION,
+                setResult(RpcResultBuilder.<List<T>>failed().withError(ErrorType.APPLICATION,
                         String.format("Unexpected exception occurred while translating response: %s. %s",
                                       result.getClass(),
                                       ex)).build());

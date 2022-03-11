@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -69,7 +69,7 @@ public class MeterUtilTest {
         final RpcResult<List<BatchFailedMetersOutput>> output = function.apply(Lists.newArrayList(
                 RpcResultBuilder.success("a").build(),
                 RpcResultBuilder.<String>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-meter-error")
+                        .withError(ErrorType.APPLICATION, "ut-meter-error")
                         .build()));
 
         Assert.assertFalse(output.isSuccessful());
@@ -136,8 +136,8 @@ public class MeterUtilTest {
 
     private static RpcResult<List<BatchFailedMetersOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedMetersOutput>>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-flowAddFail")
-                .withResult(Collections.singletonList(new BatchFailedMetersOutputBuilder()
+                .withError(ErrorType.APPLICATION, "ut-flowAddFail")
+                .withResult(List.of(new BatchFailedMetersOutputBuilder()
                         .setBatchOrder(Uint16.ZERO)
                         .setMeterId(DUMMY_METER_ID)
                         .build()))
@@ -224,7 +224,7 @@ public class MeterUtilTest {
 
     private static RpcResult<SendBarrierOutput> createBarrierFailureOutcome() {
         return RpcResultBuilder.<SendBarrierOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION, "ut-barrier-error")
+                .withError(ErrorType.APPLICATION, "ut-barrier-error")
                 .build();
     }
 

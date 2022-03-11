@@ -156,7 +156,7 @@ public class TransactionChainManagerTest {
     public void testOnTransactionChainSuccessful() {
         txChainManager.onTransactionChainSuccessful(transactionChain);
         // NOOP
-        Mockito.verifyZeroInteractions(transactionChain);
+        Mockito.verifyNoInteractions(transactionChain);
     }
 
     @Test

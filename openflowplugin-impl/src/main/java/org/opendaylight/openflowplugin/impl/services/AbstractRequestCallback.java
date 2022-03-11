@@ -20,7 +20,7 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -65,16 +65,16 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
                                                      err.getTypeString(),
                                                      err.getCodeString());
 
-            builder = RpcResultBuilder.<T>failed().withError(RpcError.ErrorType.APPLICATION, errorString, throwable);
+            builder = RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, errorString, throwable);
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_FAILURE);
         } else {
             if (throwable != null) {
                 builder = RpcResultBuilder.<T>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, throwable.getMessage(), throwable);
+                        .withError(ErrorType.APPLICATION, throwable.getMessage(), throwable);
             } else {
                 Throwable deviceReadFailedThrowable = new Throwable("Failed to read from device.");
                 builder = RpcResultBuilder.<T>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, deviceReadFailedThrowable.getMessage(),
+                        .withError(ErrorType.APPLICATION, deviceReadFailedThrowable.getMessage(),
                                 deviceReadFailedThrowable);
             }
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_ERROR);

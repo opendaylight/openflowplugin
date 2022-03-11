@@ -108,14 +108,14 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
+            <artifactId>netty-transport-classes-epoll</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
             <artifactId>netty-transport-native-epoll</artifactId>
-            <!-- Explicitly bring in the linux classifier, test may fail on 32-bit linux -->
-            <!--
-                FIXME: I don't think this is a good idea. We should be platform-agnostic
-                       for build, so this works on Mac and others as well.
-                       x86-64 Linux is tested in CSIT, where this library is present
-             -->
             <classifier>linux-x86_64</classifier>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

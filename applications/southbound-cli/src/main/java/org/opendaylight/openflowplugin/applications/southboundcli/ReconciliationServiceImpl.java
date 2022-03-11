@@ -53,7 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -147,7 +147,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(final String msg) {
         LOG.error("Error {}", msg);
         return RpcResultBuilder.<ReconcileOutput>failed()
-                .withError(RpcError.ErrorType.PROTOCOL, "reconcile", msg)
+                .withError(ErrorType.PROTOCOL, "reconcile", msg)
                 .buildFuture();
     }
 
@@ -196,6 +196,7 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         }
 
         private void increaseReconcileCount(final boolean isSuccess) {
+            // FIXME: do not use SimpleDateFormat
             final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
             InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier
                     .builder(ReconciliationCounter.class).child(ReconcileCounter.class,

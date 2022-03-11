@@ -66,7 +66,8 @@ public class SingleLayerAggregateFlowMultipartService
                                                 new AggregatedFlowStatisticsBuilder(
                                                     (MultipartReplyFlowAggregateStats) multipartReplyBody)
                                                         .build())
-                                        .collect(Collectors.toList())))
+                                        .collect(Collectors.toList()))
+                                .build())
                         .build();
             }
 

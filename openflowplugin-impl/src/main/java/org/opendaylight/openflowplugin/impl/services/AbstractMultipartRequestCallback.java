@@ -13,7 +13,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
 
             setResult(RpcResultBuilder
                     .<List<T>>failed()
-                    .withError(RpcError.ErrorType.APPLICATION,
+                    .withError(ErrorType.APPLICATION,
                             String.format("Unexpected response type received: %s.", result.getClass()))
                     .build());
         } else {

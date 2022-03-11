@@ -8,6 +8,7 @@
 package org.opendaylight.openflowjava.protocol.impl.serialization.factories;
 
 import io.netty.buffer.ByteBuf;
+import java.util.Collection;
 import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -59,7 +60,7 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         }
     }
 
-    private static void serializeReasons(final List<? extends Enumeration> reasons, final ByteBuf outBuffer) {
+    private static void serializeReasons(final Collection<? extends Enumeration> reasons, final ByteBuf outBuffer) {
         if (reasons != null) {
             int bitmap = 0;
             for (Enumeration reason : reasons) {

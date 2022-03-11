@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class OpenflowServiceRecoveryHandlerImpl implements ServiceRecoveryInterface,
+public final class OpenflowServiceRecoveryHandlerImpl implements ServiceRecoveryInterface,
         OpenflowServiceRecoveryHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowServiceRecoveryHandlerImpl.class);
