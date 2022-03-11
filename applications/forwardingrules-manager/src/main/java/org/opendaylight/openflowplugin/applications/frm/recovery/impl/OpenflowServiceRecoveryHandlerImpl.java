@@ -9,8 +9,6 @@ package org.opendaylight.openflowplugin.applications.frm.recovery.impl;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryInterface;
@@ -20,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = OpenflowServiceRecoveryHandler.class)
 public class OpenflowServiceRecoveryHandlerImpl implements ServiceRecoveryInterface,
         OpenflowServiceRecoveryHandler {
 
@@ -29,7 +26,7 @@ public class OpenflowServiceRecoveryHandlerImpl implements ServiceRecoveryInterf
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
 
     @Inject
-    public OpenflowServiceRecoveryHandlerImpl(@Reference final ServiceRecoveryRegistry serviceRecoveryRegistry) {
+    public OpenflowServiceRecoveryHandlerImpl(final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         LOG.info("Registering openflowplugin service recovery handlers");
         this.serviceRecoveryRegistry = serviceRecoveryRegistry;
         serviceRecoveryRegistry.registerServiceRecoveryRegistry(buildServiceRegistryKey(), this);
