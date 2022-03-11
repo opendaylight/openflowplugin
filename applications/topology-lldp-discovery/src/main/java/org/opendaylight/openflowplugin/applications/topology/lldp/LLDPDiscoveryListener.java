@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
@@ -32,8 +31,8 @@ public class LLDPDiscoveryListener implements PacketProcessingListener {
     private final EntityOwnershipService eos;
 
     @Inject
-    public LLDPDiscoveryListener(@Reference final NotificationPublishService notificationService,
-            final LLDPLinkAger lldpLinkAger, @Reference final EntityOwnershipService entityOwnershipService) {
+    public LLDPDiscoveryListener(final NotificationPublishService notificationService,
+            final LLDPLinkAger lldpLinkAger, final EntityOwnershipService entityOwnershipService) {
         this.notificationService = notificationService;
         this.lldpLinkAger = lldpLinkAger;
         this.eos = entityOwnershipService;
