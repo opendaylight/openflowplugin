@@ -28,6 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSalBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.add.message.sal.SalAddMessageDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.control.sal.SalControlDataBuilder;
+import org.opendaylight.yangtools.yang.common.ErrorTag;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -47,7 +49,7 @@ public class SalBundleServiceImpl implements SalBundleService {
     }
 
     @Override
-    public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(ControlBundleInput input) {
+    public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(final ControlBundleInput input) {
         LOG.debug("Control message for device {} and bundle type {}", input.getNode(), input.getType());
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         experimenterInputBuilder.setNode(input.getNode());
@@ -64,7 +66,7 @@ public class SalBundleServiceImpl implements SalBundleService {
     }
 
     @Override
-    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(AddBundleMessagesInput input) {
+    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(final AddBundleMessagesInput input) {
         final List<ListenableFuture<RpcResult<SendExperimenterOutput>>> partialResults = new ArrayList<>();
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         final BundleAddMessageSalBuilder bundleAddMessageBuilder = new BundleAddMessageSalBuilder();
@@ -89,13 +91,14 @@ public class SalBundleServiceImpl implements SalBundleService {
         Futures.addCallback(Futures.successfulAsList(partialResults),new FutureCallback<
                 List<RpcResult<SendExperimenterOutput>>>() {
             @Override
-            public void onSuccess(List<RpcResult<SendExperimenterOutput>> results) {
+            public void onSuccess(final List<RpcResult<SendExperimenterOutput>> results) {
                 final ArrayList<RpcError> errors = new ArrayList<>();
                 final RpcResultBuilder<AddBundleMessagesOutput> rpcResultBuilder;
                 for (RpcResult<SendExperimenterOutput> res : results) {
                     if (res == null) {
-                        errors.add(RpcResultBuilder.newError(RpcError.ErrorType.APPLICATION, "BundleExtensionService",
-                                                             "RpcResult is null."));
+                        // FIXME: this should never happen
+                        errors.add(RpcResultBuilder.newError(ErrorType.APPLICATION,
+                            new ErrorTag("BundleExtensionService"), "RpcResult is null."));
                     } else if (!res.isSuccessful()) {
                         errors.addAll(res.getErrors());
                     }
@@ -109,7 +112,7 @@ public class SalBundleServiceImpl implements SalBundleService {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 RpcResultBuilder<AddBundleMessagesOutput> rpcResultBuilder = RpcResultBuilder.failed();
                 result.set(rpcResultBuilder.build());
             }

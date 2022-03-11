@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -73,7 +74,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
                 for (RpcResult<O> flowModResult : results) {
                     if (flowModResult == null) {
                         errors.add(RpcResultBuilder.newError(
-                                RpcError.ErrorType.PROTOCOL, OFConstants.APPLICATION_TAG,
+                                ErrorType.PROTOCOL, OFConstants.APPLICATION_TAG,
                                 "unexpected flowMod result (null) occurred"));
                     } else if (!flowModResult.isSuccessful()) {
                         errors.addAll(flowModResult.getErrors());

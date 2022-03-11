@@ -9,9 +9,9 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
+import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -33,67 +33,53 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
 
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {
-        final MultipartReplyGroupFeaturesBuilder builder = new MultipartReplyGroupFeaturesBuilder();
-
-        return builder
+        return new MultipartReplyGroupFeaturesBuilder()
             .setGroupTypesSupported(readGroupTypes(message))
             .setGroupCapabilitiesSupported(readGroupCapabilities(message))
             .setMaxGroups(IntStream.range(0, GROUP_TYPES)
                 .mapToObj(i -> readUint32(message))
-                .collect(Collectors.toList()))
+                .collect(Collectors.toUnmodifiableList()))
             .setActions(IntStream.range(0, GROUP_TYPES)
                 .mapToObj(i -> readUint32(message))
-                .collect(Collectors.toList()))
+                .collect(Collectors.toUnmodifiableList()))
             .build();
     }
 
-    private static List<Class<? extends GroupCapability>> readGroupCapabilities(final ByteBuf message) {
-        final List<Class<? extends GroupCapability>> groupCapabilities = new ArrayList<>();
+    private static Set<Class<? extends GroupCapability>> readGroupCapabilities(final ByteBuf message) {
         final long capabilitiesMask = message.readUnsignedInt();
 
-        final boolean gcSelectWeight = (capabilitiesMask & 1 << 0) != 0;
-        final boolean gcSelectLiveness = (capabilitiesMask & 1 << 1) != 0;
-        final boolean gcChaining = (capabilitiesMask & 1 << 2) != 0;
-        final boolean gcChainingChecks = (capabilitiesMask & 1 << 3) != 0;
-
-        if (gcSelectWeight) {
-            groupCapabilities.add(SelectWeight.class);
+        final var builder = ImmutableSet.<Class<? extends GroupCapability>>builder();
+        if ((capabilitiesMask & 1 << 0) != 0) {
+            builder.add(SelectWeight.class);
         }
-        if (gcSelectLiveness) {
-            groupCapabilities.add(SelectLiveness.class);
+        if ((capabilitiesMask & 1 << 1) != 0) {
+            builder.add(SelectLiveness.class);
         }
-        if (gcChaining) {
-            groupCapabilities.add(Chaining.class);
+        if ((capabilitiesMask & 1 << 2) != 0) {
+            builder.add(Chaining.class);
         }
-        if (gcChainingChecks) {
-            groupCapabilities.add(ChainingChecks.class);
+        if ((capabilitiesMask & 1 << 3) != 0) {
+            builder.add(ChainingChecks.class);
         }
-
-        return groupCapabilities;
+        return builder.build();
     }
 
-    private static List<Class<? extends GroupType>> readGroupTypes(final ByteBuf message) {
-        final List<Class<? extends GroupType>> groupTypes = new ArrayList<>();
+    private static Set<Class<? extends GroupType>> readGroupTypes(final ByteBuf message) {
         final long typesMask = message.readUnsignedInt();
 
-        final boolean gtAll = (typesMask & 1 << 0) != 0;
-        final boolean gtSelect = (typesMask & 1 << 1) != 0;
-        final boolean gtIndirect = (typesMask & 1 << 2) != 0;
-        final boolean gtFF = (typesMask & 1 << 3) != 0;
-
-        if (gtAll) {
-            groupTypes.add(GroupAll.class);
+        final var builder = ImmutableSet.<Class<? extends GroupType>>builder();
+        if ((typesMask & 1 << 0) != 0) {
+            builder.add(GroupAll.class);
         }
-        if (gtSelect) {
-            groupTypes.add(GroupSelect.class);
+        if ((typesMask & 1 << 1) != 0) {
+            builder.add(GroupSelect.class);
         }
-        if (gtIndirect) {
-            groupTypes.add(GroupIndirect.class);
+        if ((typesMask & 1 << 2) != 0) {
+            builder.add(GroupIndirect.class);
         }
-        if (gtFF) {
-            groupTypes.add(GroupFf.class);
+        if ((typesMask & 1 << 3) != 0) {
+            builder.add(GroupFf.class);
         }
-
-        return groupTypes;
+        return builder.build();
     }
 }

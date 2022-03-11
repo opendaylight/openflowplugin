@@ -10,11 +10,11 @@ package org.opendaylight.openflowplugin.applications.topology.lldp;
 import com.google.common.annotations.VisibleForTesting;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
-import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -48,19 +47,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeChangeListener<Link>, AutoCloseable {
+public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeChangeListener<Link>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
     static final String TOPOLOGY_ID = "flow:1";
     static final InstanceIdentifier<Link> II_TO_LINK = InstanceIdentifier.create(NetworkTopology.class)
             .child(Topology.class, new TopologyKey(new TopologyId(TOPOLOGY_ID))).child(Link.class);
 
     private final long linkExpirationTime;
-    private final Map<LinkDiscovered, Date> linkToDate;
-    private final Timer timer;
+    // FIXME: use Instant instead of Date
+    private final ConcurrentMap<LinkDiscovered, Date> linkToDate = new ConcurrentHashMap<>();
+    private final Timer timer = new Timer();
     private final NotificationPublishService notificationService;
     private final AutoCloseable configurationServiceRegistration;
     private final EntityOwnershipService eos;
-    private ListenerRegistration<DataTreeChangeListener> listenerRegistration;
+    private ListenerRegistration<?> listenerRegistration;
 
     /**
      * default ctor - start timer.
@@ -72,13 +72,11 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
                         final ConfigurationService configurationService,
                         final EntityOwnershipService entityOwnershipService,
                         final DataBroker dataBroker) {
-        this.linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue().toJava();
+        linkExpirationTime = topologyLldpDiscoveryConfig.getTopologyLldpExpirationInterval().getValue().toJava();
         this.notificationService = notificationService;
-        this.configurationServiceRegistration = configurationService.registerListener(this);
-        this.eos = entityOwnershipService;
-        linkToDate = new ConcurrentHashMap<>();
-        timer = new Timer();
-        final DataTreeIdentifier dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        configurationServiceRegistration = configurationService.registerListener(this);
+        eos = entityOwnershipService;
+        final DataTreeIdentifier<Link> dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                 II_TO_LINK);
         try {
             listenerRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, LLDPLinkAger.this);
@@ -110,7 +108,7 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
 
     @Override
     public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Link>> changes) {
-        for (DataTreeModification modification : changes) {
+        for (DataTreeModification<Link> modification : changes) {
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:
                     break;
@@ -153,8 +151,8 @@ public class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeCha
         return linkToDate.containsKey(linkDiscovered);
     }
 
-    private void processLinkDeleted(DataObjectModification rootNode) {
-        Link link = (Link) rootNode.getDataBefore();
+    private void processLinkDeleted(DataObjectModification<Link> rootNode) {
+        Link link = rootNode.getDataBefore();
         LOG.trace("Removing link {} from linkToDate cache", link);
         LinkDiscovered linkDiscovered = LLDPDiscoveryUtils.toLLDPLinkDiscovered(link);
         linkToDate.remove(linkDiscovered);

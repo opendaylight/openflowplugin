@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -151,7 +151,7 @@ public class SalFlowsBatchServiceImplTest {
     public void testRemoveFlowsBatch_failed() throws Exception {
         Mockito.when(salFlowService.removeFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<RemoveFlowOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "flow-remove-fail-1")
+                        .withError(ErrorType.APPLICATION, "flow-remove-fail-1")
                         .buildFuture());
 
         final BatchRemoveFlows batchFlow1 = createEmptyBatchRemoveFlow(FLOW_ID_VALUE_1, 42);
@@ -246,7 +246,7 @@ public class SalFlowsBatchServiceImplTest {
     public void testAddFlowsBatch_failed() throws Exception {
         Mockito.when(salFlowService.addFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder
-                        .<AddFlowOutput>failed().withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
+                        .<AddFlowOutput>failed().withError(ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
 
         final AddFlowsBatchInput input = new AddFlowsBatchInputBuilder()
@@ -314,7 +314,7 @@ public class SalFlowsBatchServiceImplTest {
     public void testUpdateFlowsBatch_failure() throws Exception {
         Mockito.when(salFlowService.updateFlow(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<UpdateFlowOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-flowUpdateError")
+                        .withError(ErrorType.APPLICATION, "ut-flowUpdateError")
                         .buildFuture());
 
         final UpdateFlowsBatchInput input = new UpdateFlowsBatchInputBuilder()

@@ -32,13 +32,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
+public final class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
 
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
 
@@ -56,10 +56,10 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
                                  final ConvertorExecutor convertorExecutor,
                                  @NonNull final Executor executor) {
         this.config = config;
-        this.converterExecutor = convertorExecutor;
-        this.controlServiceRegistration = requireNonNull(rpcProviderRegistry
-                .registerRpcImplementation(StatisticsManagerControlService.class, this));
         this.executor = executor;
+        converterExecutor = convertorExecutor;
+        controlServiceRegistration = requireNonNull(rpcProviderRegistry)
+                .registerRpcImplementation(StatisticsManagerControlService.class, this);
     }
 
     @Override
@@ -95,8 +95,7 @@ public class StatisticsManagerImpl implements StatisticsManager, StatisticsManag
         }
 
         return RpcResultBuilder.<ChangeStatisticsWorkModeOutput>failed()
-                .withError(RpcError.ErrorType.APPLICATION,
-                        "Statistics work mode change is already in progress")
+                .withError(ErrorType.APPLICATION, "Statistics work mode change is already in progress")
                 .buildFuture();
     }
 
