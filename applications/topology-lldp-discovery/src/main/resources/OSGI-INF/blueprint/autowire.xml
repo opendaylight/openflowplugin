@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+    <bean id="lLDPActivator" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator" destroy-method="close">
+        <argument ref="notificationService"/>
+        <argument ref="lLDPDiscoveryListener"/>
+        <argument ref="topologyLldpDiscoveryConfig"/>
+    </bean>
+    <bean id="lLDPDiscoveryListener" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPDiscoveryListener">
+        <argument ref="notificationPublishService"/>
+        <argument ref="lLDPLinkAger"/>
+        <argument ref="entityOwnershipService"/>
+    </bean>
+    <bean id="lLDPLinkAger" class="org.opendaylight.openflowplugin.applications.topology.lldp.LLDPLinkAger" destroy-method="close">
+        <argument ref="topologyLldpDiscoveryConfig"/>
+        <argument ref="notificationPublishService"/>
+        <argument ref="configurationService"/>
+        <argument ref="entityOwnershipService"/>
+        <argument ref="dataBroker"/>
+    </bean>
+    <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
+    <reference id="notificationPublishService" interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
+    <reference id="notificationService" interface="org.opendaylight.mdsal.binding.api.NotificationService"/>
+    <reference id="entityOwnershipService" interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
+    <reference id="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+</blueprint>
