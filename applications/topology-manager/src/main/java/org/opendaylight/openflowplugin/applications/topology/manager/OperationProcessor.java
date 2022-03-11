@@ -13,7 +13,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.slf4j.Logger;
@@ -32,7 +31,7 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
     private volatile boolean finishing = false;
 
     @Inject
-    public OperationProcessor(@Reference final DataBroker dataBroker) {
+    public OperationProcessor(final DataBroker dataBroker) {
         transactionChainManager = new TransactionChainManager(dataBroker, TOPOLOGY_MANAGER);
         transactionChainManager.activateTransactionManager();
         transactionChainManager.initialSubmitWriteTransaction();

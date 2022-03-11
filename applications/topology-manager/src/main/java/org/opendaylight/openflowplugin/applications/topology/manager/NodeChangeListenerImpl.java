@@ -11,7 +11,6 @@ import java.util.Collection;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -31,7 +30,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
     @Inject
-    public NodeChangeListenerImpl(@Reference final DataBroker dataBroker, final OperationProcessor operationProcessor) {
+    public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
         // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
         // listener)
         super(operationProcessor, dataBroker,
