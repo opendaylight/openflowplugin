@@ -11,6 +11,7 @@ import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
+import org.opendaylight.yangtools.yang.common.ErrorTag;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -68,9 +69,7 @@ public final class OFConstants {
     public static final int SIGNUM_UNSIGNED = 1;
 
     /** RpcError application tag. */
-    public static final String APPLICATION_TAG = "OPENFLOW_PLUGIN";
-    /** RpcError tag - timeout. */
-    public static final String ERROR_TAG_TIMEOUT = "TIMOUT";
+    public static final ErrorTag APPLICATION_TAG = new ErrorTag("OPENFLOW_PLUGIN");
 
     /** Persistent ID of OpenFlowPlugin configuration file. */
     public static final String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";

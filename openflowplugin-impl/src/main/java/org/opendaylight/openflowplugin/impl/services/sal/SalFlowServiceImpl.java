@@ -43,6 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -140,7 +141,7 @@ public class SalFlowServiceImpl implements SalFlowService {
                         for (RpcResult<UpdateFlowOutput> flowModResult : results) {
                             if (flowModResult == null) {
                                 errors.add(RpcResultBuilder.newError(
-                                        RpcError.ErrorType.PROTOCOL, OFConstants.APPLICATION_TAG,
+                                        ErrorType.PROTOCOL, OFConstants.APPLICATION_TAG,
                                         "unexpected flowMod result (null) occurred"));
                             } else if (!flowModResult.isSuccessful()) {
                                 errors.addAll(flowModResult.getErrors());

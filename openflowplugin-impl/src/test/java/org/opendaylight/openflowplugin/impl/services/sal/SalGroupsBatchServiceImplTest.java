@@ -62,7 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcError;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -139,7 +139,7 @@ public class SalGroupsBatchServiceImplTest {
     public void testUpdateGroupsBatch_failure() throws Exception {
         Mockito.when(salGroupService.updateGroup(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<UpdateGroupOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ur-groupUpdateError")
+                        .withError(ErrorType.APPLICATION, "ur-groupUpdateError")
                         .buildFuture());
 
         final UpdateGroupsBatchInput input = new UpdateGroupsBatchInputBuilder()
@@ -207,7 +207,7 @@ public class SalGroupsBatchServiceImplTest {
     public void testAddGroupsBatch_failure() throws Exception {
         Mockito.when(salGroupService.addGroup(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<AddGroupOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupAddError")
+                        .withError(ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
 
         final AddGroupsBatchInput input = new AddGroupsBatchInputBuilder()
@@ -273,7 +273,7 @@ public class SalGroupsBatchServiceImplTest {
     public void testRemoveGroupsBatch_failure() throws Exception {
         Mockito.when(salGroupService.removeGroup(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<RemoveGroupOutput>failed()
-                        .withError(RpcError.ErrorType.APPLICATION, "ut-groupRemoveError")
+                        .withError(ErrorType.APPLICATION, "ut-groupRemoveError")
                         .buildFuture());
 
         final RemoveGroupsBatchInput input = new RemoveGroupsBatchInputBuilder()

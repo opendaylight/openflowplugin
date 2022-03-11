@@ -9,8 +9,9 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
-import java.util.ArrayList;
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -94,38 +95,38 @@ final class GroupFeaturesService
     }
 
     @VisibleForTesting
-    static List<Class<? extends GroupCapability>> extractSupportedCapabilities(final GroupCapabilities capabilities) {
-        List<Class<? extends GroupCapability>> supportedCapabilities = new ArrayList<>();
+    static Set<Class<? extends GroupCapability>> extractSupportedCapabilities(final GroupCapabilities capabilities) {
+        final var builder = ImmutableSet.<Class<? extends GroupCapability>>builder();
         if (capabilities.getOFPGFCCHAINING()) {
-            supportedCapabilities.add(Chaining.class);
+            builder.add(Chaining.class);
         }
         if (capabilities.getOFPGFCCHAININGCHECKS()) {
-            supportedCapabilities.add(ChainingChecks.class);
+            builder.add(ChainingChecks.class);
         }
         if (capabilities.getOFPGFCSELECTLIVENESS()) {
-            supportedCapabilities.add(SelectLiveness.class);
+            builder.add(SelectLiveness.class);
         }
         if (capabilities.getOFPGFCSELECTWEIGHT()) {
-            supportedCapabilities.add(SelectWeight.class);
+            builder.add(SelectWeight.class);
         }
-        return supportedCapabilities;
+        return builder.build();
     }
 
     @VisibleForTesting
-    static List<Class<? extends GroupType>> extractSupportedGroupTypes(final GroupTypes types) {
-        List<Class<? extends GroupType>> supportedGroups = new ArrayList<>();
+    static Set<Class<? extends GroupType>> extractSupportedGroupTypes(final GroupTypes types) {
+        final var builder = ImmutableSet.<Class<? extends GroupType>>builder();
         if (types.getOFPGTALL()) {
-            supportedGroups.add(GroupAll.class);
+            builder.add(GroupAll.class);
         }
         if (types.getOFPGTSELECT()) {
-            supportedGroups.add(GroupSelect.class);
+            builder.add(GroupSelect.class);
         }
         if (types.getOFPGTINDIRECT()) {
-            supportedGroups.add(GroupIndirect.class);
+            builder.add(GroupIndirect.class);
         }
         if (types.getOFPGTFF()) {
-            supportedGroups.add(GroupFf.class);
+            builder.add(GroupFf.class);
         }
-        return supportedGroups;
+        return builder.build();
     }
 }

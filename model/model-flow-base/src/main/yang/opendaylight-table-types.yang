@@ -11,7 +11,7 @@ module opendaylight-table-types {
     }
 
     typedef table-id {
-    	type uint8;
+        type uint8;
     }
 
     typedef table-ref {
@@ -204,7 +204,7 @@ module opendaylight-table-types {
 
     grouping set-field-match {
         list set-field-match {
-	    key "match-type";
+        key "match-type";
             leaf match-type {
                 type identityref {
                     base match-field;
@@ -234,6 +234,7 @@ module opendaylight-table-types {
                 container tables {
                     leaf-list table-ids {
                         type uint8;
+                        ordered-by user;
                     }
                 }
             }
@@ -242,6 +243,7 @@ module opendaylight-table-types {
                 container tables-miss {
                     leaf-list table-ids {
                         type uint8;
+                        ordered-by user;
                     }
                 }
             }
@@ -271,19 +273,19 @@ module opendaylight-table-types {
             }
 
             case match {
-		        container match-setfield {
-		    uses set-field-match;
-		        }
+                container match-setfield {
+                    uses set-field-match;
+                }
             }
 
             case wildcards {
-		        container wildcard-setfield {
+                container wildcard-setfield {
                     uses set-field-match;
                 }
             }
 
             case write-setfield {
-		        container write-setfield {
+                container write-setfield {
                     uses set-field-match;
                 }
             }

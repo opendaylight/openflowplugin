@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -61,6 +62,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
     private MastershipChangeRegistration mastershipChangeServiceRegistration;
 
+    @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "Non-final for mocking")
     public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
                                    final FlowNodeReconciliation reconcliationAgent,
                                    final DataBroker dataBroker,
@@ -70,10 +72,10 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         this.clusterSingletonService = clusterSingletonService;
         this.reconcliationAgent = reconcliationAgent;
         this.rpcProviderService = rpcProviderService;
-        this.reconcliationService = reconciliationService;
+        reconcliationService = reconciliationService;
         this.dataBroker = dataBroker;
         registerNodeListener();
-        this.mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
+        mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
     }
 
     public boolean isDeviceMastered(final NodeId nodeId) {

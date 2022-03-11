@@ -67,6 +67,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -172,7 +173,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         multipartRequestOnTheFlyCallback.onSuccess(mockedHelloMessage);
 
         final RpcResult<List<MultipartReply>> expectedRpcResult =
-                RpcResultBuilder.<List<MultipartReply>>failed().withError(RpcError.ErrorType.APPLICATION,
+                RpcResultBuilder.<List<MultipartReply>>failed().withError(ErrorType.APPLICATION,
                         String.format("Unexpected response type received: %s.", mockedHelloMessage.getClass())).build();
         final RpcResult<List<MultipartReply>> actualResult = dummyRequestContext.getFuture().get();
         assertNotNull(actualResult.getErrors());
@@ -182,7 +183,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         assertEquals(actualError.getMessage(),
                      String.format("Unexpected response type received: %s.",
                      mockedHelloMessage.getClass()));
-        assertEquals(actualError.getErrorType(),RpcError.ErrorType.APPLICATION);
+        assertEquals(actualError.getErrorType(), ErrorType.APPLICATION);
         assertEquals(expectedRpcResult.getResult(), actualResult.getResult());
         assertEquals(expectedRpcResult.isSuccessful(), actualResult.isSuccessful());
 

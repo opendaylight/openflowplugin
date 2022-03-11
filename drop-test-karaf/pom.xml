@@ -15,16 +15,8 @@
     </scm>
     <dependencies>
         <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>test-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
@@ -35,23 +27,14 @@
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-flow-base</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-inventory</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.console</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>commons-lang</groupId>
-            <artifactId>commons-lang</artifactId>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.framework</artifactId>
         </dependency>
-
     </dependencies>
 
     <build>

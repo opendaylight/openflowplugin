@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>9.0.13</version>
+        <version>10.0.0</version>
         <relativePath/>
     </parent>
 
@@ -16,6 +16,12 @@
     <name>OpenDaylight :: Openflow Plugin :: Libraries</name>
 
     <dependencies>
+        <dependency>
+            <groupId>org.opendaylight.odlparent</groupId>
+            <artifactId>odl-apache-commons-lang3</artifactId>
+            <type>xml</type>
+            <classifier>features</classifier>
+        </dependency>
         <dependency>
             <groupId>org.opendaylight.odlparent</groupId>
             <artifactId>odl-guava</artifactId>

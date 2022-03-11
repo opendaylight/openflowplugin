@@ -8,8 +8,8 @@
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,65 +60,42 @@ public class GetAsyncReplyMessageFactoryTest {
         GetAsyncOutput builtByFactory = BufferHelper.deserialize(asyncFactory, bb);
 
         BufferHelper.checkHeaderV13(builtByFactory);
-        Assert.assertEquals("Wrong packetInMask",createPacketInMask(), builtByFactory.getPacketInMask());
-        Assert.assertEquals("Wrong portStatusMask",createPortStatusMask(), builtByFactory.getPortStatusMask());
-        Assert.assertEquals("Wrong flowRemovedMask",createFlowRemovedMask(), builtByFactory.getFlowRemovedMask());
+        Assert.assertEquals("Wrong packetInMask", createPacketInMask(), builtByFactory.getPacketInMask());
+        Assert.assertEquals("Wrong portStatusMask", createPortStatusMask(), builtByFactory.getPortStatusMask());
+        Assert.assertEquals("Wrong flowRemovedMask", createFlowRemovedMask(), builtByFactory.getFlowRemovedMask());
     }
 
     private static List<PacketInMask> createPacketInMask() {
-        final List<PacketInMask> inMasks = new ArrayList<>();
-        PacketInMaskBuilder maskBuilder;
-        // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
-        maskBuilder = new PacketInMaskBuilder();
-        List<PacketInReason> reasons = new ArrayList<>();
-        reasons.add(PacketInReason.OFPRNOMATCH);
-        reasons.add(PacketInReason.OFPRACTION);
-        reasons.add(PacketInReason.OFPRINVALIDTTL);
-        maskBuilder.setMask(reasons);
-        inMasks.add(maskBuilder.build());
-        // OFPCR_ROLE_SLAVE
-        maskBuilder = new PacketInMaskBuilder();
-        reasons = new ArrayList<>();
-        maskBuilder.setMask(reasons);
-        inMasks.add(maskBuilder.build());
-        return inMasks;
+        return List.of(
+            // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
+            new PacketInMaskBuilder()
+                .setMask(Set.of(PacketInReason.OFPRNOMATCH, PacketInReason.OFPRACTION, PacketInReason.OFPRINVALIDTTL))
+                .build(),
+            // OFPCR_ROLE_SLAVE
+            new PacketInMaskBuilder().setMask(Set.of()).build());
     }
 
     private static List<PortStatusMask> createPortStatusMask() {
-        final List<PortStatusMask> inMasks = new ArrayList<>();
-        PortStatusMaskBuilder maskBuilder;
-        // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
-        maskBuilder = new PortStatusMaskBuilder();
-        List<PortReason> reasons = new ArrayList<>();
-        reasons.add(PortReason.OFPPRADD);
-        reasons.add(PortReason.OFPPRDELETE);
-        reasons.add(PortReason.OFPPRMODIFY);
-        inMasks.add(maskBuilder.setMask(reasons).build());
-        // OFPCR_ROLE_SLAVE
-        maskBuilder = new PortStatusMaskBuilder();
-        reasons = new ArrayList<>();
-        maskBuilder.setMask(reasons);
-        inMasks.add(maskBuilder.build());
-        return inMasks;
+        return List.of(
+            // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
+            new PortStatusMaskBuilder()
+                .setMask(Set.of(PortReason.OFPPRADD, PortReason.OFPPRDELETE, PortReason.OFPPRMODIFY))
+                .build(),
+            // OFPCR_ROLE_SLAVE
+            new PortStatusMaskBuilder().setMask(Set.of()).build());
     }
 
     private static List<FlowRemovedMask> createFlowRemovedMask() {
-        final List<FlowRemovedMask> inMasks = new ArrayList<>();
-        FlowRemovedMaskBuilder maskBuilder;
-        // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
-        maskBuilder = new FlowRemovedMaskBuilder();
-        List<FlowRemovedReason> reasons = new ArrayList<>();
-        reasons.add(FlowRemovedReason.OFPRRIDLETIMEOUT);
-        reasons.add(FlowRemovedReason.OFPRRHARDTIMEOUT);
-        reasons.add(FlowRemovedReason.OFPRRDELETE);
-        reasons.add(FlowRemovedReason.OFPRRGROUPDELETE);
-        maskBuilder.setMask(reasons);
-        inMasks.add(maskBuilder.build());
-        // OFPCR_ROLE_SLAVE
-        maskBuilder = new FlowRemovedMaskBuilder();
-        reasons = new ArrayList<>();
-        maskBuilder.setMask(reasons);
-        inMasks.add(maskBuilder.build());
-        return inMasks;
+        return List.of(
+            // OFPCR_ROLE_EQUAL or OFPCR_ROLE_MASTER
+            new FlowRemovedMaskBuilder()
+                .setMask(Set.of(
+                    FlowRemovedReason.OFPRRIDLETIMEOUT,
+                    FlowRemovedReason.OFPRRHARDTIMEOUT,
+                    FlowRemovedReason.OFPRRDELETE,
+                    FlowRemovedReason.OFPRRGROUPDELETE))
+                .build(),
+            // OFPCR_ROLE_SLAVE
+            new FlowRemovedMaskBuilder().setMask(Set.of()).build());
     }
 }

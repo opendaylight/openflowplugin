@@ -20,7 +20,6 @@
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="openflow/getallnodes">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetAllNodesCommandProvider">
-                <property name="dataBroker" ref="dataBroker" />
                 <property name="nodeListener" ref="nodeListener"/>
             </action>
         </command>

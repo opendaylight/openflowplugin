@@ -15,6 +15,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyGroupFeatures;
@@ -75,14 +76,8 @@ public class MultipartReplyGroupFeaturesDeserializerTest extends AbstractMultipa
         assertTrue(reply.getActions().containsAll(ACTIONS_LIST));
         assertTrue(reply.getMaxGroups().containsAll(MAX_GROUPS_LIST));
 
-        assertEquals(GROUP_TYPES_SUPPORTED.size(), reply.getGroupTypesSupported().size());
-        assertEquals(GroupAll.class, reply.getGroupTypesSupported().get(0));
-        assertEquals(GroupSelect.class, reply.getGroupTypesSupported().get(1));
-        assertEquals(GroupIndirect.class, reply.getGroupTypesSupported().get(2));
-
-        assertEquals(GROUP_CAPABILITIES_SUPPORTED.size(), reply.getGroupCapabilitiesSupported().size());
-        assertEquals(Chaining.class, reply.getGroupCapabilitiesSupported().get(0));
-        assertEquals(ChainingChecks.class, reply.getGroupCapabilitiesSupported().get(1));
+        assertEquals(Set.of(GroupAll.class, GroupSelect.class, GroupIndirect.class), reply.getGroupTypesSupported());
+        assertEquals(Set.of(Chaining.class, ChainingChecks.class), reply.getGroupCapabilitiesSupported());
 
         assertEquals(0, buffer.readableBytes());
     }

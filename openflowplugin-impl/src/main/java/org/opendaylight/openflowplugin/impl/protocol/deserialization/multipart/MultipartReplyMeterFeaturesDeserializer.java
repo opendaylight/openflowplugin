@@ -10,9 +10,9 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
+import com.google.common.collect.ImmutableSet;
 import io.netty.buffer.ByteBuf;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyMeterFeaturesBuilder;
@@ -39,45 +39,36 @@ public class MultipartReplyMeterFeaturesDeserializer implements OFDeserializer<M
                 .build();
     }
 
-    private static List<Class<? extends MeterBand>> readMeterBands(final ByteBuf message) {
-        final List<Class<? extends MeterBand>> bandTypes = new ArrayList<>();
+    private static Set<Class<? extends MeterBand>> readMeterBands(final ByteBuf message) {
         final long typesMask = message.readUnsignedInt();
-        final boolean mbtDrop = (typesMask & 1) != 0;
-        final boolean mbtDscpRemark = (typesMask & 1 << 1) != 0;
 
-        if (mbtDrop) {
+        final var bandTypes = ImmutableSet.<Class<? extends MeterBand>>builder();
+        if ((typesMask & 1) != 0) {
             bandTypes.add(MeterBandDrop.class);
         }
-        if (mbtDscpRemark) {
+        if ((typesMask & 1 << 1) != 0) {
             bandTypes.add(MeterBandDscpRemark.class);
         }
-
-        return bandTypes;
+        return bandTypes.build();
     }
 
-    private static List<Class<? extends MeterCapability>> readMeterCapabilities(final ByteBuf message) {
-        final List<Class<? extends MeterCapability>> meterCapabilities = new ArrayList<>();
+    private static Set<Class<? extends MeterCapability>> readMeterCapabilities(final ByteBuf message) {
         final long capabilitiesMask = message.readUnsignedInt();
 
-        final boolean mfKbps = (capabilitiesMask & 1) != 0;
-        final boolean mfPktps = (capabilitiesMask & 1 << 1) != 0;
-        final boolean mfBurst = (capabilitiesMask & 1 << 2) != 0;
-        final boolean mfStats = (capabilitiesMask & 1 << 3) != 0;
-
-        if (mfKbps) {
+        final var meterCapabilities = ImmutableSet.<Class<? extends MeterCapability>>builder();
+        if ((capabilitiesMask & 1) != 0) {
             meterCapabilities.add(MeterKbps.class);
         }
-        if (mfPktps) {
+        if ((capabilitiesMask & 1 << 1) != 0) {
             meterCapabilities.add(MeterPktps.class);
         }
-        if (mfBurst) {
+        if ((capabilitiesMask & 1 << 2) != 0) {
             meterCapabilities.add(MeterBurst.class);
         }
-        if (mfStats) {
+        if ((capabilitiesMask & 1 << 3) != 0) {
             meterCapabilities.add(MeterStats.class);
         }
 
-        return meterCapabilities;
+        return meterCapabilities.build();
     }
-
 }

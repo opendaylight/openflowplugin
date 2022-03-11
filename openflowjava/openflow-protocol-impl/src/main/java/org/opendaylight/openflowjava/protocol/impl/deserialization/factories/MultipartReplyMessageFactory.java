@@ -732,12 +732,12 @@ public class MultipartReplyMessageFactory implements OFDeserializer<MultipartRep
         MultipartReplyGroupFeaturesBuilder featuresBuilder = new MultipartReplyGroupFeaturesBuilder();
         featuresBuilder.setTypes(createGroupType(rawMessage.readUnsignedInt()));
         featuresBuilder.setCapabilities(createCapabilities(rawMessage.readUnsignedInt()));
-        List<Uint32> maxGroupsList = new ArrayList<>();
+        List<Uint32> maxGroupsList = new ArrayList<>(GROUP_TYPES);
         for (int i = 0; i < GROUP_TYPES; i++) {
             maxGroupsList.add(Uint32.valueOf(rawMessage.readUnsignedInt()));
         }
         featuresBuilder.setMaxGroups(maxGroupsList);
-        List<ActionType> actionBitmaps = new ArrayList<>();
+        List<ActionType> actionBitmaps = new ArrayList<>(GROUP_TYPES);
         for (int i = 0; i < GROUP_TYPES; i++) {
             actionBitmaps.add(createActionBitmap(rawMessage.readUnsignedInt()));
         }

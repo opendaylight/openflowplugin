@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.common;
 
-import java.util.ArrayList;
+import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -344,38 +344,41 @@ public final class MultipartReplyTranslatorUtil {
             .reply.body.MultipartReplyGroupFeatures translateGroupFeatures(final MultipartReply msg) {
         final MultipartReplyGroupFeatures replyBody = ((MultipartReplyGroupFeaturesCase) msg.getMultipartReplyBody())
             .getMultipartReplyGroupFeatures();
-        final List<Class<? extends GroupType>> supportedGroups = new ArrayList<>();
-        if (replyBody.getTypes().getOFPGTALL()) {
+
+        final var replyTypes = replyBody.getTypes();
+        final var supportedGroups = ImmutableSet.<Class<? extends GroupType>>builder();
+        if (replyTypes.getOFPGTALL()) {
             supportedGroups.add(GroupAll.class);
         }
-        if (replyBody.getTypes().getOFPGTSELECT()) {
+        if (replyTypes.getOFPGTSELECT()) {
             supportedGroups.add(GroupSelect.class);
         }
-        if (replyBody.getTypes().getOFPGTINDIRECT()) {
+        if (replyTypes.getOFPGTINDIRECT()) {
             supportedGroups.add(GroupIndirect.class);
         }
-        if (replyBody.getTypes().getOFPGTFF()) {
+        if (replyTypes.getOFPGTFF()) {
             supportedGroups.add(GroupFf.class);
         }
 
-        List<Class<? extends GroupCapability>> supportedCapabilities = new ArrayList<>();
-        if (replyBody.getCapabilities().getOFPGFCCHAINING()) {
+        final var replyCapabilities = replyBody.getCapabilities();
+        final var supportedCapabilities = ImmutableSet.<Class<? extends GroupCapability>>builder();
+        if (replyCapabilities.getOFPGFCCHAINING()) {
             supportedCapabilities.add(Chaining.class);
         }
-        if (replyBody.getCapabilities().getOFPGFCCHAININGCHECKS()) {
+        if (replyCapabilities.getOFPGFCCHAININGCHECKS()) {
             supportedCapabilities.add(ChainingChecks.class);
         }
-        if (replyBody.getCapabilities().getOFPGFCSELECTLIVENESS()) {
+        if (replyCapabilities.getOFPGFCSELECTLIVENESS()) {
             supportedCapabilities.add(SelectLiveness.class);
         }
-        if (replyBody.getCapabilities().getOFPGFCSELECTWEIGHT()) {
+        if (replyCapabilities.getOFPGFCSELECTWEIGHT()) {
             supportedCapabilities.add(SelectWeight.class);
         }
 
         return new MultipartReplyGroupFeaturesBuilder()
-            .setGroupTypesSupported(supportedGroups)
+            .setGroupTypesSupported(supportedGroups.build())
             .setMaxGroups(replyBody.getMaxGroups())
-            .setGroupCapabilitiesSupported(supportedCapabilities)
+            .setGroupCapabilitiesSupported(supportedCapabilities.build())
             .setActions(GroupUtil.extractGroupActionsSupportBitmap(replyBody.getActionsBitmap()))
             .build();
     }
@@ -419,25 +422,27 @@ public final class MultipartReplyTranslatorUtil {
         MultipartReplyMeterFeaturesCase caseBody = (MultipartReplyMeterFeaturesCase) msg.getMultipartReplyBody();
         MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
 
-        final List<Class<? extends MeterCapability>> supportedCapabilities = new ArrayList<>();
-        if (replyBody.getCapabilities().getOFPMFBURST()) {
+        final var replyCapabilities = replyBody.getCapabilities();
+        final var supportedCapabilities = ImmutableSet.<Class<? extends MeterCapability>>builder();
+        if (replyCapabilities.getOFPMFBURST()) {
             supportedCapabilities.add(MeterBurst.class);
         }
-        if (replyBody.getCapabilities().getOFPMFKBPS()) {
+        if (replyCapabilities.getOFPMFKBPS()) {
             supportedCapabilities.add(MeterKbps.class);
         }
-        if (replyBody.getCapabilities().getOFPMFPKTPS()) {
+        if (replyCapabilities.getOFPMFPKTPS()) {
             supportedCapabilities.add(MeterPktps.class);
         }
-        if (replyBody.getCapabilities().getOFPMFSTATS()) {
+        if (replyCapabilities.getOFPMFSTATS()) {
             supportedCapabilities.add(MeterStats.class);
         }
 
-        final List<Class<? extends MeterBand>> supportedMeterBand = new ArrayList<>();
-        if (replyBody.getBandTypes().getOFPMBTDROP()) {
+        final var replyMeterBand = replyBody.getBandTypes();
+        final var supportedMeterBand = ImmutableSet.<Class<? extends MeterBand>>builder();
+        if (replyMeterBand.getOFPMBTDROP()) {
             supportedMeterBand.add(MeterBandDrop.class);
         }
-        if (replyBody.getBandTypes().getOFPMBTDSCPREMARK()) {
+        if (replyMeterBand.getOFPMBTDSCPREMARK()) {
             supportedMeterBand.add(MeterBandDscpRemark.class);
         }
 
@@ -445,8 +450,8 @@ public final class MultipartReplyTranslatorUtil {
             .setMaxBands(replyBody.getMaxBands())
             .setMaxColor(replyBody.getMaxColor())
             .setMaxMeter(new Counter32(replyBody.getMaxMeter()))
-            .setMeterCapabilitiesSupported(supportedCapabilities)
-            .setMeterBandSupported(supportedMeterBand)
+            .setMeterCapabilitiesSupported(supportedCapabilities.build())
+            .setMeterBandSupported(supportedMeterBand.build())
             .build();
     }
 

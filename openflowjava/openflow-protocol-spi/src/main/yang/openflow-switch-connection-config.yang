@@ -112,6 +112,7 @@ module openflow-switch-connection-config {
             leaf-list cipher-suites {
                 description "combination of cryptographic algorithms used by TLS connection";
                 type string;
+                ordered-by user;
             }
         }
 
