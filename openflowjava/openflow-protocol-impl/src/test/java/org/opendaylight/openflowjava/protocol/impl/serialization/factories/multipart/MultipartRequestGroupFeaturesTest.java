@@ -59,7 +59,7 @@ public class MultipartRequestGroupFeaturesTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestGroupFeaturesCaseBuilder caseBuilder = new MultipartRequestGroupFeaturesCaseBuilder();
         MultipartRequestGroupFeaturesBuilder featuresBuilder = new MultipartRequestGroupFeaturesBuilder();
-        featuresBuilder.setEmpty(Empty.getInstance());
+        featuresBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestGroupFeatures(featuresBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();

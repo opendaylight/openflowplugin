@@ -70,7 +70,7 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
         final MultipartRequestTableCaseBuilder multipartRequestTableCaseBuilder =
                 new MultipartRequestTableCaseBuilder();
         final MultipartRequestTableBuilder multipartRequestTableBuilder = new MultipartRequestTableBuilder();
-        multipartRequestTableBuilder.setEmpty(Empty.getInstance());
+        multipartRequestTableBuilder.setEmpty(Empty.value());
         multipartRequestTableCaseBuilder.setMultipartRequestTable(multipartRequestTableBuilder.build());
 
         // Set request body to main multipart request

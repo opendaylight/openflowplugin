@@ -59,7 +59,7 @@ public class MultipartRequestMeterFeaturesTest {
         builder.setFlags(new MultipartRequestFlags(false));
         MultipartRequestMeterFeaturesCaseBuilder caseBuilder = new MultipartRequestMeterFeaturesCaseBuilder();
         MultipartRequestMeterFeaturesBuilder featuresBuilder = new MultipartRequestMeterFeaturesBuilder();
-        featuresBuilder.setEmpty(Empty.getInstance());
+        featuresBuilder.setEmpty(Empty.value());
         caseBuilder.setMultipartRequestMeterFeatures(featuresBuilder.build());
         builder.setMultipartRequestBody(caseBuilder.build());
         MultipartRequestInput message = builder.build();
