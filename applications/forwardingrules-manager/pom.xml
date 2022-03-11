@@ -68,11 +68,6 @@
       <artifactId>arbitratorreconciliation-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.aries.blueprint</groupId>
-      <artifactId>blueprint-maven-plugin-annotation</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
       <groupId>org.awaitility</groupId>
       <artifactId>awaitility</artifactId>
       <scope>test</scope>
@@ -82,20 +77,6 @@
       <artifactId>mdsal-binding-test-utils</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.aries.blueprint</groupId>
-        <artifactId>blueprint-maven-plugin</artifactId>
-        <configuration>
-          <scanPaths>
-            <scanPath>org.opendaylight.openflowplugin.applications.frm</scanPath>
-          </scanPaths>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <scm>
     <connection>scm:git:ssh://git.opendaylight.org:29418/openflowplugin.git</connection>
