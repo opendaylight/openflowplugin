@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -38,7 +37,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
 
     @Inject
-    public TerminationPointChangeListenerImpl(@Reference final DataBroker dataBroker,
+    public TerminationPointChangeListenerImpl(final DataBroker dataBroker,
                                               final OperationProcessor operationProcessor) {
         super(operationProcessor, dataBroker,
               InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)

@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -51,11 +50,10 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     private ClusterSingletonServiceRegistration singletonServiceRegistration;
 
     @Inject
-    public FlowCapableTopologyProvider(@Reference final DataBroker dataBroker,
-                                       @Reference final NotificationService notificationService,
+    public FlowCapableTopologyProvider(final DataBroker dataBroker,
+                                       final NotificationService notificationService,
                                        final OperationProcessor processor,
-                                       @Reference final ClusterSingletonServiceProvider
-                                               clusterSingletonServiceProvider) {
+                                       final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
         this.dataBroker = dataBroker;
         this.notificationService = notificationService;
         this.processor = processor;
