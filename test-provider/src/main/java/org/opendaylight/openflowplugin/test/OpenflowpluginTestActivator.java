@@ -7,23 +7,22 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Singleton
+@Component(service = { })
 public class OpenflowpluginTestActivator implements AutoCloseable {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(OpenflowpluginTestActivator.class);
-
     private RpcProviderService rpcRegistry;
     private final OpenflowpluginTestServiceProvider provider;
     private final OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
@@ -51,6 +50,8 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
 
     public static final String NODE_ID = "foo:node:1";
 
+    @Activate
+    @Inject
     public OpenflowpluginTestActivator(@Reference DataBroker dataBroker,
             @Reference NotificationService notificationService,
             @Reference NotificationPublishService notificationPublishService, BundleContext ctx) {
@@ -82,10 +83,7 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
         OpenflowPluginBulkGroupTransactionProvider openflowPluginBulkGroupTransactionProvider =
                 new OpenflowPluginBulkGroupTransactionProvider(dataBroker, ctx);
         this.groupCmdProvider = openflowPluginBulkGroupTransactionProvider;
-    }
 
-    @PostConstruct
-    public void init() {
         provider.register(rpcRegistry);
 
         groupProvider.register(rpcRegistry);
@@ -105,13 +103,8 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
 
     @Override
     @PreDestroy
-    @SuppressWarnings("checkstyle:IllegalCatch")
+    @Deactivate
     public void close() {
-        try {
-            provider.close();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            LOG.error("Stopping bundle OpenflowpluginTestActivator failed.", e);
-        }
+        provider.close();
     }
 }
