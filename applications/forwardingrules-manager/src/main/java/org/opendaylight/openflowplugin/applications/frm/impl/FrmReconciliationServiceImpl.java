@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -33,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = FrmReconciliationService.class)
 public class FrmReconciliationServiceImpl implements FrmReconciliationService {
 
     private static final Logger LOG = LoggerFactory.getLogger(FrmReconciliationServiceImpl.class);
