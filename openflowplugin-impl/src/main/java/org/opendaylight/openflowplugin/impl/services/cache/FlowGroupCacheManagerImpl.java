@@ -10,12 +10,10 @@ package org.opendaylight.openflowplugin.impl.services.cache;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
 
 @Singleton
-@Service(classes = FlowGroupCacheManager.class)
 public class FlowGroupCacheManagerImpl implements FlowGroupCacheManager {
     private final Map<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap<>();
 
