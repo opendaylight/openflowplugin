@@ -14,7 +14,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -48,8 +47,8 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
     private ListenerRegistration<?> listenerRegistration;
 
     @Inject
-    public DefaultConfigPusher(final NodeConfigService nodeConfigService, @Reference final DataBroker dataBroker,
-            @Reference final DeviceOwnershipService deviceOwnershipService) {
+    public DefaultConfigPusher(final NodeConfigService nodeConfigService, final DataBroker dataBroker,
+            final DeviceOwnershipService deviceOwnershipService) {
         this.nodeConfigService = nodeConfigService;
         this.dataBroker = dataBroker;
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
