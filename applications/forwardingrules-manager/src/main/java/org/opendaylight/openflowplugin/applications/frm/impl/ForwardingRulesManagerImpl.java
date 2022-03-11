@@ -19,7 +19,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
@@ -112,17 +111,17 @@ public class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private final ListenerRegistrationHelper registrationHelper;
 
     @Inject
-    public ForwardingRulesManagerImpl(@Reference final DataBroker dataBroker,
-                                      @Reference final RpcConsumerRegistry rpcRegistry,
-                                      @Reference final RpcProviderService rpcProviderService,
+    public ForwardingRulesManagerImpl(final DataBroker dataBroker,
+                                      final RpcConsumerRegistry rpcRegistry,
+                                      final RpcProviderService rpcProviderService,
                                       final ForwardingRulesManagerConfig config,
-                                      @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
-                                      @Reference final ClusterSingletonServiceProvider clusterSingletonService,
-                                      @Reference final ConfigurationService configurationService,
-                                      @Reference final ReconciliationManager reconciliationManager,
+                                      final MastershipChangeServiceManager mastershipChangeServiceManager,
+                                      final ClusterSingletonServiceProvider clusterSingletonService,
+                                      final ConfigurationService configurationService,
+                                      final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
-                                      @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry,
-                                      @Reference final FlowGroupCacheManager flowGroupCacheManager,
+                                      final ServiceRecoveryRegistry serviceRecoveryRegistry,
+                                      final FlowGroupCacheManager flowGroupCacheManager,
                                       final ListenerRegistrationHelper registrationHelper) {
         disableReconciliation = config.getDisableReconciliation();
         staleMarkingEnabled = config.getStaleMarkingEnabled();
