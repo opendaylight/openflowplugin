@@ -25,8 +25,6 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.apache.aries.blueprint.annotation.service.Reference;
-import org.apache.aries.blueprint.annotation.service.Service;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
@@ -40,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Service(classes = ReconciliationManager.class)
 public class ReconciliationManagerImpl implements ReconciliationManager, ReconciliationFrameworkEvent {
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationManagerImpl.class);
 
@@ -52,7 +49,7 @@ public class ReconciliationManagerImpl implements ReconciliationManager, Reconci
     private final AtomicReference<ResultState> decidedResultState = new AtomicReference<>(ResultState.DONOTHING);
 
     @Inject
-    public ReconciliationManagerImpl(@Reference final MastershipChangeServiceManager mastershipChangeServiceManager) {
+    public ReconciliationManagerImpl(final MastershipChangeServiceManager mastershipChangeServiceManager) {
         this.mastershipChangeServiceManager = requireNonNull(mastershipChangeServiceManager,
             "MastershipChangeServiceManager can not be null!");
     }
