@@ -8,7 +8,6 @@
   -->
 
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
-
     <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
         <command name="ofp/showStats">
             <action class="org.opendaylight.openflowplugin.impl.karaf.ShowStatsCommandProvider"/>
