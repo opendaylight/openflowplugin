@@ -1,25 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
         odl:use-default-for-reference-types="true">
+  <bean id="frmReconciliationServiceImpl"
+        class="org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationServiceImpl">
+    <argument ref="forwardingRulesManagerImpl"/>
+  </bean>
+  <service ref="frmReconciliationServiceImpl"
+           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
+
+  <bean id="reconciliationJMXServiceMBean"
+        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
+    <argument ref="flowGroupCacheManager"/>
+  </bean>
+  <service ref="reconciliationJMXServiceMBean"
+           interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"/>
+
+  <bean id="reconciliationJMXAgent"
+        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXAgent">
+    <argument ref="reconciliationJMXService"/>
+  </bean>
+
+  <bean id="forwardingRulesManagerImpl"
+        class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
+        init-method="start"
+        destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="rpcConsumerRegistry"/>
+    <argument ref="rpcProviderService"/>
+    <argument ref="forwardingRulesManagerConfig"/>
+    <argument ref="mastershipChangeServiceManager"/>
+    <argument ref="clusterSingletonServiceProvider"/>
+    <argument ref="configurationService"/>
+    <argument ref="reconciliationManager"/>
+    <argument ref="openflowServiceRecoveryHandlerImpl"/>
+    <argument ref="serviceRecoveryRegistry"/>
+    <argument ref="flowGroupCacheManager"/>
+    <argument ref="listenerRegistrationHelper"/>
+  </bean>
 
   <odl:clustered-app-config id="forwardingRulesManagerConfig"
-        binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
+
+  <bean id="openflowServiceRecoveryHandlerImpl"
+        class="org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowServiceRecoveryHandlerImpl">
+    <argument ref="serviceRecoveryRegistry"/>
+  </bean>
+  <service ref="openflowServiceRecoveryHandlerImpl"
+           interface="org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler"/>
+
+  <bean id="listenerRegistrationHelper"
+        class="org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper">
+    <argument ref="dataBroker"/>
+  </bean>
 
   <bean id="reconciliationJMXService"
         class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
     <argument ref="flowGroupCacheManager"/>
   </bean>
-  <bean id="reconciliationJMXAgent"
-        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXAgent">
-    <argument ref="reconciliationJMXService"/>
-  </bean>
-  <bean id="reconciliationJMXServiceMBean"
-        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
-    <argument ref="flowGroupCacheManager"/>
-  </bean>
 
-  <service ref="reconciliationJMXServiceMBean" interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"/>
-
+  <reference id="flowGroupCacheManager"
+             interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
+  <reference id="dataBroker"
+             interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
+  <reference id="rpcConsumerRegistry"
+             interface="org.opendaylight.mdsal.binding.api.RpcConsumerRegistry"/>
+  <reference id="rpcProviderService"
+             interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
+  <reference id="mastershipChangeServiceManager"
+             interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
+  <reference id="clusterSingletonServiceProvider"
+             interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+  <reference id="configurationService"
+             interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+  <reference id="reconciliationManager"
+             interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
+  <reference id="serviceRecoveryRegistry"
+             interface="org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry"/>
 </blueprint>
