@@ -5,32 +5,81 @@
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            odl:use-default-for-reference-types="true">
 
-  <bean id="configurationServiceFactory" class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryOsgiImpl">
-    <argument ref="blueprintBundleContext"/>
+  <bean id="openFlowPluginProviderImpl"
+        class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl"
+        init-method="initialize"
+        destroy-method="close">
+    <argument ref="configurationService"/>
+    <argument ref="switchConnectionProviderList"/>
+    <argument ref="pingPongDataBroker"/>
+    <argument ref="rpcProviderService"/>
+    <argument ref="notificationPublishService"/>
+    <argument ref="clusterSingletonServiceProvider"/>
+    <argument ref="entityOwnershipService"/>
+    <argument ref="mastershipChangeServiceManagerImpl"/>
+    <argument ref="openflowDiagStatusProvider"/>
+    <argument ref="systemReadyMonitor"/>
   </bean>
-  <service ref="configurationServiceFactory" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
+  <service ref="openFlowPluginProviderImpl">
+    <interfaces>
+      <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
+      <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
+      <value>org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories</value>
+    </interfaces>
+  </service>
 
-  <odl:clustered-app-config id="openflowProviderConfig"
-                          binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+  <bean id="flowGroupCacheManagerImpl"
+        class="org.opendaylight.openflowplugin.impl.services.cache.FlowGroupCacheManagerImpl"/>
+  <service ref="flowGroupCacheManagerImpl"
+           interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
+
   <bean id="configurationService"
         factory-ref="configurationServiceFactory"
         factory-method="newInstance"
         destroy-method="close">
-      <argument ref="openflowProviderConfig" />
-      <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
-                             update-strategy="component-managed"
-                             update-method="update"/>
+    <argument ref="openflowProviderConfig" />
+    <cm:managed-properties persistent-id="org.opendaylight.openflowplugin"
+                           update-strategy="component-managed"
+                           update-method="update"/>
   </bean>
-  <service ref="configurationService" interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+  <service ref="configurationService"
+           interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
+  <bean id="configurationServiceFactory"
+        class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryOsgiImpl">
+    <argument ref="blueprintBundleContext"/>
+  </bean>
+  <service ref="configurationServiceFactory"
+           interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
+  <odl:clustered-app-config id="openflowProviderConfig"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
 
-  <reference id="ppDB" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-  <bean id="pingPongDataBroker" class="org.opendaylight.openflowplugin.impl.ForwardingPingPongDataBroker">
+  <bean id="pingPongDataBroker"
+        class="org.opendaylight.openflowplugin.impl.ForwardingPingPongDataBroker">
     <argument ref="ppDB"/>
   </bean>
+  <reference id="ppDB"
+             interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-  <reference id="switchConnectionProviderList" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList" ext:proxy-method="classes"/>
+  <bean id="mastershipChangeServiceManagerImpl"
+        class="org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl"/>
+  <service ref="mastershipChangeServiceManagerImpl"
+           interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
 
-  <reference id="openflowPluginDiagStatusProviderImpl" interface="org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider" ext:proxy-method="classes"/>
+  <reference id="switchConnectionProviderList"
+             interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList"
+             ext:proxy-method="classes"/>
+  <reference id="rpcProviderService"
+             interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
+  <reference id="notificationPublishService"
+             interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
+  <reference id="clusterSingletonServiceProvider"
+             interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+  <reference id="entityOwnershipService"
+             interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
+  <reference id="openflowDiagStatusProvider"
+             interface="org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider"/>
+  <reference id="systemReadyMonitor"
+             interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
 
   <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
 </blueprint>
