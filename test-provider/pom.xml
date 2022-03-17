@@ -39,6 +39,7 @@
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
+            <!-- FIXME: Migrate to Karaf commands instead -->
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>3.10.101.v20150820-1432</version>
@@ -54,9 +55,8 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.apache.aries.blueprint</groupId>
-            <artifactId>blueprint-maven-plugin-annotation</artifactId>
-            <optional>true</optional>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.cmpn</artifactId>
         </dependency>
     </dependencies>
 
@@ -66,10 +66,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.aries.blueprint</groupId>
-                <artifactId>blueprint-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
