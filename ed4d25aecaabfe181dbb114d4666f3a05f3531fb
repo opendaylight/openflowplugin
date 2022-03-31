@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "53dc6d24_16aa34f1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 649
+      },
+      "writtenOn": "2022-03-31T14:13:48Z",
+      "side": 1,
+      "message": "serviceutils has already bumped MRI, hence the failure.",
+      "revId": "ed4d25aecaabfe181dbb114d4666f3a05f3531fb",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    }
+  ]
+}
