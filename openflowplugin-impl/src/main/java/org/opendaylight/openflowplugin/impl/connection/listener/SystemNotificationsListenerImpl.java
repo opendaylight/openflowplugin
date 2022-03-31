@@ -142,23 +142,24 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onSslConnectionError(final SslConnectionError notification) {
-        IpAddress ip = null;
+        final IpAddress ip;
         if (connectionContext.getConnectionAdapter() != null
                 && connectionContext.getConnectionAdapter().getRemoteAddress() != null
                 && connectionContext.getConnectionAdapter().getRemoteAddress().getAddress() != null) {
             ip = IpAddressBuilder.getDefaultInstance(
                     connectionContext.getConnectionAdapter().getRemoteAddress().getAddress().getHostAddress());
+        } else {
+            ip = null;
         }
-        SwitchCertificateBuilder switchCertificateBuilder = new SwitchCertificateBuilder();
-        if (notification.getSwitchCertificate() != null) {
-            switchCertificateBuilder = new SwitchCertificateBuilder(notification.getSwitchCertificate());
-        }
+
+        final var switchCert = notification.getSwitchCertificate();
+
         notificationPublishService.offerNotification(new SslErrorBuilder()
             .setType(SslErrorType.SslConFailed)
             .setCode(Uint16.valueOf(SslErrorType.SslConFailed.getIntValue()))
             .setNodeIpAddress(ip)
             .setData(notification.getInfo())
-            .setSwitchCertificate(notification.getSwitchCertificate() != null ? switchCertificateBuilder.build() : null)
+            .setSwitchCertificate(switchCert == null ? null : new SwitchCertificateBuilder(switchCert).build())
             .build());
     }
 }

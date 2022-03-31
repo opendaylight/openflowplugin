@@ -11,8 +11,10 @@ import com.google.common.annotations.Beta;
 import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolService;
@@ -80,9 +82,10 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
 
     /**
      * Notify listener about switch certificate information.
-     * @param switchcertificate X509Certificate of switch
+     *
+     * @param certificateChain X509 certificate chain presented by the switch
      */
-    void onSwitchCertificateIdentified(X509Certificate switchcertificate);
+    void onSwitchCertificateIdentified(@Nullable List<X509Certificate> certificateChain);
 
     /**
      * Set listener for connection became ready-to-use event.
