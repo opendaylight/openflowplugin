@@ -29,7 +29,6 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
-import org.opendaylight.openflowjava.protocol.impl.core.SslContextFactory;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
@@ -81,9 +80,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
                                  @NonNull final NotificationPublishService notificationPublishService) {
         this.config = config;
         this.executorService = executorService;
-        this.deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
+        deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
         this.dataBroker = dataBroker;
-        this.deviceConnectionHoldTime = config.getDeviceConnectionHoldTimeInSeconds().toJava();
+        deviceConnectionHoldTime = config.getDeviceConnectionHoldTimeInSeconds().toJava();
         deviceConnectionStatusProvider = new DeviceConnectionStatusProviderImpl();
         deviceConnectionStatusProvider.init();
         this.notificationPublishService = notificationPublishService;
@@ -96,7 +95,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         LOG.trace("prepare connection context");
         final ConnectionContext connectionContext = new ConnectionContextImpl(connectionAdapter,
                 deviceConnectionStatusProvider);
-        connectionContext.setDeviceDisconnectedHandler(this.deviceDisconnectedHandler);
+        connectionContext.setDeviceDisconnectedHandler(deviceDisconnectedHandler);
 
         HandshakeListener handshakeListener = new HandshakeListenerImpl(connectionContext, deviceConnectedHandler);
         final HandshakeManager handshakeManager = createHandshakeManager(connectionAdapter, handshakeListener);
@@ -118,7 +117,6 @@ public class ConnectionManagerImpl implements ConnectionManager {
         final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext,
                 config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService);
         connectionAdapter.setSystemListener(systemListener);
-        SslContextFactory.setIsCustomTrustManagerEnabled(config.getEnableCustomTrustManager());
 
         LOG.trace("connection ballet finished");
     }
