@@ -16,15 +16,16 @@ import java.net.InetSocketAddress;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
+import javax.security.auth.x500.X500Principal;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -63,7 +64,6 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics implements ConnectionFacade {
-
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionAdapterImpl.class);
 
     private ConnectionReadyListener connectionReadyListener;
@@ -76,6 +76,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     private ExecutorService executorService;
     private final boolean useBarrier;
     private X509Certificate switchCertificate;
+
     /**
      * Default constructor.
      * @param channel the channel to be set - used for communication
@@ -83,7 +84,6 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
      *                as there is no need to store address over tcp (stable channel))
      * @param useBarrier value is configurable by configSubsytem
      */
-
     public ConnectionAdapterImpl(final Channel channel, final InetSocketAddress address, final boolean useBarrier,
                                  final int channelOutboundQueueSize) {
         super(channel, address, channelOutboundQueueSize);
@@ -216,8 +216,10 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     @Override
-    public void onSwitchCertificateIdentified(final X509Certificate switchcertificate) {
-        this.switchCertificate = switchcertificate;
+    public void onSwitchCertificateIdentified(final List<X509Certificate> certificateChain) {
+        if (certificateChain != null && !certificateChain.isEmpty()) {
+            switchCertificate = certificateChain.get(0);
+        }
     }
 
     @Override
@@ -263,60 +265,59 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     private SwitchCertificate buildSwitchCertificate() {
-        if (switchCertificate != null) {
-            SwitchCertificateBuilder switchCertificateBuilder = new SwitchCertificateBuilder();
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'-00:00'");
-            formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            try {
-                Map<String, String> subjectMap = new ConcurrentHashMap<>();
-                Map<String, String> issuerMap = new ConcurrentHashMap<>();
-                subjectMap.putAll(new LdapName(switchCertificate.getSubjectX500Principal().getName())
-                        .getRdns().stream()
-                        .collect(Collectors.toMap(rdn -> rdn.getType(), rdn -> rdn.getValue().toString())));
-                issuerMap.putAll(new LdapName(switchCertificate.getIssuerX500Principal().getName())
-                        .getRdns().stream()
-                        .collect(Collectors.toMap(rdn -> rdn.getType(), rdn -> rdn.getValue().toString())));
-                SubjectBuilder subjectBuilder = new SubjectBuilder();
-                subjectBuilder.setCommonName(subjectMap.get("CN"));
-                subjectBuilder.setCountry(subjectMap.get("C"));
-                subjectBuilder.setLocality(subjectMap.get("L"));
-                subjectBuilder.setOrganization(subjectMap.get("O"));
-                subjectBuilder.setOrganizationUnit(subjectMap.get("OU"));
-                subjectBuilder.setState(subjectMap.get("ST"));
-                IssuerBuilder issuerBuilder = new IssuerBuilder();
-                issuerBuilder.setCommonName(issuerMap.get("CN"));
-                issuerBuilder.setCountry(issuerMap.get("C"));
-                issuerBuilder.setLocality(issuerMap.get("L"));
-                issuerBuilder.setOrganization(issuerMap.get("O"));
-                issuerBuilder.setOrganizationUnit(issuerMap.get("OU"));
-                issuerBuilder.setState(issuerMap.get("ST"));
-                switchCertificateBuilder.setSubject(subjectBuilder.build());
-                switchCertificateBuilder.setIssuer(issuerBuilder.build());
-            } catch (InvalidNameException e) {
-                LOG.error("Exception ", e);
-            }
-            switchCertificateBuilder.setSerialNumber(switchCertificate.getSerialNumber().toString());
-            try {
-                if (switchCertificate.getSubjectAlternativeNames() != null) {
-                    List<String> subjectAlternateNames = new ArrayList<>();
-                    switchCertificate.getSubjectAlternativeNames().forEach(generalName -> {
-                        final Object value = generalName.get(1);
-                        if (value instanceof String) {
-                            subjectAlternateNames.add((String) value);
-                        }
-                    });
-                    switchCertificateBuilder.setSubjectAlternateNames(subjectAlternateNames);
-                } else {
-                    switchCertificateBuilder.setSubjectAlternateNames(null);
-                }
-            } catch (CertificateParsingException e) {
-                LOG.error("Error encountered while parsing certificate ", e);
-            }
-            switchCertificateBuilder.setValidFrom(new DateAndTime(formatter.format(switchCertificate.getNotBefore())));
-            switchCertificateBuilder.setValidTo(new DateAndTime(formatter.format(switchCertificate.getNotAfter())));
-            return switchCertificateBuilder.build();
+        if (switchCertificate == null) {
+            return null;
         }
-        return null;
+
+        final var builder = new SwitchCertificateBuilder();
+        final var subjectMap = indexRds(switchCertificate.getSubjectX500Principal());
+        if (subjectMap != null) {
+            builder.setSubject(new SubjectBuilder()
+                .setCommonName(subjectMap.get("CN"))
+                .setCountry(subjectMap.get("C"))
+                .setLocality(subjectMap.get("L"))
+                .setOrganization(subjectMap.get("O"))
+                .setOrganizationUnit(subjectMap.get("OU"))
+                .setState(subjectMap.get("ST"))
+                .build());
+        }
+
+        final var issuerMap = indexRds(switchCertificate.getIssuerX500Principal());
+        if (issuerMap != null) {
+            builder.setIssuer(new IssuerBuilder()
+                .setCommonName(issuerMap.get("CN"))
+                .setCountry(issuerMap.get("C"))
+                .setLocality(issuerMap.get("L"))
+                .setOrganization(issuerMap.get("O"))
+                .setOrganizationUnit(issuerMap.get("OU"))
+                .setState(issuerMap.get("ST"))
+                .build());
+        }
+
+        Collection<List<?>> altNames = null;
+        try {
+            altNames = switchCertificate.getSubjectAlternativeNames();
+        } catch (CertificateParsingException e) {
+            LOG.error("Cannot parse certificate alternate names", e);
+        }
+        if (altNames != null) {
+            builder.setSubjectAlternateNames(altNames.stream()
+                .filter(list -> list.size() > 1)
+                .map(list -> list.get(1))
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .collect(Collectors.toUnmodifiableList()));
+        }
+
+        // FIXME: do not use SimpleDateFormat
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'-00:00'");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        return builder
+            .setSerialNumber(switchCertificate.getSerialNumber().toString())
+            .setValidFrom(new DateAndTime(formatter.format(switchCertificate.getNotBefore())))
+            .setValidTo(new DateAndTime(formatter.format(switchCertificate.getNotAfter())))
+            .build();
     }
 
     @Override
@@ -327,5 +328,16 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     @Override
     public void setExecutorService(final ExecutorService executorService) {
         this.executorService = executorService;
+    }
+
+    private static Map<String, String> indexRds(final X500Principal principal) {
+        final LdapName name;
+        try {
+            name = new LdapName(principal.getName());
+        } catch (InvalidNameException e) {
+            LOG.error("Cannot parse principal {}", principal, e);
+            return null;
+        }
+        return name.getRdns().stream().collect(Collectors.toMap(Rdn::getType, rdn -> rdn.getValue().toString()));
     }
 }
