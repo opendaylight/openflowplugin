@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLEngine;
+import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterFactory;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterFactoryImpl;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionFacade;
@@ -76,12 +77,11 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             LOG.debug("Calling OF plugin: {}", getSwitchConnectionHandler());
             getSwitchConnectionHandler().onSwitchConnected(connectionFacade);
             connectionFacade.checkListeners();
-            boolean tlsPresent = false;
 
             // If this channel is configured to support SSL it will only support SSL
-            if (getTlsConfiguration() != null) {
-                tlsPresent = true;
-                final SslContextFactory sslFactory = new SslContextFactory(getTlsConfiguration());
+            final TlsConfiguration tlsConfig = getTlsConfiguration();
+            if (tlsConfig != null) {
+                final SslContextFactory sslFactory = new SslContextFactory(tlsConfig);
                 final SSLEngine engine = sslFactory.getServerContext().createSSLEngine();
                 engine.setNeedClientAuth(true);
                 engine.setUseClientMode(false);
@@ -96,15 +96,13 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
                 final SslHandler ssl = new SslHandler(engine);
                 final Future<Channel> handshakeFuture = ssl.handshakeFuture();
                 final ConnectionFacade finalConnectionFacade = connectionFacade;
-                if (sslFactory.isCustomTrustManagerEnabled()) {
-                    handshakeFuture.addListener(future -> finalConnectionFacade
-                            .onSwitchCertificateIdentified(sslFactory.getSwitchCertificate()));
-                }
+                handshakeFuture.addListener(future -> finalConnectionFacade.onSwitchCertificateIdentified(
+                    sslFactory.getSwitchCertificateChain()));
                 handshakeFuture.addListener(future -> finalConnectionFacade.fireConnectionReadyNotification());
                 ch.pipeline().addLast(PipelineHandlers.SSL_HANDLER.name(), ssl);
             }
             ch.pipeline().addLast(PipelineHandlers.OF_FRAME_DECODER.name(),
-                    new OFFrameDecoder(connectionFacade, tlsPresent));
+                    new OFFrameDecoder(connectionFacade, tlsConfig != null));
             ch.pipeline().addLast(PipelineHandlers.OF_VERSION_DETECTOR.name(), new OFVersionDetector());
             final OFDecoder ofDecoder = new OFDecoder();
             ofDecoder.setDeserializationFactory(getDeserializationFactory());
@@ -117,7 +115,7 @@ public class TcpChannelInitializer extends ProtocolChannelInitializer<SocketChan
             ch.pipeline().addLast(PipelineHandlers.DELEGATING_INBOUND_HANDLER.name(),
                     new DelegatingInboundHandler(connectionFacade));
 
-            if (!tlsPresent) {
+            if (tlsConfig == null) {
                 connectionFacade.fireConnectionReadyNotification();
             }
         } catch (RuntimeException e) {

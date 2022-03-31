@@ -123,12 +123,7 @@ public enum ConfigurationProperty {
     /**
      * Delay for Device removal from Operational DataStore.
      */
-    DEVICE_DATASTORE_REMOVAL_DELAY,
-    /**
-     * Enable or disable customtrustmanager which adds switch certificate attributes to TLS
-     * failure notification property type.
-     */
-    ENABLE_CUSTOM_TRUST_MANAGER;
+    DEVICE_DATASTORE_REMOVAL_DELAY;
 
     private static final Map<String, ConfigurationProperty> KEY_VALUE_MAP;
 
