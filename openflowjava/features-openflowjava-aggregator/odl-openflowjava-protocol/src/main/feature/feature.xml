@@ -6,7 +6,6 @@
         <configfile finalname="etc/opendaylight/datastore/initial/config/legacy-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/legacyConfig</configfile>
         <feature version="[8,9)">odl-yangtools-netty</feature>
         <feature version="[9,10)">odl-mdsal-model-rfc6991</feature>
-        <feature version="[9,10)">odl-mdsal-model-rfc6991</feature>
         <feature version="[3,4)">odl-infrautils-diagstatus</feature>
     </feature>
 </features>
