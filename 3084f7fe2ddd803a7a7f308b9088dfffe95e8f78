@@ -16,6 +16,24 @@
       "message": "LGTM. Just this line needs to be removed.",
       "revId": "3084f7fe2ddd803a7a7f308b9088dfffe95e8f78",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9aa1905c_33b24d15",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2022-03-31T14:19:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5cda2403_f16679f8",
+      "revId": "3084f7fe2ddd803a7a7f308b9088dfffe95e8f78",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
     }
   ]
 }
