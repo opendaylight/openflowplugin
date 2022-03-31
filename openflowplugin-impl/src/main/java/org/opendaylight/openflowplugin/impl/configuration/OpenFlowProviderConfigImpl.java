@@ -165,10 +165,4 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
         return new NonZeroUint32Type(service.<Uint32>getProperty(
             ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(), Uint32::valueOf));
     }
-
-    @Override
-    public Boolean getEnableCustomTrustManager() {
-        return service.getProperty(ConfigurationProperty.ENABLE_CUSTOM_TRUST_MANAGER.toString(),
-                Boolean::valueOf);
-    }
 }
