@@ -16,6 +16,23 @@
       "message": "test-openflowplugin-core",
       "revId": "31edc94bfe6aa8a8c2e76e10371f6680a09ac8b2",
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9783fc46_ea9b26db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1927
+      },
+      "writtenOn": "2022-04-03T05:08:26Z",
+      "side": 1,
+      "message": "Core test failed because of Maven 3.8 requirement. But cherry-pick for Phosphorus is passing tests.",
+      "revId": "31edc94bfe6aa8a8c2e76e10371f6680a09ac8b2",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
     }
   ]
 }
