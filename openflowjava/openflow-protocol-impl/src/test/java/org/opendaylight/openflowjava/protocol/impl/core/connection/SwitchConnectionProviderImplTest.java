@@ -5,8 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.net.InetAddress;
@@ -14,8 +19,6 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +32,6 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.TransportProtocol;
-import org.slf4j.LoggerFactory;
 
 /**
  * Unit tests for SwitchConnectionProviderImpl.
@@ -84,11 +86,11 @@ public class SwitchConnectionProviderImplTest {
     public void testStartup1() throws UnknownHostException {
         startUp(null);
         final ListenableFuture<Boolean> future = provider.startup();
-        try {
-            future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Assert.assertEquals("Wrong state", "java.lang.NullPointerException", e.getMessage());
-        }
+
+        final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
+            .getCause();
+        assertThat(cause, instanceOf(NullPointerException.class));
+        assertEquals(null, cause.getMessage());
     }
 
     /**
@@ -99,11 +101,11 @@ public class SwitchConnectionProviderImplTest {
         startUp(null);
         provider.setSwitchConnectionHandler(handler);
         final ListenableFuture<Boolean> future = provider.startup();
-        try {
-            future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Assert.assertEquals("Wrong state", "java.lang.NullPointerException", e.getMessage());
-        }
+
+        final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
+            .getCause();
+        assertThat(cause, instanceOf(NullPointerException.class));
+        assertEquals(null, cause.getMessage());
     }
 
     /**
@@ -113,69 +115,55 @@ public class SwitchConnectionProviderImplTest {
     public void testStartup3() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
         final ListenableFuture<Boolean> future = provider.startup();
-        try {
-            future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Assert.assertEquals("Wrong state", "java.lang.IllegalStateException:"
-                    + " SwitchConnectionHandler is not set", e.getMessage());
-        }
+
+        final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
+            .getCause();
+        assertThat(cause, instanceOf(IllegalStateException.class));
+        assertEquals("SwitchConnectionHandler is not set", cause.getMessage());
     }
 
     /**
      * Tests correct provider startup - over TCP.
      */
     @Test
-    public void testStartup4() throws UnknownHostException {
+    public void testStartup4() throws Exception {
         startUp(TransportProtocol.TCP);
         provider.setSwitchConnectionHandler(handler);
-        try {
-            Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Assert.fail();
-        }
+
+        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 
     /**
      * Tests correct provider startup - over TLS.
      */
     @Test
-    public void testStartup5() throws UnknownHostException {
+    public void testStartup5() throws Exception {
         startUp(TransportProtocol.TLS);
         provider.setSwitchConnectionHandler(handler);
-        try {
-            Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Assert.fail();
-        }
+
+        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 
     /**
      * Tests correct provider startup - over UDP.
      */
     @Test
-    public void testStartup6() throws UnknownHostException {
+    public void testStartup6() throws Exception {
         startUp(TransportProtocol.UDP);
         provider.setSwitchConnectionHandler(handler);
-        try {
-            Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            Assert.fail();
-        }
+
+        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 
     /**
      * Tests correct provider shutdown.
      */
     @Test
-    public void testShutdown() throws UnknownHostException {
+    public void testShutdown() throws Exception {
         startUp(TransportProtocol.TCP);
         provider.setSwitchConnectionHandler(handler);
-        try {
-            Assert.assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
-            Assert.assertTrue("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            LoggerFactory.getLogger(SwitchConnectionProviderImplTest.class).error("Unexpected error", e);
-        }
-    }
 
+        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+        assertTrue("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+    }
 }
