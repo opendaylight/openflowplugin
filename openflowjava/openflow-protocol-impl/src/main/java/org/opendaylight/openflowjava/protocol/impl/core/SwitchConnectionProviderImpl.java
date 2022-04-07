@@ -9,6 +9,8 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -82,16 +84,16 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final String diagStatusIdentifier;
     private final String threadName;
     private TcpConnectionInitializer connectionInitializer;
-    private OpenflowDiagStatusProvider openflowDiagStatusProvider;
+    private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
 
-    public SwitchConnectionProviderImpl(
-            @Nullable ConnectionConfiguration connConfig, OpenflowDiagStatusProvider openflowDiagStatusProvider) {
+    public SwitchConnectionProviderImpl(final @Nullable ConnectionConfiguration connConfig,
+            final OpenflowDiagStatusProvider openflowDiagStatusProvider) {
         this.connConfig = connConfig;
         String connectionSuffix = createConnectionSuffix(connConfig);
-        this.diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
+        diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
         this.openflowDiagStatusProvider = openflowDiagStatusProvider;
-        this.threadName = THREAD_NAME_PREFIX + connectionSuffix;
-        this.listeningExecutorService = Executors.newListeningSingleThreadExecutor(threadName, LOG);
+        threadName = THREAD_NAME_PREFIX + connectionSuffix;
+        listeningExecutorService = Executors.newListeningSingleThreadExecutor(threadName, LOG);
         serializerRegistry = new SerializerRegistryImpl();
         if (connConfig != null) {
             serializerRegistry.setGroupAddModConfig(connConfig.isGroupAddModEnabled());
@@ -104,12 +106,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
-    private static String createConnectionSuffix(@Nullable ConnectionConfiguration config) {
-        if (config != null) {
-            return "_" + config.getPort();
-        } else {
-            return "-null-config";
-        }
+    private static String createConnectionSuffix(final @Nullable ConnectionConfiguration config) {
+        return config == null ? "-null-config" : "_" + config.getPort();
     }
 
     @Override
@@ -140,18 +138,17 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
                 throw new IllegalStateException("SwitchConnectionHandler is not set");
             }
             Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
-
                 @Override
-                public void onFailure(Throwable throwable) {
+                public void onFailure(final Throwable throwable) {
                     openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, throwable);
                 }
 
                 @Override
-                public void onSuccess(@Nullable Object nullResult) {
+                public void onSuccess(final Object result) {
                     openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.ERROR,
                             threadName + " terminated");
                 }
-            } , MoreExecutors.directExecutor());
+            }, MoreExecutors.directExecutor());
             return serverFacade.getIsOnlineFuture();
         } catch (RuntimeException e) {
             return Futures.immediateFailedFuture(e);
@@ -161,6 +158,9 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private ServerFacade createAndConfigureServer() {
         LOG.debug("Configuring ..");
         ServerFacade server;
+
+        checkState(connConfig != null, "Connection not configured");
+
         final ChannelInitializerFactory factory = new ChannelInitializerFactory();
         factory.setSwitchConnectionHandler(switchConnectionHandler);
         factory.setSwitchIdleTimeout(connConfig.getSwitchIdleTimeout());
@@ -258,14 +258,14 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public void registerExperimenterMessageDeserializer(ExperimenterIdDeserializerKey key,
-            OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+    public void registerExperimenterMessageDeserializer(final ExperimenterIdDeserializerKey key,
+            final OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
     @Override
-    public void registerMultipartReplyMessageDeserializer(ExperimenterIdDeserializerKey key,
-            OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
+    public void registerMultipartReplyMessageDeserializer(final ExperimenterIdDeserializerKey key,
+            final OFDeserializer<? extends ExperimenterDataOfChoice> deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
@@ -289,14 +289,15 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     public void registerExperimenterMessageSerializer(
-            ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
-            OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+            final ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
+            final OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
     @Override
-    public void registerMultipartRequestSerializer(ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
-                                                   OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
+    public void registerMultipartRequestSerializer(
+            final ExperimenterIdSerializerKey<? extends ExperimenterDataOfChoice> key,
+            final OFSerializer<? extends ExperimenterDataOfChoice> serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
@@ -333,16 +334,16 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     public ConnectionConfiguration getConfiguration() {
-        return this.connConfig;
+        return connConfig;
     }
 
     @Override
-    public <K> void registerSerializer(MessageTypeKey<K> key, OFGeneralSerializer serializer) {
+    public <K> void registerSerializer(final MessageTypeKey<K> key, final OFGeneralSerializer serializer) {
         serializerRegistry.registerSerializer(key, serializer);
     }
 
     @Override
-    public void registerDeserializer(MessageCodeKey key, OFGeneralDeserializer deserializer) {
+    public void registerDeserializer(final MessageCodeKey key, final OFGeneralDeserializer deserializer) {
         deserializerRegistry.registerDeserializer(key, deserializer);
     }
 
