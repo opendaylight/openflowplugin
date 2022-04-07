@@ -89,8 +89,8 @@ public class SwitchConnectionProviderImplTest {
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
-        assertThat(cause, instanceOf(NullPointerException.class));
-        assertEquals(null, cause.getMessage());
+        assertThat(cause, instanceOf(IllegalStateException.class));
+        assertEquals("Connection not configured", cause.getMessage());
     }
 
     /**
@@ -104,8 +104,8 @@ public class SwitchConnectionProviderImplTest {
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
-        assertThat(cause, instanceOf(NullPointerException.class));
-        assertEquals(null, cause.getMessage());
+        assertThat(cause, instanceOf(IllegalStateException.class));
+        assertEquals("Connection not configured", cause.getMessage());
     }
 
     /**
