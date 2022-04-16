@@ -158,7 +158,6 @@ public class RpcContextImplTest {
 
     @Test
     public void testClose() {
-        when(routedRpcReg.getInstance()).thenReturn(serviceInstance);
         rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
         rpcContext.close();
         assertTrue(rpcContext.isEmptyRpcRegistrations());

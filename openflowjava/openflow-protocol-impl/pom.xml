@@ -84,9 +84,8 @@
         </dependency>
 
         <dependency>
-            <!-- FIXME: configure slf4j-simple instead -->
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <artifactId>slf4j-simple</artifactId>
             <scope>test</scope>
         </dependency>
 

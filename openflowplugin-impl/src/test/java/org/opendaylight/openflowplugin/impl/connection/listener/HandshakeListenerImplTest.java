@@ -14,7 +14,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.net.InetSocketAddress;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -100,8 +99,6 @@ public class HandshakeListenerImplTest {
 
     @Test
     public void testOnHandshakeFailure2() {
-        when(connectionAdapter.getRemoteAddress())
-                .thenReturn(InetSocketAddress.createUnresolved("ut-ofp.example.org", 4242));
         connectionContextSpy.setNodeId(new NodeId("openflow:1"));
         handshakeListener.onHandshakeFailure();
         verify(handshakeContext).close();

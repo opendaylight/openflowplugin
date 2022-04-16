@@ -8,7 +8,6 @@
 
 package org.opendaylight.openflowplugin.impl.connection;
 
-import java.net.InetSocketAddress;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,8 +47,6 @@ public class ConnectionContextImplTest {
 
     @Before
     public void setUp() {
-        Mockito.when(connetionAdapter.getRemoteAddress())
-                .thenReturn(InetSocketAddress.createUnresolved("ofp-ut.example.org", 4242));
         Mockito.when(connetionAdapter.isAlive()).thenReturn(true);
 
         connectionContext = new ConnectionContextImpl(connetionAdapter, deviceConnectionStatusProvider);
