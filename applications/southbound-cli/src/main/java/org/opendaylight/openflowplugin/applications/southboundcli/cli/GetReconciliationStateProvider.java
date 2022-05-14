@@ -12,7 +12,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.lang.reflect.Type;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -20,13 +19,14 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -39,35 +39,36 @@ import org.slf4j.LoggerFactory;
 @Command(scope = "openflow", name = "getreconciliationstate",
         description = "Print reconciliation state for all devices")
 public class GetReconciliationStateProvider extends OsgiCommandSupport {
-
-    @Option(name = "-d", description = "Node Id")
-    String nodeId;
-
     private static final Logger LOG = LoggerFactory.getLogger(GetReconciliationStateProvider.class);
+
+    // FIXME: this is fugly: it is an unexpressed dependency on FRM bean as well as Jolokia
     private static final String URL_PREFIX = "http://";
     private static final String URL_SEPARATOR = "/";
     private static final String URL_SEPARATOR_COLON = ":";
     private static final String HTTP_JOL_OKIA_BASE_URI = "/jolokia/exec/";
     private static final int HTTP_TIMEOUT = 5000;
-    private final Integer httpPort;
-    private static final String JMX_OBJECT_NAME
-            = "org.opendaylight.openflowplugin.frm:type=ReconciliationState";
+    private static final String JMX_OBJECT_NAME = "org.opendaylight.openflowplugin.frm:type=ReconciliationState";
     private static final String JMX_ATTRIBUTE_NAME = "acquireReconciliationStates";
+    // FIXME: hard-coded credentials
     private static final String JMX_REST_HTTP_AUTH_UNAME_PWD = "admin:admin";
+
+    @Option(name = "-d", description = "Node Id")
+    String nodeId;
+
+    private final Integer httpPort;
     private final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean;
     private final ClusterMemberInfo clusterMemberInfoProvider;
 
-
     public GetReconciliationStateProvider(final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean,
                                           final ClusterMemberInfo clusterMemberInfoProvider,
-                                          @Nullable Integer httpPort) {
+                                          final @Nullable Integer httpPort) {
         this.reconciliationJMXServiceMBean = reconciliationJMXServiceMBean;
         this.clusterMemberInfoProvider = clusterMemberInfoProvider;
         this.httpPort = httpPort;
     }
 
     @Override
-    protected Object doExecute() throws Exception {
+    protected Object doExecute() {
         List<String> result = new ArrayList<>();
         Map<String, String> reconciliationStates  = getClusterwideReconcilitionStates();
         if (nodeId == null) {
@@ -111,9 +112,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
     }
 
     private static String getHeaderOutput() {
-        String header = String.format("%-17s %-25s %-25s", "DatapathId", "Reconciliation Status",
-                "Reconciliation Time");
-        return header;
+        return String.format("%-17s %-25s %-25s", "DatapathId", "Reconciliation Status", "Reconciliation Time");
     }
 
     private static String getLineSeparator() {
@@ -124,7 +123,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
     private Map<String,String> getClusterwideReconcilitionStates() {
         Map<String,String>  clusterwideReconcStates = new HashMap<>();
         List<String> clusterIPAddresses = clusterMemberInfoProvider.getClusterMembers().stream()
-                .map(s -> s.getHostAddress()).collect(Collectors.toList());
+                .map(InetAddress::getHostAddress).collect(Collectors.toList());
         LOG.debug("The ip address of nodes in the cluster : {}", clusterIPAddresses);
         if (!clusterIPAddresses.isEmpty()) {
             String selfAddress = clusterMemberInfoProvider.getSelfAddress() != null
@@ -168,17 +167,15 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         return reconciliationJMXServiceMBean.acquireReconciliationStates();
     }
 
-    @SuppressFBWarnings("DM_DEFAULT_ENCODING")
     private String invokeRemoteRestOperation(String ipAddress) throws Exception {
         String restUrl = buildRemoteReconcilationUrl(ipAddress);
         LOG.info("invokeRemoteReconcilationState() REST URL: {}", restUrl);
         String authString = JMX_REST_HTTP_AUTH_UNAME_PWD;
-        byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-        String authStringEnc = new String(authEncBytes);
+        String authStringEnc = Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8));
         HttpRequest request = HttpRequest.newBuilder(URI.create(restUrl))
                                 .timeout(Duration.ofMillis(HTTP_TIMEOUT))
-                                .header("Authorization","Basic " + authStringEnc)
-                                .header("Accept","application/json")
+                                .header("Authorization", "Basic " + authStringEnc)
+                                .header("Accept", "application/json")
                                 .GET()
                                 .build();
 
