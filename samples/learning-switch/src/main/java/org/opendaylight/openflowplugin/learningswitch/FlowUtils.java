@@ -62,9 +62,6 @@ public final class FlowUtils {
                         .build())
                 .build();
 
-        MatchBuilder match = new MatchBuilder();
-        match.setEthernetMatch(ethernetMatch);
-
         Uri outputPort = dstPort.getValue().firstKeyOf(NodeConnector.class).getId();
 
         Action outputToControllerAction = new ActionBuilder()
