@@ -1,0 +1,7 @@
+Verified+1: jenkins-releng ODL
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Thu, 19 May 2022 16:37:11 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/101150
+Project: openflowplugin
+Branch: refs/heads/master
