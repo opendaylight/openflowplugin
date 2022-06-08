@@ -21,7 +21,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>9.0.3</version>
+                <version>9.0.4</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>controller-artifacts</artifactId>
-                <version>5.0.4</version>
+                <version>5.0.5</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
