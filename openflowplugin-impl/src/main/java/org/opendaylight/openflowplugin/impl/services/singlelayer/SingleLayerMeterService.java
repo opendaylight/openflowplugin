@@ -37,9 +37,10 @@ public final class SingleLayerMeterService<O extends DataObject> extends Abstrac
         final MeterMessageBuilder meterMessageBuilder = new MeterMessageBuilder(input);
         final Class<? extends DataContainer> clazz = input.implementedInterface();
 
-        if (clazz.equals(AddMeterInput.class)
-                || clazz.equals(UpdatedMeter.class)) {
+        if (clazz.equals(AddMeterInput.class)) {
             meterMessageBuilder.setCommand(MeterModCommand.OFPMCADD);
+        } else if (clazz.equals(UpdatedMeter.class)) {
+            meterMessageBuilder.setCommand(MeterModCommand.OFPMCMODIFY);
         } else if (clazz.equals(RemoveMeterInput.class)
                 || clazz.equals(OriginalMeter.class)) {
             meterMessageBuilder.setCommand(MeterModCommand.OFPMCDELETE);
