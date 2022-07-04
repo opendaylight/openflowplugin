@@ -41,45 +41,44 @@ import org.slf4j.LoggerFactory;
  * The Utility class for SRM Shell.
  */
 public final class SrmCliUtils {
-
     private static final Logger LOG = LoggerFactory.getLogger(SrmCliUtils.class);
 
+    private static final ImmutableMap<String, EntityTypeBase> ENTITY_TYPE_MAP =
+        ImmutableMap.<String, EntityTypeBase>builder()
+            .put("SERVICE", EntityTypeService.VALUE)
+            .put("INSTANCE", EntityTypeInstance.VALUE)
+            .build();
+
+    private static final ImmutableMap<String, EntityNameBase> SERVICE_NAME_MAP =
+        ImmutableMap.<String, EntityNameBase>builder()
+            .put("ITM", GeniusItm.VALUE)
+            .put("IFM", GeniusIfm.VALUE)
+            .put("VPN", NetvirtVpn.VALUE)
+            .put("ELAN", NetvirtElan.VALUE)
+            .put("DHCP", NetvirtDhcp.VALUE)
+            .put("L2GW", NetvirtL2gw.VALUE)
+            .put("ACL", NetvirtAcl.VALUE)
+            .put("OFPLUGIN", Ofplugin.VALUE)
+            .put("QOS", NetvirtQos.VALUE)
+            .build();
+
+    private static final ImmutableMap<String, EntityNameBase> INSTANCE_NAME_MAP =
+        ImmutableMap.<String, EntityNameBase>builder()
+            .put("ITM-TEP", GeniusItmTep.VALUE)
+            .put("ITM-TZ", GeniusItmTz.VALUE)
+            .put("IFM-IFACE", GeniusIfmInterface.VALUE)
+            .put("VPN-INSTANCE", NetvirtVpnInstance.VALUE)
+            .put("ELAN-INTERFACE", NetvirtElanInterface.VALUE)
+            .put("L2GW-NODE", NetvirtL2gwNode.VALUE)
+            .put("L2GW-CONNECTION", NetvirtL2gwConnection.VALUE)
+            .put("QOS-POLICY-INSTANCE", NetvirtQosPolicyInstance.VALUE)
+            .put("ACL-INTERFACE", NetvirtAclInterface.VALUE)
+            .put("ACL-INSTANCE", NetvirtAclInstance.VALUE)
+            .build();
+
     private SrmCliUtils() {
-
+        // Hidden on purpose
     }
-
-    private static final ImmutableMap<String, Class<? extends EntityTypeBase>> ENTITY_TYPE_MAP =
-        new ImmutableMap.Builder<String, Class<? extends EntityTypeBase>>()
-            .put("SERVICE", EntityTypeService.class)
-            .put("INSTANCE", EntityTypeInstance.class)
-            .build();
-
-    private static final ImmutableMap<String, Class<? extends EntityNameBase>> SERVICE_NAME_MAP =
-        new ImmutableMap.Builder<String, Class<? extends EntityNameBase>>()
-            .put("ITM", GeniusItm.class)
-            .put("IFM", GeniusIfm.class)
-            .put("VPN", NetvirtVpn.class)
-            .put("ELAN", NetvirtElan.class)
-            .put("DHCP", NetvirtDhcp.class)
-            .put("L2GW", NetvirtL2gw.class)
-            .put("ACL", NetvirtAcl.class)
-            .put("OFPLUGIN", Ofplugin.class)
-            .put("QOS", NetvirtQos.class)
-            .build();
-
-    private static final ImmutableMap<String, Class<? extends EntityNameBase>> INSTANCE_NAME_MAP =
-        new ImmutableMap.Builder<String, Class<? extends EntityNameBase>>()
-            .put("ITM-TEP", GeniusItmTep.class)
-            .put("ITM-TZ", GeniusItmTz.class)
-            .put("IFM-IFACE", GeniusIfmInterface.class)
-            .put("VPN-INSTANCE", NetvirtVpnInstance.class)
-            .put("ELAN-INTERFACE", NetvirtElanInterface.class)
-            .put("L2GW-NODE", NetvirtL2gwNode.class)
-            .put("L2GW-CONNECTION", NetvirtL2gwConnection.class)
-            .put("QOS-POLICY-INSTANCE", NetvirtQosPolicyInstance.class)
-            .put("ACL-INTERFACE", NetvirtAclInterface.class)
-            .put("ACL-INSTANCE", NetvirtAclInstance.class)
-            .build();
 
     /**
      * Get EntityName given name in string.
@@ -87,7 +86,7 @@ public final class SrmCliUtils {
      * @param strType Entity Type as a string
      * @return EntityName for use
      */
-    public static Class<? extends EntityTypeBase> getEntityType(String strType) {
+    public static EntityTypeBase getEntityType(String strType) {
         LOG.debug("Getting entityType for type {}", strType);
         return ENTITY_TYPE_MAP.get(strType.toUpperCase(Locale.ROOT));
     }
@@ -99,12 +98,11 @@ public final class SrmCliUtils {
      * @param strName Entity Name as a string
      * @return EntityName for use
      */
-    public static @Nullable Class<? extends EntityNameBase> getEntityName(Class<? extends EntityTypeBase> type,
-            String strName) {
+    public static @Nullable EntityNameBase getEntityName(EntityTypeBase type, String strName) {
         LOG.debug("Getting entityName for type {} and name: {}", type, strName);
-        if (EntityTypeService.class.equals(type)) {
+        if (EntityTypeService.VALUE.equals(type)) {
             return SERVICE_NAME_MAP.get(strName.toUpperCase(Locale.ROOT));
-        } else if (EntityTypeInstance.class.equals(type)) {
+        } else if (EntityTypeInstance.VALUE.equals(type)) {
             return INSTANCE_NAME_MAP.get(strName.toUpperCase(Locale.ROOT));
         } else {
             return null;
@@ -119,15 +117,15 @@ public final class SrmCliUtils {
         return help.toString();
     }
 
-    public static String getNameHelp(Class<? extends EntityTypeBase> entityType) {
+    public static String getNameHelp(EntityTypeBase entityType) {
         StringBuilder help = new StringBuilder("Supported Entity Names for type");
 
-        if (EntityTypeService.class.equals(entityType)) {
+        if (EntityTypeService.VALUE.equals(entityType)) {
             help.append(" SERVICE are:\n");
             for (String entityName : SrmCliUtils.SERVICE_NAME_MAP.keySet()) {
                 help.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
             }
-        } else if (EntityTypeInstance.class.equals(entityType)) {
+        } else if (EntityTypeInstance.VALUE.equals(entityType)) {
             help.append(" INSTANCE are:\n");
             for (String entityName : SrmCliUtils.INSTANCE_NAME_MAP.keySet()) {
                 help.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
@@ -135,5 +133,4 @@ public final class SrmCliUtils {
         }
         return help.toString();
     }
-
 }

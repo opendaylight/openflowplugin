@@ -60,8 +60,7 @@ public final class ServiceRecoveryListener extends AbstractClusteredSyncDataTree
      * @param entityName The type entity for which recovery has to be started. eg : INTERFACE or DPN.
      * @param entityId The unique id to represent the entity to be recovered
      */
-    private void recoverService(Class<? extends EntityTypeBase> entityType,
-                                Class<? extends EntityNameBase> entityName, String entityId) {
+    private void recoverService(EntityTypeBase entityType, EntityNameBase entityName, String entityId) {
         String serviceRegistryKey = entityName.toString();
         serviceRecoveryRegistry.getRegisteredServiceRecoveryHandler(serviceRegistryKey).recoverService(entityId);
     }

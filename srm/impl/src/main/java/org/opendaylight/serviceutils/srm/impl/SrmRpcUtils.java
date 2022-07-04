@@ -61,103 +61,99 @@ import org.slf4j.LoggerFactory;
  * The Utility class for SRM Shell.
  */
 public final class SrmRpcUtils {
-
     private static final Logger LOG = LoggerFactory.getLogger(SrmRpcUtils.class);
-
-    private static final boolean REINSTALL_FAILED = false;
-    private static final boolean REINSTALL_SUCCESS = true;
+    private static final Boolean REINSTALL_FAILED = Boolean.FALSE;
+    private static final Boolean REINSTALL_SUCCESS = Boolean.TRUE;
 
     private SrmRpcUtils() {
+        // Hidden on purpose
     }
 
-    private static final ImmutableMap<Class<? extends EntityNameBase>,Class<? extends EntityTypeBase>>
-        NAME_TO_TYPE_MAP = new ImmutableMap
-        .Builder<Class<? extends EntityNameBase>,Class<? extends EntityTypeBase>>()
-            .put(GeniusItm.class, EntityTypeService.class)
-            .put(GeniusIfm.class, EntityTypeService.class)
-            .put(NetvirtVpn.class, EntityTypeService.class)
-            .put(NetvirtElan.class, EntityTypeService.class)
-            .put(NetvirtL2gw.class, EntityTypeService.class)
-            .put(NetvirtDhcp.class, EntityTypeService.class)
-            .put(NetvirtAcl.class, EntityTypeService.class)
-            .put(Ofplugin.class, EntityTypeService.class)
-            .put(GeniusItmTep.class, EntityTypeInstance.class)
-            .put(GeniusItmTz.class, EntityTypeInstance.class)
-            .put(GeniusIfmInterface.class, EntityTypeInstance.class)
-            .put(NetvirtVpnInstance.class, EntityTypeInstance.class)
-            .put(NetvirtElanInterface.class, EntityTypeInstance.class)
-            .put(NetvirtL2gwConnection.class, EntityTypeInstance.class)
-            .put(NetvirtL2gwNode.class, EntityTypeInstance.class)
-            .put(NetvirtQos.class, EntityTypeService.class)
-            .put(NetvirtQosPolicyInstance.class, EntityTypeInstance.class)
-            .put(NetvirtAclInterface.class, EntityTypeInstance.class)
-            .put(NetvirtAclInstance.class, EntityTypeInstance.class)
+    private static final ImmutableMap<EntityNameBase, EntityTypeBase> NAME_TO_TYPE_MAP =
+        ImmutableMap.<EntityNameBase, EntityTypeBase>builder()
+            .put(GeniusItm.VALUE, EntityTypeService.VALUE)
+            .put(GeniusIfm.VALUE, EntityTypeService.VALUE)
+            .put(NetvirtVpn.VALUE, EntityTypeService.VALUE)
+            .put(NetvirtElan.VALUE, EntityTypeService.VALUE)
+            .put(NetvirtL2gw.VALUE, EntityTypeService.VALUE)
+            .put(NetvirtDhcp.VALUE, EntityTypeService.VALUE)
+            .put(NetvirtAcl.VALUE, EntityTypeService.VALUE)
+            .put(Ofplugin.VALUE, EntityTypeService.VALUE)
+            .put(GeniusItmTep.VALUE, EntityTypeInstance.VALUE)
+            .put(GeniusItmTz.VALUE, EntityTypeInstance.VALUE)
+            .put(GeniusIfmInterface.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtVpnInstance.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtElanInterface.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtL2gwConnection.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtL2gwNode.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtQos.VALUE, EntityTypeService.VALUE)
+            .put(NetvirtQosPolicyInstance.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtAclInterface.VALUE, EntityTypeInstance.VALUE)
+            .put(NetvirtAclInstance.VALUE, EntityTypeInstance.VALUE)
             .build();
 
-    private static final ImmutableMap<Class<? extends EntityNameBase>, Class<? extends EntityNameBase>>
-        NAME_TO_SERVICE_MAP = new ImmutableMap
-        .Builder<Class<? extends EntityNameBase>, Class<? extends EntityNameBase>>()
-            .put(GeniusItm.class, GeniusItm.class)
-            .put(GeniusIfm.class, GeniusIfm.class)
-            .put(GeniusItmTep.class, GeniusItm.class)
-            .put(GeniusItmTz.class, GeniusItm.class)
-            .put(GeniusIfmInterface.class, GeniusIfm.class)
-            .put(NetvirtVpn.class, NetvirtVpn.class)
-            .put(NetvirtVpnInstance.class, NetvirtVpn.class)
-            .put(NetvirtElan.class, NetvirtElan.class)
-            .put(NetvirtElanInterface.class, NetvirtElan.class)
-            .put(NetvirtAcl.class, NetvirtAcl.class)
-            .put(NetvirtAclInterface.class, NetvirtAcl.class)
-            .put(NetvirtAclInstance.class, NetvirtAcl.class)
-            .put(NetvirtL2gwConnection.class, NetvirtL2gw.class)
-            .put(NetvirtL2gwNode.class, NetvirtL2gw.class)
-            .put(NetvirtL2gw.class, NetvirtL2gw.class)
-            .put(NetvirtDhcp.class, NetvirtDhcp.class)
-            .put(Ofplugin.class, Ofplugin.class)
-            .put(NetvirtQos.class, NetvirtQos.class)
-            .put(NetvirtQosPolicyInstance.class, NetvirtQos.class)
+    private static final ImmutableMap<EntityNameBase, EntityNameBase> NAME_TO_SERVICE_MAP =
+        ImmutableMap.<EntityNameBase, EntityNameBase>builder()
+            .put(GeniusItm.VALUE, GeniusItm.VALUE)
+            .put(GeniusIfm.VALUE, GeniusIfm.VALUE)
+            .put(GeniusItmTep.VALUE, GeniusItm.VALUE)
+            .put(GeniusItmTz.VALUE, GeniusItm.VALUE)
+            .put(GeniusIfmInterface.VALUE, GeniusIfm.VALUE)
+            .put(NetvirtVpn.VALUE, NetvirtVpn.VALUE)
+            .put(NetvirtVpnInstance.VALUE, NetvirtVpn.VALUE)
+            .put(NetvirtElan.VALUE, NetvirtElan.VALUE)
+            .put(NetvirtElanInterface.VALUE, NetvirtElan.VALUE)
+            .put(NetvirtAcl.VALUE, NetvirtAcl.VALUE)
+            .put(NetvirtAclInterface.VALUE, NetvirtAcl.VALUE)
+            .put(NetvirtAclInstance.VALUE, NetvirtAcl.VALUE)
+            .put(NetvirtL2gwConnection.VALUE, NetvirtL2gw.VALUE)
+            .put(NetvirtL2gwNode.VALUE, NetvirtL2gw.VALUE)
+            .put(NetvirtL2gw.VALUE, NetvirtL2gw.VALUE)
+            .put(NetvirtDhcp.VALUE, NetvirtDhcp.VALUE)
+            .put(Ofplugin.VALUE, Ofplugin.VALUE)
+            .put(NetvirtQos.VALUE, NetvirtQos.VALUE)
+            .put(NetvirtQosPolicyInstance.VALUE, NetvirtQos.VALUE)
             .build();
 
 
     public static RecoverOutput callSrmOp(DataBroker broker, RecoverInput input) {
         RecoverOutputBuilder outputBuilder = new RecoverOutputBuilder();
         if (input.getEntityName() == null) {
-            outputBuilder.setResponse(RpcFailEntityName.class)
+            outputBuilder.setResponse(RpcFailEntityName.VALUE)
                 .setMessage("EntityName is null");
             return outputBuilder.build();
         }
         if (input.getEntityType() == null) {
-            outputBuilder.setResponse(RpcFailEntityType.class)
-                .setMessage(String.format("EntityType for %s can't be null", input.getEntityName().getSimpleName()));
+            outputBuilder.setResponse(RpcFailEntityType.VALUE)
+                .setMessage(String.format("EntityType for %s can't be null", input.getEntityName()));
             return outputBuilder.build();
         }
         String entityId;
-        if (EntityTypeInstance.class.equals(input.getEntityType()) && input.getEntityId() ==  null) {
-            outputBuilder.setResponse(RpcFailEntityId.class)
-                .setMessage(String.format("EntityId can't be null for %s", input.getEntityName().getSimpleName()));
+        if (EntityTypeInstance.VALUE.equals(input.getEntityType()) && input.getEntityId() ==  null) {
+            outputBuilder.setResponse(RpcFailEntityId.VALUE)
+                .setMessage(String.format("EntityId can't be null for %s", input.getEntityName()));
             return outputBuilder.build();
         } else {
             entityId = input.getEntityId();
         }
-        Class<? extends EntityNameBase> serviceName = NAME_TO_SERVICE_MAP.get(input.getEntityName());
+        EntityNameBase serviceName = NAME_TO_SERVICE_MAP.get(input.getEntityName());
         if (serviceName == null) {
-            outputBuilder.setResponse(RpcFailEntityName.class)
-                .setMessage(String.format("EntityName %s has no matching service",
-                    input.getEntityName().getSimpleName()));
+            outputBuilder.setResponse(RpcFailEntityName.VALUE)
+                .setMessage(String.format("EntityName %s has no matching service", input.getEntityName()));
             return outputBuilder.build();
         }
-        Class<? extends EntityTypeBase> entityType = NAME_TO_TYPE_MAP.get(input.getEntityName());
+        EntityTypeBase entityType = NAME_TO_TYPE_MAP.get(input.getEntityName());
         if (entityType == null || !input.getEntityType().equals(entityType)) {
-            outputBuilder.setResponse(RpcFailEntityType.class)
+            outputBuilder.setResponse(RpcFailEntityType.VALUE)
                 .setMessage(String.format("EntityName %s doesn't match with EntityType %s",
-                    input.getEntityName().getSimpleName(), entityType));
+                    input.getEntityName(), entityType));
             return outputBuilder.build();
         }
 
         OperationsBuilder opsBuilder = new OperationsBuilder()
             .setEntityName(input.getEntityName())
             .setEntityType(entityType)
-            .setTriggerOperation(ServiceOpRecover.class);
+            .setTriggerOperation(ServiceOpRecover.VALUE);
         if (entityId != null) {
             opsBuilder.setEntityId(entityId);
         }
@@ -169,10 +165,10 @@ public final class SrmRpcUtils {
             tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error writing RecoveryOp to datastore. path:{}, data:{}", opsIid, operation);
-            outputBuilder.setResponse(RpcFailUnknown.class).setMessage(e.getMessage());
+            outputBuilder.setResponse(RpcFailUnknown.VALUE).setMessage(e.getMessage());
             return outputBuilder.build();
         }
-        outputBuilder.setResponse(RpcSuccess.class).setMessage("Recovery operation successfully triggered");
+        outputBuilder.setResponse(RpcSuccess.VALUE).setMessage("Recovery operation successfully triggered");
         return outputBuilder.build();
     }
 
@@ -185,37 +181,36 @@ public final class SrmRpcUtils {
         }
         if (input.getEntityType() == null) {
             outputBuilder.setSuccessful(REINSTALL_FAILED)
-                .setMessage(String.format("EntityType for %s can't be null", input.getEntityName().getSimpleName()));
+                .setMessage(String.format("EntityType for %s can't be null", input.getEntityName()));
             return outputBuilder.build();
         }
 
-        if (!EntityTypeService.class.equals(input.getEntityType())) {
+        if (!EntityTypeService.VALUE.equals(input.getEntityType())) {
             outputBuilder.setSuccessful(REINSTALL_FAILED)
                 .setMessage(String.format("EntityType is %s, Reinstall is only for EntityTypeService",
                                           input.getEntityType()));
             return outputBuilder.build();
         }
 
-        Class<? extends EntityNameBase> serviceName = NAME_TO_SERVICE_MAP.get(input.getEntityName());
+        EntityNameBase serviceName = NAME_TO_SERVICE_MAP.get(input.getEntityName());
         if (serviceName == null) {
             outputBuilder.setSuccessful(REINSTALL_FAILED)
-                .setMessage(String.format("EntityName %s has no matching service",
-                    input.getEntityName().getSimpleName()));
+                .setMessage(String.format("EntityName %s has no matching service", input.getEntityName()));
             return outputBuilder.build();
         }
 
-        Class<? extends EntityTypeBase> entityType = NAME_TO_TYPE_MAP.get(input.getEntityName());
+        EntityTypeBase entityType = NAME_TO_TYPE_MAP.get(input.getEntityName());
         if (entityType == null || !input.getEntityType().equals(entityType)) {
             outputBuilder.setSuccessful(REINSTALL_FAILED)
                 .setMessage(String.format("EntityName %s doesn't match with EntityType %s",
-                    input.getEntityName().getSimpleName(), entityType));
+                    input.getEntityName(), entityType));
             return outputBuilder.build();
         }
 
         OperationsBuilder opsBuilder = new OperationsBuilder()
             .setEntityName(input.getEntityName())
             .setEntityType(entityType)
-            .setTriggerOperation(ServiceOpReinstall.class);
+            .setTriggerOperation(ServiceOpReinstall.VALUE);
         Operations operation = opsBuilder.build();
         InstanceIdentifier<Operations> opsIid = getInstanceIdentifier(operation, serviceName);
         WriteTransaction tx = broker.newWriteOnlyTransaction();
@@ -232,7 +227,7 @@ public final class SrmRpcUtils {
     }
 
     private static InstanceIdentifier<Operations> getInstanceIdentifier(
-            Operations operation, Class<? extends EntityNameBase> serviceName) {
+            Operations operation, EntityNameBase serviceName) {
         return InstanceIdentifier.create(ServiceOps.class)
             .child(Services.class, new ServicesKey(serviceName))
             .child(Operations.class, operation.key());

@@ -32,7 +32,7 @@ public class ReinstallCommand extends OsgiCommandSupport {
     String name;
 
     private final OdlSrmRpcsService srmRpcService;
-    private final Class<? extends EntityTypeBase> entityType = EntityTypeService.class;
+    private final EntityTypeBase entityType = EntityTypeService.VALUE;
 
     public ReinstallCommand(OdlSrmRpcsService srmRpcService) {
         this.srmRpcService = srmRpcService;
@@ -66,7 +66,7 @@ public class ReinstallCommand extends OsgiCommandSupport {
     }
 
     private @Nullable ReinstallInput getInput() {
-        Class<? extends EntityNameBase> entityName = SrmCliUtils.getEntityName(entityType, name);
+        EntityNameBase entityName = SrmCliUtils.getEntityName(entityType, name);
         if (entityName == null) {
             session.getConsole().println(SrmCliUtils.getNameHelp(entityType));
             return null;

@@ -59,7 +59,7 @@ public class RecoverCommand extends OsgiCommandSupport {
             LOG.trace("RPC Result: {}", recoverResult.getResult());
         } else {
             strResult.append("RPC Call to recover failed.\n")
-                .append("ErrorCode: ").append(recoverResult.getResult().getResponse().getSimpleName())
+                .append("ErrorCode: ").append(recoverResult.getResult().getResponse())
                 .append("ErrorMsg: ").append(recoverResult.getResult().getMessage());
             LOG.trace("RPC Result: {}", recoverResult.getResult());
         }
@@ -70,12 +70,12 @@ public class RecoverCommand extends OsgiCommandSupport {
         if (type == null || name == null) {
             return null;
         }
-        Class<? extends EntityTypeBase> entityType = SrmCliUtils.getEntityType(type);
+        EntityTypeBase entityType = SrmCliUtils.getEntityType(type);
         if (entityType == null) {
             session.getConsole().println(SrmCliUtils.getTypeHelp());
             return null;
         }
-        Class<? extends EntityNameBase> entityName = SrmCliUtils.getEntityName(entityType, name);
+        EntityNameBase entityName = SrmCliUtils.getEntityName(entityType, name);
         if (entityName == null) {
             session.getConsole().println(SrmCliUtils.getNameHelp(entityType));
             return null;
