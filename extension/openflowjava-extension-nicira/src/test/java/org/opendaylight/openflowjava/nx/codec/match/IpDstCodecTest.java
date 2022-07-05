@@ -63,8 +63,8 @@ public class IpDstCodecTest {
         final IpDstCaseValueBuilder caseBuilder = new IpDstCaseValueBuilder();
         final IpDstValuesBuilder valuesBuilder = new IpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfIpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfIpDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

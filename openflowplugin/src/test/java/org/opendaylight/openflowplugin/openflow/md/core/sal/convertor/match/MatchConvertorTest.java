@@ -333,7 +333,7 @@ public class MatchConvertorTest {
                 ((TunnelIdCase) entry.getMatchEntryValue()).getTunnelId().getTunnelId());
     }
 
-    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field,
+    private static void checkEntryHeader(final MatchEntry entry, final MatchField field,
             final boolean hasMask) {
         assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         assertEquals("Wrong oxm field", field, entry.getOxmMatchField());

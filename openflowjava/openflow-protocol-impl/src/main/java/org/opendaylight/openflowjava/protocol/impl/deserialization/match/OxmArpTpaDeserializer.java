@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmArpTpaDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmArpTpaDeserializer() {
-        super(ArpTpa.class);
+        super(ArpTpa.VALUE);
     }
 
     @Override

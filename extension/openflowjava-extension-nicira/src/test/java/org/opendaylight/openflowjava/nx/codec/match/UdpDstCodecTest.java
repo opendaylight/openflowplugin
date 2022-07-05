@@ -66,8 +66,8 @@ public class UdpDstCodecTest {
         final UdpDstCaseValueBuilder caseBuilder = new UdpDstCaseValueBuilder();
         final UdpDstValuesBuilder valuesBuilder = new UdpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfUdpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfUdpDst.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(Uint16.ONE));

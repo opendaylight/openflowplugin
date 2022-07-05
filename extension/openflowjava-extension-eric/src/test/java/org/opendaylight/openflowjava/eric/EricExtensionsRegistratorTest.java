@@ -43,16 +43,16 @@ public class EricExtensionsRegistratorTest {
     @Test
     public void registerEricExtensionsTest() {
         verify(registrator).registerMatchEntrySerializer(
-                eq(new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
-                        Icmpv6NdReserved.class)), any(Icmpv6NDReservedCodec.class));
+                eq(new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.VALUE,
+                        Icmpv6NdReserved.VALUE)), any(Icmpv6NDReservedCodec.class));
         verify(registrator).registerMatchEntryDeserializer(
                 eq(new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                         EricConstants.ERICOXM_OF_EXPERIMENTER_ID, EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED)),
                 any(Icmpv6NDReservedCodec.class));
 
         verify(registrator).registerMatchEntrySerializer(
-                        eq(new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
-                                Icmpv6NdOptionsType.class)), any(Icmpv6NDOptionsTypeCodec.class));
+                        eq(new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.VALUE,
+                                Icmpv6NdOptionsType.VALUE)), any(Icmpv6NDOptionsTypeCodec.class));
         verify(registrator).registerMatchEntryDeserializer(
                         eq(new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3,
                                 EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
@@ -65,15 +65,15 @@ public class EricExtensionsRegistratorTest {
         ericExtensionsRegistrator.close();
 
         verify(registrator).unregisterMatchEntrySerializer(
-                new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
-                        Icmpv6NdReserved.class));
+                new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.VALUE,
+                        Icmpv6NdReserved.VALUE));
         verify(registrator).unregisterMatchEntryDeserializer(
                 new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                         EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED));
 
         verify(registrator).unregisterMatchEntrySerializer(
-                new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.class,
-                        Icmpv6NdOptionsType.class));
+                new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, EricExpClass.VALUE,
+                        Icmpv6NdOptionsType.VALUE));
         verify(registrator).unregisterMatchEntryDeserializer(
                 new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
                          EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE));

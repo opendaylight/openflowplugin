@@ -74,9 +74,9 @@ public class KeysTest {
         Assert.assertEquals(instructionSerializerKey.hashCode(), experimenterInstructionSerializerKey.hashCode());
 
         MatchEntrySerializerKey<OpenflowBasicClass, InPort> matchKey = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.class, InPort.class);
+                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.VALUE, InPort.VALUE);
         MatchEntrySerializerKey<OpenflowBasicClass, InPort> matchKey2 = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.class, InPort.class);
+                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.VALUE, InPort.VALUE);
         Assert.assertEquals(matchKey, matchKey2);
         Assert.assertEquals(matchKey.hashCode(), matchKey2.hashCode());
     }

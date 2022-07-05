@@ -66,8 +66,8 @@ public class TcpDstCodecTest {
         final TcpDstCaseValueBuilder caseBuilder = new TcpDstCaseValueBuilder();
         final TcpDstValuesBuilder valuesBuilder = new TcpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfTcpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfTcpDst.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(Uint16.ONE));

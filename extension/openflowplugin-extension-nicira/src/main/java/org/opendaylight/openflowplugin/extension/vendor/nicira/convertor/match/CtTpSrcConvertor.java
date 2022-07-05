@@ -51,8 +51,8 @@ public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         ctTpSrcCaseValueBuilder.setCtTpSrcValues(ctTpSrcValuesBuilder.build());
         MatchEntryBuilder ofMatch = MatchUtil
                 .createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn
-                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc.class,
-                        Nxm1Class.class, ctTpSrcCaseValueBuilder.build());
+                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc.VALUE,
+                        Nxm1Class.VALUE, ctTpSrcCaseValueBuilder.build());
         return ofMatch.build();
     }
 
@@ -61,12 +61,11 @@ public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         CtTpSrcCaseValue ctTpSrcCaseValue = (CtTpSrcCaseValue) input.getMatchEntryValue();
         NxmNxCtTpSrcBuilder ctTpSrcBuilder = new NxmNxCtTpSrcBuilder();
         ctTpSrcBuilder.setCtTpSrc(ctTpSrcCaseValue.getCtTpSrcValues().getCtTpSrc());
-        return resolveAugmentation(ctTpSrcBuilder.build(), path,
-                NxmNxCtTpSrcKey.class);
+        return resolveAugmentation(ctTpSrcBuilder.build(), path, NxmNxCtTpSrcKey.VALUE);
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtTpSrc value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

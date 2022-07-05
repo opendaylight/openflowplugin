@@ -131,15 +131,15 @@ public class TypeKeyMakerFactoryTest {
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(InPort.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(InPort.VALUE);
         builder.setHasMask(true);
         MatchEntry entry = builder.build();
         MessageTypeKey<?> key = keyMaker.make(entry);
 
         Assert.assertNotNull("Null key", key);
         MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                OpenflowBasicClass.class, InPort.class);
+                OpenflowBasicClass.VALUE, InPort.VALUE);
         Assert.assertEquals("Wrong key", comparationKey, key);
     }
 
@@ -153,8 +153,8 @@ public class TypeKeyMakerFactoryTest {
         Assert.assertNotNull("Null keyMaker", keyMaker);
 
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(ExperimenterClass.class);
-        builder.setOxmMatchField(OxmMatchFieldClass.class);
+        builder.setOxmClass(ExperimenterClass.VALUE);
+        builder.setOxmMatchField(OxmMatchFieldClass.VALUE);
         builder.setHasMask(true);
         ExperimenterIdCaseBuilder caseBuilder = new ExperimenterIdCaseBuilder();
         ExperimenterBuilder expBuilder = new ExperimenterBuilder();
@@ -166,7 +166,7 @@ public class TypeKeyMakerFactoryTest {
 
         Assert.assertNotNull("Null key", key);
         MatchEntrySerializerKey<?, ?> comparationKey = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                ExperimenterClass.class, OxmMatchFieldClass.class);
+                ExperimenterClass.VALUE, OxmMatchFieldClass.VALUE);
         comparationKey.setExperimenterId(Uint32.valueOf(42L));
         Assert.assertEquals("Wrong key", comparationKey, key);
     }

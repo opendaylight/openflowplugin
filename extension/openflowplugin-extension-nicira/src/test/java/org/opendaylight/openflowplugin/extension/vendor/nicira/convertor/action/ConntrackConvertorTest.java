@@ -13,7 +13,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.aug.nx.action.ActionConntrack;
@@ -55,8 +56,8 @@ public class ConntrackConvertorTest {
         final NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder()
                 .setFlags(Uint16.ONE)
                 .setRangePresent(Uint16.TWO)
-                .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"))
-                .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.10.0"))
+                .setIpAddressMin(new IpAddress(new Ipv4Address("192.168.0.0")))
+                .setIpAddressMin(new IpAddress(new Ipv4Address("192.168.10.0")))
                 .setPortMin(Uint16.valueOf(3000))
                 .setPortMax(Uint16.valueOf(4000));
         final CtActionsBuilder ctActionsBuilder = new CtActionsBuilder().setOfpactActions(new NxActionNatCaseBuilder()
@@ -113,8 +114,8 @@ public class ConntrackConvertorTest {
             .NxActionNatBuilder()
             .setFlags(Uint16.ONE)
             .setRangePresent(Uint16.TWO)
-            .setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"))
-            .setIpAddressMax(IpAddressBuilder.getDefaultInstance("192.168.10.0"))
+            .setIpAddressMin(new IpAddress(new Ipv4Address("192.168.0.0")))
+            .setIpAddressMax(new IpAddress(new Ipv4Address("192.168.10.0")))
             .setPortMin(Uint16.valueOf(3000))
             .setPortMax(Uint16.valueOf(4000));
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.action.rev140421.ofj.nx.action.conntrack.grouping

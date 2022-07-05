@@ -68,8 +68,8 @@ public class CtTpSrcCodecTest {
         final CtTpSrcCaseValueBuilder caseBuilder = new CtTpSrcCaseValueBuilder();
         final CtTpSrcValuesBuilder valuesBuilder = new CtTpSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtTpSrc.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtTpSrc.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setCtTpSrc(Uint16.ONE);

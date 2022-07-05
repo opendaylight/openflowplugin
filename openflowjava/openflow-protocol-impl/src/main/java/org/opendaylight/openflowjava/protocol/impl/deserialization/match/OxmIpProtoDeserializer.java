@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIpProtoDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmIpProtoDeserializer() {
-        super(IpProto.class);
+        super(IpProto.VALUE);
     }
 
     @Override

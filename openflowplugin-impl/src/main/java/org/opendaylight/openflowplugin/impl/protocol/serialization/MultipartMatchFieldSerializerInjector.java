@@ -118,7 +118,7 @@ final class MultipartMatchFieldSerializerInjector {
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
-        final Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> injector =
+        final Function<MatchField, Consumer<OFSerializer<SetFieldMatch>>> injector =
                 createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
         injector.apply(ArpOp.class).accept(new ArpOpMatchFieldSerializer());
@@ -176,7 +176,7 @@ final class MultipartMatchFieldSerializerInjector {
      * @return injector
      */
     @VisibleForTesting
-    static Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> createInjector(
+    static Function<MatchField, Consumer<OFSerializer<SetFieldMatch>>> createInjector(
             final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
                 provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);

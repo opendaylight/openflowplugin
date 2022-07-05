@@ -68,8 +68,8 @@ public class EthDstCodecTest {
         final EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
         final EthDstValuesBuilder valuesBuilder = new EthDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfEthDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfEthDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));

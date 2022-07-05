@@ -186,7 +186,7 @@ public class OF13MatchSerializer02Test {
     @Test
     public void testEmptyMatch() {
         MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        builder.setType(OxmMatchType.VALUE);
         Match match = builder.build();
 
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();
@@ -203,11 +203,11 @@ public class OF13MatchSerializer02Test {
     @Test
     public void test() {
         MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        builder.setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(InPort.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(InPort.VALUE);
         entryBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
@@ -216,8 +216,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(inPortCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(InPhyPort.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(InPhyPort.VALUE);
         entryBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
@@ -226,8 +226,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Metadata.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Metadata.VALUE);
         entryBuilder.setHasMask(true);
         MetadataCaseBuilder metaCaseBuilder = new MetadataCaseBuilder();
         MetadataBuilder metadataBuilder = new MetadataBuilder();
@@ -237,8 +237,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(metaCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(EthDst.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(EthDst.VALUE);
         entryBuilder.setHasMask(true);
         EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
         EthDstBuilder ethDstBuilder = new EthDstBuilder();
@@ -248,8 +248,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(EthSrc.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(EthSrc.VALUE);
         entryBuilder.setHasMask(true);
         EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
         EthSrcBuilder ethSrcBuilder = new EthSrcBuilder();
@@ -259,8 +259,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(EthType.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(EthType.VALUE);
         entryBuilder.setHasMask(false);
         EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
         EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
@@ -269,8 +269,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ethTypeCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(VlanVid.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(VlanVid.VALUE);
         entryBuilder.setHasMask(true);
         final VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
@@ -281,8 +281,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(vlanVidCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(VlanPcp.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(VlanPcp.VALUE);
         entryBuilder.setHasMask(false);
         VlanPcpCaseBuilder vlanPcpCaseBuilder = new VlanPcpCaseBuilder();
         VlanPcpBuilder vlanPcpBuilder = new VlanPcpBuilder();
@@ -291,8 +291,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(vlanPcpCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(IpDscp.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(IpDscp.VALUE);
         entryBuilder.setHasMask(false);
         IpDscpCaseBuilder ipDscpCaseBuilder = new IpDscpCaseBuilder();
         IpDscpBuilder ipDscpBuilder = new IpDscpBuilder();
@@ -301,8 +301,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipDscpCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(IpEcn.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(IpEcn.VALUE);
         entryBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
@@ -311,8 +311,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipEcnCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(IpProto.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(IpProto.VALUE);
         entryBuilder.setHasMask(false);
         IpProtoCaseBuilder ipProtoCaseBuilder = new IpProtoCaseBuilder();
         IpProtoBuilder ipProtoBuilder = new IpProtoBuilder();
@@ -321,8 +321,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipProtoCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv4Src.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entryBuilder.setHasMask(true);
         Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -332,8 +332,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv4SrcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv4Dst.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entryBuilder.setHasMask(true);
         Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
@@ -343,8 +343,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv4DstCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(TcpSrc.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(TcpSrc.VALUE);
         entryBuilder.setHasMask(false);
         TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
         TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
@@ -354,8 +354,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(tcpSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(TcpDst.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(TcpDst.VALUE);
         entryBuilder.setHasMask(false);
         TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
         TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
@@ -365,8 +365,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(UdpSrc.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(UdpSrc.VALUE);
         entryBuilder.setHasMask(false);
         UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
         UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
@@ -376,8 +376,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(udpSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(UdpDst.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(UdpDst.VALUE);
         entryBuilder.setHasMask(false);
         UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
         UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
@@ -387,8 +387,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(udpDstCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(SctpSrc.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(SctpSrc.VALUE);
         entryBuilder.setHasMask(false);
         SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
         SctpSrcBuilder sctpSrcBuilder = new SctpSrcBuilder();
@@ -398,8 +398,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(sctpSrcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(SctpDst.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(SctpDst.VALUE);
         entryBuilder.setHasMask(false);
         SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
         SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
@@ -409,8 +409,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(sctpDstCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Icmpv4Type.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Icmpv4Type.VALUE);
         entryBuilder.setHasMask(false);
         Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
         Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
@@ -419,8 +419,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(icmpv4TypeCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Icmpv4Code.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Icmpv4Code.VALUE);
         entryBuilder.setHasMask(false);
         Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
         Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
@@ -429,8 +429,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(icmpv4CodeCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(ArpOp.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(ArpOp.VALUE);
         entryBuilder.setHasMask(false);
         ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder();
         ArpOpBuilder arpOpBuilder = new ArpOpBuilder();
@@ -439,8 +439,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(arpOpCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(ArpSpa.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(ArpSpa.VALUE);
         entryBuilder.setHasMask(true);
         ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
         ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
@@ -450,8 +450,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(arpSpaCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(ArpTpa.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(ArpTpa.VALUE);
         entryBuilder.setHasMask(true);
         ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
         ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
@@ -461,8 +461,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(arpTpaCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(ArpSha.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(ArpSha.VALUE);
         entryBuilder.setHasMask(true);
         ArpShaCaseBuilder arpShaCaseBuilder = new ArpShaCaseBuilder();
         ArpShaBuilder arpShaBuilder = new ArpShaBuilder();
@@ -472,8 +472,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(arpShaCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(ArpTha.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(ArpTha.VALUE);
         entryBuilder.setHasMask(true);
         ArpThaCaseBuilder arpThaCaseBuilder = new ArpThaCaseBuilder();
         ArpThaBuilder arpThaBuilder = new ArpThaBuilder();
@@ -483,8 +483,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(arpThaCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6Src.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entryBuilder.setHasMask(true);
         Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -494,8 +494,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6SrcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6Dst.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entryBuilder.setHasMask(true);
         Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
@@ -505,8 +505,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6DstCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6Flabel.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6Flabel.VALUE);
         entryBuilder.setHasMask(false);
         Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
         Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
@@ -515,8 +515,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6FlabelCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Icmpv6Type.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Icmpv6Type.VALUE);
         entryBuilder.setHasMask(false);
         Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
         Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
@@ -525,8 +525,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(icmpv6TypeCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Icmpv6Code.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Icmpv6Code.VALUE);
         entryBuilder.setHasMask(false);
         Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
         Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
@@ -534,8 +534,8 @@ public class OF13MatchSerializer02Test {
         icmpv6CodeCaseBuilder.setIcmpv6Code(icmpv6CodeBuilder.build());
         entryBuilder.setMatchEntryValue(icmpv6CodeCaseBuilder.build());
         entries.add(entryBuilder.build());
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6NdTarget.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6NdTarget.VALUE);
         entryBuilder.setHasMask(false);
         Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
         Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
@@ -544,8 +544,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6NdTargetCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6NdSll.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6NdSll.VALUE);
         entryBuilder.setHasMask(false);
         Ipv6NdSllCaseBuilder ipv6NdSllCaseBuilder = new Ipv6NdSllCaseBuilder();
         Ipv6NdSllBuilder ipv6NdSllBuilder = new Ipv6NdSllBuilder();
@@ -554,8 +554,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6NdSllCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6NdTll.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6NdTll.VALUE);
         entryBuilder.setHasMask(false);
         Ipv6NdTllCaseBuilder ipv6NdTllCaseBuilder = new Ipv6NdTllCaseBuilder();
         Ipv6NdTllBuilder ipv6NdTllBuilder = new Ipv6NdTllBuilder();
@@ -564,8 +564,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6NdTllCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(MplsLabel.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(MplsLabel.VALUE);
         entryBuilder.setHasMask(false);
         MplsLabelCaseBuilder mplsLabelCaseBuilder = new MplsLabelCaseBuilder();
         MplsLabelBuilder mplsLabelBuilder = new MplsLabelBuilder();
@@ -574,8 +574,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(mplsLabelCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(MplsTc.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(MplsTc.VALUE);
         entryBuilder.setHasMask(false);
         MplsTcCaseBuilder mplsTcCaseBuilder = new MplsTcCaseBuilder();
         MplsTcBuilder mplsTcBuilder = new MplsTcBuilder();
@@ -584,8 +584,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(mplsTcCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(MplsBos.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(MplsBos.VALUE);
         entryBuilder.setHasMask(false);
         MplsBosCaseBuilder mplsBosCaseBuilder = new MplsBosCaseBuilder();
         MplsBosBuilder mplsBosBuilder = new MplsBosBuilder();
@@ -594,8 +594,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(mplsBosCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(PbbIsid.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(PbbIsid.VALUE);
         entryBuilder.setHasMask(true);
         PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
         PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
@@ -605,8 +605,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(pbbIsidCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(TunnelId.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(TunnelId.VALUE);
         entryBuilder.setHasMask(true);
         TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
         TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
@@ -616,8 +616,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(tunnelIdCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(Ipv6Exthdr.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(Ipv6Exthdr.VALUE);
         entryBuilder.setHasMask(true);
         Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
         Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
@@ -628,8 +628,8 @@ public class OF13MatchSerializer02Test {
         entryBuilder.setMatchEntryValue(ipv6ExthdrCaseBuilder.build());
         entries.add(entryBuilder.build());
         entryBuilder = new MatchEntryBuilder();
-        entryBuilder.setOxmClass(OpenflowBasicClass.class);
-        entryBuilder.setOxmMatchField(PacketType.class);
+        entryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entryBuilder.setOxmMatchField(PacketType.VALUE);
         entryBuilder.setHasMask(false);
         PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
         PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();

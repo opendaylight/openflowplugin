@@ -22,7 +22,7 @@ import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
  */
 public class OxmIpDscpDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmIpDscpDeserializer() {
-        super(IpDscp.class);
+        super(IpDscp.VALUE);
     }
 
     @Override

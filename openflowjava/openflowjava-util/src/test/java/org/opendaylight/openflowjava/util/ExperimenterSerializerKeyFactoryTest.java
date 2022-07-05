@@ -84,17 +84,17 @@ public class ExperimenterSerializerKeyFactoryTest {
         final ExperimenterIdSerializerKey<?> comparationKey5;
 
         createdKey = ExperimenterSerializerKeyFactory.createMeterBandSerializerKey(EncodeConstants.OF_VERSION_1_0,
-                Uint32.valueOf(43), ExperimenterMeterBandSubType.class);
+                Uint32.valueOf(43), ExperimenterMeterBandSubType.VALUE);
         comparationKey1 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                Uint32.valueOf(43), MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.class);
+                Uint32.valueOf(43), MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.VALUE);
         comparationKey2 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
-                Uint32.valueOf(42), MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.class);
+                Uint32.valueOf(42), MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.VALUE);
         comparationKey3 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
-                Uint32.valueOf(43), null, ExperimenterMeterBandSubType.class);
+                Uint32.valueOf(43), null, ExperimenterMeterBandSubType.VALUE);
         comparationKey4 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
                 Uint32.valueOf(43), MeterBandExperimenterCase.class, null);
         comparationKey5 = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0,
-                Uint32.valueOf(43), MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.class);
+                Uint32.valueOf(43), MeterBandExperimenterCase.class, ExperimenterMeterBandSubType.VALUE);
         Assert.assertNotEquals("Wrong key created", comparationKey1, createdKey);
         Assert.assertNotEquals("Wrong key created", comparationKey2, createdKey);
         Assert.assertNotEquals("Wrong key created", comparationKey3, createdKey);

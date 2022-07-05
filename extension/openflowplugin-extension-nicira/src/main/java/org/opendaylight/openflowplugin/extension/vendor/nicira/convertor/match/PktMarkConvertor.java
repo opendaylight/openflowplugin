@@ -52,8 +52,8 @@ public class PktMarkConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         pktMarkCaseValueBuilder.setPktMarkValues(pktMarkValuesBuilder.build());
         MatchEntryBuilder ofMatch = MatchUtil
                 .createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn
-                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark.class,
-                        Nxm1Class.class, pktMarkCaseValueBuilder.build());
+                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark.VALUE,
+                        Nxm1Class.VALUE, pktMarkCaseValueBuilder.build());
         return ofMatch.build();
     }
 
@@ -63,12 +63,11 @@ public class PktMarkConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         NxmNxPktMarkBuilder pktMarkBuilder = new NxmNxPktMarkBuilder();
         pktMarkBuilder.setPktMark(pktMarkCaseValue.getPktMarkValues().getPktMark());
         pktMarkBuilder.setMask(pktMarkCaseValue.getPktMarkValues().getMask());
-        return resolveAugmentation(pktMarkBuilder.build(), path,
-                NxmNxPktMarkKey.class);
+        return resolveAugmentation(pktMarkBuilder.build(), path, NxmNxPktMarkKey.VALUE);
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxPktMark value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

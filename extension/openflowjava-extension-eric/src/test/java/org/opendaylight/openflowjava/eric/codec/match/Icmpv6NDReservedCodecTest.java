@@ -63,8 +63,8 @@ public class Icmpv6NDReservedCodecTest {
         final Icmpv6NdReservedCaseValueBuilder caseBuilder = new Icmpv6NdReservedCaseValueBuilder();
         final Icmpv6NdReservedValuesBuilder valuesBuilder = new Icmpv6NdReservedValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(EricExpClass.class);
-        matchEntryBuilder.setOxmMatchField(Icmpv6NdReserved.class);
+        matchEntryBuilder.setOxmClass(EricExpClass.VALUE);
+        matchEntryBuilder.setOxmMatchField(Icmpv6NdReserved.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setIcmpv6NdReserved(Uint32.ONE);

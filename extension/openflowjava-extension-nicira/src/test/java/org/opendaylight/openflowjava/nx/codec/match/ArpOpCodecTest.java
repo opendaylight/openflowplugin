@@ -71,8 +71,8 @@ public class ArpOpCodecTest {
         final ArpOpCaseValueBuilder caseBuilder = new ArpOpCaseValueBuilder();
         final ArpOpValuesBuilder valuesBuilder = new ArpOpValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfArpOp.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfArpOp.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint16.ONE);

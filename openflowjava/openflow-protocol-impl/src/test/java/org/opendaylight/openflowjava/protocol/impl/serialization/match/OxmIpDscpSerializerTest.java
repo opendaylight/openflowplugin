@@ -84,7 +84,7 @@ public class OxmIpDscpSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIpDscpMatchEntry(Uint8 value) {
+    private static MatchEntryBuilder prepareIpDscpMatchEntry(final Uint8 value) {
         MatchEntryBuilder builder = prepareIpDscpHeader(false);
         IpDscpCaseBuilder casebuilder = new IpDscpCaseBuilder();
         IpDscpBuilder dscpBuilder = new IpDscpBuilder();
@@ -94,15 +94,15 @@ public class OxmIpDscpSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareIpDscpHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareIpDscpHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(IpDscp.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(IpDscp.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.IP_DSCP, fieldAndMask >>> 1);

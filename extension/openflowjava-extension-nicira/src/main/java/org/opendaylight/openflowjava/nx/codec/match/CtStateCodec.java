@@ -33,7 +33,7 @@ public class CtStateCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 4;
     private static final int NXM_FIELD_CODE = 105;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxCtState> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxCtState.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm1Class.VALUE, NxmNxCtState.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
@@ -74,12 +74,12 @@ public class CtStateCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxCtState.class;
+    public MatchField getNxmField() {
+        return NxmNxCtState.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm1Class.VALUE;
     }
 }

@@ -51,7 +51,7 @@ public class ArpSpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         ArpSpaCaseValue arpSpaCaseValue = (ArpSpaCaseValue) input.getMatchEntryValue();
         Ipv4Address ipv4Address = IpConverter.longToIpv4Address(arpSpaCaseValue.getArpSpaValues().getValue().toJava());
         return resolveAugmentation(new NxmOfArpSpaBuilder().setIpv4Address(ipv4Address).build(), path,
-                NxmOfArpSpaKey.class);
+                NxmOfArpSpaKey.VALUE);
     }
 
     @Override
@@ -61,8 +61,8 @@ public class ArpSpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             throw new CodecPreconditionException(extension);
         }
         return MatchUtil.createDefaultMatchEntryBuilder(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpSpa.class,
-            Nxm0Class.class, new ArpSpaCaseValueBuilder()
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfArpSpa.VALUE,
+            Nxm0Class.VALUE, new ArpSpaCaseValueBuilder()
                 .setArpSpaValues(new ArpSpaValuesBuilder()
                     .setValue(Uint32.valueOf(IpConverter.ipv4AddressToLong(matchGrouping.get().getNxmOfArpSpa()
                         .getIpv4Address())))
@@ -72,7 +72,7 @@ public class ArpSpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfArpSpa value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

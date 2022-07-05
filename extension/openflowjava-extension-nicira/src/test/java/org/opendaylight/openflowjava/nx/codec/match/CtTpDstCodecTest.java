@@ -62,8 +62,8 @@ public class CtTpDstCodecTest {
         final CtTpDstCaseValueBuilder caseBuilder = new CtTpDstCaseValueBuilder();
         final CtTpDstValuesBuilder valuesBuilder = new CtTpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtTpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtTpDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setCtTpDst(Uint16.ONE);

@@ -227,7 +227,7 @@ public class MatchResponseConvertorTest {
         return builder.build();
     }
 
-    private static MatchEntry toOfPort(final Class<? extends MatchField> field,
+    private static MatchEntry toOfPort(final MatchField field,
                                 final Uint32 portNumber) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);
