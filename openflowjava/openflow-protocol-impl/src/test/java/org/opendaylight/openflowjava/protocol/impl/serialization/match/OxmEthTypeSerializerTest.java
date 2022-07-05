@@ -84,7 +84,7 @@ public class OxmEthTypeSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareEthTypeMatchEntry(Uint16 type) {
+    private static MatchEntryBuilder prepareEthTypeMatchEntry(final Uint16 type) {
         MatchEntryBuilder builder = prepareEthTypeHeader(false);
         EthTypeCaseBuilder casebuilder = new EthTypeCaseBuilder();
         EthTypeBuilder valueBuilder = new EthTypeBuilder();
@@ -94,15 +94,15 @@ public class OxmEthTypeSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareEthTypeHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareEthTypeHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(EthType.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(EthType.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ETH_TYPE, fieldAndMask >>> 1);

@@ -63,8 +63,8 @@ public class TunIpv4DstCodecTest {
         final TunIpv4DstCaseValueBuilder caseBuilder = new TunIpv4DstCaseValueBuilder();
         final TunIpv4DstValuesBuilder valuesBuilder = new TunIpv4DstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxTunIpv4Dst.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxTunIpv4Dst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

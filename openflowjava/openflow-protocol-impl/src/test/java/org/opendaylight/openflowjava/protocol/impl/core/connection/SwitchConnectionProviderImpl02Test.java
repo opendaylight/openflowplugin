@@ -262,7 +262,7 @@ public class SwitchConnectionProviderImpl02Test {
                 provider.unregisterSerializer(key15));
         // -- registerMatchEntrySerializer
         final MatchEntrySerializerKey<OpenflowBasicClass, InPort> key16
-            = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
+            = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
         provider.registerMatchEntrySerializer(key16, serializer);
         Assert.assertTrue("Wrong -- unregister MatchEntrySerializer", provider.unregisterSerializer(key16));
         Assert.assertFalse("Wrong -- unregister MatchEntrySerializer by not existing key",

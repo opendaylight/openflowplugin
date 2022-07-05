@@ -82,7 +82,7 @@ public class OxmMplsBosSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMplsBosMatchEntry(boolean bos) {
+    private static MatchEntryBuilder prepareMplsBosMatchEntry(final boolean bos) {
         MatchEntryBuilder builder = prepareMplsBosHeader(false);
         MplsBosCaseBuilder casebuilder = new MplsBosCaseBuilder();
         MplsBosBuilder valueBuilder = new MplsBosBuilder();
@@ -92,15 +92,15 @@ public class OxmMplsBosSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareMplsBosHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareMplsBosHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(MplsBos.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(MplsBos.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.MPLS_BOS, fieldAndMask >>> 1);

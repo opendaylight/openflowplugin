@@ -63,8 +63,8 @@ public class IcmpTypeCodecTest {
         final IcmpTypeCaseValueBuilder caseBuilder = new IcmpTypeCaseValueBuilder();
         final IcmpTypeValuesBuilder valuesBuilder = new IcmpTypeValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfIcmpType.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfIcmpType.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint8.ONE);

@@ -50,7 +50,7 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
                 = (Icmpv6NdOptionsTypeCaseValue)input.getMatchEntryValue();
         return resolveAugmentation(new EricOfIcmpv6NdOptionsTypeBuilder()
                 .setIcmpv6NdOptionsType(icmpv6NdOptionsTypeCaseValue.getIcmpv6NdOptionsTypeValues()
-                .getIcmpv6NdOptionsType()).build(), path, Icmpv6NdOptionsTypeKey.class);
+                .getIcmpv6NdOptionsType()).build(), path, Icmpv6NdOptionsTypeKey.VALUE);
     }
 
     @Override
@@ -65,12 +65,12 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
                 = new Icmpv6NdOptionsTypeCaseValueBuilder();
         icmpv6NdOptionsTypeCaseValueBuilder.setIcmpv6NdOptionsTypeValues(new Icmpv6NdOptionsTypeValuesBuilder()
                 .setIcmpv6NdOptionsType(value).build());
-        return MatchUtil.createDefaultMatchEntryBuilder(Icmpv6NdOptionsType.class, EricExpClass.class,
+        return MatchUtil.createDefaultMatchEntryBuilder(Icmpv6NdOptionsType.VALUE, EricExpClass.VALUE,
                 icmpv6NdOptionsTypeCaseValueBuilder.build()).build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
-            final EricOfIcmpv6NdOptionsType value, final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final EricOfIcmpv6NdOptionsType value, final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,

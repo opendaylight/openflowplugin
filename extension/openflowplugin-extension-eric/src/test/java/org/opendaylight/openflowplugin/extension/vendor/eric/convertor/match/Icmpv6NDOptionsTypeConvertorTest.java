@@ -123,7 +123,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
             new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(
                     new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType(Uint8.ONE).build()).build(),
-                Icmpv6NdOptionsTypeKey.class);
+                Icmpv6NdOptionsTypeKey.VALUE);
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();

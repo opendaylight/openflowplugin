@@ -19,7 +19,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * @author hyy on 2016/9/8.
  */
 public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> extends ExperimenterIdSerializerKey<T> {
-    private final Class<? extends ExperimenterMeterBandSubType> meterSubType;
+    private final ExperimenterMeterBandSubType meterSubType;
 
     /**
      * Constructor.
@@ -30,7 +30,7 @@ public class ExperimenterIdMeterSubTypeSerializerKey<T extends DataContainer> ex
      * @param meterSubType    vendor defined subtype
      */
     public ExperimenterIdMeterSubTypeSerializerKey(final Uint8 msgVersion, final Uint32 experimenterId,
-            final Class<T> objectClass, final Class<? extends ExperimenterMeterBandSubType> meterSubType) {
+            final Class<T> objectClass, final ExperimenterMeterBandSubType meterSubType) {
         super(msgVersion, experimenterId, objectClass);
         this.meterSubType = meterSubType;
     }

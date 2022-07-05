@@ -76,8 +76,8 @@ public class ArpShaCodecTest {
         final ArpShaCaseValueBuilder caseBuilder = new ArpShaCaseValueBuilder();
         final ArpShaValuesBuilder valuesBuilder = new ArpShaValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxArpSha.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxArpSha.VALUE);
         matchEntryBuilder.setHasMask(false);
 
 

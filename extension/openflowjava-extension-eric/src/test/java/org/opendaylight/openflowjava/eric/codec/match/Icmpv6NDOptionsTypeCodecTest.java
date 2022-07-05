@@ -64,8 +64,8 @@ public class Icmpv6NDOptionsTypeCodecTest {
         final Icmpv6NdOptionsTypeCaseValueBuilder caseBuilder = new Icmpv6NdOptionsTypeCaseValueBuilder();
         final Icmpv6NdOptionsTypeValuesBuilder valuesBuilder = new Icmpv6NdOptionsTypeValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(EricExpClass.class);
-        matchEntryBuilder.setOxmMatchField(Icmpv6NdOptionsType.class);
+        matchEntryBuilder.setOxmClass(EricExpClass.VALUE);
+        matchEntryBuilder.setOxmMatchField(Icmpv6NdOptionsType.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setIcmpv6NdOptionsType(Uint8.ONE);

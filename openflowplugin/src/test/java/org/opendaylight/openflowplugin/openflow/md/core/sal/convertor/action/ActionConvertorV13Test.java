@@ -669,7 +669,7 @@ public class ActionConvertorV13Test {
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
     }
 
-    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field,
+    private static void checkEntryHeader(final MatchEntry entry, final MatchField field,
             final boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());

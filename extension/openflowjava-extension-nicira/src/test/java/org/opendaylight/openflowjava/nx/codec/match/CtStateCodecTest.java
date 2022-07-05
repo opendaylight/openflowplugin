@@ -64,8 +64,8 @@ public class CtStateCodecTest {
         final CtStateCaseValueBuilder caseBuilder = new CtStateCaseValueBuilder();
         final CtStateValuesBuilder valuesBuilder = new CtStateValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtState.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtState.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setCtState(Uint32.ONE);

@@ -66,8 +66,8 @@ public class TcpSrcCodecTest {
         final TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
         final TcpSrcValuesBuilder valuesBuilder = new TcpSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfTcpSrc.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfTcpSrc.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(Uint16.ONE));

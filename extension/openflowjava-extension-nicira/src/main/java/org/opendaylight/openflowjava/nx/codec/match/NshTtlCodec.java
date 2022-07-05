@@ -28,7 +28,7 @@ public class NshTtlCodec extends AbstractExperimenterMatchCodec {
     private static final int VALUE_LENGTH = Byte.BYTES;
     private static final int NXM_FIELD_CODE = 10;
     public static final MatchEntrySerializerKey<ExperimenterClass, NxmNxNshTtl> SERIALIZER_KEY =
-            createSerializerKey(EncodeConstants.OF_VERSION_1_3, NiciraConstants.NX_NSH_VENDOR_ID, NxmNxNshTtl.class);
+            createSerializerKey(EncodeConstants.OF_VERSION_1_3, NiciraConstants.NX_NSH_VENDOR_ID, NxmNxNshTtl.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
             createDeserializerKey(EncodeConstants.OF_VERSION_1_3, NiciraConstants.NX_NSH_VENDOR_ID, NXM_FIELD_CODE);
 
@@ -67,7 +67,7 @@ public class NshTtlCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxNshTtl.class;
+    public MatchField getNxmField() {
+        return NxmNxNshTtl.VALUE;
     }
 }

@@ -74,8 +74,8 @@ public class ArpThaCodecTest {
         final ArpThaCaseValueBuilder caseBuilder = new ArpThaCaseValueBuilder();
         final ArpThaValuesBuilder valuesBuilder = new ArpThaValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxArpTha.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxArpTha.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));

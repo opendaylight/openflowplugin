@@ -28,7 +28,7 @@ public class CtTpSrcCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 124;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxCtTpSrc> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxCtTpSrc.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm1Class.VALUE, NxmNxCtTpSrc.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
@@ -64,12 +64,12 @@ public class CtTpSrcCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxCtTpSrc.class;
+    public MatchField getNxmField() {
+        return NxmNxCtTpSrc.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm1Class.VALUE;
     }
 }

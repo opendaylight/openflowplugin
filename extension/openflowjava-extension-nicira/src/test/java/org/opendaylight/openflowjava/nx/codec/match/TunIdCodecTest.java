@@ -64,8 +64,8 @@ public class TunIdCodecTest {
         final TunIdCaseValueBuilder caseBuilder = new TunIdCaseValueBuilder();
         final TunIdValuesBuilder valuesBuilder = new TunIdValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxTunId.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxTunId.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint64.ZERO);

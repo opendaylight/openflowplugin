@@ -190,7 +190,7 @@ public class TableFeaturesResponseConvertor
     private static final Map<TableFeaturesPropType, ActionExecutor> TABLE_FEATURE_PROPERTY_TYPE_TO_ACTION;
     private static final Map<Class<?>,
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> OF_TO_SAL_ACTION;
-    private static final Map<Class<? extends MatchField>, Class<? extends org.opendaylight.yang.gen.v1.urn
+    private static final Map<MatchField, Class<? extends org.opendaylight.yang.gen.v1.urn
             .opendaylight.table.types.rev131026.MatchField>> OF_TO_SAL_TABLE_FEATURE_PROPERTIES;
     private static final Set<Class<?>> TYPES = Collections.singleton(MultipartReplyTableFeatures.class);
 
@@ -366,7 +366,7 @@ public class TableFeaturesResponseConvertor
     }
 
     static {
-        final Builder<Class<? extends MatchField>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table
+        final Builder<MatchField, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table
                 .types.rev131026.MatchField>> builder = ImmutableMap.builder();
 
         builder.put(ArpOp.class, org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.class);
@@ -554,7 +554,7 @@ public class TableFeaturesResponseConvertor
         // This handles only OpenflowBasicClass oxm class.
         for (MatchEntry currMatch : properties.augmentation(OxmRelatedTableFeatureProperty.class)
                 .getMatchEntry()) {
-            Class<? extends MatchField> ofMatchField = currMatch.getOxmMatchField();
+            MatchField ofMatchField = currMatch.getOxmMatchField();
 
             if (setHasMask) {
                 setFieldMatchBuilder.setHasMask(currMatch.getHasMask());

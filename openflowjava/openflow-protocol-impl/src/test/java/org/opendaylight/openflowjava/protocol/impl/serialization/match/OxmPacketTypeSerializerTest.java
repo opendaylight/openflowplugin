@@ -48,13 +48,13 @@ public class OxmPacketTypeSerializerTest {
         assertEquals(packetType, buffer.readUnsignedInt());
     }
 
-    private static MatchEntry createMatchEntry(Uint32 packetType) {
+    private static MatchEntry createMatchEntry(final Uint32 packetType) {
         PacketTypeCase packetTypeCase = new PacketTypeCaseBuilder()
                 .setPacketType(new PacketTypeBuilder().setPacketType(packetType).build())
                 .build();
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
-                .setOxmMatchField(PacketType.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
+                .setOxmMatchField(PacketType.VALUE)
                 .setHasMask(false)
                 .setMatchEntryValue(packetTypeCase)
                 .build();

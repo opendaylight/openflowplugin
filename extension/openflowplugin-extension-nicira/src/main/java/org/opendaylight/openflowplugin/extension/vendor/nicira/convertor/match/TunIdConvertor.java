@@ -47,7 +47,7 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
     public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         TunIdCaseValue tunnelIdCase = (TunIdCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new NxmNxTunIdBuilder().setValue(tunnelIdCase.getTunIdValues().getValue()).build(),
-                path, NxmNxTunIdKey.class);
+                path, NxmNxTunIdKey.VALUE);
     }
 
     @Override
@@ -65,13 +65,13 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
         tunnelIdCaseBuilder.setTunIdValues(tunnelIdBuilder.build());
 
         return MatchUtil.createDefaultMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunId.class,
-                Nxm1Class.class, tunnelIdCaseBuilder.build()).build();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunId.VALUE,
+                Nxm1Class.VALUE, tunnelIdCaseBuilder.build()).build();
 
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxTunId value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

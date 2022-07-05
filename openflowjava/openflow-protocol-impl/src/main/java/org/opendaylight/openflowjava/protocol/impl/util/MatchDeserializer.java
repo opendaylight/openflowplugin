@@ -39,10 +39,10 @@ public class MatchDeserializer implements OFDeserializer<Match>,
             int length = input.readUnsignedShort();
             switch (type) {
                 case 0:
-                    builder.setType(StandardMatchType.class);
+                    builder.setType(StandardMatchType.VALUE);
                     break;
                 case 1:
-                    builder.setType(OxmMatchType.class);
+                    builder.setType(OxmMatchType.VALUE);
                     break;
                 default:
                     break;
@@ -62,6 +62,6 @@ public class MatchDeserializer implements OFDeserializer<Match>,
 
     @Override
     public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
-        this.registry = deserializerRegistry;
+        registry = deserializerRegistry;
     }
 }

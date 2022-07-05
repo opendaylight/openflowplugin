@@ -30,29 +30,29 @@ public class MatchEntrySerializerKeyTest {
     @Test
     public void test() {
         MatchEntrySerializerKey<?, ?> key1 = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
+                EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
         MatchEntrySerializerKey<?, ?> key2 = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
+                EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
         Assert.assertTrue("Wrong equals", key1.equals(key2));
         Assert.assertTrue("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                OpenflowBasicClass.class, InPhyPort.class);
+                OpenflowBasicClass.VALUE, InPhyPort.VALUE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                Nxm0Class.class, InPort.class);
+                Nxm0Class.VALUE, InPort.VALUE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_0,
-                OpenflowBasicClass.class, InPhyPort.class);
+                OpenflowBasicClass.VALUE, InPhyPort.VALUE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                OpenflowBasicClass.class, null);
+                OpenflowBasicClass.VALUE, null);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3,
-                null, InPhyPort.class);
+                null, InPhyPort.VALUE);
         Assert.assertFalse("Wrong equals", key1.equals(key2));
         Assert.assertFalse("Wrong hashCode", key1.hashCode() == key2.hashCode());
         key2.setExperimenterId(Uint32.valueOf(42L));
@@ -66,8 +66,8 @@ public class MatchEntrySerializerKeyTest {
     public void testEquals() {
         MatchEntrySerializerKey<?, ?> key1;
         MatchEntrySerializerKey<?, ?> key2;
-        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
-        key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
+        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
+        key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
         Assert.assertTrue("Wrong equal to identical object.", key1.equals(key1));
         Assert.assertFalse("Wrong equal to different class.", key1.equals(new Object()));
 
@@ -80,16 +80,16 @@ public class MatchEntrySerializerKeyTest {
         Uint32 expId1 = Uint32.valueOf(987654331L);
         key1.setExperimenterId(expId1);
         Assert.assertFalse("Wrong equal by experimenterId", key1.equals(key2));
-        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, null, InPort.class);
+        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, null, InPort.VALUE);
         key1.setExperimenterId(expId2);
         Assert.assertFalse("Wrong equal by oxmClass", key1.equals(key2));
-        key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, null, InPort.class);
+        key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, null, InPort.VALUE);
         key2.setExperimenterId(expId2);
         Assert.assertTrue("Wrong equal by oxmClass", key1.equals(key2));
-        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, null);
+        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, null);
         key1.setExperimenterId(expId2);
         Assert.assertFalse("Wrong equal by oxmField", key1.equals(key2));
-        key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, null);
+        key2 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, null);
         key2.setExperimenterId(expId2);
         Assert.assertTrue("Wrong equal by oxmField", key1.equals(key2));
     }
@@ -100,12 +100,13 @@ public class MatchEntrySerializerKeyTest {
     @Test
     public void testToString() {
         MatchEntrySerializerKey<?, ?> key1;
-        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
+        key1 = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
 
-        Assert.assertEquals("Wrong toString()", "msgVersion: 4 objectType: org.opendaylight.yang.gen.v1.urn"
-                + ".opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry"
-                + " oxm_class: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225"
-                + ".OpenflowBasicClass oxm_field: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow"
-                + ".oxm.rev150225.InPort experimenterID: null", key1.toString());
+        Assert.assertEquals("Wrong toString()", """
+        	msgVersion: 4 objectType: org.opendaylight.yang.gen.v1.urn\
+        	.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry\
+        	 oxm_class: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225\
+        	.OpenflowBasicClass oxm_field: org.opendaylight.yang.gen.v1.urn.opendaylight.openflow\
+        	.oxm.rev150225.InPort experimenterID: null""", key1.toString());
     }
 }

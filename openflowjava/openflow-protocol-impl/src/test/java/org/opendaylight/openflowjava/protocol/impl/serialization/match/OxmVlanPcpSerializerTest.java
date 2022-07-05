@@ -83,7 +83,7 @@ public class OxmVlanPcpSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareVlanPcpMatchEntry(Uint8 value) {
+    private static MatchEntryBuilder prepareVlanPcpMatchEntry(final Uint8 value) {
         MatchEntryBuilder builder = prepareVlanPcpHeader(false);
         VlanPcpCaseBuilder casebuilder = new VlanPcpCaseBuilder();
         VlanPcpBuilder valueBuilder = new VlanPcpBuilder();
@@ -93,15 +93,15 @@ public class OxmVlanPcpSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareVlanPcpHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareVlanPcpHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(VlanPcp.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(VlanPcp.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.VLAN_PCP, fieldAndMask >>> 1);

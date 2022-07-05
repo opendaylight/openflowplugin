@@ -66,8 +66,8 @@ public class UdpSrcCodecTest {
         final UdpSrcCaseValueBuilder caseBuilder = new UdpSrcCaseValueBuilder();
         final UdpSrcValuesBuilder valuesBuilder = new UdpSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfUdpSrc.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfUdpSrc.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(Uint16.ONE));

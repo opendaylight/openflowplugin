@@ -63,8 +63,8 @@ public class IpSrcCodecTest {
         final IpSrcCaseValueBuilder caseBuilder = new IpSrcCaseValueBuilder();
         final IpSrcValuesBuilder valuesBuilder = new IpSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfIpSrc.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfIpSrc.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

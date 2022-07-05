@@ -63,8 +63,8 @@ public class EthTypeCodecTest {
         final EthTypeCaseValueBuilder caseBuilder = new EthTypeCaseValueBuilder();
         final EthTypeValuesBuilder valuesBuilder = new EthTypeValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfEthType.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfEthType.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint16.ONE);
