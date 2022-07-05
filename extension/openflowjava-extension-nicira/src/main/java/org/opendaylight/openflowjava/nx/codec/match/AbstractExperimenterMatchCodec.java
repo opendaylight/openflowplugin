@@ -30,9 +30,9 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec {
 
     protected static <F extends MatchField> MatchEntrySerializerKey<ExperimenterClass, F> createSerializerKey(
-            final Uint8 version, final Uint32 expId, final Class<F> oxmField) {
+            final Uint8 version, final Uint32 expId, final F oxmField) {
         MatchEntrySerializerKey<ExperimenterClass, F> key = new MatchEntrySerializerKey<>(
-                version, ExperimenterClass.class, oxmField);
+                version, ExperimenterClass.VALUE, oxmField);
         key.setExperimenterId(expId);
         return key;
     }
@@ -104,8 +104,8 @@ public abstract class AbstractExperimenterMatchCodec extends AbstractMatchCodec 
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return ExperimenterClass.class;
+    public OxmClassBase getOxmClass() {
+        return ExperimenterClass.VALUE;
     }
 
     @Override

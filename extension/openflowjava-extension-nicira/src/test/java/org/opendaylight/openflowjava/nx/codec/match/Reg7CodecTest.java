@@ -52,8 +52,8 @@ public class Reg7CodecTest {
 
         final RegCaseValue result = (RegCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxReg7.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxReg7.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(1, result.getRegValues().getValue().intValue());
     }
@@ -63,8 +63,8 @@ public class Reg7CodecTest {
         final RegCaseValueBuilder caseBuilder = new RegCaseValueBuilder();
         final RegValuesBuilder valuesBuilder = new RegValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxReg7.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxReg7.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

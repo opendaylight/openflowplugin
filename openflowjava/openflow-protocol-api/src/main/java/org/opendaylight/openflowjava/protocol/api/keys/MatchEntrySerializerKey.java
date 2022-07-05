@@ -24,8 +24,8 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends MatchField>
         extends MessageTypeKey<MatchEntry> implements ExperimenterSerializerKey {
 
-    private final Class<C> oxmClass;
-    private final Class<F> oxmField;
+    private final C oxmClass;
+    private final F oxmField;
 
     private Uint32 experimenterId;
 
@@ -36,7 +36,7 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
      * @param oxmClass oxm_class (see specification)
      * @param oxmField oxm_field (see specification)
      */
-    public MatchEntrySerializerKey(final Uint8 msgVersion, final Class<C> oxmClass, final Class<F> oxmField) {
+    public MatchEntrySerializerKey(final Uint8 msgVersion, final C oxmClass, final F oxmField) {
         super(msgVersion, MatchEntry.class);
         this.oxmClass = oxmClass;
         this.oxmField = oxmField;
@@ -87,7 +87,7 @@ public final class MatchEntrySerializerKey<C extends OxmClassBase, F extends Mat
 
     @Override
     public String toString() {
-        return super.toString() + " oxm_class: " + oxmClass.getName() + " oxm_field: "
-                + oxmField.getName() + " experimenterID: " + experimenterId;
+        return super.toString() + " oxm_class: " + oxmClass.implementedInterface().getName() + " oxm_field: "
+                + oxmField.implementedInterface().getName() + " experimenterID: " + experimenterId;
     }
 }

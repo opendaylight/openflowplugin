@@ -51,7 +51,7 @@ public class ExtensionConverterManagerImplTest {
     @Before
     public void setUp() {
         manager = new ExtensionConverterManagerImpl();
-        keyFromOFJava = new ExperimenterActionSerializerKey(Uint8.ONE, Uint32.valueOf(42), ExpSubType.class);
+        keyFromOFJava = new ExperimenterActionSerializerKey(Uint8.ONE, Uint32.valueOf(42), ExpSubType.VALUE);
         regFromOFJava = manager.registerActionConvertor(keyFromOFJava, extConvertorFromOFJava);
 
         keyToOFJava = new TypeVersionKey<>(ActionExpCase.class, Uint8.ONE);

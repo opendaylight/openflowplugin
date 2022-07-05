@@ -64,8 +64,8 @@ public class ArpShaCodecTest {
 
         final ArpShaCaseValue result = (ArpShaCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxArpSha.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxArpSha.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(RESULT_ADDRESS, result.getArpShaValues().getMacAddress());
     }
@@ -76,8 +76,8 @@ public class ArpShaCodecTest {
         final ArpShaCaseValueBuilder caseBuilder = new ArpShaCaseValueBuilder();
         final ArpShaValuesBuilder valuesBuilder = new ArpShaValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxArpSha.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxArpSha.VALUE);
         matchEntryBuilder.setHasMask(false);
 
 

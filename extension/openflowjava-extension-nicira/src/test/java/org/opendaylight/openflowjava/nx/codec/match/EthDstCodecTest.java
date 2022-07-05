@@ -57,8 +57,8 @@ public class EthDstCodecTest {
 
         final EthDstCaseValue result = (EthDstCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfEthDst.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfEthDst.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(TEST_ADDRESS, result.getEthDstValues().getMacAddress());
     }
@@ -68,8 +68,8 @@ public class EthDstCodecTest {
         final EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
         final EthDstValuesBuilder valuesBuilder = new EthDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfEthDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfEthDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));

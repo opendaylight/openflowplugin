@@ -27,7 +27,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
 
     private final Uint8 version;
-    private final Class<C> generalClass;
+    private final C generalClass;
     private final SerializerRegistry serializerRegistry;
 
     /**
@@ -37,7 +37,7 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param generalClass class that will be used for match entry serializer registration
      * @param serializerRegistry registry to be filled with message serializers
      */
-    public MatchEntrySerializerRegistryHelper(final Uint8 version, final Class<C> generalClass,
+    public MatchEntrySerializerRegistryHelper(final Uint8 version, final C generalClass,
             final SerializerRegistry serializerRegistry) {
         this.version = requireNonNull(version);
         this.generalClass = generalClass;
@@ -51,7 +51,7 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param serializer the serializer instance
      */
     public <F extends MatchField> void registerSerializer(
-            final Class<F> specificClass, final OFGeneralSerializer serializer) {
+            final F specificClass, final OFGeneralSerializer serializer) {
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(version, generalClass, specificClass);
         key.setExperimenterId(null);
         serializerRegistry.registerSerializer(key, serializer);
@@ -64,9 +64,9 @@ public class MatchEntrySerializerRegistryHelper<C extends OxmClassBase> {
      * @param serializer the serializer instance
      */
     public <F extends MatchField> void registerExperimenterSerializer(
-            final Class<F> specificClass, final Uint32 expId, final OFGeneralSerializer serializer) {
+            final F specificClass, final Uint32 expId, final OFGeneralSerializer serializer) {
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                version, ExperimenterClass.class, specificClass);
+                version, ExperimenterClass.VALUE, specificClass);
         key.setExperimenterId(expId);
         serializerRegistry.registerSerializer(key, serializer);
     }

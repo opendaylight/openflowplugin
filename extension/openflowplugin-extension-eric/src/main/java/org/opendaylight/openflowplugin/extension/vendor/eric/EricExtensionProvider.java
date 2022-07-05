@@ -38,7 +38,7 @@ public class EricExtensionProvider implements AutoCloseable {
      * Register appropriate converters.
      */
     public EricExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
-        this.extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
+        extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
         registrations = List.of(
             extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
                 Icmpv6NdReservedKey.class, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_RESERVED_CONVERTOR),

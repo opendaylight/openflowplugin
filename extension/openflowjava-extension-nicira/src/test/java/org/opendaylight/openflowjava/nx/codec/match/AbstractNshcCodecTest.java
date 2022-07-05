@@ -30,7 +30,7 @@ public class AbstractNshcCodecTest {
         }
 
         @Override
-        public Class<? extends MatchField> getNxmField() {
+        public MatchField getNxmField() {
             return null;
         }
     }

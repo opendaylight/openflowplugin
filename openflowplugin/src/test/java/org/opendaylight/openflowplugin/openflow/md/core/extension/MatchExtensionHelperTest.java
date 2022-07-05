@@ -40,10 +40,10 @@ public class MatchExtensionHelperTest {
 
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
-    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> KEY_1 =
-        new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField1.class);
-    private static final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> KEY_2 =
-        new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.class, MockMatchField2.class);
+    private static final MatchEntrySerializerKey<?, ?> KEY_1 =
+        new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.VALUE, MockMatchField1.VALUE);
+    private static final MatchEntrySerializerKey<?, ?> KEY_2 =
+        new MatchEntrySerializerKey<>(OpenflowVersion.OF13.getVersion(), MockOxmClassBase.VALUE, MockMatchField2.VALUE);
 
     @Before
     public void setup() {
@@ -51,12 +51,12 @@ public class MatchExtensionHelperTest {
         when(extensionConverterProvider.getConverter(KEY_1))
                 .thenReturn((input, path) -> {
                     MockAugmentation mockAugmentation = new MockAugmentation();
-                    return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey1.class);
+                    return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey1.VALUE);
                 });
         when(extensionConverterProvider.getConverter(KEY_2))
                 .thenReturn((input, path) -> {
                     MockAugmentation mockAugmentation = new MockAugmentation();
-                    return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey2.class);
+                    return new ExtensionAugment<>(MockAugmentation.class, mockAugmentation, MockExtensionKey2.VALUE);
                 });
     }
 
@@ -86,39 +86,41 @@ public class MatchExtensionHelperTest {
     private static List<MatchEntry> createMatchEntrieses() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setHasMask(true);
-        matchEntryBuilder.setOxmClass(MockOxmClassBase.class);
-        matchEntryBuilder.setOxmMatchField(MockMatchField1.class);
+        matchEntryBuilder.setOxmClass(MockOxmClassBase.VALUE);
+        matchEntryBuilder.setOxmMatchField(MockMatchField1.VALUE);
         List<MatchEntry> matchEntries = new ArrayList<>();
         matchEntries.add(matchEntryBuilder.build());
 
 
         MatchEntryBuilder matchEntryBuilder1 = new MatchEntryBuilder();
         matchEntryBuilder1.setHasMask(true);
-        matchEntryBuilder1.setOxmClass(MockOxmClassBase.class);
-        matchEntryBuilder1.setOxmMatchField(MockMatchField2.class);
+        matchEntryBuilder1.setOxmClass(MockOxmClassBase.VALUE);
+        matchEntryBuilder1.setOxmMatchField(MockMatchField2.VALUE);
         matchEntries.add(matchEntryBuilder1.build());
         return matchEntries;
     }
 
     private interface MockOxmClassBase extends OxmClassBase {
-
+        MockOxmClassBase VALUE = () -> MockOxmClassBase.class;
     }
 
-    private class MockMatchField1 implements MatchField {
+    private interface MockMatchField1 extends MatchField {
+        MockMatchField1 VALUE = () -> MockMatchField1.class;
     }
 
-    private class MockMatchField2 implements MatchField {
+    private interface MockMatchField2 extends MatchField {
+        MockMatchField2 VALUE = () -> MockMatchField2.class;
     }
 
     private interface MockExtensionKey1 extends ExtensionKey {
-
+        MockExtensionKey1 VALUE = () -> MockExtensionKey1.class;
     }
 
     private interface MockExtensionKey2 extends ExtensionKey {
-
+        MockExtensionKey2 VALUE = () -> MockExtensionKey2.class;
     }
 
-    private final class MockAugmentation implements Augmentation<Extension> {
+    private static final class MockAugmentation implements Augmentation<Extension> {
         @Override
         public Class<MockAugmentation> implementedInterface() {
             return MockAugmentation.class;

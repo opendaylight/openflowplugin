@@ -59,7 +59,7 @@ public class KeysTest {
         ActionSerializerKey<ExperimenterIdCase> actionSerializerKey = new ActionSerializerKey<>(
                 EncodeConstants.OF_VERSION_1_3, ExperimenterIdCase.class, Uint32.ONE);
         ExperimenterActionSerializerKey experimenterActionSerializerKey = new ExperimenterActionSerializerKey(
-                EncodeConstants.OF_VERSION_1_3,  Uint32.ONE, ExpSubType.class);
+                EncodeConstants.OF_VERSION_1_3,  Uint32.ONE, ExpSubType.VALUE);
         Assert.assertFalse(actionSerializerKey.equals(experimenterActionSerializerKey));
         Assert.assertFalse(experimenterActionSerializerKey.equals(actionSerializerKey));
 
@@ -74,14 +74,17 @@ public class KeysTest {
         Assert.assertEquals(instructionSerializerKey.hashCode(), experimenterInstructionSerializerKey.hashCode());
 
         MatchEntrySerializerKey<OpenflowBasicClass, InPort> matchKey = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.class, InPort.class);
+                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.VALUE, InPort.VALUE);
         MatchEntrySerializerKey<OpenflowBasicClass, InPort> matchKey2 = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.class, InPort.class);
+                EncodeConstants.OF_VERSION_1_0, OpenflowBasicClass.VALUE, InPort.VALUE);
         Assert.assertEquals(matchKey, matchKey2);
         Assert.assertEquals(matchKey.hashCode(), matchKey2.hashCode());
     }
 
     private interface ExpSubType extends ExperimenterActionSubType {
-        // empty class - only used in test for comparation
+        ExpSubType VALUE = () -> ExpSubType.class;
+
+        @Override
+        Class<? extends ExpSubType> implementedInterface();
     }
 }

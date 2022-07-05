@@ -22,7 +22,7 @@ import org.opendaylight.yangtools.yang.common.netty.ByteBufUtils;
  */
 public class OxmEthTypeDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmEthTypeDeserializer() {
-        super(EthType.class);
+        super(EthType.VALUE);
     }
 
     @Override

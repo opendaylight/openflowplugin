@@ -57,8 +57,8 @@ public final class MatchUtil {
     private MatchUtil() {
     }
 
-    public static MatchEntryBuilder createDefaultMatchEntryBuilder(final Class<? extends MatchField> matchField,
-                                                                   final Class<? extends OxmClassBase> oxmClass,
+    public static MatchEntryBuilder createDefaultMatchEntryBuilder(final MatchField matchField,
+                                                                   final OxmClassBase oxmClass,
                                                                    final MatchEntryValue matchEntryValue) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setHasMask(false);

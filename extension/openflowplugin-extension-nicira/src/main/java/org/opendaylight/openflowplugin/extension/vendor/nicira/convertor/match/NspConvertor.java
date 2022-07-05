@@ -51,7 +51,7 @@ public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         return resolveAugmentation(
                 new NxmNxNspBuilder().setValue(nshNspCaseValue.getNspValues().getNsp()).build(),
                 path,
-                NxmNxNspKey.class);
+                NxmNxNspKey.VALUE);
     }
 
     @Override
@@ -69,13 +69,13 @@ public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         NspValues nspValues = new NspValuesBuilder().setNsp(nsp).setMask(mask).build();
         NspCaseValue nspCaseValue = new NspCaseValueBuilder().setNspValues(nspValues).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp.class,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNsp.VALUE,
                 NiciraConstants.NX_NSH_VENDOR_ID,
                 nspCaseValue).setHasMask(mask != null).build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxNsp value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

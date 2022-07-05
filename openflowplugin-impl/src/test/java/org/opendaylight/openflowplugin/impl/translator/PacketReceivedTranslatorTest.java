@@ -148,7 +148,7 @@ public class PacketReceivedTranslatorTest {
         return matchEntryBuilder;
     }
 
-    private static MatchEntryBuilder prepareHeader(final Class<? extends MatchField> oxmMatchField,
+    private static MatchEntryBuilder prepareHeader(final MatchField oxmMatchField,
             final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
         builder.setOxmClass(OpenflowBasicClass.class);

@@ -18,10 +18,9 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
  * @param <T> type of wrapped augmentation
  */
 public class ExtensionAugment<T extends Augmentation<Extension>> extends AugmentTuple<Extension> {
+    private final ExtensionKey key;
 
-    private final Class<? extends ExtensionKey> key;
-
-    public ExtensionAugment(Class<T> augmentationClass, T augmentationObject, Class<? extends ExtensionKey> key) {
+    public ExtensionAugment(final Class<T> augmentationClass, final T augmentationObject, final ExtensionKey key) {
         super(augmentationClass, augmentationObject);
         this.key = key;
     }
@@ -30,7 +29,7 @@ public class ExtensionAugment<T extends Augmentation<Extension>> extends Augment
      * Returns the key which represents an extension type.
      * @return key
      */
-    public Class<? extends ExtensionKey> getKey() {
+    public ExtensionKey getKey() {
         return key;
     }
 }

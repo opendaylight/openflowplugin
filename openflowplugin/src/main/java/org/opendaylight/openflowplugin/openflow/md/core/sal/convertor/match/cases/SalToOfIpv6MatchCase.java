@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -59,8 +58,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         if (source.getIpv6Source() != null) {
             Ipv6Prefix ipv6Prefix = source.getIpv6Source();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Src.VALUE);
 
             Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
             Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -80,8 +79,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         if (source.getIpv6Destination() != null) {
             Ipv6Prefix ipv6Prefix = source.getIpv6Destination();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Dst.VALUE);
 
             Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
             Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
@@ -101,8 +100,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         if (source.getIpv6Label() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             boolean hasmask = false;
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Flabel.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Flabel.VALUE);
             Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
             Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
             ipv6FlabelBuilder.setIpv6Flabel(source.getIpv6Label().getIpv6Flabel());
@@ -121,9 +120,9 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
 
         if (source.getIpv6NdTarget() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
             matchEntryBuilder.setHasMask(false);
-            matchEntryBuilder.setOxmMatchField(Ipv6NdTarget.class);
+            matchEntryBuilder.setOxmMatchField(Ipv6NdTarget.VALUE);
 
             Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
             Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
@@ -136,8 +135,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         if (source.getIpv6NdSll() != null) {
             MacAddress ipv6NdSll = source.getIpv6NdSll();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6NdSll.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6NdSll.VALUE);
 
             Ipv6NdSllCaseBuilder ipv6NdSllCaseBuilder = new Ipv6NdSllCaseBuilder();
             Ipv6NdSllBuilder ipv6NdSllBuilder = new Ipv6NdSllBuilder();
@@ -151,8 +150,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         if (source.getIpv6NdTll() != null) {
             MacAddress ipv6NdSll = source.getIpv6NdTll();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6NdTll.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6NdTll.VALUE);
 
             Ipv6NdTllCaseBuilder ipv6NdTllCaseBuilder = new Ipv6NdTllCaseBuilder();
             Ipv6NdTllBuilder ipv6NdTllBuilder = new Ipv6NdTllBuilder();
@@ -167,8 +166,8 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
         if (source.getIpv6ExtHeader() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
             boolean hasmask = false;
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Exthdr.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Exthdr.VALUE);
             Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
             Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
 

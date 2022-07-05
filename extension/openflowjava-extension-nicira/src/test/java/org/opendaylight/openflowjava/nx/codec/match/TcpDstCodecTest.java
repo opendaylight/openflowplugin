@@ -54,8 +54,8 @@ public class TcpDstCodecTest {
 
         final TcpDstCaseValue result = (TcpDstCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfTcpDst.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfTcpDst.VALUE, input.getOxmMatchField());
         assertEquals(true, input.getHasMask());
         assertEquals(1, result.getTcpDstValues().getPort().getValue().shortValue());
         assertEquals(0xffff, result.getTcpDstValues().getMask().shortValue() & 0xffff);
@@ -66,8 +66,8 @@ public class TcpDstCodecTest {
         final TcpDstCaseValueBuilder caseBuilder = new TcpDstCaseValueBuilder();
         final TcpDstValuesBuilder valuesBuilder = new TcpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfTcpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfTcpDst.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(Uint16.ONE));
