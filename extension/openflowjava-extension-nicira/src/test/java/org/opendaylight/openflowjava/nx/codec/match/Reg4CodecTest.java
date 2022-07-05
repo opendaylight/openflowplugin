@@ -63,8 +63,8 @@ public class Reg4CodecTest {
         final RegCaseValueBuilder caseBuilder = new RegCaseValueBuilder();
         final RegValuesBuilder valuesBuilder = new RegValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxReg4.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxReg4.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

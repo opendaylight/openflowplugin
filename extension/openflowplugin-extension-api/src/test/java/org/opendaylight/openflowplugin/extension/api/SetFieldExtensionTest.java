@@ -29,14 +29,14 @@ public class SetFieldExtensionTest {
         eqGroup.add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class);
         eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(ZVendorExt1.class).build();
+        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(ZVendorExt1.VALUE).build();
         SetField setField1 = new SetFieldBuilder()
                 .addAugmentation(new GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder()
                     .setExtensionList(Collections.singletonMap(extension1.key(), extension1))
                     .build())
                 .build();
 
-        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(ZVendorExt2.class).build();
+        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(ZVendorExt2.VALUE).build();
         SetField setField2 = new SetFieldBuilder()
                 .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
                     .setExtensionList(Collections.singletonMap(extension2.key(), extension2))

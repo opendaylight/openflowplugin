@@ -49,7 +49,7 @@ public class ArpThaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         ArpThaCaseValue arpThaCaseValue = (ArpThaCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(
                 new NxmNxArpThaBuilder().setMacAddress(arpThaCaseValue.getArpThaValues().getMacAddress()).build(), path,
-                NxmNxArpThaKey.class);
+                NxmNxArpThaKey.VALUE);
     }
 
     @Override
@@ -63,12 +63,12 @@ public class ArpThaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         arpThaCaseValueBuilder.setArpThaValues(new ArpThaValuesBuilder()
                 .setMacAddress(macAddress).build());
         return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx
-                .match.rev140421.NxmNxArpTha.class, Nxm1Class.class, arpThaCaseValueBuilder.build()).build();
+                .match.rev140421.NxmNxArpTha.VALUE, Nxm1Class.VALUE, arpThaCaseValueBuilder.build()).build();
 
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxArpTha value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

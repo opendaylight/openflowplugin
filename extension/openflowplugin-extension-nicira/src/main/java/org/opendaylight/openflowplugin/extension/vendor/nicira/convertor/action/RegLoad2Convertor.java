@@ -158,7 +158,7 @@ public class RegLoad2Convertor implements
     }
 
     private static NxRegLoad resolveRegLoad(final MatchEntry matchEntry) {
-        Class<? extends MatchField> oxmMatchField = matchEntry.getOxmMatchField();
+        MatchField oxmMatchField = matchEntry.getOxmMatchField();
         ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) matchEntry.getMatchEntryValue();
         OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
         NxExpMatchEntryValue nxExpMatchEntryValue = ofjAugNxExpMatch.getNxExpMatchEntryValue();
@@ -167,7 +167,7 @@ public class RegLoad2Convertor implements
     }
 
     private static NxRegLoad resolveRegLoad(
-            final Class<? extends MatchField> oxmMatchField,
+            final MatchField oxmMatchField,
             final NxExpMatchEntryValue value,
             final DstBuilder dstBuilder) {
 

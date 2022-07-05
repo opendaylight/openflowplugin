@@ -61,8 +61,8 @@ public class PktMarkCodecTest {
         final PktMarkCaseValueBuilder caseBuilder = new PktMarkCaseValueBuilder();
         final PktMarkValuesBuilder valuesBuilder = new PktMarkValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxPktMark.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxPktMark.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setPktMark(Uint32.ONE);

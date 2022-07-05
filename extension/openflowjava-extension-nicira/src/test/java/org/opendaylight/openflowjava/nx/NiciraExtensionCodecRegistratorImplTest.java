@@ -71,7 +71,7 @@ public class NiciraExtensionCodecRegistratorImplTest {
         actionSerializerKey = new NiciraActionSerializerKey(VERSION, PopVlanCase.class);
         //subtype = 10
         actionDeserializerKey = new NiciraActionDeserializerKey(VERSION, 10);
-        matchSerializerKey = new MatchEntrySerializerKey<>(VERSION, Nxm0Class.class, MatchField.class);
+        matchSerializerKey = new MatchEntrySerializerKey<>(VERSION, Nxm0Class.VALUE, MatchField.VALUE);
         //OxmClass 1, OxmField 2
         matchDeserializerKey = new MatchEntryDeserializerKey(VERSION, 1, 2);
 

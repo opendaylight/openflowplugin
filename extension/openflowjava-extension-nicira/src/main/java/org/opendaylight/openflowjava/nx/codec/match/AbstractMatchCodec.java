@@ -102,10 +102,10 @@ public abstract class AbstractMatchCodec implements
     /**
      * Returns the nxm_field class.
      */
-    public abstract Class<? extends MatchField> getNxmField();
+    public abstract MatchField getNxmField();
 
     /**
      * Returns the oxm_class class.
      */
-    public abstract Class<? extends OxmClassBase> getOxmClass();
+    public abstract OxmClassBase getOxmClass();
 }

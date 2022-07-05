@@ -62,8 +62,8 @@ public class CtZoneCodecTest {
         final CtZoneCaseValueBuilder caseBuilder = new CtZoneCaseValueBuilder();
         final CtZoneValuesBuilder valuesBuilder = new CtZoneValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtZone.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtZone.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setCtZone(Uint16.ONE);

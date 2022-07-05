@@ -24,8 +24,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 public abstract class AbstractOxmExperimenterMatchEntryDeserializer<F extends MatchField>
         extends AbstractOxmMatchEntryDeserializer {
 
-    protected AbstractOxmExperimenterMatchEntryDeserializer(final Class<? extends MatchField> oxmField) {
-        super(ExperimenterClass.class, oxmField);
+    protected AbstractOxmExperimenterMatchEntryDeserializer(final MatchField oxmField) {
+        super(ExperimenterClass.VALUE, oxmField);
     }
 
     protected ExperimenterIdCaseBuilder createExperimenterIdCase(final MatchEntryBuilder entryBuilder,

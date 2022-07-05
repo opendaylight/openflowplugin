@@ -122,7 +122,7 @@ public class Icmpv6NDReservedConvertorTest {
             new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdReserved(
                     new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(Uint32.ONE).build()).build(),
-                Icmpv6NdReservedKey.class);
+                Icmpv6NdReservedKey.VALUE);
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();

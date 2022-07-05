@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmVlanPcpDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmVlanPcpDeserializer() {
-        super(VlanPcp.class);
+        super(VlanPcp.VALUE);
     }
 
     @Override
