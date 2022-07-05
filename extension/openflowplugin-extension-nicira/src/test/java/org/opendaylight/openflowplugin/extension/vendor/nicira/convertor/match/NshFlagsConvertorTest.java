@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +83,7 @@ public class NshFlagsConvertorTest {
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
-        assertEquals(extensionAugment.getKey(), NxmNxNshFlagsKey.class);
+        assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = convertor.convert(matchEntry,
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
@@ -92,7 +91,7 @@ public class NshFlagsConvertorTest {
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
-        assertEquals(extensionAugment.getKey(), NxmNxNshFlagsKey.class);
+        assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
@@ -100,7 +99,7 @@ public class NshFlagsConvertorTest {
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
-        assertEquals(extensionAugment.getKey(), NxmNxNshFlagsKey.class);
+        assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_RPC_MATCH);
@@ -108,6 +107,6 @@ public class NshFlagsConvertorTest {
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
-        assertEquals(extensionAugment.getKey(), NxmNxNshFlagsKey.class);
+        assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
     }
 }

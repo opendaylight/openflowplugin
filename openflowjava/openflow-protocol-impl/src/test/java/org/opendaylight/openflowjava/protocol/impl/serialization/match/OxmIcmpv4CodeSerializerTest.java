@@ -83,7 +83,7 @@ public class OxmIcmpv4CodeSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIcmpv4CodeMatchEntry(Uint8 value) {
+    private static MatchEntryBuilder prepareIcmpv4CodeMatchEntry(final Uint8 value) {
         MatchEntryBuilder builder = prepareIcmpv4CodeHeader(false);
         Icmpv4CodeCaseBuilder casebuilder = new Icmpv4CodeCaseBuilder();
         Icmpv4CodeBuilder valueBuilder = new Icmpv4CodeBuilder();
@@ -93,15 +93,15 @@ public class OxmIcmpv4CodeSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareIcmpv4CodeHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareIcmpv4CodeHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(Icmpv4Code.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(Icmpv4Code.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ICMPV4_CODE, fieldAndMask >>> 1);

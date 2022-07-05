@@ -87,35 +87,35 @@ public class UdpDstConvertorTest {
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = udpDstConvertor.convert(matchEntry,
                 MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(Uint16.valueOf(2),
+        Assert.assertEquals(Uint16.TWO,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpDst().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfUdpDst().getPort());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
+        Assert.assertEquals(NxmOfUdpDstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = udpDstConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(Uint16.valueOf(2),
+        Assert.assertEquals(Uint16.TWO,
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmOfUdpDst()
                         .getMask());
         Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfUdpDst().getPort());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
+        Assert.assertEquals(NxmOfUdpDstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = udpDstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(Uint16.valueOf(2),
+        Assert.assertEquals(Uint16.TWO,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfUdpDst().getPort());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
+        Assert.assertEquals(NxmOfUdpDstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = udpDstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(Uint16.valueOf(2),
+        Assert.assertEquals(Uint16.TWO,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getMask());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfUdpDst().getPort());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfUdpDstKey.class);
+        Assert.assertEquals(NxmOfUdpDstKey.VALUE, extensionAugment.getKey());
     }
 }

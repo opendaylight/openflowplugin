@@ -51,8 +51,8 @@ public class CtZoneCodecTest {
 
         final CtZoneCaseValue result = (CtZoneCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxCtZone.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxCtZone.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getCtZoneValues().getCtZone().shortValue());
     }
@@ -62,8 +62,8 @@ public class CtZoneCodecTest {
         final CtZoneCaseValueBuilder caseBuilder = new CtZoneCaseValueBuilder();
         final CtZoneValuesBuilder valuesBuilder = new CtZoneValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtZone.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtZone.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setCtZone(Uint16.ONE);

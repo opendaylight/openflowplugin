@@ -71,8 +71,8 @@ public class OF13SetFieldActionSerializerTest {
         expBuilder.setExperimenter(new ExperimenterId(experimenterId));
         expCaseBuilder.setExperimenter(expBuilder.build());
         MatchEntryBuilder meb = new MatchEntryBuilder();
-        meb.setOxmClass(ExperimenterClass.class);
-        meb.setOxmMatchField(OxmMatchFieldClass.class);
+        meb.setOxmClass(ExperimenterClass.VALUE);
+        meb.setOxmMatchField(OxmMatchFieldClass.VALUE);
         meb.setMatchEntryValue(expCaseBuilder.build());
         List<MatchEntry> matchEntry = new ArrayList<>();
         MatchEntry me = meb.build();
@@ -83,7 +83,7 @@ public class OF13SetFieldActionSerializerTest {
         caseBuilder.setSetFieldAction(setFieldBuilder.build());
         actionBuilder.setActionChoice(caseBuilder.build());
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
-                EncodeConstants.OF_VERSION_1_3, ExperimenterClass.class, OxmMatchFieldClass.class);
+                EncodeConstants.OF_VERSION_1_3, ExperimenterClass.VALUE, OxmMatchFieldClass.VALUE);
         key.setExperimenterId(experimenterId);
         registry.registerSerializer(key, serializerMock);
         ByteBuf out = UnpooledByteBufAllocator.DEFAULT.buffer();

@@ -60,16 +60,16 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         NxmNxRegBuilder nxRegBuilder = new NxmNxRegBuilder();
-        if (!org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg.class
-                .isAssignableFrom(input.getOxmMatchField())) {
+        if (!(input.getOxmMatchField()
+            instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg)) {
             String msg = input.getOxmMatchField()
                     + " does not implement "
                     + org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg.class;
             LOG.warn("Warning {}",msg);
             throw new IllegalStateException(msg);
         }
-        nxRegBuilder.setReg((Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match
-                .rev140421.NxmNxReg>) input.getOxmMatchField());
+        nxRegBuilder.setReg((org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg)
+            input.getOxmMatchField());
         RegCaseValue regCaseValue = (RegCaseValue) input.getMatchEntryValue();
         nxRegBuilder.setValue(regCaseValue.getRegValues().getValue());
 
@@ -94,42 +94,43 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         RegCaseValueBuilder regCaseValueBuilder = new RegCaseValueBuilder();
         regCaseValueBuilder.setRegValues(regValuesBuilder.build());
         return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
-                Nxm1Class.class,
+                Nxm1Class.VALUE,
                 regCaseValueBuilder.build())
             .setHasMask(nxmNxReg.getMask() != null)
             .build();
     }
 
-    private static Class<? extends ExtensionKey> resolveRegKey(final Class<? extends MatchField> oxmMatchField) {
-        if (NiciraMatchCodecs.REG0_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg0Key.class;
+    private static ExtensionKey resolveRegKey(final MatchField oxmMatchField) {
+        // FIXME: Use direct field value equalitity
+        if (NiciraMatchCodecs.REG0_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg0Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG1_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg1Key.class;
+        if (NiciraMatchCodecs.REG1_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg1Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG2_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg2Key.class;
+        if (NiciraMatchCodecs.REG2_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg2Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG3_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg3Key.class;
+        if (NiciraMatchCodecs.REG3_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg3Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG4_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg4Key.class;
+        if (NiciraMatchCodecs.REG4_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg4Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG5_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg5Key.class;
+        if (NiciraMatchCodecs.REG5_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg5Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG6_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg6Key.class;
+        if (NiciraMatchCodecs.REG6_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg6Key.VALUE;
         }
-        if (NiciraMatchCodecs.REG7_CODEC.getNxmField().isAssignableFrom(oxmMatchField)) {
-            return NxmNxReg7Key.class;
+        if (NiciraMatchCodecs.REG7_CODEC.getNxmField().equals(oxmMatchField)) {
+            return NxmNxReg7Key.VALUE;
         }
         throw new CodecPreconditionException("There is no key for " + oxmMatchField);
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxReg nxmNxReg,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

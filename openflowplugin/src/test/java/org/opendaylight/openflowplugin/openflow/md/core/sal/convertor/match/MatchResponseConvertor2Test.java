@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.ArrayList;
@@ -198,7 +197,7 @@ public class MatchResponseConvertor2Test {
     public void testEmptyMatchEntry() {
 
         final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        builder.setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         builder.setMatchEntry(entries);
         final Match match = builder.build();
@@ -236,9 +235,9 @@ public class MatchResponseConvertor2Test {
     public void testWithMatchEntryNoMasks() {
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPort.VALUE);
         entriesBuilder.setHasMask(false);
         final InPortCaseBuilder caseBuilder = new InPortCaseBuilder();
         final InPortBuilder portBuilder = new InPortBuilder();
@@ -249,9 +248,9 @@ public class MatchResponseConvertor2Test {
 
         final InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPhyPort.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.InPhyPort.VALUE);
         entriesBuilder.setHasMask(false);
         final InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
         inPhyPortBuilder.setPortNumber(new PortNumber(Uint32.TWO));
@@ -260,9 +259,9 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(false);
         final MetadataCaseBuilder metadataCaseBuilder = new MetadataCaseBuilder();
         final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match
@@ -275,8 +274,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(PacketType.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(PacketType.VALUE);
         entriesBuilder.setHasMask(false);
         final PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
         final PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
@@ -286,8 +285,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthDst.VALUE);
         entriesBuilder.setHasMask(false);
         final EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
         final EthDstBuilder ethDstBuilder = new EthDstBuilder();
@@ -297,8 +296,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthSrc.VALUE);
         entriesBuilder.setHasMask(false);
         final EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
         final EthSrcBuilder ethSrcBuilder = new EthSrcBuilder();
@@ -309,8 +308,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthType.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthType.VALUE);
         entriesBuilder.setHasMask(false);
         final EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
 
@@ -322,8 +321,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(VlanVid.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(VlanVid.VALUE);
         final VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         entriesBuilder.setHasMask(false);
         final VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
@@ -334,8 +333,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(VlanPcp.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(VlanPcp.VALUE);
         final VlanPcpCaseBuilder vlanPcpCaseBuilder = new VlanPcpCaseBuilder();
         entriesBuilder.setHasMask(false);
         final VlanPcpBuilder vlanPcpBuilder = new VlanPcpBuilder();
@@ -346,8 +345,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpDscp.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpDscp.VALUE);
         entriesBuilder.setHasMask(false);
         final IpDscpCaseBuilder ipDscpCaseBuilder = new IpDscpCaseBuilder();
         final IpDscpBuilder ipDscpBuilder = new IpDscpBuilder();
@@ -358,8 +357,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpEcn.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpEcn.VALUE);
         entriesBuilder.setHasMask(false);
         final IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         final IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
@@ -370,8 +369,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpProto.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpProto.VALUE);
         final IpProtoCaseBuilder ipProtoCaseBuilder = new IpProtoCaseBuilder();
         entriesBuilder.setHasMask(false);
         final IpProtoBuilder ipProtoBuilder = new IpProtoBuilder();
@@ -382,8 +381,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv4SrcCaseBuilder ipv4AddressBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -393,8 +392,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
@@ -404,8 +403,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(TcpSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(TcpSrc.VALUE);
         entriesBuilder.setHasMask(false);
         final TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
         final TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
@@ -416,8 +415,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(TcpDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(TcpDst.VALUE);
         entriesBuilder.setHasMask(false);
         final TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
         final TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
@@ -428,8 +427,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Icmpv4Type.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Icmpv4Type.VALUE);
         entriesBuilder.setHasMask(false);
         final Icmpv4TypeCaseBuilder icmpv4TypeCaseBuilder = new Icmpv4TypeCaseBuilder();
         final Icmpv4TypeBuilder icmpv4TypeBuilder = new Icmpv4TypeBuilder();
@@ -439,8 +438,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Icmpv4Code.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Icmpv4Code.VALUE);
         entriesBuilder.setHasMask(false);
         final Icmpv4CodeCaseBuilder icmpv4CodeCaseBuilder = new Icmpv4CodeCaseBuilder();
         final Icmpv4CodeBuilder icmpv4CodeBuilder = new Icmpv4CodeBuilder();
@@ -450,8 +449,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Icmpv6Type.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Icmpv6Type.VALUE);
         entriesBuilder.setHasMask(false);
         final Icmpv6TypeCaseBuilder icmpv6TypeCaseBuilder = new Icmpv6TypeCaseBuilder();
         final Icmpv6TypeBuilder icmpv6TypeBuilder = new Icmpv6TypeBuilder();
@@ -461,8 +460,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Icmpv6Code.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Icmpv6Code.VALUE);
         entriesBuilder.setHasMask(false);
         final Icmpv6CodeCaseBuilder icmpv6CodeCaseBuilder = new Icmpv6CodeCaseBuilder();
         final Icmpv6CodeBuilder icmpv6CodeBuilder = new Icmpv6CodeBuilder();
@@ -472,8 +471,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(MplsLabel.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(MplsLabel.VALUE);
         entriesBuilder.setHasMask(false);
         final MplsLabelCaseBuilder mplsLabelCaseBuilder = new MplsLabelCaseBuilder();
 
@@ -484,8 +483,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(MplsTc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(MplsTc.VALUE);
         entriesBuilder.setHasMask(false);
         final MplsTcCaseBuilder mplsTcCaseBuilder = new MplsTcCaseBuilder();
         final MplsTcBuilder mplsTcBuilder = new MplsTcBuilder();
@@ -495,8 +494,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(MplsBos.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(MplsBos.VALUE);
         entriesBuilder.setHasMask(false);
         final MplsBosCaseBuilder mplsBosCaseBuilder = new MplsBosCaseBuilder();
         final MplsBosBuilder mplsBosBuilder = new MplsBosBuilder();
@@ -506,8 +505,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(PbbIsid.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(PbbIsid.VALUE);
         entriesBuilder.setHasMask(false);
         final PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
         final PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
@@ -517,8 +516,8 @@ public class MatchResponseConvertor2Test {
 
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(TunnelId.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(TunnelId.VALUE);
         entriesBuilder.setHasMask(false);
         final TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
         final TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
@@ -586,12 +585,12 @@ public class MatchResponseConvertor2Test {
     @Test
     public void testWithMatchEntryWithMasks() {
         final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        builder.setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
 
@@ -607,8 +606,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthDst.VALUE);
         entriesBuilder.setHasMask(true);
         final EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
         final EthDstBuilder ethDstBuilder = new EthDstBuilder();
@@ -619,8 +618,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthSrc.VALUE);
         entriesBuilder.setHasMask(true);
         final EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
         final EthSrcBuilder ethSrcBuilder = new EthSrcBuilder();
@@ -631,8 +630,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(VlanVid.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(VlanVid.VALUE);
         entriesBuilder.setHasMask(true);
         final VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         final VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
@@ -644,8 +643,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -656,8 +655,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
@@ -668,8 +667,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(PbbIsid.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(PbbIsid.VALUE);
         entriesBuilder.setHasMask(true);
         final PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
 
@@ -681,8 +680,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(TunnelId.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(TunnelId.VALUE);
         entriesBuilder.setHasMask(true);
         final TunnelIdCaseBuilder tunnelIdCaseBuilder = new TunnelIdCaseBuilder();
         final TunnelIdBuilder tunnelIdBuilder = new TunnelIdBuilder();
@@ -732,17 +731,17 @@ public class MatchResponseConvertor2Test {
     @Test
     public void testWithMatchEntryWithArbitraryMasks() {
         final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        builder.setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -753,8 +752,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
@@ -789,18 +788,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithSrcCidrMaskAndDstArbitraryBitMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -811,8 +810,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
@@ -847,18 +846,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithSrcArbitraryBitMaskAndDstCidrMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -869,8 +868,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
@@ -906,18 +905,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithDstArbitraryBitMaskAndSrcCidrMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
@@ -928,8 +927,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -964,18 +963,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithDstCidrMaskAndSrcArbitraryBitMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
         final Ipv4DstBuilder ipv4AddressBuilder = new Ipv4DstBuilder();
@@ -986,8 +985,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv4Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv4Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
         final Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -1022,13 +1021,13 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testLayer4MatchUdp() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc.VALUE);
         entriesBuilder.setHasMask(false);
         final UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
         final UdpSrcBuilder portBuilder = new UdpSrcBuilder();
@@ -1040,8 +1039,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(UdpDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(UdpDst.VALUE);
         entriesBuilder.setHasMask(false);
         final UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
         final UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
@@ -1070,12 +1069,12 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testLayer4MatchSctp() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(SctpSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(SctpSrc.VALUE);
         entriesBuilder.setHasMask(false);
         final SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
         final SctpSrcBuilder portBuilder = new SctpSrcBuilder();
@@ -1087,8 +1086,8 @@ public class MatchResponseConvertor2Test {
 
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(SctpDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(SctpDst.VALUE);
         entriesBuilder.setHasMask(false);
         final SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
         final SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
@@ -1118,12 +1117,12 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testLayer3MatchIpv6() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6AddressBuilder = new Ipv6SrcBuilder();
@@ -1133,8 +1132,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
@@ -1144,8 +1143,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Flabel.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Flabel.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
         final Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
@@ -1155,8 +1154,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6NdTarget.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6NdTarget.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6NdTargetCaseBuilder ipv6NdTargetCaseBuilder = new Ipv6NdTargetCaseBuilder();
         final Ipv6NdTargetBuilder ipv6NdTargetBuilder = new Ipv6NdTargetBuilder();
@@ -1166,8 +1165,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6NdSll.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6NdSll.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6NdSllCaseBuilder ipv6NdSllCaseBuilder = new Ipv6NdSllCaseBuilder();
         final Ipv6NdSllBuilder ipv6NdSllBuilder = new Ipv6NdSllBuilder();
@@ -1177,8 +1176,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6NdTll.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6NdTll.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6NdTllCaseBuilder ipv6NdTllCaseBuilder = new Ipv6NdTllCaseBuilder();
         final Ipv6NdTllBuilder ipv6NdTllBuilder = new Ipv6NdTllBuilder();
@@ -1188,8 +1187,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Exthdr.VALUE);
         entriesBuilder.setHasMask(false);
         final Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
         final Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
@@ -1226,12 +1225,12 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testLayer3MatchIpv6ExtHeader2() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         final MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Exthdr.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
         final Ipv6ExthdrBuilder ipv6ExthdrBuilder = new Ipv6ExthdrBuilder();
@@ -1263,12 +1262,12 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testLayer3MatchArp() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpOp.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpOp.VALUE);
         entriesBuilder.setHasMask(false);
         final ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder();
         final ArpOpBuilder arpOpBuilder = new ArpOpBuilder();
@@ -1278,8 +1277,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpSpa.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpSpa.VALUE);
         entriesBuilder.setHasMask(false);
         final ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
         final ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
@@ -1289,8 +1288,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpTpa.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpTpa.VALUE);
         entriesBuilder.setHasMask(false);
         final ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
         final ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
@@ -1300,8 +1299,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpSha.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpSha.VALUE);
         entriesBuilder.setHasMask(false);
         final ArpShaCaseBuilder arpShaCaseBuilder = new ArpShaCaseBuilder();
         final ArpShaBuilder arpShaBuilder = new ArpShaBuilder();
@@ -1311,9 +1310,9 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha.VALUE);
         entriesBuilder.setHasMask(false);
         final ArpThaCaseBuilder arpThaCaseBuilder = new ArpThaCaseBuilder();
         final ArpThaBuilder arpThaBuilder = new ArpThaBuilder();
@@ -1347,12 +1346,12 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testLayer3MatchArpWithMasks() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpSpa.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpSpa.VALUE);
         entriesBuilder.setHasMask(true);
         final ArpSpaCaseBuilder arpSpaCaseBuilder = new ArpSpaCaseBuilder();
         final ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
@@ -1363,8 +1362,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpTpa.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpTpa.VALUE);
         entriesBuilder.setHasMask(true);
         final ArpTpaCaseBuilder arpTpaCaseBuilder = new ArpTpaCaseBuilder();
         final ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
@@ -1375,8 +1374,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(ArpSha.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(ArpSha.VALUE);
         entriesBuilder.setHasMask(true);
         final ArpShaCaseBuilder arpShaCaseBuilder = new ArpShaCaseBuilder();
         final ArpShaBuilder arpShaBuilder = new ArpShaBuilder();
@@ -1387,9 +1386,9 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.ArpTha.VALUE);
         entriesBuilder.setHasMask(true);
         final ArpThaCaseBuilder arpThaCaseBuilder = new ArpThaCaseBuilder();
         final ArpThaBuilder arpThaBuilder = new ArpThaBuilder();
@@ -1428,18 +1427,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithIpv6ArbitraryMasks() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -1450,8 +1449,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
@@ -1486,18 +1485,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithIpv6SrcCidrlMaskAndDstArbitraryBitMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -1508,8 +1507,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
@@ -1544,18 +1543,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithIpv6SrcArbitraryBitMaskAndDstCidrMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -1566,8 +1565,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
@@ -1603,18 +1602,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithIpv6DstArbitraryBitMaskAndSrcCidrMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
@@ -1625,8 +1624,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
@@ -1662,18 +1661,18 @@ public class MatchResponseConvertor2Test {
      */
     @Test
     public void testWithMatchEntryWithIpv6DstCidrMaskAndSrcArbitraryBitMask() {
-        final MatchBuilder builder = new MatchBuilder();
-        builder.setType(OxmMatchType.class);
+        final MatchBuilder builder = new MatchBuilder()
+            .setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         entriesBuilder.setOxmMatchField(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.class);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Metadata.VALUE);
         entriesBuilder.setHasMask(true);
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Dst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Dst.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
         final Ipv6DstBuilder ipv6AddressBuilder = new Ipv6DstBuilder();
@@ -1684,8 +1683,8 @@ public class MatchResponseConvertor2Test {
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Src.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Src.VALUE);
         entriesBuilder.setHasMask(true);
         final Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
         final Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();

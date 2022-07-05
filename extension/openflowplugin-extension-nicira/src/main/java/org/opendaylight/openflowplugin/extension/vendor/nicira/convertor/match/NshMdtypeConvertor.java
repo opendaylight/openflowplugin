@@ -55,7 +55,7 @@ public class NshMdtypeConvertor implements ConvertorToOFJava<MatchEntry>, Conver
         return resolveAugmentation(
                 nxmNxNshMdtype,
                 path,
-                NxmNxNshMdtypeKey.class);
+                NxmNxNshMdtypeKey.VALUE);
     }
 
     @Override
@@ -72,14 +72,14 @@ public class NshMdtypeConvertor implements ConvertorToOFJava<MatchEntry>, Conver
         NshMdtypeValues nshMdtypeValues = new NshMdtypeValuesBuilder().setValue(value).build();
         NxExpMatchEntryValue entryValue = new NshMdtypeCaseValueBuilder().setNshMdtypeValues(nshMdtypeValues).build();
         return MatchUtil.createExperimenterMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshMdtype.class,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxNshMdtype.VALUE,
                 NiciraConstants.NX_NSH_VENDOR_ID,
                 entryValue).setHasMask(mask != null).build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
             final NxmNxNshMdtype value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

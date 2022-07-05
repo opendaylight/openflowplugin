@@ -34,9 +34,9 @@ public class OxmPbbIsidDeserializerTest {
         OxmPbbIsidDeserializer deserializer = new OxmPbbIsidDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong entry field", PbbIsid.class, entry.getOxmMatchField());
-        Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals("Wrong entry field", PbbIsid.VALUE, entry.getOxmMatchField());
+        Assert.assertFalse("Wrong entry hasMask", entry.getHasMask());
         Assert.assertEquals("Wrong entry value", 2, ((PbbIsidCase) entry.getMatchEntryValue())
                 .getPbbIsid().getIsid().intValue());
     }

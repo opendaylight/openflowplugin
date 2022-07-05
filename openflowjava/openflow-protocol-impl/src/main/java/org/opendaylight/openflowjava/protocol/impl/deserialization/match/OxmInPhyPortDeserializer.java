@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmInPhyPortDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmInPhyPortDeserializer() {
-        super(InPhyPort.class);
+        super(InPhyPort.VALUE);
     }
 
     @Override

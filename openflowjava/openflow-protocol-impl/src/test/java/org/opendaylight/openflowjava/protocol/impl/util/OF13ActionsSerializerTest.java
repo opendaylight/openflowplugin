@@ -155,8 +155,8 @@ public class OF13ActionsSerializerTest {
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setOxmMatchField(InPort.class);
+        matchBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchBuilder.setOxmMatchField(InPort.VALUE);
         matchBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
@@ -265,8 +265,8 @@ public class OF13ActionsSerializerTest {
         actions.add(actionBuilder.build());
         actionBuilder = new ActionBuilder();
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setOxmMatchField(InPort.class);
+        matchBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchBuilder.setOxmMatchField(InPort.VALUE);
         matchBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();

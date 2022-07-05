@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -55,9 +54,9 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
 
         if (source.getArpOp() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
             matchEntryBuilder.setHasMask(false);
-            matchEntryBuilder.setOxmMatchField(ArpOp.class);
+            matchEntryBuilder.setOxmMatchField(ArpOp.VALUE);
             ArpOpCaseBuilder arpOpCaseBuilder = new ArpOpCaseBuilder();
             ArpOpBuilder arpOpBuilder = new ArpOpBuilder();
             arpOpBuilder.setOpCode(source.getArpOp());
@@ -69,8 +68,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
         if (source.getArpSourceTransportAddress() != null) {
             Ipv4Prefix ipv4Prefix = source.getArpSourceTransportAddress();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(ArpSpa.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(ArpSpa.VALUE);
 
             ArpSpaBuilder arpSpaBuilder = new ArpSpaBuilder();
 
@@ -94,8 +93,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
         if (source.getArpTargetTransportAddress() != null) {
             Ipv4Prefix ipv4Prefix = source.getArpTargetTransportAddress();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(ArpTpa.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(ArpTpa.VALUE);
 
             ArpTpaBuilder arpTpaBuilder = new ArpTpaBuilder();
 
@@ -119,8 +118,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
         ArpSourceHardwareAddress arpSourceHardwareAddress = source.getArpSourceHardwareAddress();
         if (arpSourceHardwareAddress != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(ArpSha.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(ArpSha.VALUE);
 
             ArpShaCaseBuilder arpShaCaseBuilder = new ArpShaCaseBuilder();
             ArpShaBuilder arpShaBuilder = new ArpShaBuilder();
@@ -139,8 +138,8 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
         ArpTargetHardwareAddress arpTargetHardwareAddress = source.getArpTargetHardwareAddress();
         if (arpTargetHardwareAddress != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(ArpTha.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(ArpTha.VALUE);
 
             ArpThaCaseBuilder arpThaCaseBuilder = new ArpThaCaseBuilder();
             ArpThaBuilder arpThaBuilder = new ArpThaBuilder();

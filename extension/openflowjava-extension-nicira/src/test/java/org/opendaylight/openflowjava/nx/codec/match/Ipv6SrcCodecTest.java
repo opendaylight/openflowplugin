@@ -52,8 +52,8 @@ public class Ipv6SrcCodecTest {
 
         final IpSrcCaseValue result = (IpSrcCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmOfIpSrc.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfIpSrc.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getIpSrcValues().getValue().intValue());
     }
@@ -63,8 +63,8 @@ public class Ipv6SrcCodecTest {
         final IpSrcCaseValueBuilder caseBuilder = new IpSrcCaseValueBuilder();
         final IpSrcValuesBuilder valuesBuilder = new IpSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfIpSrc.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfIpSrc.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

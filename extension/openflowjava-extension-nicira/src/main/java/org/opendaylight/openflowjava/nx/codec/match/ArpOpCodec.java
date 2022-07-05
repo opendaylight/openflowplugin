@@ -27,7 +27,7 @@ public class ArpOpCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 15;
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfArpOp> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfArpOp.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm0Class.VALUE, NxmOfArpOp.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
@@ -63,12 +63,12 @@ public class ArpOpCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfArpOp.class;
+    public MatchField getNxmField() {
+        return NxmOfArpOp.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm0Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm0Class.VALUE;
     }
 }

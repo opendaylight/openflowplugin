@@ -54,8 +54,8 @@ public class TcpSrcCodecTest {
 
         final TcpSrcCaseValue result = (TcpSrcCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfTcpSrc.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfTcpSrc.VALUE, input.getOxmMatchField());
         assertEquals(true, input.getHasMask());
         assertEquals(1, result.getTcpSrcValues().getPort().getValue().shortValue());
         assertEquals(0xffff, result.getTcpSrcValues().getMask().shortValue() & 0xffff);
@@ -66,8 +66,8 @@ public class TcpSrcCodecTest {
         final TcpSrcCaseValueBuilder caseBuilder = new TcpSrcCaseValueBuilder();
         final TcpSrcValuesBuilder valuesBuilder = new TcpSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfTcpSrc.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfTcpSrc.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setPort(new PortNumber(Uint16.ONE));

@@ -49,7 +49,7 @@ public class EthTypeConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         EthTypeCaseValue ethTypeCaseValue = (EthTypeCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(
                 new NxmOfEthTypeBuilder().setValue(ethTypeCaseValue.getEthTypeValues().getValue()).build(), path,
-                NxmOfEthTypeKey.class);
+                NxmOfEthTypeKey.VALUE);
     }
 
     @Override
@@ -63,13 +63,13 @@ public class EthTypeConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         ethTypeCaseValueBuilder.setEthTypeValues(new EthTypeValuesBuilder()
                 .setValue(value).build());
         return MatchUtil.createDefaultMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthType.class,
-                Nxm0Class.class, ethTypeCaseValueBuilder.build()).build();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthType.VALUE,
+                Nxm0Class.VALUE, ethTypeCaseValueBuilder.build()).build();
 
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfEthType value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

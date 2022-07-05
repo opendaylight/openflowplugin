@@ -474,7 +474,7 @@ public class OpenflowpluginStatsTestCommandProvider implements CommandProvider {
         InstanceIdentifier<Nodes> nodesID = InstanceIdentifier.create(Nodes.class);
         Nodes nodes = TestProviderTransactionUtil.getDataObject(readOnlyTransaction, nodesID);
         if (nodes == null) {
-            throw new RuntimeException("nodes are not found, pls add the node.");
+            throw new IllegalStateException("nodes are not found, pls add the node.");
         }
         return nodes.nonnullNode().values();
     }

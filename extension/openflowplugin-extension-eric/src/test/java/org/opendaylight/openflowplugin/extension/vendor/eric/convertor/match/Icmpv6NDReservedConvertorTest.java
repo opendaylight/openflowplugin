@@ -91,25 +91,25 @@ public class Icmpv6NDReservedConvertorTest {
                 = icmpv6NDReservedConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         assertEquals(10, ((EricAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getEricOfIcmpv6NdReserved().getIcmpv6NdReserved().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1
                 = icmpv6NDReservedConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertEquals(10, ((EricAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getEricOfIcmpv6NdReserved().getIcmpv6NdReserved().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2
                 = icmpv6NDReservedConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertEquals(10, ((EricAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getEricOfIcmpv6NdReserved().getIcmpv6NdReserved().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3
                = icmpv6NDReservedConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         assertEquals(10, ((EricAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getEricOfIcmpv6NdReserved().getIcmpv6NdReserved().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdReservedKey.VALUE);
     }
 
     @Test
@@ -122,7 +122,7 @@ public class Icmpv6NDReservedConvertorTest {
             new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdReserved(
                     new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(Uint32.ONE).build()).build(),
-                Icmpv6NdReservedKey.class);
+                Icmpv6NdReservedKey.VALUE);
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();
@@ -138,7 +138,7 @@ public class Icmpv6NDReservedConvertorTest {
                     .build())
                 .build();
 
-        assertEquals(Icmpv6NdReservedKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
+        assertEquals(Icmpv6NdReservedKey.VALUE, eqGroup.getExtension(setField).get().nonnullExtensionList()
                 .values().iterator().next().getExtensionKey());
     }
 

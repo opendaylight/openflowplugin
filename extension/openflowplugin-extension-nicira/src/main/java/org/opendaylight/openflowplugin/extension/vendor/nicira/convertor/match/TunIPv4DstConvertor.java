@@ -37,7 +37,7 @@ import org.opendaylight.yangtools.yang.binding.Augmentation;
 
 public class TunIPv4DstConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxTunIpv4Dst value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
@@ -65,7 +65,7 @@ public class TunIPv4DstConvertor implements ConvertorToOFJava<MatchEntry>, Conve
         TunIpv4DstCaseValue tunIpv4DstCaseValue = (TunIpv4DstCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new NxmNxTunIpv4DstBuilder()
                 .setIpv4Address(MatchUtil.uint32ToIpv4Address(tunIpv4DstCaseValue.getTunIpv4DstValues().getValue()))
-                .build(), path, NxmNxTunIpv4DstKey.class);
+                .build(), path, NxmNxTunIpv4DstKey.VALUE);
     }
 
     @Override
@@ -75,8 +75,8 @@ public class TunIPv4DstConvertor implements ConvertorToOFJava<MatchEntry>, Conve
             .getNxmNxTunIpv4Dst().getIpv4Address();
 
         return MatchUtil.createDefaultMatchEntryBuilder(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunIpv4Dst.class,
-            Nxm1Class.class, new TunIpv4DstCaseValueBuilder()
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxTunIpv4Dst.VALUE,
+            Nxm1Class.VALUE, new TunIpv4DstCaseValueBuilder()
                 .setTunIpv4DstValues(new TunIpv4DstValuesBuilder()
                     .setValue(MatchUtil.ipv4ToUint32(value))
                     .build())

@@ -97,9 +97,9 @@ public final class MatchConvertorUtil {
      */
     public static MatchEntry toOfIpDscp(final Dscp ipDscp) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(IpDscp.class);
+        matchEntryBuilder.setOxmMatchField(IpDscp.VALUE);
 
         IpDscpCaseBuilder ipDscpCaseBuilder = new IpDscpCaseBuilder();
         IpDscpBuilder ipDscpBuilder = new IpDscpBuilder();
@@ -118,9 +118,9 @@ public final class MatchConvertorUtil {
     public static MatchEntry toOfVlanPcp(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanPcp vlanPcp) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(VlanPcp.class);
+        matchEntryBuilder.setOxmMatchField(VlanPcp.VALUE);
         VlanPcpCaseBuilder vlanPcpCaseBuilder = new VlanPcpCaseBuilder();
         VlanPcpBuilder vlanPcpBuilder = new VlanPcpBuilder();
         vlanPcpBuilder.setVlanPcp(vlanPcp.getValue());

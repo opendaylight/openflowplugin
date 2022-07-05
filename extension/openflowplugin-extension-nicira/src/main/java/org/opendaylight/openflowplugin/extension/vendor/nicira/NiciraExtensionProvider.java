@@ -363,7 +363,7 @@ public class NiciraExtensionProvider implements AutoCloseable {
      * Register appropriate converters.
      */
     public NiciraExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
-        this.extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
+        extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
         registrations = new HashSet<>();
         // src=dataStore/config
         registerAction13(NxActionRegLoadNodesNodeTableFlowApplyActionsCase.class, REG_LOAD_CONVERTOR_PROXY);
@@ -538,21 +538,21 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 NiciraUtil.createOfJavaKeyFrom(DecNshTtlCodec.SERIALIZER_KEY), DEC_NSH_TTL_CONVERTOR));
 
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg0Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg0Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg1Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg1Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg2Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg2Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg3Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg3Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg4Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg4Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg5Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg5Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg6Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg6Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxReg7Key.class, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxReg7Key.VALUE, EncodeConstants.OF_VERSION_1_3), REG_CONVERTOR));
 
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Reg0Codec.SERIALIZER_KEY, REG_CONVERTOR));
@@ -571,139 +571,139 @@ public class NiciraExtensionProvider implements AutoCloseable {
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Reg7Codec.SERIALIZER_KEY, REG_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxTunIdKey.class, EncodeConstants.OF_VERSION_1_3), TUN_ID_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxTunIdKey.VALUE, EncodeConstants.OF_VERSION_1_3), TUN_ID_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(TunIdCodec.SERIALIZER_KEY, TUN_ID_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxArpShaKey.class, EncodeConstants.OF_VERSION_1_3), ARP_SHA_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxArpShaKey.VALUE, EncodeConstants.OF_VERSION_1_3), ARP_SHA_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(ArpShaCodec.SERIALIZER_KEY, ARP_SHA_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxArpThaKey.class, EncodeConstants.OF_VERSION_1_3), ARP_THA_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxArpThaKey.VALUE, EncodeConstants.OF_VERSION_1_3), ARP_THA_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(ArpThaCodec.SERIALIZER_KEY, ARP_THA_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfArpOpKey.class, EncodeConstants.OF_VERSION_1_3), ARP_OP_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfArpOpKey.VALUE, EncodeConstants.OF_VERSION_1_3), ARP_OP_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(ArpOpCodec.SERIALIZER_KEY, ARP_OP_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfArpSpaKey.class, EncodeConstants.OF_VERSION_1_3), ARP_SPA_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfArpSpaKey.VALUE, EncodeConstants.OF_VERSION_1_3), ARP_SPA_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(ArpSpaCodec.SERIALIZER_KEY, ARP_SPA_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfArpTpaKey.class, EncodeConstants.OF_VERSION_1_3), ARP_TPA_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfArpTpaKey.VALUE, EncodeConstants.OF_VERSION_1_3), ARP_TPA_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(ArpTpaCodec.SERIALIZER_KEY, ARP_TPA_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfInPortKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmOfInPortKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 NXM_IN_PORT_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(InPortCodec.SERIALIZER_KEY,
                 NXM_IN_PORT_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfEthSrcKey.class, EncodeConstants.OF_VERSION_1_3), ETH_SRC_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfEthSrcKey.VALUE, EncodeConstants.OF_VERSION_1_3), ETH_SRC_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(EthSrcCodec.SERIALIZER_KEY, ETH_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfEthDstKey.class, EncodeConstants.OF_VERSION_1_3), ETH_DST_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfEthDstKey.VALUE, EncodeConstants.OF_VERSION_1_3), ETH_DST_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(EthDstCodec.SERIALIZER_KEY, ETH_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfEthTypeKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmOfEthTypeKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 ETH_TYPE_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(EthTypeCodec.SERIALIZER_KEY, ETH_TYPE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNspKey.class, EncodeConstants.OF_VERSION_1_3), NSP_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNspKey.VALUE, EncodeConstants.OF_VERSION_1_3), NSP_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(NspCodec.SERIALIZER_KEY, NSP_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNsiKey.class, EncodeConstants.OF_VERSION_1_3), NSI_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNsiKey.VALUE, EncodeConstants.OF_VERSION_1_3), NSI_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(NsiCodec.SERIALIZER_KEY, NSI_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshc1Key.class, EncodeConstants.OF_VERSION_1_3), NSC1_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNshc1Key.VALUE, EncodeConstants.OF_VERSION_1_3), NSC1_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Nshc1Codec.SERIALIZER_KEY, NSC1_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshc2Key.class, EncodeConstants.OF_VERSION_1_3), NSC2_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNshc2Key.VALUE, EncodeConstants.OF_VERSION_1_3), NSC2_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Nshc2Codec.SERIALIZER_KEY, NSC2_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshc3Key.class, EncodeConstants.OF_VERSION_1_3), NSC3_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNshc3Key.VALUE, EncodeConstants.OF_VERSION_1_3), NSC3_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Nshc3Codec.SERIALIZER_KEY, NSC3_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshc4Key.class, EncodeConstants.OF_VERSION_1_3), NSC4_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNshc4Key.VALUE, EncodeConstants.OF_VERSION_1_3), NSC4_CONVERTOR));
         registrations
                 .add(extensionConverterRegistrator.registerMatchConvertor(Nshc4Codec.SERIALIZER_KEY, NSC4_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshFlagsKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxNshFlagsKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 NSH_FLAGS_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(NshFlagsCodec.SERIALIZER_KEY,
                 NSH_FLAGS_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshTtlKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxNshTtlKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 NSH_TTL_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(NshTtlCodec.SERIALIZER_KEY,
                 NSH_TTL_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxTunIpv4SrcKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxTunIpv4SrcKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 TUN_IPV4_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4SrcCodec.SERIALIZER_KEY,
                 TUN_IPV4_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxTunIpv4DstKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxTunIpv4DstKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 TUN_IPV4_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(TunIpv4DstCodec.SERIALIZER_KEY,
                 TUN_IPV4_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshMdtypeKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxNshMdtypeKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 NSH_MDTYPE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(NshMdtypeCodec.SERIALIZER_KEY,
                 NSH_MDTYPE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxNshNpKey.class, EncodeConstants.OF_VERSION_1_3), NSH_NP_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxNshNpKey.VALUE, EncodeConstants.OF_VERSION_1_3), NSH_NP_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(NshNpCodec.SERIALIZER_KEY, NSH_NP_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfTcpSrcKey.class, EncodeConstants.OF_VERSION_1_3), TCP_SRC_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfTcpSrcKey.VALUE, EncodeConstants.OF_VERSION_1_3), TCP_SRC_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(TcpSrcCodec.SERIALIZER_KEY, TCP_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfTcpDstKey.class, EncodeConstants.OF_VERSION_1_3), TCP_DST_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfTcpDstKey.VALUE, EncodeConstants.OF_VERSION_1_3), TCP_DST_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(TcpDstCodec.SERIALIZER_KEY, TCP_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfUdpSrcKey.class, EncodeConstants.OF_VERSION_1_3), UDP_SRC_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfUdpSrcKey.VALUE, EncodeConstants.OF_VERSION_1_3), UDP_SRC_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(UdpSrcCodec.SERIALIZER_KEY, UDP_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmOfUdpDstKey.class, EncodeConstants.OF_VERSION_1_3), UDP_DST_CONVERTOR));
+                new ConverterExtensionKey<>(NxmOfUdpDstKey.VALUE, EncodeConstants.OF_VERSION_1_3), UDP_DST_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(UdpDstCodec.SERIALIZER_KEY, UDP_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxCtStateKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxCtStateKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 CT_STATE_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtStateCodec.SERIALIZER_KEY, CT_STATE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxCtZoneKey.class, EncodeConstants.OF_VERSION_1_3), CT_ZONE_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxCtZoneKey.VALUE, EncodeConstants.OF_VERSION_1_3), CT_ZONE_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtZoneCodec.SERIALIZER_KEY, CT_ZONE_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxCtMarkKey.class, EncodeConstants.OF_VERSION_1_3), CT_MARK_CONVERTOR));
+                new ConverterExtensionKey<>(NxmNxCtMarkKey.VALUE, EncodeConstants.OF_VERSION_1_3), CT_MARK_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtMarkCodec.SERIALIZER_KEY, CT_MARK_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxCtTpSrcKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxCtTpSrcKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 CT_TP_SRC_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtTpSrcCodec.SERIALIZER_KEY, CT_TP_SRC_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxCtTpDstKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxCtTpDstKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 CT_TP_DST_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(CtTpDstCodec.SERIALIZER_KEY, CT_TP_DST_CONVERTOR));
         registrations.add(extensionConverterRegistrator.registerMatchConvertor(
-                new ConverterExtensionKey<>(NxmNxPktMarkKey.class, EncodeConstants.OF_VERSION_1_3),
+                new ConverterExtensionKey<>(NxmNxPktMarkKey.VALUE, EncodeConstants.OF_VERSION_1_3),
                 PKT_MARK_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(PktMarkCodec.SERIALIZER_KEY, PKT_MARK_CONVERTOR));

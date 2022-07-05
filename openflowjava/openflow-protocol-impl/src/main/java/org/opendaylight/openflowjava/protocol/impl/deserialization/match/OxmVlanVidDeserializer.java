@@ -21,7 +21,7 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  */
 public class OxmVlanVidDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmVlanVidDeserializer() {
-        super(VlanVid.class);
+        super(VlanVid.VALUE);
     }
 
     @Override

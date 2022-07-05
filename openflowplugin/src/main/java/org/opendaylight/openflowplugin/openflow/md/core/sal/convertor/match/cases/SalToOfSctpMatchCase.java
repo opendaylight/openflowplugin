@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -38,8 +37,8 @@ public class SalToOfSctpMatchCase extends ConvertorCase<SctpMatch, List<MatchEnt
 
         if (source.getSctpSourcePort() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(SctpSrc.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(SctpSrc.VALUE);
 
             SctpSrcCaseBuilder sctpSrcCaseBuilder = new SctpSrcCaseBuilder();
             SctpSrcBuilder sctpSrcBuilder = new SctpSrcBuilder();
@@ -52,8 +51,8 @@ public class SalToOfSctpMatchCase extends ConvertorCase<SctpMatch, List<MatchEnt
 
         if (source.getSctpDestinationPort() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(SctpDst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(SctpDst.VALUE);
 
             SctpDstCaseBuilder sctpDstCaseBuilder = new SctpDstCaseBuilder();
             SctpDstBuilder sctpDstBuilder = new SctpDstBuilder();
