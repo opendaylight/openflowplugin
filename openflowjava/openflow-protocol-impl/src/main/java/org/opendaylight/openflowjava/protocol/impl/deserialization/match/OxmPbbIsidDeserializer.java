@@ -22,7 +22,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 public class OxmPbbIsidDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmPbbIsidDeserializer() {
-        super(PbbIsid.class);
+        super(PbbIsid.VALUE);
     }
 
     @Override

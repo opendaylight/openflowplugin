@@ -91,7 +91,7 @@ public class CtStateConvertorTest {
                 .getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxCtState()
                 .getMask().longValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
+        Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ctStateConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
@@ -99,7 +99,7 @@ public class CtStateConvertorTest {
                 .getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxCtState().getMask().longValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
+        Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctStateConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
@@ -107,7 +107,7 @@ public class CtStateConvertorTest {
                 .getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxCtState().getMask().longValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
+        Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ctStateConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
@@ -115,6 +115,6 @@ public class CtStateConvertorTest {
                 .getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxCtState().getMask().longValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxCtStateKey.class);
+        Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
     }
 }

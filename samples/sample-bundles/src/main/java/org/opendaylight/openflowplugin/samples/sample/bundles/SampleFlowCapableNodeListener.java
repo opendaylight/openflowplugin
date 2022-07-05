@@ -184,7 +184,7 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
             try {
                 return future.get();
             } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }, EXECUTOR);
     }

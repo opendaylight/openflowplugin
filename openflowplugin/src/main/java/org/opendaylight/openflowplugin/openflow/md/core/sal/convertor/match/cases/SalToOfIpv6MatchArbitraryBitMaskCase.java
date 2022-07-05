@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -41,8 +40,8 @@ public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6Matc
 
         if (source.getIpv6SourceAddressNoMask() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Src.VALUE);
 
             Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();
             ipv6SrcBuilder.setIpv6Address(source.getIpv6SourceAddressNoMask());
@@ -65,8 +64,8 @@ public class SalToOfIpv6MatchArbitraryBitMaskCase extends ConvertorCase<Ipv6Matc
 
         if (source.getIpv6DestinationAddressNoMask() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Dst.VALUE);
 
             Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();
 

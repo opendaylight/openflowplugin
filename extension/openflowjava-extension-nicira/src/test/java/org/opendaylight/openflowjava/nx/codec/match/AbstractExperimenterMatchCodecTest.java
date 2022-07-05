@@ -40,11 +40,16 @@ public class AbstractExperimenterMatchCodecTest {
     private ByteBuf buffer;
     private TestCodec testCodec;
 
-    private class TestNxmField implements MatchField {
+    private static class TestNxmField implements MatchField {
         // test class
+
+        @Override
+        public Class<? extends MatchField> implementedInterface() {
+            return TestNxmField.class;
+        }
     }
 
-    private class TestCodec extends AbstractExperimenterMatchCodec {
+    private static class TestCodec extends AbstractExperimenterMatchCodec {
 
         @Override
         protected void serializeValue(final NxExpMatchEntryValue value, final boolean hasMask,
@@ -73,8 +78,8 @@ public class AbstractExperimenterMatchCodecTest {
         }
 
         @Override
-        public Class<? extends MatchField> getNxmField() {
-            return TestNxmField.class;
+        public MatchField getNxmField() {
+            return TestNxmField.VALUE;
         }
     }
 
@@ -118,8 +123,8 @@ public class AbstractExperimenterMatchCodecTest {
 
         MatchEntry matchEntry = testCodec.deserialize(buffer);
 
-        assertEquals(ExperimenterClass.class, matchEntry.getOxmClass());
-        assertEquals(TestNxmField.class, matchEntry.getOxmMatchField());
+        assertEquals(ExperimenterClass.VALUE, matchEntry.getOxmClass());
+        assertEquals(TestNxmField.VALUE, matchEntry.getOxmMatchField());
         assertEquals(false, matchEntry.getHasMask());
         Experimenter experimenter = ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter();
         assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue());
@@ -133,8 +138,8 @@ public class AbstractExperimenterMatchCodecTest {
 
         MatchEntry matchEntry = testCodec.deserialize(buffer);
 
-        assertEquals(ExperimenterClass.class, matchEntry.getOxmClass());
-        assertEquals(TestNxmField.class, matchEntry.getOxmMatchField());
+        assertEquals(ExperimenterClass.VALUE, matchEntry.getOxmClass());
+        assertEquals(TestNxmField.VALUE, matchEntry.getOxmMatchField());
         assertEquals(true, matchEntry.getHasMask());
         Experimenter experimenter = ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter();
         assertEquals(EXPERIMENTER_ID, experimenter.getExperimenter().getValue());
@@ -144,8 +149,8 @@ public class AbstractExperimenterMatchCodecTest {
 
     static MatchEntry createMatchEntry(final NxExpMatchEntryValue value, final boolean hasMask) {
         return new MatchEntryBuilder()
-                .setOxmClass(ExperimenterClass.class)
-                .setOxmMatchField(TestNxmField.class)
+                .setOxmClass(ExperimenterClass.VALUE)
+                .setOxmMatchField(TestNxmField.VALUE)
                 .setHasMask(hasMask)
                 .setMatchEntryValue(new ExperimenterIdCaseBuilder()
                     .setExperimenter(new ExperimenterBuilder()

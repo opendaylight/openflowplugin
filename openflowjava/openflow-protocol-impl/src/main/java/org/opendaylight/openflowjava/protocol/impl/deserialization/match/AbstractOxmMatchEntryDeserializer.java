@@ -26,17 +26,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public abstract class AbstractOxmMatchEntryDeserializer
         implements HeaderDeserializer<MatchEntry>, OFDeserializer<MatchEntry> {
-    private final @NonNull Class<? extends OxmClassBase> oxmClass;
-    private final @NonNull Class<? extends MatchField> oxmField;
+    private final @NonNull OxmClassBase oxmClass;
+    private final @NonNull MatchField oxmField;
 
-    protected AbstractOxmMatchEntryDeserializer(final Class<? extends OxmClassBase> oxmClass,
-            final Class<? extends MatchField> oxmField) {
+    protected AbstractOxmMatchEntryDeserializer(final OxmClassBase oxmClass,
+            final MatchField oxmField) {
         this.oxmClass = requireNonNull(oxmClass);
         this.oxmField = requireNonNull(oxmField);
     }
 
-    protected AbstractOxmMatchEntryDeserializer(final Class<? extends MatchField> oxmField) {
-        this(OpenflowBasicClass.class, oxmField);
+    protected AbstractOxmMatchEntryDeserializer(final MatchField oxmField) {
+        this(OpenflowBasicClass.VALUE, oxmField);
     }
 
     @Override

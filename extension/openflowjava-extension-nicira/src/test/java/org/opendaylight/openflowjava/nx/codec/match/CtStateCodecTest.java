@@ -52,8 +52,8 @@ public class CtStateCodecTest {
 
         final CtStateCaseValue result = (CtStateCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxCtState.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxCtState.VALUE, input.getOxmMatchField());
         assertEquals(true, input.getHasMask());
         assertEquals(1, result.getCtStateValues().getCtState().intValue());
         assertEquals(2, result.getCtStateValues().getMask().intValue());
@@ -64,8 +64,8 @@ public class CtStateCodecTest {
         final CtStateCaseValueBuilder caseBuilder = new CtStateCaseValueBuilder();
         final CtStateValuesBuilder valuesBuilder = new CtStateValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtState.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtState.VALUE);
         matchEntryBuilder.setHasMask(true);
 
         valuesBuilder.setCtState(Uint32.ONE);

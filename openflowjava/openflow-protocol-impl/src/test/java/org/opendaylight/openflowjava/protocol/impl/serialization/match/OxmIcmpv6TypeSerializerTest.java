@@ -83,7 +83,7 @@ public class OxmIcmpv6TypeSerializerTest {
         assertEquals("Wrong value length", Byte.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIcmpv6TypeMatchEntry(Uint8 value) {
+    private static MatchEntryBuilder prepareIcmpv6TypeMatchEntry(final Uint8 value) {
         MatchEntryBuilder builder = prepareIcmpv6TypeHeader(false);
         Icmpv6TypeCaseBuilder casebuilder = new Icmpv6TypeCaseBuilder();
         Icmpv6TypeBuilder valueBuilder = new Icmpv6TypeBuilder();
@@ -93,15 +93,15 @@ public class OxmIcmpv6TypeSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareIcmpv6TypeHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareIcmpv6TypeHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(Icmpv6Type.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(Icmpv6Type.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ICMPV6_TYPE, fieldAndMask >>> 1);

@@ -51,8 +51,8 @@ public class ArpSpaCodecTest {
 
         final ArpSpaCaseValue result = (ArpSpaCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfArpSpa.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfArpSpa.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getArpSpaValues().getValue().shortValue());
     }
@@ -62,8 +62,8 @@ public class ArpSpaCodecTest {
         final ArpSpaCaseValueBuilder caseBuilder = new ArpSpaCaseValueBuilder();
         final ArpSpaValuesBuilder valuesBuilder = new ArpSpaValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfArpSpa.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfArpSpa.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

@@ -298,15 +298,15 @@ public class TableFeaturesResponseConvertorTest {
         propBuilder = new TableFeaturePropertiesBuilder();
         propBuilder.setType(TableFeaturesPropType.OFPTFPTMATCH);
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(InPhyPort.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(InPhyPort.VALUE);
         entriesBuilder.setHasMask(false);
 
         List<MatchEntry> entries = new ArrayList<>();
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(InPort.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(InPort.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
@@ -319,13 +319,13 @@ public class TableFeaturesResponseConvertorTest {
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELD);
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpProto.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpProto.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpEcn.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpEcn.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
@@ -337,13 +337,13 @@ public class TableFeaturesResponseConvertorTest {
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELD);
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(Ipv6Exthdr.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(Ipv6Exthdr.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(VlanVid.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(VlanVid.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
@@ -355,13 +355,13 @@ public class TableFeaturesResponseConvertorTest {
         propBuilder.setType(TableFeaturesPropType.OFPTFPTWRITESETFIELDMISS);
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(VlanPcp.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(VlanPcp.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(TcpSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(TcpSrc.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         propBuilder.addAugmentation(new OxmRelatedTableFeaturePropertyBuilder().setMatchEntry(entries).build());
@@ -373,14 +373,14 @@ public class TableFeaturesResponseConvertorTest {
         propBuilder.setType(TableFeaturesPropType.OFPTFPTAPPLYSETFIELDMISS);
         entries = new ArrayList<>();
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(UdpSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(UdpSrc.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(UdpDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(UdpDst.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
@@ -394,14 +394,14 @@ public class TableFeaturesResponseConvertorTest {
         entries = new ArrayList<>();
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthSrc.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthSrc.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
         entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(EthDst.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(EthDst.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
 
@@ -599,10 +599,10 @@ public class TableFeaturesResponseConvertorTest {
         Collection<SetFieldMatch> fieldMatch = propType5.getMatchSetfield().nonnullSetFieldMatch().values();
         Assert.assertEquals("Wrong match-entry-ids size", 2, fieldMatch.size());
         Iterator<SetFieldMatch> fieldIt = fieldMatch.iterator();
-        Assert.assertEquals("Wrong match-entry-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
-            + "rev131026.InPhyPort", fieldIt.next().getMatchType().getName());
-        Assert.assertEquals("Wrong match-entry-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
-            + "rev131026.InPort", fieldIt.next().getMatchType().getName());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPhyPort.VALUE,
+                fieldIt.next().getMatchType());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPort.VALUE,
+                fieldIt.next().getMatchType());
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
             + "rev131026.table.feature.prop.type.table.feature.prop.type.ApplySetfield",
@@ -611,12 +611,10 @@ public class TableFeaturesResponseConvertorTest {
         fieldMatch = propType6.getApplySetfield().nonnullSetFieldMatch().values();
         Assert.assertEquals("Wrong match-entry-ids size", 2, fieldMatch.size());
         fieldIt = fieldMatch.iterator();
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpProto",
-                fieldIt.next().getMatchType().getName());
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpEcn",
-                fieldIt.next().getMatchType().getName());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpProto.VALUE,
+                fieldIt.next().getMatchType());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpEcn.VALUE,
+                fieldIt.next().getMatchType());
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
             + "rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfield",
@@ -625,12 +623,10 @@ public class TableFeaturesResponseConvertorTest {
         fieldMatch = propType7.getWriteSetfield().nonnullSetFieldMatch().values();
         Assert.assertEquals("Wrong match-entry-ids size", 2, fieldMatch.size());
         fieldIt = fieldMatch.iterator();
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Exthdr",
-                fieldIt.next().getMatchType().getName());
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid",
-                fieldIt.next().getMatchType().getName());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Exthdr.VALUE,
+                fieldIt.next().getMatchType());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.VALUE,
+                fieldIt.next().getMatchType());
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
             + "rev131026.table.feature.prop.type.table.feature.prop.type.WriteSetfieldMiss",
@@ -639,12 +635,10 @@ public class TableFeaturesResponseConvertorTest {
         fieldMatch = propType8.getWriteSetfieldMiss().nonnullSetFieldMatch().values();
         Assert.assertEquals("Wrong match-entry-ids size", 2, fieldMatch.size());
         fieldIt = fieldMatch.iterator();
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp",
-                fieldIt.next().getMatchType().getName());
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc",
-                fieldIt.next().getMatchType().getName());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.VALUE,
+                fieldIt.next().getMatchType());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc.VALUE,
+                fieldIt.next().getMatchType());
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
             + "rev131026.table.feature.prop.type.table.feature.prop.type.ApplySetfieldMiss",
@@ -653,12 +647,10 @@ public class TableFeaturesResponseConvertorTest {
         fieldMatch = propType9.getApplySetfieldMiss().nonnullSetFieldMatch().values();
         Assert.assertEquals("Wrong match-entry-ids size", 2, fieldMatch.size());
         fieldIt = fieldMatch.iterator();
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc",
-                fieldIt.next().getMatchType().getName());
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst",
-                fieldIt.next().getMatchType().getName());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc.VALUE,
+                fieldIt.next().getMatchType());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.VALUE,
+                fieldIt.next().getMatchType());
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
             + "rev131026.table.feature.prop.type.table.feature.prop.type.Wildcards",
@@ -667,12 +659,10 @@ public class TableFeaturesResponseConvertorTest {
         fieldMatch = propType10.getWildcardSetfield().nonnullSetFieldMatch().values();
         Assert.assertEquals("Wrong match-entry-ids size", 2, fieldMatch.size());
         fieldIt = fieldMatch.iterator();
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthSrc",
-                fieldIt.next().getMatchType().getName());
-        Assert.assertEquals("Wrong match-entry-id",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthDst",
-                fieldIt.next().getMatchType().getName());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthSrc.VALUE,
+                fieldIt.next().getMatchType());
+        Assert.assertEquals(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthDst.VALUE,
+                fieldIt.next().getMatchType());
 
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."

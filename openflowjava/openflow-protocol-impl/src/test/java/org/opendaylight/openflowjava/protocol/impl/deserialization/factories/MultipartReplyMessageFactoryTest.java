@@ -911,11 +911,11 @@ public class MultipartReplyMessageFactoryTest {
         Assert.assertTrue("Wrong setFieldType", message.getGroupDesc().get(0).getBucketsList().get(0)
                 .getAction().get(1).getActionChoice() instanceof SetFieldCase);
 
-        Assert.assertEquals("Wrong setFieldOXMClass", OpenflowBasicClass.class,
+        Assert.assertEquals("Wrong setFieldOXMClass", OpenflowBasicClass.VALUE,
                 ((SetFieldCase) message.getGroupDesc().get(0).getBucketsList().get(0).getAction().get(1)
                 .getActionChoice()).getSetFieldAction().getMatchEntry().get(0).getOxmClass());
 
-        Assert.assertEquals("Wrong setFieldOXMField", InPort.class,
+        Assert.assertEquals("Wrong setFieldOXMField", InPort.VALUE,
                 ((SetFieldCase) message.getGroupDesc().get(0).getBucketsList().get(0).getAction().get(1)
                         .getActionChoice()).getSetFieldAction().getMatchEntry().get(0).getOxmMatchField());
 

@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
@@ -180,8 +180,8 @@ public class ConntrackCodecTest {
         NxActionNatBuilder nxActionNatBuilder = new NxActionNatBuilder();
         nxActionNatBuilder.setFlags(Uint16.valueOf(5));
         nxActionNatBuilder.setRangePresent(Uint16.valueOf(0x3F));
-        nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"));
-        nxActionNatBuilder.setIpAddressMax(IpAddressBuilder.getDefaultInstance("192.168.10.0"));
+        nxActionNatBuilder.setIpAddressMin(new IpAddress(new Ipv4Address("192.168.0.0")));
+        nxActionNatBuilder.setIpAddressMax(new IpAddress(new Ipv4Address("192.168.10.0")));
         nxActionNatBuilder.setPortMin(Uint16.valueOf(3000));
         nxActionNatBuilder.setPortMax(Uint16.valueOf(4000));
         NxActionNatCaseBuilder nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
@@ -193,7 +193,7 @@ public class ConntrackCodecTest {
         nxActionNatBuilder = new NxActionNatBuilder();
         nxActionNatBuilder.setFlags(Uint16.valueOf(5));
         nxActionNatBuilder.setRangePresent(Uint16.valueOf(0x21));
-        nxActionNatBuilder.setIpAddressMin(IpAddressBuilder.getDefaultInstance("192.168.0.0"));
+        nxActionNatBuilder.setIpAddressMin(new IpAddress(new Ipv4Address("192.168.0.0")));
         nxActionNatBuilder.setPortMax(Uint16.valueOf(4000));
         nxActionNatCaseBuilder = new NxActionNatCaseBuilder();
         nxActionNatCaseBuilder.setNxActionNat(nxActionNatBuilder.build());

@@ -189,9 +189,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         //TODO: currently this matchconverter is mapped to OF1.3 in MatchInjector. Will need to revisit during 1.4+
         final Uint32 portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13, inPort);
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(InPort.class);
+        matchEntryBuilder.setOxmMatchField(InPort.VALUE);
         InPortCaseBuilder caseBuilder = new InPortCaseBuilder();
         InPortBuilder portBuilder = new InPortBuilder();
         portBuilder.setPortNumber(new PortNumber(portNumber));
@@ -209,9 +209,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         final Uint32 portNumber = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.OF13,
             inPhyPort);
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(InPhyPort.class);
+        matchEntryBuilder.setOxmMatchField(InPhyPort.VALUE);
         InPhyPortCaseBuilder caseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder portBuilder = new InPhyPortBuilder();
         portBuilder.setPortNumber(new PortNumber(portNumber));
@@ -228,8 +228,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final boolean hasmask = metadata.getMetadataMask() != null;
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setOxmMatchField(Metadata.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchEntryBuilder.setOxmMatchField(Metadata.VALUE);
         MetadataCaseBuilder metadataCaseBuilder = new MetadataCaseBuilder();
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry
             .value.metadata._case.MetadataBuilder metadataBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight
@@ -252,8 +252,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         }
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setOxmMatchField(PacketType.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchEntryBuilder.setOxmMatchField(PacketType.VALUE);
         matchEntryBuilder.setHasMask(false);
         PacketTypeCaseBuilder packetTypeCaseBuilder = new PacketTypeCaseBuilder();
         PacketTypeBuilder packetTypeBuilder = new PacketTypeBuilder();
@@ -283,8 +283,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         matchEntryBuilder.setMatchEntryValue(tunnelIdCaseBuilder.build());
         matchEntryBuilder.setHasMask(hasMask);
-        matchEntryBuilder.setOxmMatchField(TunnelId.class);
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmMatchField(TunnelId.VALUE);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         matchEntryList.add(matchEntryBuilder.build());
     }
 
@@ -365,8 +365,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         if (vlanMatch.getVlanId() != null) {
             VlanId vlanId = vlanMatch.getVlanId();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(VlanVid.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(VlanVid.VALUE);
             VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();
             boolean setCfiBit = false;
             Uint16 vidEntryValue = Uint16.ZERO;
@@ -406,8 +406,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         EthernetDestination ethernetDestination = ethernetMatch.getEthernetDestination();
         if (ethernetDestination != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(EthDst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(EthDst.VALUE);
             EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
             EthDstBuilder ethDstBuilder = new EthDstBuilder();
             ethDstBuilder.setMacAddress(ethernetDestination.getAddress());
@@ -426,8 +426,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         EthernetSource ethernetSource = ethernetMatch.getEthernetSource();
         if (ethernetSource != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(EthSrc.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(EthSrc.VALUE);
             EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
             EthSrcBuilder ethDstBuilder = new EthSrcBuilder();
             ethDstBuilder.setMacAddress(ethernetSource.getAddress());
@@ -451,10 +451,10 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     private static void tcpFlagsMatch(final List<MatchEntry> matchEntryList, final TcpFlagsMatch tcpFlagsMatch) {
         ExperimenterIdCaseBuilder expIdCaseBuilder = new ExperimenterIdCaseBuilder();
         if (tcpFlagsMatch != null) {
-            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(ExperimenterClass.class);
-            matchEntryBuilder.setHasMask(false);
-            matchEntryBuilder.setOxmMatchField(TcpFlags.class);
+            MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder()
+                .setOxmClass(ExperimenterClass.VALUE)
+                .setHasMask(false)
+                .setOxmMatchField(TcpFlags.VALUE);
 
             TcpFlagsContainerBuilder tcpFlagsContainerBuilder = new TcpFlagsContainerBuilder();
             TcpFlagsBuilder tcpFlagsBuilder = new TcpFlagsBuilder();
@@ -479,8 +479,8 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     private static MatchEntry toOfMplsPbb(final Pbb pbb) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         final boolean hasmask = pbb.getPbbMask() != null;
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchEntryBuilder.setOxmMatchField(PbbIsid.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchEntryBuilder.setOxmMatchField(PbbIsid.VALUE);
         PbbIsidCaseBuilder pbbIsidCaseBuilder = new PbbIsidCaseBuilder();
         PbbIsidBuilder pbbIsidBuilder = new PbbIsidBuilder();
         pbbIsidBuilder.setIsid(pbb.getPbbIsid());
@@ -497,9 +497,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfMplsTc(final Uint8 mplsTc) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(MplsTc.class)
+                .setOxmMatchField(MplsTc.VALUE)
                 .setMatchEntryValue(new MplsTcCaseBuilder()
                     .setMplsTc(new MplsTcBuilder().setTc(mplsTc).build())
                     .build())
@@ -508,9 +508,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfMplsBos(final Uint8 mplsBos) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(MplsBos.class)
+                .setOxmMatchField(MplsBos.VALUE)
                 .setMatchEntryValue(new MplsBosCaseBuilder()
                     .setMplsBos(new MplsBosBuilder().setBos(mplsBos.toJava() != 0).build())
                     .build())
@@ -519,9 +519,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfMplsLabel(final Uint32 mplsLabel) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(MplsLabel.class)
+                .setOxmMatchField(MplsLabel.VALUE)
                 .setMatchEntryValue(new MplsLabelCaseBuilder()
                     .setMplsLabel(new MplsLabelBuilder().setMplsLabel(mplsLabel).build())
                     .build())
@@ -530,9 +530,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfEthernetType(final EthernetType ethernetType) {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
+        matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
         matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(EthType.class);
+        matchEntryBuilder.setOxmMatchField(EthType.VALUE);
         EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
         EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
         EtherType etherType = new EtherType(ethernetType.getType().getValue().toUint16());
@@ -544,9 +544,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfIcmpv4Type(final Uint8 icmpv4Type) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(Icmpv4Type.class)
+                .setOxmMatchField(Icmpv4Type.VALUE)
                 .setMatchEntryValue(new Icmpv4TypeCaseBuilder()
                     .setIcmpv4Type(new Icmpv4TypeBuilder().setIcmpv4Type(icmpv4Type).build())
                     .build())
@@ -555,9 +555,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfIcmpv4Code(final Uint8 icmpv4Code) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(Icmpv4Code.class)
+                .setOxmMatchField(Icmpv4Code.VALUE)
                 .setMatchEntryValue(new Icmpv4CodeCaseBuilder()
                     .setIcmpv4Code(new Icmpv4CodeBuilder().setIcmpv4Code(icmpv4Code).build()).build())
                 .build();
@@ -565,9 +565,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfIcmpv6Type(final Uint8 icmpv6Type) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(Icmpv6Type.class)
+                .setOxmMatchField(Icmpv6Type.VALUE)
                 .setMatchEntryValue(new Icmpv6TypeCaseBuilder()
                     .setIcmpv6Type(new Icmpv6TypeBuilder().setIcmpv6Type(icmpv6Type).build())
                     .build())
@@ -576,9 +576,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfIcmpv6Code(final Uint8 icmpv6Code) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(Icmpv6Code.class)
+                .setOxmMatchField(Icmpv6Code.VALUE)
                 .setMatchEntryValue(new Icmpv6CodeCaseBuilder()
                     .setIcmpv6Code(new Icmpv6CodeBuilder().setIcmpv6Code(icmpv6Code).build())
                     .build())
@@ -587,9 +587,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfIpProto(final Uint8 ipProtocol) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(IpProto.class)
+                .setOxmMatchField(IpProto.VALUE)
                 .setMatchEntryValue(new IpProtoCaseBuilder()
                     .setIpProto(new IpProtoBuilder().setProtocolNumber(ipProtocol).build())
                     .build())
@@ -598,9 +598,9 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
 
     private static MatchEntry toOfIpEcn(final Uint8 ipEcn) {
         return new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE)
-                .setOxmMatchField(IpEcn.class)
+                .setOxmMatchField(IpEcn.VALUE)
                 .setMatchEntryValue(new IpEcnCaseBuilder().setIpEcn(new IpEcnBuilder().setEcn(ipEcn).build()).build())
                 .build();
     }

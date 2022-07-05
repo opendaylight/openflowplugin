@@ -77,7 +77,7 @@ public abstract class ExperimenterSerializerKeyFactory {
 
     public static ExperimenterIdSerializerKey<MeterBandExperimenterCase> createMeterBandSerializerKey(
             final Uint8 msgVersion, final Uint32 experimenterId,
-            final Class<? extends ExperimenterMeterBandSubType> meterSubType) {
+            final ExperimenterMeterBandSubType meterSubType) {
         return new ExperimenterIdMeterSubTypeSerializerKey<>(msgVersion, experimenterId,
                 MeterBandExperimenterCase.class, meterSubType);
     }

@@ -63,8 +63,8 @@ public class ArpThaCodecTest {
 
         final ArpThaCaseValue result = (ArpThaCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxArpTha.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxArpTha.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(TEST_ADDRESS, result.getArpThaValues().getMacAddress());
     }
@@ -74,8 +74,8 @@ public class ArpThaCodecTest {
         final ArpThaCaseValueBuilder caseBuilder = new ArpThaCaseValueBuilder();
         final ArpThaValuesBuilder valuesBuilder = new ArpThaValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxArpTha.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxArpTha.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));

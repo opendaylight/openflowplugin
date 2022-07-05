@@ -84,7 +84,7 @@ public class OxmTcpDstSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(int value) {
+    private static MatchEntryBuilder prepareMatchEntry(final int value) {
         MatchEntryBuilder builder = prepareHeader(false);
         TcpDstCaseBuilder casebuilder = new TcpDstCaseBuilder();
         TcpDstBuilder valueBuilder = new TcpDstBuilder();
@@ -94,15 +94,15 @@ public class OxmTcpDstSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(TcpDst.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(TcpDst.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.TCP_DST, fieldAndMask >>> 1);

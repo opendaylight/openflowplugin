@@ -84,27 +84,27 @@ public class ArpThaConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxArpTha().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
+        Assert.assertEquals(NxmNxArpThaKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpThaConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxArpTha()
                         .getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
+        Assert.assertEquals(NxmNxArpThaKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpThaConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxArpTha()
                         .getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
+        Assert.assertEquals(NxmNxArpThaKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpThaConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(arpThaCaseValue.getArpThaValues().getMacAddress(),
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxArpTha()
                         .getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxArpThaKey.class);
+        Assert.assertEquals(NxmNxArpThaKey.VALUE, extensionAugment.getKey());
     }
 }

@@ -27,7 +27,7 @@ public class TunIdCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 8;
     private static final int NXM_FIELD_CODE = 16;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxTunId> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxTunId.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm1Class.VALUE, NxmNxTunId.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
@@ -62,12 +62,12 @@ public class TunIdCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxTunId.class;
+    public MatchField getNxmField() {
+        return NxmNxTunId.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm1Class.VALUE;
     }
 }

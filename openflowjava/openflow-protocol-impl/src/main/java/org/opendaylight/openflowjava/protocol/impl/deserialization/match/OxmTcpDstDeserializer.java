@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmTcpDstDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmTcpDstDeserializer() {
-        super(TcpDst.class);
+        super(TcpDst.VALUE);
     }
 
     @Override

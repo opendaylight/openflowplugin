@@ -77,7 +77,7 @@ public class OxmIpv6SrcSerializerTest {
         assertTrue("Unexpected data", buffer.readableBytes() == 0);
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, String value) {
+    private static MatchEntryBuilder prepareMatchEntry(final boolean hasMask, final String value) {
         final MatchEntryBuilder builder = prepareHeader(hasMask);
         Ipv6SrcCaseBuilder caseBuilder = new Ipv6SrcCaseBuilder();
         Ipv6SrcBuilder srcBuilder = new Ipv6SrcBuilder();
@@ -90,15 +90,15 @@ public class OxmIpv6SrcSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(Ipv6Src.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(Ipv6Src.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV6_SRC, fieldAndMask >>> 1);

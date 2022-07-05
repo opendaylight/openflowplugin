@@ -88,7 +88,7 @@ public class OxmIpv6NdSllSerializerTest {
         assertEquals("Wrong value length", EncodeConstants.MAC_ADDRESS_LENGTH, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(String value) {
+    private static MatchEntryBuilder prepareMatchEntry(final String value) {
         MatchEntryBuilder builder = prepareHeader(false);
         Ipv6NdSllCaseBuilder casebuilder = new Ipv6NdSllCaseBuilder();
         Ipv6NdSllBuilder valueBuilder = new Ipv6NdSllBuilder();
@@ -98,15 +98,15 @@ public class OxmIpv6NdSllSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(Ipv6NdSll.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(Ipv6NdSll.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV6_ND_SLL, fieldAndMask >>> 1);

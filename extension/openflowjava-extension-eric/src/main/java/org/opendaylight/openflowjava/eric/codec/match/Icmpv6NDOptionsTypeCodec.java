@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.eric.match.rev
 public class Icmpv6NDOptionsTypeCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 1;
     public static final MatchEntrySerializerKey<?, ?> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, EricExpClass.class, Icmpv6NdOptionsType.class);
+            EncodeConstants.OF_VERSION_1_3, EricExpClass.VALUE, Icmpv6NdOptionsType.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
             EricConstants.ERICOXM_OF_ICMPV6_ND_OPTIONS_TYPE);
@@ -66,12 +66,12 @@ public class Icmpv6NDOptionsTypeCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getEricField() {
-        return Icmpv6NdOptionsType.class;
+    public MatchField getEricField() {
+        return Icmpv6NdOptionsType.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return EricExpClass.class;
+    public OxmClassBase getOxmClass() {
+        return EricExpClass.VALUE;
     }
 }

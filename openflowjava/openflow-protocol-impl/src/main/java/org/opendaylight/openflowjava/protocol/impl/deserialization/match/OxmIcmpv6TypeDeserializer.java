@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIcmpv6TypeDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmIcmpv6TypeDeserializer() {
-        super(Icmpv6Type.class);
+        super(Icmpv6Type.VALUE);
     }
 
     @Override
