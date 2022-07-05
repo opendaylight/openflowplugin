@@ -121,7 +121,7 @@ public class OxmArpTpaSerializerTest {
         assertEquals("Wrong value length", Integer.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, String value) {
+    private static MatchEntryBuilder prepareMatchEntry(final boolean hasMask, final String value) {
         final MatchEntryBuilder builder = prepareHeader(hasMask);
         ArpTpaCaseBuilder casebuilder = new ArpTpaCaseBuilder();
         ArpTpaBuilder valueBuilder = new ArpTpaBuilder();
@@ -134,15 +134,15 @@ public class OxmArpTpaSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(ArpTpa.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(ArpTpa.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ARP_TPA, fieldAndMask >>> 1);

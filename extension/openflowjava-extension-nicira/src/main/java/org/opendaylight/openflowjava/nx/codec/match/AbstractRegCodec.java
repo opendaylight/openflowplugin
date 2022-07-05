@@ -61,7 +61,7 @@ public abstract class AbstractRegCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm1Class.VALUE;
     }
 }

@@ -150,9 +150,8 @@ public class SwitchConnectionProviderImpl02Test {
     public void testUnregisterExistingKeys() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
         // -- registerActionSerializer
-        final ExperimenterActionSerializerKey key1
-            = new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
-                TestSubType.class);
+        final ExperimenterActionSerializerKey key1 =
+            new ExperimenterActionSerializerKey(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42), TestSubType.VALUE);
         provider.registerActionSerializer(key1, serializer);
         Assert.assertTrue("Wrong -- unregister ActionSerializer", provider.unregisterSerializer(key1));
         Assert.assertFalse("Wrong -- unregister ActionSerializer by not existing key",
@@ -165,22 +164,22 @@ public class SwitchConnectionProviderImpl02Test {
         Assert.assertFalse("Wrong -- unregister ActionDeserializer by not existing key",
                 provider.unregisterDeserializer(key2));
         // -- registerInstructionSerializer
-        final ExperimenterInstructionSerializerKey key3
-            = new ExperimenterInstructionSerializerKey(EncodeConstants.OF_VERSION_1_0, 42L);
+        final ExperimenterInstructionSerializerKey key3 =
+            new ExperimenterInstructionSerializerKey(EncodeConstants.OF_VERSION_1_0, 42L);
         provider.registerInstructionSerializer(key3, serializer);
         Assert.assertTrue("Wrong -- unregister InstructionSerializer", provider.unregisterSerializer(key3));
         Assert.assertFalse("Wrong -- unregister InstructionSerializer by not existing key",
                 provider.unregisterSerializer(key3));
         // -- registerInstructionDeserializer
-        final ExperimenterInstructionDeserializerKey key4
-            = new ExperimenterInstructionDeserializerKey(EncodeConstants.OF_VERSION_1_0, 42L);
+        final ExperimenterInstructionDeserializerKey key4 =
+            new ExperimenterInstructionDeserializerKey(EncodeConstants.OF_VERSION_1_0, 42L);
         provider.registerInstructionDeserializer(key4, deserializer);
         Assert.assertTrue("Wrong -- unregister InstructionDeserializer", provider.unregisterDeserializer(key4));
         Assert.assertFalse("Wrong -- unregister InstructionDeserializer by not existing key",
                 provider.unregisterDeserializer(key4));
         // -- registerMatchEntryDeserializer
-        final MatchEntryDeserializerKey key5
-            = new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
+        final MatchEntryDeserializerKey key5 =
+            new MatchEntryDeserializerKey(EncodeConstants.OF_VERSION_1_0, 0x8000, 42);
         provider.registerMatchEntryDeserializer(key5, deserializer);
         Assert.assertTrue("Wrong -- unregister MatchEntryDeserializer", provider.unregisterDeserializer(key5));
         Assert.assertFalse("Wrong -- unregister MatchEntryDeserializer by not existing key",
@@ -229,40 +228,40 @@ public class SwitchConnectionProviderImpl02Test {
         Assert.assertFalse("Wrong -- unregister MeterBandDeserializer by not existing key",
                 provider.unregisterDeserializer(key11));
         // -- registerExperimenterMessageSerializer
-        ExperimenterIdSerializerKey<ExperimenterDataOfChoice> key12
-                = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
-                        ExperimenterDataOfChoice.class);
+        ExperimenterIdSerializerKey<ExperimenterDataOfChoice> key12 =
+            new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
+                ExperimenterDataOfChoice.class);
         provider.registerExperimenterMessageSerializer(key12, serializerExperimenterInput);
         Assert.assertTrue("Wrong -- unregister ExperimenterMessageSerializer", provider.unregisterSerializer(key12));
         Assert.assertFalse("Wrong -- unregister ExperimenterMessageSerializer by not existing key",
                 provider.unregisterSerializer(key12));
         //registerMultipartRequestSerializer
-        ExperimenterIdSerializerKey<ExperimenterDataOfChoice> key13
-                = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
-                        ExperimenterDataOfChoice.class);
+        ExperimenterIdSerializerKey<ExperimenterDataOfChoice> key13 =
+            new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
+                ExperimenterDataOfChoice.class);
         provider.registerMultipartRequestSerializer(key13, serializerMultipartRequestExpCase);
         Assert.assertTrue("Wrong -- unregister MultipartRequestSerializer", provider.unregisterSerializer(key13));
         Assert.assertFalse("Wrong -- unregister MultipartRequestSerializer by not existing key",
                 provider.unregisterSerializer(key13));
         // -- registerMultipartRequestTFSerializer
-        final ExperimenterIdSerializerKey<TableFeatureProperties> key14
-            = new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
-                    TableFeatureProperties.class);
+        final ExperimenterIdSerializerKey<TableFeatureProperties> key14 =
+            new ExperimenterIdSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
+                TableFeatureProperties.class);
         provider.registerMultipartRequestTFSerializer(key14, serializer);
         Assert.assertTrue("Wrong -- unregister MultipartRequestTFSerializer", provider.unregisterSerializer(key14));
         Assert.assertFalse("Wrong -- unregister MultipartRequestTFSerializer by not existing key",
                 provider.unregisterSerializer(key14));
         // -- registerMeterBandSerializer
-        final ExperimenterIdMeterSubTypeSerializerKey<MeterBandExperimenterCase> key15
-            = new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
-                    MeterBandExperimenterCase.class,null);
+        final ExperimenterIdMeterSubTypeSerializerKey<MeterBandExperimenterCase> key15 =
+            new ExperimenterIdMeterSubTypeSerializerKey<>(EncodeConstants.OF_VERSION_1_0, Uint32.valueOf(42),
+                MeterBandExperimenterCase.class,null);
         provider.registerMeterBandSerializer(key15, serializerMeterBandExpCase);
         Assert.assertTrue("Wrong -- unregister MeterBandSerializer", provider.unregisterSerializer(key15));
         Assert.assertFalse("Wrong -- unregister MeterBandSerializer by not existing key",
                 provider.unregisterSerializer(key15));
         // -- registerMatchEntrySerializer
-        final MatchEntrySerializerKey<OpenflowBasicClass, InPort> key16
-            = new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.class, InPort.class);
+        final MatchEntrySerializerKey<OpenflowBasicClass, InPort> key16 =
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, OpenflowBasicClass.VALUE, InPort.VALUE);
         provider.registerMatchEntrySerializer(key16, serializer);
         Assert.assertTrue("Wrong -- unregister MatchEntrySerializer", provider.unregisterSerializer(key16));
         Assert.assertFalse("Wrong -- unregister MatchEntrySerializer by not existing key",
@@ -276,6 +275,6 @@ public class SwitchConnectionProviderImpl02Test {
     }
 
     private interface TestSubType extends ExperimenterActionSubType {
-        // empty class - only used in test for comparation
+        TestSubType VALUE = () -> TestSubType.class;
     }
 }

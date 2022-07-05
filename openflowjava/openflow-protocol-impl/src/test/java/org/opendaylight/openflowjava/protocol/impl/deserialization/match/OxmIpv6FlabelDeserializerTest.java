@@ -34,8 +34,8 @@ public class OxmIpv6FlabelDeserializerTest {
         OxmIpv6FlabelDeserializer deserializer = new OxmIpv6FlabelDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong entry field", Ipv6Flabel.class, entry.getOxmMatchField());
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals("Wrong entry field", Ipv6Flabel.VALUE, entry.getOxmMatchField());
         Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel()
@@ -53,8 +53,8 @@ public class OxmIpv6FlabelDeserializerTest {
         OxmIpv6FlabelDeserializer deserializer = new OxmIpv6FlabelDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong entry field", Ipv6Flabel.class, entry.getOxmMatchField());
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals("Wrong entry field", Ipv6Flabel.VALUE, entry.getOxmMatchField());
         Assert.assertEquals("Wrong entry hasMask", true, entry.getHasMask());
         Assert.assertEquals("Wrong entry value", 2,
                 ((Ipv6FlabelCase) entry.getMatchEntryValue()).getIpv6Flabel()

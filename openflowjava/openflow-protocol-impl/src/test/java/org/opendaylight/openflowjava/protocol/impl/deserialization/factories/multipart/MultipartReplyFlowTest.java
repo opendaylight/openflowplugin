@@ -111,7 +111,7 @@ public class MultipartReplyFlowTest {
         Assert.assertEquals("Wrong cookie", Uint64.valueOf("FF01010101010101", 16), flowStats1.getCookie());
         Assert.assertEquals("Wrong packetCount",  Uint64.valueOf("EF01010101010101", 16), flowStats1.getPacketCount());
         Assert.assertEquals("Wrong byteCount",  Uint64.valueOf("7F01010101010101", 16), flowStats1.getByteCount());
-        Assert.assertEquals("Wrong match type", OxmMatchType.class, flowStats1.getMatch().getType());
+        Assert.assertEquals("Wrong match type", OxmMatchType.VALUE, flowStats1.getMatch().getType());
         flowStats1 = message.getFlowStats().get(1);
         Assert.assertEquals("Wrong tableId", 8, flowStats1.getTableId().intValue());
         Assert.assertEquals("Wrong durationSec", 9, flowStats1.getDurationSec().intValue());
@@ -123,6 +123,6 @@ public class MultipartReplyFlowTest {
         Assert.assertEquals("Wrong cookie", Uint64.valueOf("FF01010101010101", 16), flowStats1.getCookie());
         Assert.assertEquals("Wrong packetCount", Uint64.valueOf("EF01010101010101", 16), flowStats1.getPacketCount());
         Assert.assertEquals("Wrong byteCount", Uint64.valueOf("7F01010101010101", 16), flowStats1.getByteCount());
-        Assert.assertEquals("Wrong match type", OxmMatchType.class, flowStats1.getMatch().getType());
+        Assert.assertEquals("Wrong match type", OxmMatchType.VALUE, flowStats1.getMatch().getType());
     }
 }

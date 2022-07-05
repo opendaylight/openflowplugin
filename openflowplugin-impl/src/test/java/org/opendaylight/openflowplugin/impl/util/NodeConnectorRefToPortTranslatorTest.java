@@ -47,8 +47,8 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
                 .setInPort(inPortBuilder.build());
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
-                .setOxmMatchField(InPort.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
+                .setOxmMatchField(InPort.VALUE)
                 .setHasMask(false)
                 .setMatchEntryValue(caseBuilder.build());
 

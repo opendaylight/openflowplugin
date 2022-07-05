@@ -121,7 +121,7 @@ public class OxmIpv4SrcSerializerTest {
         assertEquals("Wrong value length", Integer.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, String value) {
+    private static MatchEntryBuilder prepareMatchEntry(final boolean hasMask, final String value) {
         final MatchEntryBuilder builder = prepareHeader(hasMask);
         Ipv4SrcCaseBuilder casebuilder = new Ipv4SrcCaseBuilder();
         Ipv4SrcBuilder valueBuilder = new Ipv4SrcBuilder();
@@ -134,15 +134,15 @@ public class OxmIpv4SrcSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(Ipv4Src.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(Ipv4Src.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV4_SRC, fieldAndMask >>> 1);

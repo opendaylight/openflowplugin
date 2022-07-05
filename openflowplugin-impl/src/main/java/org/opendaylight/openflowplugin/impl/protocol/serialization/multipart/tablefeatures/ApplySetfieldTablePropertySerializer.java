@@ -29,8 +29,8 @@ public class ApplySetfieldTablePropertySerializer extends AbstractTablePropertyS
             .getApplySetfield()
             .nonnullSetFieldMatch().values()
             .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
-                .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(
-                    new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, setFieldMatch.getMatchType()))
+                .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(new MessageTypeKey<>(
+                    EncodeConstants.OF_VERSION_1_3,setFieldMatch.getMatchType().implementedInterface()))
                 .serialize(setFieldMatch, byteBuf));
     }
 

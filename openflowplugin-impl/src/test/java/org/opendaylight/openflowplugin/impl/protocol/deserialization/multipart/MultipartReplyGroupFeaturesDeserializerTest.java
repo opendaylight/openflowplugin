@@ -76,8 +76,8 @@ public class MultipartReplyGroupFeaturesDeserializerTest extends AbstractMultipa
         assertTrue(reply.getActions().containsAll(ACTIONS_LIST));
         assertTrue(reply.getMaxGroups().containsAll(MAX_GROUPS_LIST));
 
-        assertEquals(Set.of(GroupAll.class, GroupSelect.class, GroupIndirect.class), reply.getGroupTypesSupported());
-        assertEquals(Set.of(Chaining.class, ChainingChecks.class), reply.getGroupCapabilitiesSupported());
+        assertEquals(Set.of(GroupAll.VALUE, GroupSelect.VALUE, GroupIndirect.VALUE), reply.getGroupTypesSupported());
+        assertEquals(Set.of(Chaining.VALUE, ChainingChecks.VALUE), reply.getGroupCapabilitiesSupported());
 
         assertEquals(0, buffer.readableBytes());
     }

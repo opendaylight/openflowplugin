@@ -111,7 +111,7 @@ public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Ma
                 EncodeConstants.OF_VERSION_1_3, entry.getOxmClass(), entry.getOxmMatchField());
 
             // If entry is experimenter, set experimenter ID to key
-            if (entry.getOxmClass().equals(ExperimenterClass.class)) {
+            if (ExperimenterClass.VALUE.equals(entry.getOxmClass())) {
                 key.setExperimenterId(((ExperimenterIdCase) entry.getMatchEntryValue())
                     .getExperimenter().getExperimenter().getValue());
             }

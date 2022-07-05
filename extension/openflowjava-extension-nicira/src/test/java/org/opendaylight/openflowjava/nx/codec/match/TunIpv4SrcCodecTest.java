@@ -52,8 +52,8 @@ public class TunIpv4SrcCodecTest {
 
         final TunIpv4SrcCaseValue result = (TunIpv4SrcCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxTunIpv4Src.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxTunIpv4Src.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(1, result.getTunIpv4SrcValues().getValue().intValue());
     }
@@ -63,8 +63,8 @@ public class TunIpv4SrcCodecTest {
         final TunIpv4SrcCaseValueBuilder caseBuilder = new TunIpv4SrcCaseValueBuilder();
         final TunIpv4SrcValuesBuilder valuesBuilder = new TunIpv4SrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxTunIpv4Src.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxTunIpv4Src.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

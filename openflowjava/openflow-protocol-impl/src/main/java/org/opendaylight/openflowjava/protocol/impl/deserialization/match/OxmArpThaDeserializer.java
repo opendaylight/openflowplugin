@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmArpThaDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmArpThaDeserializer() {
-        super(ArpTha.class);
+        super(ArpTha.VALUE);
     }
 
     @Override

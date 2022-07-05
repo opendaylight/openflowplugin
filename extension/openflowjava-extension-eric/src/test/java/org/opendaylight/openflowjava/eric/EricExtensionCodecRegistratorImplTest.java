@@ -48,7 +48,7 @@ public class EricExtensionCodecRegistratorImplTest {
     @Before
     public void setUp() {
         providers.add(provider);
-        matchSerializerKey = new MatchEntrySerializerKey<>(VERSION, EricExpClass.class, MatchField.class);
+        matchSerializerKey = new MatchEntrySerializerKey<>(VERSION, EricExpClass.VALUE, MatchField.VALUE);
         //OxmClass 1, OxmField 2
         matchDeserializerKey = new MatchEntryDeserializerKey(VERSION, 1, 2);
 

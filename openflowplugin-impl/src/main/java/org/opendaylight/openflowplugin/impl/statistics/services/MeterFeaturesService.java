@@ -92,32 +92,32 @@ final class MeterFeaturesService
     }
 
     @VisibleForTesting
-    protected static Set<Class<? extends MeterBand>> extractSupportedMeterBand(
+    protected static Set<MeterBand> extractSupportedMeterBand(
             final MultipartReplyMeterFeatures replyBody, final MeterBandTypeBitmap bandTypes) {
-        final var supportedMeterBand = ImmutableSet.<Class<? extends MeterBand>>builder();
+        final var supportedMeterBand = ImmutableSet.<MeterBand>builder();
         if (bandTypes.getOFPMBTDROP()) {
-            supportedMeterBand.add(MeterBandDrop.class);
+            supportedMeterBand.add(MeterBandDrop.VALUE);
         }
         if (replyBody.getBandTypes().getOFPMBTDSCPREMARK()) {
-            supportedMeterBand.add(MeterBandDscpRemark.class);
+            supportedMeterBand.add(MeterBandDscpRemark.VALUE);
         }
         return supportedMeterBand.build();
     }
 
     @VisibleForTesting
-    protected static Set<Class<? extends MeterCapability>> extractMeterCapabilities(final MeterFlags capabilities) {
-        final var supportedCapabilities = ImmutableSet.<Class<? extends MeterCapability>>builder();
+    protected static Set<MeterCapability> extractMeterCapabilities(final MeterFlags capabilities) {
+        final var supportedCapabilities = ImmutableSet.<MeterCapability>builder();
         if (capabilities.getOFPMFBURST()) {
-            supportedCapabilities.add(MeterBurst.class);
+            supportedCapabilities.add(MeterBurst.VALUE);
         }
         if (capabilities.getOFPMFKBPS()) {
-            supportedCapabilities.add(MeterKbps.class);
+            supportedCapabilities.add(MeterKbps.VALUE);
         }
         if (capabilities.getOFPMFPKTPS()) {
-            supportedCapabilities.add(MeterPktps.class);
+            supportedCapabilities.add(MeterPktps.VALUE);
         }
         if (capabilities.getOFPMFSTATS()) {
-            supportedCapabilities.add(MeterStats.class);
+            supportedCapabilities.add(MeterStats.VALUE);
         }
         return supportedCapabilities.build();
     }

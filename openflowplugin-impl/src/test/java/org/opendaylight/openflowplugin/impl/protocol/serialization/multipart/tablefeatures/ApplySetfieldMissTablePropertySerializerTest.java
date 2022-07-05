@@ -27,7 +27,7 @@ public class ApplySetfieldMissTablePropertySerializerTest extends AbstractTableP
                         .table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.setfield.miss
                         .ApplySetfieldMissBuilder()
                         .setSetFieldMatch(BindingMap.of(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpOp.class)
+                                        .setMatchType(ArpOp.VALUE)
                                         .setHasMask(false)
                                         .build()))
                         .build())

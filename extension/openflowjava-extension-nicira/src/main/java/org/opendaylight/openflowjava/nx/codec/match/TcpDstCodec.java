@@ -33,7 +33,7 @@ public class TcpDstCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 2;
     private static final int NXM_FIELD_CODE = 10;
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfTcpDst> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfTcpDst.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm0Class.VALUE, NxmOfTcpDst.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
@@ -74,12 +74,12 @@ public class TcpDstCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfTcpDst.class;
+    public MatchField getNxmField() {
+        return NxmOfTcpDst.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm0Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm0Class.VALUE;
     }
 }

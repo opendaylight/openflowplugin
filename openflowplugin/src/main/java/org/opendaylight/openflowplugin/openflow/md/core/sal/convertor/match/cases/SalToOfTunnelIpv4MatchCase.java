@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -44,8 +43,8 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
         if (source.getTunnelIpv4Source() != null) {
             Ipv4Prefix ipv4Prefix = source.getTunnelIpv4Source();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv4Src.VALUE);
 
             Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
 
@@ -71,8 +70,8 @@ public class SalToOfTunnelIpv4MatchCase extends ConvertorCase<TunnelIpv4Match, L
         if (source.getTunnelIpv4Destination() != null) {
             Ipv4Prefix ipv4Prefix = source.getTunnelIpv4Destination();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv4Dst.VALUE);
 
             Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
 

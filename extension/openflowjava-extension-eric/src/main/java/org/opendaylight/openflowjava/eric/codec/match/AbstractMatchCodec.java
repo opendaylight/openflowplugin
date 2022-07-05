@@ -102,10 +102,10 @@ public abstract class AbstractMatchCodec implements
     /**
      * Returns the eric_field class.
      */
-    public abstract Class<? extends MatchField> getEricField();
+    public abstract MatchField getEricField();
 
     /**
      * Returns the oxm_class class.
      */
-    public abstract Class<? extends OxmClassBase> getOxmClass();
+    public abstract OxmClassBase getOxmClass();
 }

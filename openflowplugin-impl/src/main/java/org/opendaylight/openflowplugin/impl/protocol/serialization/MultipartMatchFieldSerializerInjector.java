@@ -118,53 +118,53 @@ final class MultipartMatchFieldSerializerInjector {
      */
     static void injectSerializers(final SerializerExtensionProvider provider) {
         // Inject new message serializers here using injector created by createInjector method
-        final Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> injector =
+        final Function<MatchField, Consumer<OFSerializer<SetFieldMatch>>> injector =
                 createInjector(provider, EncodeConstants.OF_VERSION_1_3);
 
-        injector.apply(ArpOp.class).accept(new ArpOpMatchFieldSerializer());
-        injector.apply(ArpSha.class).accept(new ArpShaMatchFieldSerializer());
-        injector.apply(ArpSpa.class).accept(new ArpSpaMatchFieldSerializer());
-        injector.apply(ArpTha.class).accept(new ArpThaMatchFieldSerializer());
-        injector.apply(ArpTpa.class).accept(new ArpTpaMatchFieldSerializer());
-        injector.apply(EthDst.class).accept(new EthDstMatchFieldSerializer());
-        injector.apply(EthSrc.class).accept(new EthSrcMatchFieldSerializer());
-        injector.apply(EthType.class).accept(new EthTypeMatchFieldSerializer());
-        injector.apply(Icmpv4Code.class).accept(new Icmpv4CodeMatchFieldSerializer());
-        injector.apply(Icmpv4Type.class).accept(new Icmpv4TypeMatchFieldSerializer());
-        injector.apply(Icmpv6Code.class).accept(new Icmpv6CodeMatchFieldSerializer());
-        injector.apply(Icmpv6Type.class).accept(new Icmpv6TypeMatchFieldSerializer());
-        injector.apply(InPhyPort.class).accept(new InPhyPortMatchFieldSerializer());
-        injector.apply(InPort.class).accept(new InPortMatchFieldSerializer());
-        injector.apply(IpDscp.class).accept(new IpDscpMatchFieldSerializer());
-        injector.apply(IpEcn.class).accept(new IpEcnMatchFieldSerializer());
-        injector.apply(IpProto.class).accept(new IpProtoMatchFieldSerializer());
-        injector.apply(Ipv4Dst.class).accept(new Ipv4DstMatchFieldSerializer());
-        injector.apply(Ipv4Src.class).accept(new Ipv4SrcMatchFieldSerializer());
-        injector.apply(Ipv6Dst.class).accept(new Ipv6DstMatchFieldSerializer());
-        injector.apply(Ipv6Exthdr.class).accept(new Ipv6ExtHdrMatchFieldSerializer());
-        injector.apply(Ipv6Flabel.class).accept(new Ipv6FlabelMatchFieldSerializer());
-        injector.apply(Ipv6NdSll.class).accept(new Ipv6NdSllMatchFieldSerializer());
-        injector.apply(Ipv6NdTarget.class).accept(new Ipv6NdTargetMatchFieldSerializer());
-        injector.apply(Ipv6NdTll.class).accept(new Ipv6NdTllMatchFieldSerializer());
-        injector.apply(Ipv6Src.class).accept(new Ipv6SrcMatchFieldSerializer());
-        injector.apply(Metadata.class).accept(new MetadataMatchFieldSerializer());
-        injector.apply(MplsBos.class).accept(new MplsBosMatchFieldSerializer());
-        injector.apply(MplsLabel.class).accept(new MplsLabelMatchFieldSerializer());
-        injector.apply(MplsTc.class).accept(new MplsTcMatchFieldSerializer());
-        injector.apply(PbbIsid.class).accept(new PbbIsidMatchFieldSerializer());
-        injector.apply(SctpDst.class).accept(new SctpDstMatchFieldSerializer());
-        injector.apply(SctpSrc.class).accept(new SctpSrcMatchFieldSerializer());
-        injector.apply(TcpDst.class).accept(new TcpDstMatchFieldSerializer());
-        injector.apply(TcpFlags.class).accept(new TcpFlagsMatchFieldSerializer());
-        injector.apply(TcpSrc.class).accept(new TcpSrcMatchFieldSerializer());
-        injector.apply(TunnelId.class).accept(new TunnelIdMatchFieldSerializer());
+        injector.apply(ArpOp.VALUE).accept(new ArpOpMatchFieldSerializer());
+        injector.apply(ArpSha.VALUE).accept(new ArpShaMatchFieldSerializer());
+        injector.apply(ArpSpa.VALUE).accept(new ArpSpaMatchFieldSerializer());
+        injector.apply(ArpTha.VALUE).accept(new ArpThaMatchFieldSerializer());
+        injector.apply(ArpTpa.VALUE).accept(new ArpTpaMatchFieldSerializer());
+        injector.apply(EthDst.VALUE).accept(new EthDstMatchFieldSerializer());
+        injector.apply(EthSrc.VALUE).accept(new EthSrcMatchFieldSerializer());
+        injector.apply(EthType.VALUE).accept(new EthTypeMatchFieldSerializer());
+        injector.apply(Icmpv4Code.VALUE).accept(new Icmpv4CodeMatchFieldSerializer());
+        injector.apply(Icmpv4Type.VALUE).accept(new Icmpv4TypeMatchFieldSerializer());
+        injector.apply(Icmpv6Code.VALUE).accept(new Icmpv6CodeMatchFieldSerializer());
+        injector.apply(Icmpv6Type.VALUE).accept(new Icmpv6TypeMatchFieldSerializer());
+        injector.apply(InPhyPort.VALUE).accept(new InPhyPortMatchFieldSerializer());
+        injector.apply(InPort.VALUE).accept(new InPortMatchFieldSerializer());
+        injector.apply(IpDscp.VALUE).accept(new IpDscpMatchFieldSerializer());
+        injector.apply(IpEcn.VALUE).accept(new IpEcnMatchFieldSerializer());
+        injector.apply(IpProto.VALUE).accept(new IpProtoMatchFieldSerializer());
+        injector.apply(Ipv4Dst.VALUE).accept(new Ipv4DstMatchFieldSerializer());
+        injector.apply(Ipv4Src.VALUE).accept(new Ipv4SrcMatchFieldSerializer());
+        injector.apply(Ipv6Dst.VALUE).accept(new Ipv6DstMatchFieldSerializer());
+        injector.apply(Ipv6Exthdr.VALUE).accept(new Ipv6ExtHdrMatchFieldSerializer());
+        injector.apply(Ipv6Flabel.VALUE).accept(new Ipv6FlabelMatchFieldSerializer());
+        injector.apply(Ipv6NdSll.VALUE).accept(new Ipv6NdSllMatchFieldSerializer());
+        injector.apply(Ipv6NdTarget.VALUE).accept(new Ipv6NdTargetMatchFieldSerializer());
+        injector.apply(Ipv6NdTll.VALUE).accept(new Ipv6NdTllMatchFieldSerializer());
+        injector.apply(Ipv6Src.VALUE).accept(new Ipv6SrcMatchFieldSerializer());
+        injector.apply(Metadata.VALUE).accept(new MetadataMatchFieldSerializer());
+        injector.apply(MplsBos.VALUE).accept(new MplsBosMatchFieldSerializer());
+        injector.apply(MplsLabel.VALUE).accept(new MplsLabelMatchFieldSerializer());
+        injector.apply(MplsTc.VALUE).accept(new MplsTcMatchFieldSerializer());
+        injector.apply(PbbIsid.VALUE).accept(new PbbIsidMatchFieldSerializer());
+        injector.apply(SctpDst.VALUE).accept(new SctpDstMatchFieldSerializer());
+        injector.apply(SctpSrc.VALUE).accept(new SctpSrcMatchFieldSerializer());
+        injector.apply(TcpDst.VALUE).accept(new TcpDstMatchFieldSerializer());
+        injector.apply(TcpFlags.VALUE).accept(new TcpFlagsMatchFieldSerializer());
+        injector.apply(TcpSrc.VALUE).accept(new TcpSrcMatchFieldSerializer());
+        injector.apply(TunnelId.VALUE).accept(new TunnelIdMatchFieldSerializer());
         // TODO: Finish implementation of Tunnel Ipv4 src and dst
-        injector.apply(TunnelIpv4Dst.class).accept(new Ipv4DstMatchFieldSerializer());
-        injector.apply(TunnelIpv4Src.class).accept(new Ipv4SrcMatchFieldSerializer());
-        injector.apply(UdpDst.class).accept(new UdpDstMatchFieldSerializer());
-        injector.apply(UdpSrc.class).accept(new UdpSrcMatchFieldSerializer());
-        injector.apply(VlanPcp.class).accept(new VlanPcpMatchFieldSerializer());
-        injector.apply(VlanVid.class).accept(new VlanVidMatchFieldSerializer());
+        injector.apply(TunnelIpv4Dst.VALUE).accept(new Ipv4DstMatchFieldSerializer());
+        injector.apply(TunnelIpv4Src.VALUE).accept(new Ipv4SrcMatchFieldSerializer());
+        injector.apply(UdpDst.VALUE).accept(new UdpDstMatchFieldSerializer());
+        injector.apply(UdpSrc.VALUE).accept(new UdpSrcMatchFieldSerializer());
+        injector.apply(VlanPcp.VALUE).accept(new VlanPcpMatchFieldSerializer());
+        injector.apply(VlanVid.VALUE).accept(new VlanVidMatchFieldSerializer());
     }
 
     /**
@@ -176,9 +176,9 @@ final class MultipartMatchFieldSerializerInjector {
      * @return injector
      */
     @VisibleForTesting
-    static Function<Class<? extends MatchField>, Consumer<OFSerializer<SetFieldMatch>>> createInjector(
+    static Function<MatchField, Consumer<OFSerializer<SetFieldMatch>>> createInjector(
             final SerializerExtensionProvider provider, final Uint8 version) {
         return type -> serializer ->
-                provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
+                provider.registerSerializer(new MessageTypeKey<>(version, type.implementedInterface()), serializer);
     }
 }

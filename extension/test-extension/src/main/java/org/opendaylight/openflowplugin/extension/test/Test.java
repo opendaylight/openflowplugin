@@ -94,7 +94,7 @@ public class Test implements TestService {
                                     // vendor part
                                     .setNxRegLoad(new NxRegLoadBuilder()
                                         .setDst(new DstBuilder()
-                                            .setDstChoice(new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build())
+                                            .setDstChoice(new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build())
                                             .setStart(Uint16.ZERO)
                                             .setEnd(Uint16.valueOf(5))
                                             .build())

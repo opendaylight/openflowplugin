@@ -97,8 +97,9 @@ public class PacketReceivedTranslatorTest {
         final PacketReceived packetReceived = packetReceivedTranslator.translate(packetInMessage, deviceInfo, null);
 
         Assert.assertArrayEquals(packetInMessage.getData(), packetReceived.getPayload());
-        Assert.assertEquals("org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController",
-                packetReceived.getPacketInReason().getName());
+        Assert.assertEquals(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController.VALUE,
+            packetReceived.getPacketInReason());
         Assert.assertEquals("openflow:10:" + PORT_NO,
                 packetReceived.getIngress().getValue().firstKeyOf(NodeConnector.class).getId().getValue());
         Assert.assertEquals(0L, packetReceived.getFlowCookie().getValue().longValue());
@@ -140,7 +141,7 @@ public class PacketReceivedTranslatorTest {
     }
 
     private static MatchEntryBuilder assembleMatchEntryBld(final long portNumValue) {
-        MatchEntryBuilder matchEntryBuilder = prepareHeader(InPort.class, false);
+        MatchEntryBuilder matchEntryBuilder = prepareHeader(InPort.VALUE, false);
         InPortBuilder inPortBld = new InPortBuilder().setPortNumber(new PortNumber(Uint32.valueOf(portNumValue)));
         InPortCaseBuilder caseBuilder = new InPortCaseBuilder();
         caseBuilder.setInPort(inPortBld.build());
@@ -148,10 +149,10 @@ public class PacketReceivedTranslatorTest {
         return matchEntryBuilder;
     }
 
-    private static MatchEntryBuilder prepareHeader(final Class<? extends MatchField> oxmMatchField,
+    private static MatchEntryBuilder prepareHeader(final MatchField oxmMatchField,
             final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
         builder.setOxmMatchField(oxmMatchField);
         builder.setHasMask(hasMask);
         return builder;

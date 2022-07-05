@@ -44,7 +44,7 @@ public class EthSrcConvertorTest {
     @Mock
     private MatchEntry matchEntry;
 
-    private static final MacAddress MAC_ADDRESS =  MacAddress.getDefaultInstance("01:23:45:67:89:AB");
+    private static final MacAddress MAC_ADDRESS =  new MacAddress("01:23:45:67:89:AB");
 
     private EthSrcConvertor ethSrcConvertor;
 
@@ -85,24 +85,24 @@ public class EthSrcConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(MAC_ADDRESS,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfEthSrc().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthSrcKey.class);
+        Assert.assertEquals(NxmOfEthSrcKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ethSrcConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfEthSrc().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthSrcKey.class);
+        Assert.assertEquals(NxmOfEthSrcKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ethSrcConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfEthSrc().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthSrcKey.class);
+        Assert.assertEquals(NxmOfEthSrcKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ethSrcConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmOfEthSrc().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthSrcKey.class);
+        Assert.assertEquals(NxmOfEthSrcKey.VALUE, extensionAugment.getKey());
     }
 }

@@ -161,21 +161,21 @@ public final class FieldChoiceResolver {
                                 NiciraMatchCodecs.IPV6_DST_CODEC.getHeaderWithoutHasMask())
                         .put(new SrcNxOfMplsLabelCaseBuilder().setOfMplsLabel(Empty.value()).build(),
                                 NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build(),
                                 NiciraMatchCodecs.REG0_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg1.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg1.VALUE).build(),
                                 NiciraMatchCodecs.REG1_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg2.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg2.VALUE).build(),
                                 NiciraMatchCodecs.REG2_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg3.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg3.VALUE).build(),
                                 NiciraMatchCodecs.REG3_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg4.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg4.VALUE).build(),
                                 NiciraMatchCodecs.REG4_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg5.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg5.VALUE).build(),
                                 NiciraMatchCodecs.REG5_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg6.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg6.VALUE).build(),
                                 NiciraMatchCodecs.REG6_CODEC.getHeaderWithoutHasMask())
-                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg7.class).build(),
+                        .put(new SrcNxRegCaseBuilder().setNxReg(NxmNxReg7.VALUE).build(),
                                 NiciraMatchCodecs.REG7_CODEC.getHeaderWithoutHasMask())
                         .build();
 
@@ -233,21 +233,21 @@ public final class FieldChoiceResolver {
                                 NiciraMatchCodecs.OXM_OF_MPLS_LABEL.getHeaderWithoutHasMask())
                         .put(new DstOfIcmpTypeCaseBuilder().setOfIcmpType(Empty.value()).build(),
                                 NiciraMatchCodecs.ICMP_TYPE_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build(),
                                 NiciraMatchCodecs.REG0_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg1.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg1.VALUE).build(),
                                 NiciraMatchCodecs.REG1_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg2.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg2.VALUE).build(),
                                 NiciraMatchCodecs.REG2_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg3.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg3.VALUE).build(),
                                 NiciraMatchCodecs.REG3_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg4.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg4.VALUE).build(),
                                 NiciraMatchCodecs.REG4_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg5.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg5.VALUE).build(),
                                 NiciraMatchCodecs.REG5_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg6.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg6.VALUE).build(),
                                 NiciraMatchCodecs.REG6_CODEC.getHeaderWithoutHasMask())
-                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg7.class).build(),
+                        .put(new DstNxRegCaseBuilder().setNxReg(NxmNxReg7.VALUE).build(),
                                 NiciraMatchCodecs.REG7_CODEC.getHeaderWithoutHasMask())
                         .build();
 

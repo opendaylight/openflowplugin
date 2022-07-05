@@ -26,7 +26,7 @@ public class WriteSetfieldTablePropertySerializerTest extends AbstractTablePrope
             .setWriteSetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                 .prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder()
                     .setSetFieldMatch(BindingMap.of(new SetFieldMatchBuilder()
-                        .setMatchType(ArpOp.class)
+                        .setMatchType(ArpOp.VALUE)
                         .setHasMask(false)
                         .build()))
                     .build())

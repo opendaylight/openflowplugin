@@ -137,7 +137,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     /**
      * OxmMatch type.
      */
-    public static final Class<? extends MatchTypeBase> DEFAULT_MATCH_TYPE = OxmMatchType.class;
+    public static final MatchTypeBase DEFAULT_MATCH_TYPE = OxmMatchType.VALUE;
 
     /**
      * default match entries - empty.

@@ -138,11 +138,11 @@ public class FlowModInputMessageFactoryTest {
 
     private static Match createMatch() {
         MatchBuilder matchBuilder = new MatchBuilder();
-        matchBuilder.setType(OxmMatchType.class);
+        matchBuilder.setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(InPhyPort.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(InPhyPort.VALUE);
         entriesBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
@@ -150,8 +150,8 @@ public class FlowModInputMessageFactoryTest {
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpEcn.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpEcn.VALUE);
         entriesBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();
@@ -162,5 +162,4 @@ public class FlowModInputMessageFactoryTest {
         matchBuilder.setMatchEntry(entries);
         return matchBuilder.build();
     }
-
 }

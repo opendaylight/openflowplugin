@@ -353,59 +353,59 @@ public class FieldChoiceResolverTest {
             },
             {
                 NiciraMatchCodecs.REG0_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg0.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG1_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg1.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg1.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg1.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg1.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg1.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg1.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg1.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg1.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG2_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg2.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg2.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg2.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg2.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg2.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg2.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg2.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg2.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG3_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg3.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg3.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg3.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg3.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg3.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg3.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg3.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg3.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG4_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg4.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg4.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg4.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg4.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg4.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg4.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg4.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg4.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG5_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg5.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg5.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg5.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg5.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg5.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg5.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg5.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg5.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG6_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg6.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg6.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg6.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg6.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg6.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg6.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg6.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg6.VALUE).build()
             },
             {
                 NiciraMatchCodecs.REG7_CODEC.getHeaderWithoutHasMask(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg7.class).build(),
-                new DstNxRegCaseBuilder().setNxReg(NxmNxReg7.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg7.class).build(),
-                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg7.class).build()
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg7.VALUE).build(),
+                new DstNxRegCaseBuilder().setNxReg(NxmNxReg7.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg7.VALUE).build(),
+                new SrcNxRegCaseBuilder().setNxReg(NxmNxReg7.VALUE).build()
             }
         });
     }

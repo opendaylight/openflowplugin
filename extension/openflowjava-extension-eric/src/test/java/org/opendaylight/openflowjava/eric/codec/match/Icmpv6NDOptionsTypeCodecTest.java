@@ -53,8 +53,8 @@ public class Icmpv6NDOptionsTypeCodecTest {
         input = icmpv6NDOptionsTypeCodec.deserialize(buffer);
 
         final Icmpv6NdOptionsTypeCaseValue result = (Icmpv6NdOptionsTypeCaseValue) input.getMatchEntryValue();
-        assertEquals(EricExpClass.class, input.getOxmClass());
-        assertEquals(Icmpv6NdOptionsType.class, input.getOxmMatchField());
+        assertEquals(EricExpClass.VALUE, input.getOxmClass());
+        assertEquals(Icmpv6NdOptionsType.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getIcmpv6NdOptionsTypeValues().getIcmpv6NdOptionsType().shortValue());
     }
@@ -64,8 +64,8 @@ public class Icmpv6NDOptionsTypeCodecTest {
         final Icmpv6NdOptionsTypeCaseValueBuilder caseBuilder = new Icmpv6NdOptionsTypeCaseValueBuilder();
         final Icmpv6NdOptionsTypeValuesBuilder valuesBuilder = new Icmpv6NdOptionsTypeValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(EricExpClass.class);
-        matchEntryBuilder.setOxmMatchField(Icmpv6NdOptionsType.class);
+        matchEntryBuilder.setOxmClass(EricExpClass.VALUE);
+        matchEntryBuilder.setOxmMatchField(Icmpv6NdOptionsType.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setIcmpv6NdOptionsType(Uint8.ONE);

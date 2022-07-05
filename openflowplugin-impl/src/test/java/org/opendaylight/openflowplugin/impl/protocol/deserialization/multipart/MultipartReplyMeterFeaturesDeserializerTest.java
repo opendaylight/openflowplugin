@@ -13,15 +13,15 @@ import static org.junit.Assert.assertTrue;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.multipart.reply.multipart.reply.body.MultipartReplyMeterFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandDrop;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBandDscpRemark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterBurst;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterCapability;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterKbps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterPktps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterStats;
@@ -29,8 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 
 public class MultipartReplyMeterFeaturesDeserializerTest extends AbstractMultipartDeserializerTest {
     private static final int MAX_METER = 3;
-    private static final List BANDS_SUPPORTED = Collections.singletonList(MeterBandDrop.class);
-    private static final List CAPABILITIES_SUPPORTED = Arrays.asList(MeterKbps.class, MeterBurst.class);
+    private static final List<MeterBand> BANDS_SUPPORTED = List.of(MeterBandDrop.VALUE);
+    private static final List<MeterCapability> CAPABILITIES_SUPPORTED = List.of(MeterKbps.VALUE, MeterBurst.VALUE);
     private static final byte MAX_BANDS = 56;
     private static final byte MAX_COLOR = 48;
 
@@ -40,15 +40,15 @@ public class MultipartReplyMeterFeaturesDeserializerTest extends AbstractMultipa
         buffer.writeInt(MAX_METER);
 
         int bitMaskBands = ByteBufUtils.fillBitMask(0,
-                BANDS_SUPPORTED.contains(MeterBandDrop.class),
-                BANDS_SUPPORTED.contains(MeterBandDscpRemark.class));
+                BANDS_SUPPORTED.contains(MeterBandDrop.VALUE),
+                BANDS_SUPPORTED.contains(MeterBandDscpRemark.VALUE));
         buffer.writeInt(bitMaskBands);
 
         int bitMaskCapabilities = ByteBufUtils.fillBitMask(0,
-                CAPABILITIES_SUPPORTED.contains(MeterKbps.class),
-                CAPABILITIES_SUPPORTED.contains(MeterPktps.class),
-                CAPABILITIES_SUPPORTED.contains(MeterBurst.class),
-                CAPABILITIES_SUPPORTED.contains(MeterStats.class));
+                CAPABILITIES_SUPPORTED.contains(MeterKbps.VALUE),
+                CAPABILITIES_SUPPORTED.contains(MeterPktps.VALUE),
+                CAPABILITIES_SUPPORTED.contains(MeterBurst.VALUE),
+                CAPABILITIES_SUPPORTED.contains(MeterStats.VALUE));
         buffer.writeInt(bitMaskCapabilities);
 
         buffer.writeByte(MAX_BANDS);

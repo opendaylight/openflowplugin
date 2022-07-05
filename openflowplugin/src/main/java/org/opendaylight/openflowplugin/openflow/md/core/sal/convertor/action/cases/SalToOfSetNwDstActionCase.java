@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import com.google.common.base.Splitter;
@@ -56,8 +55,8 @@ public class SalToOfSetNwDstActionCase extends ConvertorCase<SetNwDstActionCase,
             Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv4) address).getIpv4Address().getValue());
             Ipv4Address result = new Ipv4Address(addressParts.iterator().next());
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv4Dst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv4Dst.VALUE);
 
             Ipv4DstCaseBuilder ipv4DstCaseBuilder = new Ipv4DstCaseBuilder();
             Ipv4DstBuilder ipv4DstBuilder = new Ipv4DstBuilder();
@@ -81,8 +80,8 @@ public class SalToOfSetNwDstActionCase extends ConvertorCase<SetNwDstActionCase,
             Iterable<String> addressParts = PREFIX_SPLITTER.split(((Ipv6) address).getIpv6Address().getValue());
             Ipv6Address result = new Ipv6Address(addressParts.iterator().next());
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Dst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Dst.VALUE);
 
             Ipv6DstCaseBuilder ipv6DstCaseBuilder = new Ipv6DstCaseBuilder();
             Ipv6DstBuilder ipv6DstBuilder = new Ipv6DstBuilder();

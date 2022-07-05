@@ -33,7 +33,7 @@ public class GroupingLooseResolverTest {
         eqGroup.add(GeneralAugMatchNodesNodeTableFlow.class);
         eqGroup.add(GeneralAugMatchNotifPacketIn.class);
 
-        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(JoachimTheBig.class).build();
+        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(JoachimTheBig.VALUE).build();
         Match match1 = new MatchBuilder()
                 .addAugmentation(new GeneralAugMatchNodesNodeTableFlowBuilder()
                     .setExtensionList(Collections.singletonMap(extension1.key(), extension1))
@@ -43,23 +43,22 @@ public class GroupingLooseResolverTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.MatchBuilder mb2 =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service
                     .rev130709.packet.received.MatchBuilder();
-        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(JoachimTheTiny.class).build();
+        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(JoachimTheTiny.VALUE).build();
         org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match match2 =
                 mb2.addAugmentation(new GeneralAugMatchNotifPacketInBuilder()
                     .setExtensionList(Collections.singletonMap(extension2.key(), extension2)).build()).build();
 
-        Assert.assertEquals(JoachimTheBig.class,
+        Assert.assertEquals(JoachimTheBig.VALUE,
                 eqGroup.getExtension(match1).get().nonnullExtensionList().values().iterator().next().getExtensionKey());
-        Assert.assertEquals(JoachimTheTiny.class,
+        Assert.assertEquals(JoachimTheTiny.VALUE,
                 eqGroup.getExtension(match2).get().nonnullExtensionList().values().iterator().next().getExtensionKey());
     }
 
     private interface JoachimTheBig extends ExtensionKey {
-        // nobody
+        JoachimTheBig VALUE = () -> JoachimTheBig.class;
     }
 
     private interface JoachimTheTiny extends ExtensionKey {
-        // nobody
+        JoachimTheTiny VALUE = () -> JoachimTheTiny.class;
     }
-
 }

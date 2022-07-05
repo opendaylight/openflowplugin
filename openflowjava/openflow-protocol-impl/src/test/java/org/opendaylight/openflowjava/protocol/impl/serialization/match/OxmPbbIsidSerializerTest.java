@@ -118,7 +118,7 @@ public class OxmPbbIsidSerializerTest {
         assertEquals("Wrong value length", EncodeConstants.SIZE_OF_3_BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder preparePbbIsidMatchEntry(boolean hasMask, int value) {
+    private static MatchEntryBuilder preparePbbIsidMatchEntry(final boolean hasMask, final int value) {
         final MatchEntryBuilder builder = preparePbbIsidHeader(hasMask);
         PbbIsidCaseBuilder casebuilder = new PbbIsidCaseBuilder();
         PbbIsidBuilder valueBuilder = new PbbIsidBuilder();
@@ -131,15 +131,15 @@ public class OxmPbbIsidSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder preparePbbIsidHeader(boolean hasMask) {
+    private static MatchEntryBuilder preparePbbIsidHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(PbbIsid.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(PbbIsid.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.PBB_ISID, fieldAndMask >>> 1);

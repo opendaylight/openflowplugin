@@ -50,8 +50,7 @@ public class CtStateConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         NxmNxCtStateBuilder ctStateBuilder = new NxmNxCtStateBuilder();
         ctStateBuilder.setCtState(ctStateCaseValue.getCtStateValues().getCtState());
         ctStateBuilder.setMask(ctStateCaseValue.getCtStateValues().getMask());
-        return resolveAugmentation(ctStateBuilder.build(), path,
-                NxmNxCtStateKey.class);
+        return resolveAugmentation(ctStateBuilder.build(), path, NxmNxCtStateKey.VALUE);
     }
 
     @Override
@@ -66,14 +65,14 @@ public class CtStateConvertor implements ConvertorToOFJava<MatchEntry>, Converto
         ctStateValuesBuilder.setMask(matchGrouping.get().getNxmNxCtState().getMask());
         ctStateCaseValueBuilder.setCtStateValues(ctStateValuesBuilder.build());
         MatchEntryBuilder ofMatch = MatchUtil.createDefaultMatchEntryBuilder(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtState.class,
-            Nxm1Class.class, ctStateCaseValueBuilder.build());
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtState.VALUE,
+            Nxm1Class.VALUE, ctStateCaseValueBuilder.build());
         ofMatch.setHasMask(true);
         return ofMatch.build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtState value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

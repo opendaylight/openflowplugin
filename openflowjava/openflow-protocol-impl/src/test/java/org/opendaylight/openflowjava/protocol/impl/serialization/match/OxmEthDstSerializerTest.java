@@ -123,7 +123,7 @@ public class OxmEthDstSerializerTest {
         assertEquals("Wrong value length", EncodeConstants.MAC_ADDRESS_LENGTH, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(boolean hasMask, String value) {
+    private static MatchEntryBuilder prepareMatchEntry(final boolean hasMask, final String value) {
         final MatchEntryBuilder builder = prepareHeader(hasMask);
         EthDstCaseBuilder casebuilder = new EthDstCaseBuilder();
         EthDstBuilder valueBuilder = new EthDstBuilder();
@@ -136,15 +136,15 @@ public class OxmEthDstSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(EthDst.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(EthDst.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ETH_DST, fieldAndMask >>> 1);

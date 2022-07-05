@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -38,8 +37,8 @@ public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry
 
         if (source.getUdpSourcePort() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(UdpSrc.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(UdpSrc.VALUE);
 
             UdpSrcCaseBuilder udpSrcCaseBuilder = new UdpSrcCaseBuilder();
             UdpSrcBuilder udpSrcBuilder = new UdpSrcBuilder();
@@ -52,8 +51,8 @@ public class SalToOfUdpMatchCase extends ConvertorCase<UdpMatch, List<MatchEntry
 
         if (source.getUdpDestinationPort() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(UdpDst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(UdpDst.VALUE);
 
             UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
             UdpDstBuilder udpDstBuilder = new UdpDstBuilder();

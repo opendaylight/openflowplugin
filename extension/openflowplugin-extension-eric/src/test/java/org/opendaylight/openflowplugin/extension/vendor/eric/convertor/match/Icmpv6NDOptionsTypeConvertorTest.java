@@ -92,25 +92,25 @@ public class Icmpv6NDOptionsTypeConvertorTest {
                 = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         assertEquals(10, ((EricAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1
                 = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertEquals(10, ((EricAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType() .getIcmpv6NdOptionsType().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2
                 = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertEquals(10, ((EricAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3
                 = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         assertEquals(10, ((EricAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType().intValue());
-        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.class);
+        assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
     }
 
     @Test
@@ -123,7 +123,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
             new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
                 new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(
                     new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType(Uint8.ONE).build()).build(),
-                Icmpv6NdOptionsTypeKey.class);
+                Icmpv6NdOptionsTypeKey.VALUE);
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();
@@ -138,7 +138,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
                     .setExtensionList(BindingMap.of(extListBld.build())).build())
                 .build();
 
-        assertEquals(Icmpv6NdOptionsTypeKey.class, eqGroup.getExtension(setField).get().nonnullExtensionList()
+        assertEquals(Icmpv6NdOptionsTypeKey.VALUE, eqGroup.getExtension(setField).get().nonnullExtensionList()
                  .values().iterator().next().getExtensionKey());
     }
 }

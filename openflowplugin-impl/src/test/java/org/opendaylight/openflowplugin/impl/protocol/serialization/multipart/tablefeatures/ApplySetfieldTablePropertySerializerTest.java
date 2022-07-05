@@ -27,7 +27,7 @@ public class ApplySetfieldTablePropertySerializerTest extends AbstractTablePrope
                         .prop.type.table.feature.prop.type.apply.setfield
                         .ApplySetfieldBuilder()
                         .setSetFieldMatch(BindingMap.of(new SetFieldMatchBuilder()
-                                        .setMatchType(ArpOp.class)
+                                        .setMatchType(ArpOp.VALUE)
                                         .setHasMask(false)
                                         .build()))
                         .build())

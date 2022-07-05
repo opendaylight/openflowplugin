@@ -52,8 +52,8 @@ public class Ipv6DstCodecTest {
 
         final IpDstCaseValue result = (IpDstCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmOfIpDst.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfIpDst.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getIpDstValues().getValue().intValue());
     }
@@ -63,8 +63,8 @@ public class Ipv6DstCodecTest {
         final IpDstCaseValueBuilder caseBuilder = new IpDstCaseValueBuilder();
         final IpDstValuesBuilder valuesBuilder = new IpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfIpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfIpDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

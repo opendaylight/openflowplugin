@@ -148,7 +148,7 @@ public final class MultipartRequestInputFactory {
                 if (OFConstants.OFP_VERSION_1_0.equals(version)) {
                     multipartRequestFlowBuilder.setMatchV10(MatchUtil.createEmptyV10Match().build());
                 } else if (OFConstants.OFP_VERSION_1_3.equals(version)) {
-                    multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.class).build());
+                    multipartRequestFlowBuilder.setMatch(new MatchBuilder().setType(OxmMatchType.VALUE).build());
                 } else {
                     throw new IllegalArgumentException("Unknown version " + version);
                 }

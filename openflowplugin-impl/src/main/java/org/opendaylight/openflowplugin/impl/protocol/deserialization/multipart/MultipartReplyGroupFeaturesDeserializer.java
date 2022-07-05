@@ -45,40 +45,40 @@ public class MultipartReplyGroupFeaturesDeserializer implements OFDeserializer<M
             .build();
     }
 
-    private static Set<Class<? extends GroupCapability>> readGroupCapabilities(final ByteBuf message) {
+    private static Set<GroupCapability> readGroupCapabilities(final ByteBuf message) {
         final long capabilitiesMask = message.readUnsignedInt();
 
-        final var builder = ImmutableSet.<Class<? extends GroupCapability>>builder();
+        final var builder = ImmutableSet.<GroupCapability>builder();
         if ((capabilitiesMask & 1 << 0) != 0) {
-            builder.add(SelectWeight.class);
+            builder.add(SelectWeight.VALUE);
         }
         if ((capabilitiesMask & 1 << 1) != 0) {
-            builder.add(SelectLiveness.class);
+            builder.add(SelectLiveness.VALUE);
         }
         if ((capabilitiesMask & 1 << 2) != 0) {
-            builder.add(Chaining.class);
+            builder.add(Chaining.VALUE);
         }
         if ((capabilitiesMask & 1 << 3) != 0) {
-            builder.add(ChainingChecks.class);
+            builder.add(ChainingChecks.VALUE);
         }
         return builder.build();
     }
 
-    private static Set<Class<? extends GroupType>> readGroupTypes(final ByteBuf message) {
+    private static Set<GroupType> readGroupTypes(final ByteBuf message) {
         final long typesMask = message.readUnsignedInt();
 
-        final var builder = ImmutableSet.<Class<? extends GroupType>>builder();
+        final var builder = ImmutableSet.<GroupType>builder();
         if ((typesMask & 1 << 0) != 0) {
-            builder.add(GroupAll.class);
+            builder.add(GroupAll.VALUE);
         }
         if ((typesMask & 1 << 1) != 0) {
-            builder.add(GroupSelect.class);
+            builder.add(GroupSelect.VALUE);
         }
         if ((typesMask & 1 << 2) != 0) {
-            builder.add(GroupIndirect.class);
+            builder.add(GroupIndirect.VALUE);
         }
         if ((typesMask & 1 << 3) != 0) {
-            builder.add(GroupFf.class);
+            builder.add(GroupFf.VALUE);
         }
         return builder.build();
     }

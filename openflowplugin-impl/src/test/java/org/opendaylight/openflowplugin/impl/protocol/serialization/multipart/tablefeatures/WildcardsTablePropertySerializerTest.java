@@ -26,7 +26,7 @@ public class WildcardsTablePropertySerializerTest extends AbstractTablePropertyS
         final Wildcards property = new WildcardsBuilder()
                 .setWildcardSetfield(new WildcardSetfieldBuilder()
                         .setSetFieldMatch(BindingMap.of(
-                                new SetFieldMatchBuilder().setMatchType(ArpOp.class).setHasMask(false).build()))
+                                new SetFieldMatchBuilder().setMatchType(ArpOp.VALUE).setHasMask(false).build()))
                         .build())
                 .build();
 

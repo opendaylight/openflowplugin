@@ -31,7 +31,7 @@ public class OfToSalExperimenterIdCase extends ConvertorCase<ExperimenterIdCase,
             final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
 
-        if (data.getOxmMatchField().equals(TcpFlags.class)) {
+        if (TcpFlags.VALUE.equals(data.getOxmMatchField())) {
             final TcpFlagsMatchBuilder tcpFlagsMatchBuilder = data.getTcpFlagsMatchBuilder();
             final TcpFlagsContainer tcpFlagsContainer = source.augmentation(TcpFlagsContainer.class);
 
