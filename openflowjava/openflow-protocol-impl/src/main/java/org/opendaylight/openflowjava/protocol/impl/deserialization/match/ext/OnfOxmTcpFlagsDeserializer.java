@@ -21,7 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OnfOxmTcpFlagsDeserializer extends AbstractOxmExperimenterMatchEntryDeserializer<TcpFlags> {
     public OnfOxmTcpFlagsDeserializer() {
-        super(TcpFlags.class);
+        super(TcpFlags.VALUE);
     }
 
     @Override

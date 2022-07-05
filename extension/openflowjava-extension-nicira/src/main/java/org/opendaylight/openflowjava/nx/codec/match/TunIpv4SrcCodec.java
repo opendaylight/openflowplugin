@@ -28,7 +28,7 @@ public class TunIpv4SrcCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 4;
     private static final int NXM_FIELD_CODE = 31;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxTunIpv4Src> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxTunIpv4Src.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm1Class.VALUE, NxmNxTunIpv4Src.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
@@ -64,12 +64,12 @@ public class TunIpv4SrcCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxTunIpv4Src.class;
+    public MatchField getNxmField() {
+        return NxmNxTunIpv4Src.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm1Class.VALUE;
     }
 }

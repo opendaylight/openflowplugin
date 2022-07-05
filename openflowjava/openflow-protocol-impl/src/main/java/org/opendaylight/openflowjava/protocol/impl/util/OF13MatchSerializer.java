@@ -57,9 +57,9 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
     }
 
     private static void serializeType(final Match match, final ByteBuf out) {
-        if (match.getType().isAssignableFrom(StandardMatchType.class)) {
+        if (match.getType() instanceof StandardMatchType) {
             out.writeShort(STANDARD_MATCH_TYPE_CODE);
-        } else if (match.getType().isAssignableFrom(OxmMatchType.class)) {
+        } else if (match.getType() instanceof OxmMatchType) {
             out.writeShort(OXM_MATCH_TYPE_CODE);
         }
     }
@@ -79,7 +79,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
 
             MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
                     EncodeConstants.OF_VERSION_1_3, entry.getOxmClass(), entry.getOxmMatchField());
-            if (entry.getOxmClass().equals(ExperimenterClass.class)) {
+            if (ExperimenterClass.VALUE.equals(entry.getOxmClass())) {
                 ExperimenterIdCase entryValue = (ExperimenterIdCase) entry.getMatchEntryValue();
                 key.setExperimenterId(entryValue.getExperimenter().getExperimenter().getValue());
             } else {
@@ -92,6 +92,6 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
 
     @Override
     public void injectSerializerRegistry(final SerializerRegistry serializerRegistry) {
-        this.registry = serializerRegistry;
+        registry = serializerRegistry;
     }
 }

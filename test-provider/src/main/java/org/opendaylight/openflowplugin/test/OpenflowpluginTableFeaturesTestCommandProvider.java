@@ -294,7 +294,7 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                 .setMatchSetfield(new MatchSetfieldBuilder()
                     .setSetFieldMatch(BindingMap.of(new SetFieldMatchBuilder()
                         .setHasMask(false)
-                        .setMatchType(MplsLabel.class)
+                        .setMatchType(MplsLabel.VALUE)
                         .build()))
                     .build())
                 .build())
@@ -309,9 +309,10 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                 .setWriteSetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                     .prop.type.table.feature.prop.type.write.setfield.WriteSetfieldBuilder()
                         .setSetFieldMatch(BindingMap.ordered(
-                            new SetFieldMatchBuilder().setHasMask(false).setMatchType(MplsLabel.class).build(),
-                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(MplsBos.class).build(),
-                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(EthDst.class).build())).build())
+                            new SetFieldMatchBuilder().setHasMask(false).setMatchType(MplsLabel.VALUE).build(),
+                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(MplsBos.VALUE).build(),
+                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(EthDst.VALUE).build()))
+                        .build())
                 .build())
             .withKey(new TableFeaturePropertiesKey(0))
             .setOrder(1);
@@ -324,9 +325,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
             .setWriteSetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                 .prop.type.table.feature.prop.type.write.setfield.miss.WriteSetfieldMissBuilder()
                     .setSetFieldMatch(BindingMap.ordered(
-                        new SetFieldMatchBuilder().setHasMask(false).setMatchType(EthSrc.class).build(),
-                        new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.class).build(),
-                        new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.class).build()))
+                        new SetFieldMatchBuilder().setHasMask(false).setMatchType(EthSrc.VALUE).build(),
+                        new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build(),
+                        new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.VALUE).build()))
                     .build())
             .build())
             .withKey(new TableFeaturePropertiesKey(0)).setOrder(1);
@@ -339,9 +340,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                 .setApplySetfield(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                     .prop.type.table.feature.prop.type.apply.setfield.ApplySetfieldBuilder()
                         .setSetFieldMatch(BindingMap.ordered(
-                            new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.class).build(),
-                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.class).build(),
-                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.class).build()))
+                            new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.VALUE).build(),
+                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build(),
+                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.VALUE).build()))
                         .build())
             .build())
             .withKey(new TableFeaturePropertiesKey(0))
@@ -355,9 +356,9 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
                 .setApplySetfieldMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                     .feature.prop.type.table.feature.prop.type.apply.setfield.miss.ApplySetfieldMissBuilder()
                         .setSetFieldMatch(BindingMap.of(
-                            new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.class).build(),
-                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.class).build(),
-                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.class).build()))
+                            new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.VALUE).build(),
+                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build(),
+                            new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.VALUE).build()))
                         .build())
                 .build())
             .withKey(new TableFeaturePropertiesKey(0))
@@ -370,8 +371,8 @@ public class OpenflowpluginTableFeaturesTestCommandProvider implements CommandPr
             .setTableFeaturePropType(new WildcardsBuilder()
                 .setWildcardSetfield(new WildcardSetfieldBuilder()
                     .setSetFieldMatch(BindingMap.ordered(
-                        new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.class).build(),
-                        new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.class).build()))
+                        new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.VALUE).build(),
+                        new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build()))
                     .build())
                 .build())
             .withKey(new TableFeaturePropertiesKey(0))

@@ -38,8 +38,8 @@ public class SalToOfStripVlanActionCase extends ConvertorCase<StripVlanActionCas
     public Optional<Action> process(@NonNull final StripVlanActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setOxmMatchField(VlanVid.class);
+        matchBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchBuilder.setOxmMatchField(VlanVid.VALUE);
         matchBuilder.setHasMask(false);
         VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();

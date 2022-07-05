@@ -123,8 +123,7 @@ public final class AugmentationGroupingResolver<G extends DataObject, T extends 
         return new Factory<>((Class<? extends Augmentation<T>>[]) array);
     }
 
-    public static final class Builder<G extends DataObject, T extends Augmentable<T>>
-            implements org.opendaylight.yangtools.concepts.Builder<AugmentationGroupingResolver<G, T>> {
+    public static final class Builder<G extends DataObject, T extends Augmentable<T>> {
         private final Set<Class<? extends Augmentation<T>>> augmentations = new HashSet<>();
         private final Class<G> grouping;
 
@@ -139,7 +138,6 @@ public final class AugmentationGroupingResolver<G extends DataObject, T extends 
             return this;
         }
 
-        @Override
         @SuppressWarnings("unchecked")
         public @NonNull AugmentationGroupingResolver<G, T> build() {
             return new AugmentationGroupingResolver<>(grouping,

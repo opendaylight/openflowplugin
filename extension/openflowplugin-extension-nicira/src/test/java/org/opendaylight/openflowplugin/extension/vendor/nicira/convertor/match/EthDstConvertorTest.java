@@ -87,24 +87,24 @@ public class EthDstConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(MAC_ADDRESS,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfEthDst().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthDstKey.class);
+        Assert.assertEquals(NxmOfEthDstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ethDstConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfEthDst().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthDstKey.class);
+        Assert.assertEquals(NxmOfEthDstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ethDstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfEthDst().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthDstKey.class);
+        Assert.assertEquals(NxmOfEthDstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ethDstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(MAC_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmOfEthDst().getMacAddress());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfEthDstKey.class);
+        Assert.assertEquals(NxmOfEthDstKey.VALUE, extensionAugment.getKey());
     }
 }

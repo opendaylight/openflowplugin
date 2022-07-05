@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIpv6NdTllDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmIpv6NdTllDeserializer() {
-        super(Ipv6NdTll.class);
+        super(Ipv6NdTll.VALUE);
     }
 
     @Override

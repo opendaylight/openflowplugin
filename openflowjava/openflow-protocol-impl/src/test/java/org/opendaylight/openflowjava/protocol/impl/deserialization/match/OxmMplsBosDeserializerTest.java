@@ -34,8 +34,8 @@ public class OxmMplsBosDeserializerTest {
         OxmMplsBosDeserializer deserializer = new OxmMplsBosDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong entry field", MplsBos.class, entry.getOxmMatchField());
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals("Wrong entry field", MplsBos.VALUE, entry.getOxmMatchField());
         Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertEquals("Wrong entry value", false,
                 ((MplsBosCase) entry.getMatchEntryValue()).getMplsBos().getBos());

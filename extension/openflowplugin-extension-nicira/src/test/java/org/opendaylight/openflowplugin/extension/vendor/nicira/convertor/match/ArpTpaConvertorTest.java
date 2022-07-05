@@ -46,7 +46,7 @@ public class ArpTpaConvertorTest {
     @Mock
     private MatchEntry matchEntry;
 
-    private static final Ipv4Address IPV4_ADDRESS = Ipv4Address.getDefaultInstance("1.2.3.4");
+    private static final Ipv4Address IPV4_ADDRESS = new Ipv4Address("1.2.3.4");
 
     private ArpTpaConvertor arpTpaConvertor;
 
@@ -87,24 +87,24 @@ public class ArpTpaConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfArpTpa().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfArpTpaKey.class);
+        Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpTpaConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfArpTpa().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfArpTpaKey.class);
+        Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpTpaConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfArpTpa().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfArpTpaKey.class);
+        Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpTpaConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmOfArpTpa().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmOfArpTpaKey.class);
+        Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
     }
 }

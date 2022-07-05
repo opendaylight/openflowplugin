@@ -35,8 +35,8 @@ public class OxmMetadataDeserializerTest {
         OxmMetadataDeserializer deserializer = new OxmMetadataDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong entry field", Metadata.class, entry.getOxmMatchField());
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals("Wrong entry field", Metadata.VALUE, entry.getOxmMatchField());
         Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertArrayEquals("Wrong entry value", ByteBufUtils.hexStringToBytes("00 00 00 00 00 00 00 03"),
                 ((MetadataCase) entry.getMatchEntryValue()).getMetadata().getMetadata());

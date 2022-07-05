@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIpEcnDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmIpEcnDeserializer() {
-        super(IpEcn.class);
+        super(IpEcn.VALUE);
     }
 
     @Override

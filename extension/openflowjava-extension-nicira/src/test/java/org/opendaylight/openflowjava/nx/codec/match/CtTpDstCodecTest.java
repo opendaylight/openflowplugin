@@ -51,8 +51,8 @@ public class CtTpDstCodecTest {
 
         final CtTpDstCaseValue result = (CtTpDstCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxCtTpDst.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxCtTpDst.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getCtTpDstValues().getCtTpDst().shortValue());
     }
@@ -62,8 +62,8 @@ public class CtTpDstCodecTest {
         final CtTpDstCaseValueBuilder caseBuilder = new CtTpDstCaseValueBuilder();
         final CtTpDstValuesBuilder valuesBuilder = new CtTpDstValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxCtTpDst.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxCtTpDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setCtTpDst(Uint16.ONE);

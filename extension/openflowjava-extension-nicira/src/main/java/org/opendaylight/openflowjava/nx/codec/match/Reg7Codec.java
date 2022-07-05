@@ -19,7 +19,7 @@ public class Reg7Codec extends AbstractRegCodec {
 
     private static final int NXM_FIELD_CODE = 7;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmNxReg7> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmNxReg7.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm1Class.VALUE, NxmNxReg7.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
@@ -29,7 +29,7 @@ public class Reg7Codec extends AbstractRegCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxReg7.class;
+    public MatchField getNxmField() {
+        return NxmNxReg7.VALUE;
     }
 }

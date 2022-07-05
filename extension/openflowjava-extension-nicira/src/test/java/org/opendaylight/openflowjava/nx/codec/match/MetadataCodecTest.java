@@ -45,15 +45,15 @@ public class MetadataCodecTest {
     public void deserializeTest() {
         createBuffer(buffer);
         input = metadataCodec.deserialize(buffer);
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfMetadata.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfMetadata.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
     }
 
     private static MatchEntry createMatchEntry() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfMetadata.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfMetadata.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         OfMetadataCaseValueBuilder caseBuilder = new OfMetadataCaseValueBuilder();

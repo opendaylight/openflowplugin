@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.ArrayList;
@@ -41,8 +40,8 @@ public class SalToOfSetDlDstActionCase extends ConvertorCase<SetDlDstActionCase,
         SetDlDstAction setdldstaction = source.getSetDlDstAction();
 
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setOxmMatchField(EthDst.class);
+        matchBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchBuilder.setOxmMatchField(EthDst.VALUE);
         EthDstCaseBuilder ethDstCaseBuilder = new EthDstCaseBuilder();
         EthDstBuilder ethDstBuilder = new EthDstBuilder();
         ethDstBuilder.setMacAddress(setdldstaction.getAddress());

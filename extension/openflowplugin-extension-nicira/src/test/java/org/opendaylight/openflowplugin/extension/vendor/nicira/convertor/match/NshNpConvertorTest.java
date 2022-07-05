@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
 import static org.junit.Assert.assertEquals;
@@ -80,24 +79,24 @@ public class NshNpConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
-        assertEquals(extensionAugment.getKey(), NxmNxNshNpKey.class);
+        assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = convertor.convert(matchEntry,
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
-        assertEquals(extensionAugment.getKey(), NxmNxNshNpKey.class);
+        assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
-        assertEquals(extensionAugment.getKey(), NxmNxNshNpKey.class);
+        assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
-        assertEquals(extensionAugment.getKey(), NxmNxNshNpKey.class);
+        assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
     }
 }

@@ -241,8 +241,8 @@ public class ActionConvertorV13Test {
 
         actionBuilder = new ActionBuilder();
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setOxmMatchField(InPort.class);
+        matchBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchBuilder.setOxmMatchField(InPort.VALUE);
         matchBuilder.setHasMask(false);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
         InPortBuilder inPortBuilder = new InPortBuilder();
@@ -529,7 +529,7 @@ public class ActionConvertorV13Test {
                         .action.choice.SetFieldCase) action.getActionChoice();
         MatchEntry entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp.VALUE, false);
         Assert.assertEquals("Wrong vlan pcp", 7, ((VlanPcpCase) entry.getMatchEntryValue()).getVlanPcp().getVlanPcp()
                 .intValue());
 
@@ -541,7 +541,7 @@ public class ActionConvertorV13Test {
                 .action.choice.SetFieldCase) action.getActionChoice();
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid.VALUE, false);
         Assert.assertEquals("Wrong vlan vid", 0, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getVlanVid()
                 .intValue());
         Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid().getCfiBit());
@@ -554,7 +554,7 @@ public class ActionConvertorV13Test {
                 .action.choice.SetFieldCase) action.getActionChoice();
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthDst.VALUE, false);
         Assert.assertEquals("Wrong dl dst", "00:00:00:00:00:06", ((EthDstCase) entry.getMatchEntryValue()).getEthDst()
                 .getMacAddress().getValue());
 
@@ -566,7 +566,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.EthSrc.VALUE, false);
         Assert.assertEquals("Wrong dl src", "00:00:00:00:00:05", ((EthSrcCase) entry.getMatchEntryValue()).getEthSrc()
                 .getMacAddress().getValue());
 
@@ -578,7 +578,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Src.VALUE, false);
         Assert.assertEquals("Wrong ipv4 src", "10.0.0.0", ((Ipv4SrcCase) entry.getMatchEntryValue()).getIpv4Src()
                 .getIpv4Address().getValue());
 
@@ -590,7 +590,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv4Dst.VALUE, false);
         Assert.assertEquals("Wrong ipv4 dst", "10.0.0.2", ((Ipv4DstCase) entry.getMatchEntryValue()).getIpv4Dst()
                 .getIpv4Address().getValue());
 
@@ -602,7 +602,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpSrc.VALUE, false);
         Assert.assertEquals("Wrong tcp src", 54, ((TcpSrcCase) entry.getMatchEntryValue()).getTcpSrc()
                 .getPort().getValue().intValue());
 
@@ -614,7 +614,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.TcpDst.VALUE, false);
         Assert.assertEquals("Wrong tcp dst", 45, ((TcpDstCase) entry.getMatchEntryValue()).getTcpDst()
                 .getPort().getValue().intValue());
 
@@ -626,7 +626,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.IpDscp.VALUE, false);
         Assert.assertEquals("Wrong ip dscp", 4, ((IpDscpCase) entry.getMatchEntryValue()).getIpDscp()
                 .getDscp().getValue().intValue());
 
@@ -638,7 +638,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid.VALUE, false);
         Assert.assertEquals("Wrong vlan id", 22, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
                 .getVlanVid().intValue());
         Assert.assertEquals("Wrong cfi bit", true, ((VlanVidCase) entry.getMatchEntryValue()).getVlanVid()
@@ -652,7 +652,7 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Src.VALUE, false);
         Assert.assertEquals("Wrong ipv6 src", "::5",
                 ((Ipv6SrcCase) entry.getMatchEntryValue()).getIpv6Src().getIpv6Address().getValue());
 
@@ -664,12 +664,12 @@ public class ActionConvertorV13Test {
                 action.getActionChoice().implementedInterface().getName());
         entry = setFieldCase.getSetFieldAction().getMatchEntry().get(0);
         checkEntryHeader(entry,
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst.class, false);
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Ipv6Dst.VALUE, false);
         Assert.assertEquals("Wrong ipv6 dst", "::",
                 ((Ipv6DstCase) entry.getMatchEntryValue()).getIpv6Dst().getIpv6Address().getValue());
     }
 
-    private static void checkEntryHeader(final MatchEntry entry, final Class<? extends MatchField> field,
+    private static void checkEntryHeader(final MatchEntry entry, final MatchField field,
             final boolean hasMask) {
         Assert.assertEquals("Wrong oxm class", OpenflowBasicClass.class, entry.getOxmClass());
         Assert.assertEquals("Wrong oxm field", field, entry.getOxmMatchField());

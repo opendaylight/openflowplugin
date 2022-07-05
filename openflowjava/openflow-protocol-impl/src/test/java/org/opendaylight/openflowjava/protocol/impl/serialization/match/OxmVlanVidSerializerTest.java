@@ -116,7 +116,7 @@ public class OxmVlanVidSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareVlanVidMatchEntry(boolean hasMask, boolean cfiBit) {
+    private static MatchEntryBuilder prepareVlanVidMatchEntry(final boolean hasMask, final boolean cfiBit) {
         final MatchEntryBuilder builder = prepareVlanVidHeader(hasMask);
         final VlanVidCaseBuilder casebuilder = new VlanVidCaseBuilder();
         VlanVidBuilder valueBuilder = new VlanVidBuilder();
@@ -130,15 +130,15 @@ public class OxmVlanVidSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareVlanVidHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareVlanVidHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(VlanVid.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(VlanVid.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.VLAN_VID, fieldAndMask >>> 1);

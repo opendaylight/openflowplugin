@@ -179,8 +179,8 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
         data.setTcpFlagsMatchBuilder(new TcpFlagsMatchBuilder());
 
         for (MatchEntry ofMatch : source.nonnullMatchEntry()) {
-            if (TunnelIpv4Dst.class.isAssignableFrom(ofMatch.getOxmMatchField())
-                    || TunnelIpv4Src.class.isAssignableFrom(ofMatch.getOxmMatchField())) {
+            if (TunnelIpv4Dst.VALUE.equals(ofMatch.getOxmMatchField())
+                    || TunnelIpv4Src.VALUE.equals(ofMatch.getOxmMatchField())) {
                 /*
                  * TODO: Fix TunnelIpv4Src and Ipv4Dst, because current implementation do not work
                  * TunnelIpv4Src and TunnelIpv4Dst are not compatible with

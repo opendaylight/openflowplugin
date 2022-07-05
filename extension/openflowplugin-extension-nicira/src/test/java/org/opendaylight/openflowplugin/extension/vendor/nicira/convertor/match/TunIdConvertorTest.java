@@ -84,25 +84,25 @@ public class TunIdConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(U64_TEN,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxTunId().getValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
+        Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIdConvertor.convert(matchEntry,
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(U64_TEN,
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxTunId()
                         .getValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
+        Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIdConvertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(U64_TEN,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxTunId().getValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
+        Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIdConvertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(U64_TEN,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxTunId().getValue());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIdKey.class);
+        Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
     }
 }

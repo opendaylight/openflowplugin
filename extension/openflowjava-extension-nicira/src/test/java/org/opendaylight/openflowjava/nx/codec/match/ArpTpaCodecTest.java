@@ -51,8 +51,8 @@ public class ArpTpaCodecTest {
 
         final ArpTpaCaseValue result = (ArpTpaCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfArpTpa.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfArpTpa.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(2, result.getArpTpaValues().getValue().intValue());
     }
@@ -62,8 +62,8 @@ public class ArpTpaCodecTest {
         final ArpTpaCaseValueBuilder caseBuilder = new ArpTpaCaseValueBuilder();
         final ArpTpaValuesBuilder valuesBuilder = new ArpTpaValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfArpTpa.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfArpTpa.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint32.ONE);

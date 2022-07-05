@@ -126,8 +126,8 @@ public class FlowConvertorTest {
         assertEquals("Wrong out group", 5000, flowMod.get(0).getOutGroup().intValue());
         assertEquals("Wrong flags", new FlowModFlags(false, false, false, false, false), flowMod.get(0).getFlags());
         assertEquals("Wrong match",
-                "org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType",
-                flowMod.get(0).getMatch().getType().getName());
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType.VALUE,
+                flowMod.get(0).getMatch().getType());
         assertEquals("Wrong match entries size", 0, flowMod.get(0).getMatch().nonnullMatchEntry().size());
     }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.ArrayList;
@@ -36,11 +35,11 @@ public class SalToOfSetVlanIdActionCase extends ConvertorCase<SetVlanIdActionCas
 
     @NonNull
     @Override
-    public Optional<Action> process(@NonNull final SetVlanIdActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(final SetVlanIdActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder();
-        matchBuilder.setOxmClass(OpenflowBasicClass.class);
-        matchBuilder.setOxmMatchField(VlanVid.class);
+        matchBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        matchBuilder.setOxmMatchField(VlanVid.VALUE);
         matchBuilder.setHasMask(false);
         VlanVidCaseBuilder vlanVidCaseBuilder = new VlanVidCaseBuilder();
         VlanVidBuilder vlanVidBuilder = new VlanVidBuilder();

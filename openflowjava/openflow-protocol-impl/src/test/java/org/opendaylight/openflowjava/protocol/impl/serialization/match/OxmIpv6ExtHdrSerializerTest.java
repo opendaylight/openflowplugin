@@ -118,7 +118,7 @@ public class OxmIpv6ExtHdrSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareIpv6ExtHdrMatchEntry(boolean hasMask, Ipv6ExthdrFlags flags) {
+    private static MatchEntryBuilder prepareIpv6ExtHdrMatchEntry(final boolean hasMask, final Ipv6ExthdrFlags flags) {
         final MatchEntryBuilder builder = prepareIpv6ExtHdrHeader(hasMask);
         Ipv6ExthdrCaseBuilder casebuilder = new Ipv6ExthdrCaseBuilder();
         Ipv6ExthdrBuilder valueBuilder = new Ipv6ExthdrBuilder();
@@ -131,15 +131,15 @@ public class OxmIpv6ExtHdrSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareIpv6ExtHdrHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareIpv6ExtHdrHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(Ipv6Exthdr.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(Ipv6Exthdr.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.IPV6_EXTHDR, fieldAndMask >>> 1);
