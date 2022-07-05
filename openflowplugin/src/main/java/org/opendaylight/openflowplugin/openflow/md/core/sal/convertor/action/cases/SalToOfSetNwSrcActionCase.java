@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import com.google.common.base.Splitter;
@@ -57,8 +56,8 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
             Ipv4Address result = new Ipv4Address(addressParts.iterator().next());
 
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv4Src.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv4Src.VALUE);
 
             Ipv4SrcCaseBuilder ipv4SrcCaseBuilder = new Ipv4SrcCaseBuilder();
             Ipv4SrcBuilder ipv4SrcBuilder = new Ipv4SrcBuilder();
@@ -84,8 +83,8 @@ public class SalToOfSetNwSrcActionCase extends ConvertorCase<SetNwSrcActionCase,
             Ipv6Address result = new Ipv6Address(addressParts.iterator().next());
 
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(Ipv6Src.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(Ipv6Src.VALUE);
 
             Ipv6SrcCaseBuilder ipv6SrcCaseBuilder = new Ipv6SrcCaseBuilder();
             Ipv6SrcBuilder ipv6SrcBuilder = new Ipv6SrcBuilder();

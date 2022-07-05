@@ -27,7 +27,7 @@ public class EthSrcCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 6;
     private static final int NXM_FIELD_CODE = 2;
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfEthSrc> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfEthSrc.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm0Class.VALUE, NxmOfEthSrc.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
@@ -68,12 +68,12 @@ public class EthSrcCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfEthSrc.class;
+    public MatchField getNxmField() {
+        return NxmOfEthSrc.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm0Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm0Class.VALUE;
     }
 }

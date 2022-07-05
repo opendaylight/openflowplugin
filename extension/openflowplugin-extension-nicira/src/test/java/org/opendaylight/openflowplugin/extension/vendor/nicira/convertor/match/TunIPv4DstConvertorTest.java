@@ -86,24 +86,24 @@ public class TunIPv4DstConvertorTest {
                 .convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxTunIpv4Dst().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
+        Assert.assertEquals(NxmNxTunIpv4DstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIPv4DstConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxTunIpv4Dst().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
+        Assert.assertEquals(NxmNxTunIpv4DstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIPv4DstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxTunIpv4Dst().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
+        Assert.assertEquals(NxmNxTunIpv4DstKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIPv4DstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxTunIpv4Dst().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4DstKey.class);
+        Assert.assertEquals(NxmNxTunIpv4DstKey.VALUE, extensionAugment.getKey());
     }
 }

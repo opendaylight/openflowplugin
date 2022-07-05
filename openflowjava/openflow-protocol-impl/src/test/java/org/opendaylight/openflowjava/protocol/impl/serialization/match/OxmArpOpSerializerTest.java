@@ -83,7 +83,7 @@ public class OxmArpOpSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareArpOpMatchEntry(Uint16 value) {
+    private static MatchEntryBuilder prepareArpOpMatchEntry(final Uint16 value) {
         MatchEntryBuilder builder = prepareArpOpHeader(false);
         ArpOpCaseBuilder casebuilder = new ArpOpCaseBuilder();
         ArpOpBuilder valueBuilder = new ArpOpBuilder();
@@ -93,15 +93,15 @@ public class OxmArpOpSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareArpOpHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareArpOpHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(ArpOp.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(ArpOp.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.ARP_OP, fieldAndMask >>> 1);

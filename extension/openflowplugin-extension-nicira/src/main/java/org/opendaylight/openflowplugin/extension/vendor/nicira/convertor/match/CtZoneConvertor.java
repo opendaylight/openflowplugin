@@ -49,8 +49,7 @@ public class CtZoneConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         CtZoneCaseValue ctZoneCaseValue = (CtZoneCaseValue) input.getMatchEntryValue();
         NxmNxCtZoneBuilder ctZoneBuilder = new NxmNxCtZoneBuilder();
         ctZoneBuilder.setCtZone(ctZoneCaseValue.getCtZoneValues().getCtZone());
-        return resolveAugmentation(ctZoneBuilder.build(), path,
-                NxmNxCtZoneKey.class);
+        return resolveAugmentation(ctZoneBuilder.build(), path, NxmNxCtZoneKey.VALUE);
     }
 
     @Override
@@ -65,13 +64,13 @@ public class CtZoneConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         ctZoneCaseValueBuilder.setCtZoneValues(ctZoneValuesBuilder.build());
         MatchEntryBuilder ofMatch = MatchUtil
                 .createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn
-                                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxCtZone.class,
-                                                Nxm1Class.class, ctZoneCaseValueBuilder.build());
+                                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxCtZone.VALUE,
+                                                Nxm1Class.VALUE, ctZoneCaseValueBuilder.build());
         return ofMatch.build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtZone value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

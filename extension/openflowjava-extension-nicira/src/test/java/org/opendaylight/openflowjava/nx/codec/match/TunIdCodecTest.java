@@ -53,8 +53,8 @@ public class TunIdCodecTest {
 
         final TunIdCaseValue result = (TunIdCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm1Class.class, input.getOxmClass());
-        assertEquals(NxmNxTunId.class, input.getOxmMatchField());
+        assertEquals(Nxm1Class.VALUE, input.getOxmClass());
+        assertEquals(NxmNxTunId.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(0, result.getTunIdValues().getValue().longValue());
     }
@@ -64,8 +64,8 @@ public class TunIdCodecTest {
         final TunIdCaseValueBuilder caseBuilder = new TunIdCaseValueBuilder();
         final TunIdValuesBuilder valuesBuilder = new TunIdValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm1Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmNxTunId.class);
+        matchEntryBuilder.setOxmClass(Nxm1Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmNxTunId.VALUE);
         matchEntryBuilder.setHasMask(false);
 
         valuesBuilder.setValue(Uint64.ZERO);

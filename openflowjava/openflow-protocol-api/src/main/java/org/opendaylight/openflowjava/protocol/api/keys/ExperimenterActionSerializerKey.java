@@ -19,8 +19,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * @author michal.polkorab
  */
 public final class ExperimenterActionSerializerKey extends ActionSerializerKey<ExperimenterIdCase> {
-
-    private final Class<? extends ExperimenterActionSubType> actionSubType;
+    private final ExperimenterActionSubType actionSubType;
 
     /**
      * Constructor.
@@ -30,7 +29,7 @@ public final class ExperimenterActionSerializerKey extends ActionSerializerKey<E
      * @param actionSubType vendor defined subtype
      */
     public ExperimenterActionSerializerKey(final Uint8 msgVersion, final Uint32 experimenterId,
-            final Class<? extends ExperimenterActionSubType> actionSubType) {
+            final ExperimenterActionSubType actionSubType) {
         super(msgVersion, ExperimenterIdCase.class, experimenterId);
         this.actionSubType = actionSubType;
     }

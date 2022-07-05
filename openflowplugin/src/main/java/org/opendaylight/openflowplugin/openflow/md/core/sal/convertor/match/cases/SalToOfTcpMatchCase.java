@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.ArrayList;
@@ -38,8 +37,8 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
 
         if (source.getTcpSourcePort() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(TcpSrc.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(TcpSrc.VALUE);
 
             TcpSrcCaseBuilder tcpSrcCaseBuilder = new TcpSrcCaseBuilder();
             TcpSrcBuilder tcpSrcBuilder = new TcpSrcBuilder();
@@ -53,8 +52,8 @@ public class SalToOfTcpMatchCase extends ConvertorCase<TcpMatch, List<MatchEntry
 
         if (source.getTcpDestinationPort() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            matchEntryBuilder.setOxmClass(OpenflowBasicClass.class);
-            matchEntryBuilder.setOxmMatchField(TcpDst.class);
+            matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+            matchEntryBuilder.setOxmMatchField(TcpDst.VALUE);
 
             TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
             TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();

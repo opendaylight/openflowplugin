@@ -35,8 +35,8 @@ public class OxmIpv6ExtHdrDeserializerTest {
         OxmIpv6ExtHdrDeserializer deserializer = new OxmIpv6ExtHdrDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals("Wrong entry field", Ipv6Exthdr.class, entry.getOxmMatchField());
+        Assert.assertEquals("Wrong entry class", OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals("Wrong entry field", Ipv6Exthdr.VALUE, entry.getOxmMatchField());
         Assert.assertEquals("Wrong entry hasMask", false, entry.getHasMask());
         Assert.assertEquals("Wrong entry value",
                 new Ipv6ExthdrFlags(true, true, true, true, true, true, true, true, true),

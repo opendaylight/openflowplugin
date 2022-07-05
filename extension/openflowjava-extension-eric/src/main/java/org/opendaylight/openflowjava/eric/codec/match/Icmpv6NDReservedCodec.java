@@ -28,7 +28,7 @@ public class Icmpv6NDReservedCodec extends AbstractMatchCodec {
 
     private static final int VALUE_LENGTH = 4;
     public static final MatchEntrySerializerKey<?, ?> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-             EncodeConstants.OF_VERSION_1_3, EricExpClass.class, Icmpv6NdReserved.class);
+             EncodeConstants.OF_VERSION_1_3, EricExpClass.VALUE, Icmpv6NdReserved.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, EricConstants.ERICOXM_OF_EXPERIMENTER_ID,
             EricConstants.ERICOXM_OF_ICMPV6_ND_RESERVED);
@@ -67,12 +67,12 @@ public class Icmpv6NDReservedCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getEricField() {
-        return Icmpv6NdReserved.class;
+    public MatchField getEricField() {
+        return Icmpv6NdReserved.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return EricExpClass.class;
+    public OxmClassBase getOxmClass() {
+        return EricExpClass.VALUE;
     }
 }

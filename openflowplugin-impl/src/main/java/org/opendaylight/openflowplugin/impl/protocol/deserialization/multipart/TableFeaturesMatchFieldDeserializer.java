@@ -64,8 +64,8 @@ public class TableFeaturesMatchFieldDeserializer {
     /**
      * Mapping of match entry code to match set field class.
      */
-    private final Map<MatchEntryDeserializerKey, Class<? extends MatchField>> codeToFieldMap = ImmutableMap
-        .<MatchEntryDeserializerKey, Class<? extends MatchField>>builder()
+    private final Map<MatchEntryDeserializerKey, MatchField> codeToFieldMap = ImmutableMap
+        .<MatchEntryDeserializerKey, MatchField>builder()
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
@@ -261,7 +261,7 @@ public class TableFeaturesMatchFieldDeserializer {
                 message.getUnsignedInt(message.readerIndex() + Short.BYTES + 2 * Byte.BYTES)));
         }
 
-        final Class<? extends MatchField> clazz = codeToFieldMap.get(key);
+        final MatchField clazz = codeToFieldMap.get(key);
         return clazz == null ? Optional.empty() : Optional.of(processHeader(message).setMatchType(clazz).build());
     }
 }

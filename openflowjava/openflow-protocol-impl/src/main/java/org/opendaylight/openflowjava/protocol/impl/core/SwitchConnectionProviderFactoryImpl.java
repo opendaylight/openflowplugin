@@ -57,7 +57,7 @@ public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProv
             try {
                 address = getInetAddress(config.getAddress());
             } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
         }
 

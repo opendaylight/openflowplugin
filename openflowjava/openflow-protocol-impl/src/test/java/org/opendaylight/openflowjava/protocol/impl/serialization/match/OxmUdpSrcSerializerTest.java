@@ -84,7 +84,7 @@ public class OxmUdpSrcSerializerTest {
         assertEquals("Wrong value length", Short.BYTES, serializer.getValueLength());
     }
 
-    private static MatchEntryBuilder prepareMatchEntry(int value) {
+    private static MatchEntryBuilder prepareMatchEntry(final int value) {
         MatchEntryBuilder builder = prepareHeader(false);
         UdpSrcCaseBuilder casebuilder = new UdpSrcCaseBuilder();
         UdpSrcBuilder valueBuilder = new UdpSrcBuilder();
@@ -94,15 +94,15 @@ public class OxmUdpSrcSerializerTest {
         return builder;
     }
 
-    private static MatchEntryBuilder prepareHeader(boolean hasMask) {
+    private static MatchEntryBuilder prepareHeader(final boolean hasMask) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(UdpSrc.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(UdpSrc.VALUE);
         builder.setHasMask(hasMask);
         return builder;
     }
 
-    private static void checkHeader(ByteBuf buffer, boolean hasMask) {
+    private static void checkHeader(final ByteBuf buffer, final boolean hasMask) {
         assertEquals("Wrong oxm-class", OxmMatchConstants.OPENFLOW_BASIC_CLASS, buffer.readUnsignedShort());
         short fieldAndMask = buffer.readUnsignedByte();
         assertEquals("Wrong oxm-field", OxmMatchConstants.UDP_SRC, fieldAndMask >>> 1);

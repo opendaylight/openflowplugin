@@ -20,7 +20,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmMetadataDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmMetadataDeserializer() {
-        super(Metadata.class);
+        super(Metadata.VALUE);
     }
 
     @Override

@@ -58,8 +58,8 @@ public class EthSrcCodecTest {
 
         final EthSrcCaseValue result = (EthSrcCaseValue) input.getMatchEntryValue();
 
-        assertEquals(Nxm0Class.class, input.getOxmClass());
-        assertEquals(NxmOfEthSrc.class, input.getOxmMatchField());
+        assertEquals(Nxm0Class.VALUE, input.getOxmClass());
+        assertEquals(NxmOfEthSrc.VALUE, input.getOxmMatchField());
         assertEquals(false, input.getHasMask());
         assertEquals(TEST_ADDRESS, result.getEthSrcValues().getMacAddress());
     }
@@ -69,8 +69,8 @@ public class EthSrcCodecTest {
         final EthSrcCaseValueBuilder caseBuilder = new EthSrcCaseValueBuilder();
         final EthSrcValuesBuilder valuesBuilder = new EthSrcValuesBuilder();
 
-        matchEntryBuilder.setOxmClass(Nxm0Class.class);
-        matchEntryBuilder.setOxmMatchField(NxmOfEthDst.class);
+        matchEntryBuilder.setOxmClass(Nxm0Class.VALUE);
+        matchEntryBuilder.setOxmMatchField(NxmOfEthDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
 

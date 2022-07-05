@@ -137,8 +137,8 @@ public class MultipartRequestTableFeaturesInputMessageFactoryTest {
     public List<MatchEntry> createMatchEntries() {
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(InPhyPort.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(InPhyPort.VALUE);
         entriesBuilder.setHasMask(false);
         entries.add(entriesBuilder.build());
         return entries;

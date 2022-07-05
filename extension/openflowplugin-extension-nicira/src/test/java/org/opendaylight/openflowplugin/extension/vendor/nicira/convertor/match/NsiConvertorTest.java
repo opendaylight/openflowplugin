@@ -78,25 +78,25 @@ public class NsiConvertorTest {
                 MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(NSI_VALUE,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNsi().getNsi());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNsiKey.class);
+        Assert.assertEquals(NxmNxNsiKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = nsiConvertor.convert(matchEntry,
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(NSI_VALUE,
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxNsi().getNsi());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNsiKey.class);
+        Assert.assertEquals(NxmNxNsiKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = nsiConvertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(NSI_VALUE,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxNsi().getNsi());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNsiKey.class);
+        Assert.assertEquals(NxmNxNsiKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = nsiConvertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(NSI_VALUE,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNsi().getNsi());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNsiKey.class);
+        Assert.assertEquals(NxmNxNsiKey.VALUE, extensionAugment.getKey());
     }
 }
 

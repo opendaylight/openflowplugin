@@ -82,7 +82,7 @@ public class Nshc1ConvertorTest {
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNshc1().getValue());
         Assert.assertEquals(MASK_VALUE,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxNshc1().getMask());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc1Key.class);
+        Assert.assertEquals(NxmNxNshc1Key.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = nshc1Convertor.convert(matchEntry,
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
@@ -92,7 +92,7 @@ public class Nshc1ConvertorTest {
         Assert.assertEquals(MASK_VALUE,
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                         .getNxmNxNshc1().getMask());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc1Key.class);
+        Assert.assertEquals(NxmNxNshc1Key.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = nshc1Convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
@@ -100,7 +100,7 @@ public class Nshc1ConvertorTest {
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxNshc1().getValue());
         Assert.assertEquals(MASK_VALUE,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxNshc1().getMask());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc1Key.class);
+        Assert.assertEquals(NxmNxNshc1Key.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = nshc1Convertor.convert(matchEntry,
                 MatchPath.FLOWS_STATISTICS_RPC_MATCH);
@@ -108,6 +108,6 @@ public class Nshc1ConvertorTest {
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNshc1().getValue());
         Assert.assertEquals(MASK_VALUE,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxNshc1().getMask());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxNshc1Key.class);
+        Assert.assertEquals(NxmNxNshc1Key.VALUE, extensionAugment.getKey());
     }
 }

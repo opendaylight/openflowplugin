@@ -73,11 +73,11 @@ public class FlowRemovedMessageFactoryTest {
         builder.setPacketCount(Uint64.valueOf(1234));
         builder.setByteCount(Uint64.valueOf(1234));
         MatchBuilder matchBuilder = new MatchBuilder();
-        matchBuilder.setType(OxmMatchType.class);
+        matchBuilder.setType(OxmMatchType.VALUE);
         final List<MatchEntry> entries = new ArrayList<>();
         MatchEntryBuilder entriesBuilder = new MatchEntryBuilder();
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(InPhyPort.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(InPhyPort.VALUE);
         entriesBuilder.setHasMask(false);
         InPhyPortCaseBuilder inPhyPortCaseBuilder = new InPhyPortCaseBuilder();
         InPhyPortBuilder inPhyPortBuilder = new InPhyPortBuilder();
@@ -85,8 +85,8 @@ public class FlowRemovedMessageFactoryTest {
         inPhyPortCaseBuilder.setInPhyPort(inPhyPortBuilder.build());
         entriesBuilder.setMatchEntryValue(inPhyPortCaseBuilder.build());
         entries.add(entriesBuilder.build());
-        entriesBuilder.setOxmClass(OpenflowBasicClass.class);
-        entriesBuilder.setOxmMatchField(IpEcn.class);
+        entriesBuilder.setOxmClass(OpenflowBasicClass.VALUE);
+        entriesBuilder.setOxmMatchField(IpEcn.VALUE);
         entriesBuilder.setHasMask(false);
         IpEcnCaseBuilder ipEcnCaseBuilder = new IpEcnCaseBuilder();
         IpEcnBuilder ipEcnBuilder = new IpEcnBuilder();

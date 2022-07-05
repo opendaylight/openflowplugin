@@ -29,33 +29,33 @@ public class SetFieldExtensionTest {
         eqGroup.add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class);
         eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(ZVendorExt1.class).build();
+        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(ZVendorExt1.VALUE).build();
         SetField setField1 = new SetFieldBuilder()
                 .addAugmentation(new GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder()
                     .setExtensionList(Collections.singletonMap(extension1.key(), extension1))
                     .build())
                 .build();
 
-        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(ZVendorExt2.class).build();
+        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(ZVendorExt2.VALUE).build();
         SetField setField2 = new SetFieldBuilder()
                 .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
                     .setExtensionList(Collections.singletonMap(extension2.key(), extension2))
                     .build())
                 .build();
 
-        Assert.assertEquals(ZVendorExt1.class,
+        Assert.assertEquals(ZVendorExt1.VALUE,
                 eqGroup.getExtension(setField1).get().nonnullExtensionList().values().iterator().next()
                         .getExtensionKey());
-        Assert.assertEquals(ZVendorExt2.class,
+        Assert.assertEquals(ZVendorExt2.VALUE,
                 eqGroup.getExtension(setField2).get().nonnullExtensionList().values().iterator().next()
                         .getExtensionKey());
     }
 
     private interface ZVendorExt1 extends ExtensionKey {
-        // nobody
+        ZVendorExt1 VALUE = () -> ZVendorExt1.class;
     }
 
     private interface ZVendorExt2 extends ExtensionKey {
-        // nobody
+        ZVendorExt2 VALUE = () -> ZVendorExt2.class;
     }
 }

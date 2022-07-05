@@ -26,9 +26,9 @@ public class OxmPacketTypeDeserializerTest {
         OxmPacketTypeDeserializer deserializer = new OxmPacketTypeDeserializer();
         MatchEntry entry = deserializer.deserialize(buffer);
 
-        Assert.assertEquals(OpenflowBasicClass.class, entry.getOxmClass());
-        Assert.assertEquals(PacketType.class, entry.getOxmMatchField());
-        Assert.assertEquals(false, entry.getHasMask());
+        Assert.assertEquals(OpenflowBasicClass.VALUE, entry.getOxmClass());
+        Assert.assertEquals(PacketType.VALUE, entry.getOxmMatchField());
+        Assert.assertFalse(entry.getHasMask());
 
         PacketTypeCase packetTypeCase = (PacketTypeCase) entry.getMatchEntryValue();
         Assert.assertEquals(0x1894f, packetTypeCase.getPacketType().getPacketType().longValue());

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.ArrayList;
@@ -63,7 +62,7 @@ public class SalToOfSetTpSrcActionCase extends ConvertorCase<SetTpSrcActionCase,
         SetTpSrcAction settpsrcaction = source.getSetTpSrcAction();
 
         MatchEntryBuilder matchBuilder = new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE);
 
         final Uint16 port = settpsrcaction.getPort().getValue();
@@ -72,19 +71,19 @@ public class SalToOfSetTpSrcActionCase extends ConvertorCase<SetTpSrcActionCase,
         if (protocol != null) {
             switch (protocol) {
                 case ICMP:
-                    matchBuilder.setOxmMatchField(Icmpv4Type.class);
+                    matchBuilder.setOxmMatchField(Icmpv4Type.VALUE);
                     matchBuilder.setMatchEntryValue(new Icmpv4TypeCaseBuilder()
                         .setIcmpv4Type(new Icmpv4TypeBuilder().setIcmpv4Type(type).build())
                         .build());
                     break;
                 case ICMPV6:
-                    matchBuilder.setOxmMatchField(Icmpv6Type.class);
+                    matchBuilder.setOxmMatchField(Icmpv6Type.VALUE);
                     matchBuilder.setMatchEntryValue(new Icmpv6TypeCaseBuilder()
                         .setIcmpv6Type(new Icmpv6TypeBuilder().setIcmpv6Type(type).build())
                         .build());
                     break;
                 case TCP:
-                    matchBuilder.setOxmMatchField(TcpSrc.class);
+                    matchBuilder.setOxmMatchField(TcpSrc.VALUE);
                     matchBuilder.setMatchEntryValue(new TcpSrcCaseBuilder()
                         .setTcpSrc(new TcpSrcBuilder()
                             .setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
@@ -93,7 +92,7 @@ public class SalToOfSetTpSrcActionCase extends ConvertorCase<SetTpSrcActionCase,
                         .build());
                     break;
                 case UDP:
-                    matchBuilder.setOxmMatchField(UdpSrc.class);
+                    matchBuilder.setOxmMatchField(UdpSrc.VALUE);
                     matchBuilder.setMatchEntryValue(new UdpSrcCaseBuilder()
                         .setUdpSrc(new UdpSrcBuilder()
                             .setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
