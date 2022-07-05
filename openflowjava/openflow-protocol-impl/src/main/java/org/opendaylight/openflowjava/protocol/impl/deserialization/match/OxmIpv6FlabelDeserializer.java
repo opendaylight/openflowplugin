@@ -23,7 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
  */
 public class OxmIpv6FlabelDeserializer extends AbstractOxmMatchEntryDeserializer {
     public OxmIpv6FlabelDeserializer() {
-        super(Ipv6Flabel.class);
+        super(Ipv6Flabel.VALUE);
     }
 
     @Override

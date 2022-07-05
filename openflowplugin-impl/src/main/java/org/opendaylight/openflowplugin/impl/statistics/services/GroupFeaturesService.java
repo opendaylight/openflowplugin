@@ -95,37 +95,37 @@ final class GroupFeaturesService
     }
 
     @VisibleForTesting
-    static Set<Class<? extends GroupCapability>> extractSupportedCapabilities(final GroupCapabilities capabilities) {
-        final var builder = ImmutableSet.<Class<? extends GroupCapability>>builder();
+    static Set<GroupCapability> extractSupportedCapabilities(final GroupCapabilities capabilities) {
+        final var builder = ImmutableSet.<GroupCapability>builder();
         if (capabilities.getOFPGFCCHAINING()) {
-            builder.add(Chaining.class);
+            builder.add(Chaining.VALUE);
         }
         if (capabilities.getOFPGFCCHAININGCHECKS()) {
-            builder.add(ChainingChecks.class);
+            builder.add(ChainingChecks.VALUE);
         }
         if (capabilities.getOFPGFCSELECTLIVENESS()) {
-            builder.add(SelectLiveness.class);
+            builder.add(SelectLiveness.VALUE);
         }
         if (capabilities.getOFPGFCSELECTWEIGHT()) {
-            builder.add(SelectWeight.class);
+            builder.add(SelectWeight.VALUE);
         }
         return builder.build();
     }
 
     @VisibleForTesting
-    static Set<Class<? extends GroupType>> extractSupportedGroupTypes(final GroupTypes types) {
-        final var builder = ImmutableSet.<Class<? extends GroupType>>builder();
+    static Set<GroupType> extractSupportedGroupTypes(final GroupTypes types) {
+        final var builder = ImmutableSet.<GroupType>builder();
         if (types.getOFPGTALL()) {
-            builder.add(GroupAll.class);
+            builder.add(GroupAll.VALUE);
         }
         if (types.getOFPGTSELECT()) {
-            builder.add(GroupSelect.class);
+            builder.add(GroupSelect.VALUE);
         }
         if (types.getOFPGTINDIRECT()) {
-            builder.add(GroupIndirect.class);
+            builder.add(GroupIndirect.VALUE);
         }
         if (types.getOFPGTFF()) {
-            builder.add(GroupFf.class);
+            builder.add(GroupFf.VALUE);
         }
         return builder.build();
     }

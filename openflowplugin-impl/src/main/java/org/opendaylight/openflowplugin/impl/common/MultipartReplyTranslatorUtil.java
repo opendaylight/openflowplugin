@@ -346,33 +346,33 @@ public final class MultipartReplyTranslatorUtil {
             .getMultipartReplyGroupFeatures();
 
         final var replyTypes = replyBody.getTypes();
-        final var supportedGroups = ImmutableSet.<Class<? extends GroupType>>builder();
+        final var supportedGroups = ImmutableSet.<GroupType>builder();
         if (replyTypes.getOFPGTALL()) {
-            supportedGroups.add(GroupAll.class);
+            supportedGroups.add(GroupAll.VALUE);
         }
         if (replyTypes.getOFPGTSELECT()) {
-            supportedGroups.add(GroupSelect.class);
+            supportedGroups.add(GroupSelect.VALUE);
         }
         if (replyTypes.getOFPGTINDIRECT()) {
-            supportedGroups.add(GroupIndirect.class);
+            supportedGroups.add(GroupIndirect.VALUE);
         }
         if (replyTypes.getOFPGTFF()) {
-            supportedGroups.add(GroupFf.class);
+            supportedGroups.add(GroupFf.VALUE);
         }
 
         final var replyCapabilities = replyBody.getCapabilities();
-        final var supportedCapabilities = ImmutableSet.<Class<? extends GroupCapability>>builder();
+        final var supportedCapabilities = ImmutableSet.<GroupCapability>builder();
         if (replyCapabilities.getOFPGFCCHAINING()) {
-            supportedCapabilities.add(Chaining.class);
+            supportedCapabilities.add(Chaining.VALUE);
         }
         if (replyCapabilities.getOFPGFCCHAININGCHECKS()) {
-            supportedCapabilities.add(ChainingChecks.class);
+            supportedCapabilities.add(ChainingChecks.VALUE);
         }
         if (replyCapabilities.getOFPGFCSELECTLIVENESS()) {
-            supportedCapabilities.add(SelectLiveness.class);
+            supportedCapabilities.add(SelectLiveness.VALUE);
         }
         if (replyCapabilities.getOFPGFCSELECTWEIGHT()) {
-            supportedCapabilities.add(SelectWeight.class);
+            supportedCapabilities.add(SelectWeight.VALUE);
         }
 
         return new MultipartReplyGroupFeaturesBuilder()
@@ -423,27 +423,27 @@ public final class MultipartReplyTranslatorUtil {
         MultipartReplyMeterFeatures replyBody = caseBody.getMultipartReplyMeterFeatures();
 
         final var replyCapabilities = replyBody.getCapabilities();
-        final var supportedCapabilities = ImmutableSet.<Class<? extends MeterCapability>>builder();
+        final var supportedCapabilities = ImmutableSet.<MeterCapability>builder();
         if (replyCapabilities.getOFPMFBURST()) {
-            supportedCapabilities.add(MeterBurst.class);
+            supportedCapabilities.add(MeterBurst.VALUE);
         }
         if (replyCapabilities.getOFPMFKBPS()) {
-            supportedCapabilities.add(MeterKbps.class);
+            supportedCapabilities.add(MeterKbps.VALUE);
         }
         if (replyCapabilities.getOFPMFPKTPS()) {
-            supportedCapabilities.add(MeterPktps.class);
+            supportedCapabilities.add(MeterPktps.VALUE);
         }
         if (replyCapabilities.getOFPMFSTATS()) {
-            supportedCapabilities.add(MeterStats.class);
+            supportedCapabilities.add(MeterStats.VALUE);
         }
 
         final var replyMeterBand = replyBody.getBandTypes();
-        final var supportedMeterBand = ImmutableSet.<Class<? extends MeterBand>>builder();
+        final var supportedMeterBand = ImmutableSet.<MeterBand>builder();
         if (replyMeterBand.getOFPMBTDROP()) {
-            supportedMeterBand.add(MeterBandDrop.class);
+            supportedMeterBand.add(MeterBandDrop.VALUE);
         }
         if (replyMeterBand.getOFPMBTDSCPREMARK()) {
-            supportedMeterBand.add(MeterBandDscpRemark.class);
+            supportedMeterBand.add(MeterBandDscpRemark.VALUE);
         }
 
         return new MultipartReplyMeterFeaturesBuilder()

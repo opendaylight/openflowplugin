@@ -183,12 +183,12 @@ public class MatchResponseConvertorTest {
             createOFMatch(final List<MatchEntry> entries) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder builder =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder();
-        return builder.setType(OxmMatchType.class).setMatchEntry(entries).build();
+        return builder.setType(OxmMatchType.VALUE).setMatchEntry(entries).build();
     }
 
     private static List<MatchEntry> createDefaultMatchEntry() {
         List<MatchEntry> entries = new ArrayList<>();
-        entries.add(toOfPort(InPort.class, IN_PORT));
+        entries.add(toOfPort(InPort.VALUE, IN_PORT));
 
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
         EthSrcCaseBuilder ethSrcCaseBuilder = new EthSrcCaseBuilder();
@@ -197,7 +197,7 @@ public class MatchResponseConvertorTest {
         ethSrcBuilder.setMacAddress(MAC_SRC);
         ethSrcCaseBuilder.setEthSrc(ethSrcBuilder.build());
         matchEntryBuilder.setMatchEntryValue(ethSrcCaseBuilder.build());
-        matchEntryBuilder.setOxmMatchField(EthSrc.class);
+        matchEntryBuilder.setOxmMatchField(EthSrc.VALUE);
         entries.add(matchEntryBuilder.build());
 
 
@@ -206,7 +206,7 @@ public class MatchResponseConvertorTest {
         ethDstBuilder.setMacAddress(MAC_DST);
         ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
         matchEntryBuilder.setMatchEntryValue(ethDstCaseBuilder.build());
-        matchEntryBuilder.setOxmMatchField(EthDst.class);
+        matchEntryBuilder.setOxmMatchField(EthDst.VALUE);
         entries.add(matchEntryBuilder.build());
 
         entries.add(toOfEthernetType(ETHTYPE_IPV4));
@@ -215,9 +215,9 @@ public class MatchResponseConvertorTest {
 
     private static MatchEntry toOfEthernetType(final Uint16 ethType) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
         builder.setHasMask(false);
-        builder.setOxmMatchField(EthType.class);
+        builder.setOxmMatchField(EthType.VALUE);
         EthTypeCaseBuilder ethTypeCaseBuilder = new EthTypeCaseBuilder();
         EthTypeBuilder ethTypeBuilder = new EthTypeBuilder();
         EtherType etherType = new EtherType(ethType);
@@ -227,10 +227,9 @@ public class MatchResponseConvertorTest {
         return builder.build();
     }
 
-    private static MatchEntry toOfPort(final Class<? extends MatchField> field,
-                                final Uint32 portNumber) {
+    private static MatchEntry toOfPort(final MatchField field, final Uint32 portNumber) {
         MatchEntryBuilder builder = new MatchEntryBuilder();
-        builder.setOxmClass(OpenflowBasicClass.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
         builder.setHasMask(false);
         builder.setOxmMatchField(field);
         InPortCaseBuilder inPortCaseBuilder = new InPortCaseBuilder();
@@ -246,8 +245,8 @@ public class MatchResponseConvertorTest {
         boolean cfi = true;
         final Uint16 vidValue;
         byte[] mask = null;
-        builder.setOxmClass(OpenflowBasicClass.class);
-        builder.setOxmMatchField(VlanVid.class);
+        builder.setOxmClass(OpenflowBasicClass.VALUE);
+        builder.setOxmMatchField(VlanVid.VALUE);
         if (vid == 0) {
             // Match untagged frame.
             cfi = false;

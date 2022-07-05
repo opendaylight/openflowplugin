@@ -80,8 +80,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.MatchEntryValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.Match;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src;
 
 /**
  * Converts Openflow 1.3+ specific flow match to MD-SAL format flow match.
@@ -179,23 +177,22 @@ public class MatchResponseConvertor extends Convertor<MatchEntriesGrouping, Matc
         data.setTcpFlagsMatchBuilder(new TcpFlagsMatchBuilder());
 
         for (MatchEntry ofMatch : source.nonnullMatchEntry()) {
-            if (TunnelIpv4Dst.class.isAssignableFrom(ofMatch.getOxmMatchField())
-                    || TunnelIpv4Src.class.isAssignableFrom(ofMatch.getOxmMatchField())) {
-                /*
-                 * TODO: Fix TunnelIpv4Src and Ipv4Dst, because current implementation do not work
-                 * TunnelIpv4Src and TunnelIpv4Dst are not compatible with
-                 * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField
-                 * and so you cannot even set them to OxmMatchField.
-                 * Creation of TunnelIpv4SrcCase and TunnelIpv4DstCase in
-                 * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value
-                 *     .grouping.match.entry.value
-                 * and proper use of it can fix this bug.
-                 */
-                OF_TO_SAL_TUNNEL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
-            } else {
-                data.setOxmMatchField(ofMatch.getOxmMatchField());
-                OF_TO_SAL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
-            }
+            // FIXME: Fix TunnelIpv4Src and Ipv4Dst, because current implementation do not work
+            //        TunnelIpv4Src and TunnelIpv4Dst are not compatible with
+            //          org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField
+            //        and so you cannot even set them to OxmMatchField.
+            //
+            //        Create a TunnelIpv4SrcCase and a TunnelIpv4DstCase in
+            //          org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value
+            //              .grouping.match.entry.value
+            //        and use of them to fix this bug.
+            // if (TunnelIpv4Dst.VALUE.equals(ofMatch.getOxmMatchField())
+            //     || TunnelIpv4Src.VALUE.equals(ofMatch.getOxmMatchField())) {
+            //     OF_TO_SAL_TUNNEL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
+            // } else {
+            data.setOxmMatchField(ofMatch.getOxmMatchField());
+            OF_TO_SAL_PROCESSOR.process(ofMatch.getMatchEntryValue(), data, getConvertorExecutor());
+            // }
         }
 
         return matchBuilder;

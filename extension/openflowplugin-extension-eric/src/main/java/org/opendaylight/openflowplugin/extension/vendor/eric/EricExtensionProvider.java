@@ -25,11 +25,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class EricExtensionProvider implements AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(EricExtensionProvider.class);
     private static final Icmpv6NDReservedConvertor ICMPV6_ND_RESERVED_CONVERTOR = new Icmpv6NDReservedConvertor();
-    private static final Icmpv6NDOptionsTypeConvertor ICMPV6_ND_OPTIONS_TYPE_CONVERTOR
-            = new Icmpv6NDOptionsTypeConvertor();
+    private static final Icmpv6NDOptionsTypeConvertor ICMPV6_ND_OPTIONS_TYPE_CONVERTOR =
+        new Icmpv6NDOptionsTypeConvertor();
 
     private final ExtensionConverterRegistrator extensionConverterRegistrator;
     private final List<ObjectRegistration<?>> registrations;
@@ -38,14 +37,14 @@ public class EricExtensionProvider implements AutoCloseable {
      * Register appropriate converters.
      */
     public EricExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
-        this.extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
+        extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
         registrations = List.of(
             extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
-                Icmpv6NdReservedKey.class, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_RESERVED_CONVERTOR),
+                Icmpv6NdReservedKey.VALUE, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_RESERVED_CONVERTOR),
             extensionConverterRegistrator.registerMatchConvertor(
                 Icmpv6NDReservedCodec.SERIALIZER_KEY, ICMPV6_ND_RESERVED_CONVERTOR),
             extensionConverterRegistrator.registerMatchConvertor(new ConverterExtensionKey<>(
-                Icmpv6NdOptionsTypeKey.class, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_OPTIONS_TYPE_CONVERTOR),
+                Icmpv6NdOptionsTypeKey.VALUE, EncodeConstants.OF_VERSION_1_3), ICMPV6_ND_OPTIONS_TYPE_CONVERTOR),
             extensionConverterRegistrator.registerMatchConvertor(
                 Icmpv6NDOptionsTypeCodec.SERIALIZER_KEY, ICMPV6_ND_OPTIONS_TYPE_CONVERTOR));
     }

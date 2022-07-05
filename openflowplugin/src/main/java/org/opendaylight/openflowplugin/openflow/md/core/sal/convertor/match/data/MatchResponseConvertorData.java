@@ -53,7 +53,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
     private ProtocolMatchFieldsBuilder protocolMatchFieldsBuilder;
     private TunnelIpv4MatchBuilder tunnelIpv4MatchBuilder;
     private TcpFlagsMatchBuilder tcpFlagsMatchBuilder;
-    private Class<? extends MatchField> oxmMatchField;
+    private MatchField oxmMatchField;
 
     /**
      * Instantiates a new Match convertor data.
@@ -377,7 +377,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @param oxmMatchField the oxm match field
      */
-    public void setOxmMatchField(final Class<? extends MatchField> oxmMatchField) {
+    public void setOxmMatchField(final MatchField oxmMatchField) {
         this.oxmMatchField = oxmMatchField;
     }
 
@@ -386,7 +386,7 @@ public class MatchResponseConvertorData extends VersionDatapathIdConvertorData {
      *
      * @return the oxm match field
      */
-    public Class<? extends MatchField> getOxmMatchField() {
+    public MatchField getOxmMatchField() {
         return oxmMatchField;
     }
 }

@@ -49,7 +49,7 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
     public Optional<Action> process(final SetTpDstActionCase source, final ActionConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         final MatchEntryBuilder matchBuilder = new MatchEntryBuilder()
-                .setOxmClass(OpenflowBasicClass.class)
+                .setOxmClass(OpenflowBasicClass.VALUE)
                 .setHasMask(Boolean.FALSE);
 
         final Uint8 ipProtocol = data.getIpProtocol();
@@ -65,7 +65,7 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
 
             switch (protocol) {
                 case ICMP:
-                    matchBuilder.setOxmMatchField(Icmpv4Code.class);
+                    matchBuilder.setOxmMatchField(Icmpv4Code.VALUE);
                     matchBuilder.setMatchEntryValue(new Icmpv4CodeCaseBuilder()
                         .setIcmpv4Code(new Icmpv4CodeBuilder()
                             .setIcmpv4Code(Uint8.valueOf(0xFF & port.toJava()))
@@ -73,7 +73,7 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
                         .build());
                     break;
                 case ICMPV6:
-                    matchBuilder.setOxmMatchField(Icmpv6Code.class);
+                    matchBuilder.setOxmMatchField(Icmpv6Code.VALUE);
                     matchBuilder.setMatchEntryValue(new Icmpv6CodeCaseBuilder()
                         .setIcmpv6Code(new Icmpv6CodeBuilder()
                             .setIcmpv6Code(Uint8.valueOf(0xFF & port.toJava()))
@@ -81,7 +81,7 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
                         .build());
                     break;
                 case TCP:
-                    matchBuilder.setOxmMatchField(TcpDst.class);
+                    matchBuilder.setOxmMatchField(TcpDst.VALUE);
                     TcpDstCaseBuilder tcpDstCaseBuilder = new TcpDstCaseBuilder();
                     TcpDstBuilder tcpDstBuilder = new TcpDstBuilder();
                     tcpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types
@@ -90,7 +90,7 @@ public class SalToOfSetTpDstActionCase extends ConvertorCase<SetTpDstActionCase,
                     matchBuilder.setMatchEntryValue(tcpDstCaseBuilder.build());
                     break;
                 case UDP:
-                    matchBuilder.setOxmMatchField(UdpDst.class);
+                    matchBuilder.setOxmMatchField(UdpDst.VALUE);
                     UdpDstCaseBuilder udpDstCaseBuilder = new UdpDstCaseBuilder();
                     UdpDstBuilder udpDstBuilder = new UdpDstBuilder();
                     udpDstBuilder.setPort(new org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types

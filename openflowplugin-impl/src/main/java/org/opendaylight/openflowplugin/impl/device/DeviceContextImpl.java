@@ -180,28 +180,28 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                       final NotificationManager<String, Runnable> queuedNotificationManager,
                       final boolean isStatisticsPollingOn) {
         this.primaryConnectionContext = primaryConnectionContext;
-        this.deviceInfo = primaryConnectionContext.getDeviceInfo();
+        deviceInfo = primaryConnectionContext.getDeviceInfo();
         this.hashedWheelTimer = hashedWheelTimer;
         this.deviceInitializerProvider = deviceInitializerProvider;
         this.isFlowRemovedNotificationOn = isFlowRemovedNotificationOn;
         this.switchFeaturesMandatory = switchFeaturesMandatory;
-        this.deviceState = new DeviceStateImpl();
+        deviceState = new DeviceStateImpl();
         this.dataBroker = dataBroker;
         this.messageSpy = messageSpy;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.contextChainHolder = contextChainHolder;
 
-        this.packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
+        packetInLimiter = new PacketInRateLimiter(primaryConnectionContext.getConnectionAdapter(),
                 /*initial*/ LOW_WATERMARK, /*initial*/HIGH_WATERMARK, this.messageSpy, REJECTED_DRAIN_FACTOR);
 
         this.translatorLibrary = translatorLibrary;
-        this.portStatusTranslator = translatorLibrary.lookupTranslator(
+        portStatusTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), PortGrouping.class.getName()));
-        this.packetInTranslator = translatorLibrary.lookupTranslator(
+        packetInTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
                         .protocol.rev130731
                         .PacketIn.class.getName()));
-        this.flowRemovedTranslator = translatorLibrary.lookupTranslator(
+        flowRemovedTranslator = translatorLibrary.lookupTranslator(
                 new TranslatorKey(deviceInfo.getVersion(), FlowRemoved.class.getName()));
 
         this.convertorExecutor = convertorExecutor;
@@ -578,7 +578,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @VisibleForTesting
     TransactionChainManager getTransactionChainManager() {
-        return this.transactionChainManager;
+        return transactionChainManager;
     }
 
     @Override
@@ -598,12 +598,12 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public DeviceInfo getDeviceInfo() {
-        return this.deviceInfo;
+        return deviceInfo;
     }
 
     @Override
     public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
-        this.contextChainMastershipWatcher = newWatcher;
+        contextChainMastershipWatcher = newWatcher;
     }
 
     @Override
@@ -672,7 +672,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {
-            throw new RuntimeException(String.format("Error processing port status messages from device %s: %s",
+            throw new IllegalStateException(String.format("Error processing port status messages from device %s: %s",
                     deviceInfo.toString(), ex.toString()), ex);
         }
 
@@ -688,14 +688,14 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
             } catch (TimeoutException ex) {
                 initialize.cancel(true);
-                throw new RuntimeException(String.format("Failed to initialize device %s in %ss: %s",
+                throw new IllegalStateException(String.format("Failed to initialize device %s in %ss: %s",
                         deviceInfo.toString(), String.valueOf(DEVICE_INIT_TIMEOUT / 1000), ex.toString()), ex);
             } catch (ExecutionException | InterruptedException ex) {
-                throw new RuntimeException(
+                throw new IllegalStateException(
                         String.format("Device %s cannot be initialized: %s", deviceInfo.toString(), ex.toString()), ex);
             }
         } else {
-            throw new RuntimeException(String.format("Unsupported version %s for device %s",
+            throw new IllegalStateException(String.format("Unsupported version %s for device %s",
                     deviceInfo.getVersion(),
                     deviceInfo.toString()));
         }
@@ -709,15 +709,15 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @VisibleForTesting
     void lazyTransactionManagerInitialization() {
-        if (!this.initialized.get()) {
+        if (!initialized.get()) {
             LOG.debug("Transaction chain manager for node {} created", deviceInfo);
             final NodeId nodeId = deviceInfo.getNodeId();
-            this.transactionChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());
-            this.history = new FlowGroupInfoHistoryImpl(FLOWGROUP_CACHE_SIZE);
-            this.deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker,
+            transactionChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());
+            history = new FlowGroupInfoHistoryImpl(FLOWGROUP_CACHE_SIZE);
+            deviceFlowRegistry = new DeviceFlowRegistryImpl(deviceInfo.getVersion(), dataBroker,
                     deviceInfo.getNodeInstanceIdentifier(), history);
-            this.deviceGroupRegistry = new DeviceGroupRegistryImpl(history);
-            this.deviceMeterRegistry = new DeviceMeterRegistryImpl();
+            deviceGroupRegistry = new DeviceGroupRegistryImpl(history);
+            deviceMeterRegistry = new DeviceMeterRegistryImpl();
         }
 
         transactionChainManager.activateTransactionManager();

@@ -24,7 +24,7 @@ public class MetadataCodec extends AbstractMatchCodec {
     private static final int NXM_FIELD_CODE = 2;
 
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfMetadata> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfMetadata.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm0Class.VALUE, NxmOfMetadata.VALUE);
 
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
@@ -56,12 +56,12 @@ public class MetadataCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfMetadata.class;
+    public MatchField getNxmField() {
+        return NxmOfMetadata.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm0Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm0Class.VALUE;
     }
 }

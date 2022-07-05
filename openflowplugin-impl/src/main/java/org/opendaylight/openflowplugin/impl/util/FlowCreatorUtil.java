@@ -87,7 +87,7 @@ public final class FlowCreatorUtil {
     }
 
     public static Match createWildcardedMatch() {
-        return new MatchBuilder().setType(OxmMatchType.class).build();
+        return new MatchBuilder().setType(OxmMatchType.VALUE).build();
     }
 
     /**

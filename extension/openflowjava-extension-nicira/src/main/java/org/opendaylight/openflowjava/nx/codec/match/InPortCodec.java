@@ -28,7 +28,7 @@ public class InPortCodec extends AbstractMatchCodec {
     private static final int NXM_FIELD_CODE = 0;
 
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfInPort> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfInPort.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm0Class.VALUE, NxmOfInPort.VALUE);
 
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
@@ -67,12 +67,12 @@ public class InPortCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfInPort.class;
+    public MatchField getNxmField() {
+        return NxmOfInPort.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm0Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm0Class.VALUE;
     }
 }

@@ -8,10 +8,8 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Ordering;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +123,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTable;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.field.match.SetFieldMatchKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
@@ -170,72 +169,71 @@ public class TableFeaturesConvertor extends Convertor<
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features
         .table.features.table.properties.TableFeatureProperties> TABLE_FEATURE_PROPS_ORDERING =
             Ordering.from(OrderComparator.build());
-    private static final Map<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm
-            .rev150225.MatchField>> SAL_TO_OF_TABLE_FEATURES;
-    private static final List<Class<?>> TYPES = Arrays.asList(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types
-            .rev131026.TableFeatures.class, UpdatedTable.class);
+    private static final List<Class<?>> TYPES = List.of(
+        org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures.class,
+        UpdatedTable.class);
 
-    static {
-        Builder<Class<?>, Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm
-                .rev150225.MatchField>> builder = ImmutableMap.builder();
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.class, ArpOp.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSha.class, ArpSha.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSpa.class, ArpSpa.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpTha.class, ArpTha.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpTpa.class, ArpTpa.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthDst.class, EthDst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthSrc.class, EthSrc.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthType.class, EthType.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Code.class,
-                Icmpv4Code.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Type.class,
-                Icmpv4Type.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Code.class,
-                Icmpv6Code.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Type.class,
-                Icmpv6Type.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPhyPort.class,
-                InPhyPort.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPort.class, InPort.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpDscp.class, IpDscp.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpEcn.class, IpEcn.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpProto.class, IpProto.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv4Dst.class, Ipv4Dst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv4Src.class, Ipv4Src.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Dst.class, Ipv6Dst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Exthdr.class,
-                Ipv6Exthdr.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Flabel.class,
-                Ipv6Flabel.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdSll.class,
-                Ipv6NdSll.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTarget.class,
-                Ipv6NdTarget.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTll.class,
-                Ipv6NdTll.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Src.class, Ipv6Src.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Metadata.class, Metadata.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsBos.class, MplsBos.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsLabel.class,
-                MplsLabel.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsTc.class, MplsTc.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.PbbIsid.class, PbbIsid.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpDst.class, SctpDst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpSrc.class, SctpSrc.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpDst.class, TcpDst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc.class, TcpSrc.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelId.class, TunnelId.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.class, UdpDst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc.class, UdpSrc.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.class, VlanPcp.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.class, VlanVid.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.class,
-                Ipv4Dst.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.class,
-                Ipv4Src.class);
-        builder.put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlags.class, TcpFlags.class);
-        SAL_TO_OF_TABLE_FEATURES = builder.build();
-    }
+    private static final ImmutableMap<MatchField,
+        org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField> SAL_TO_OF_TABLE_FEATURES =
+            ImmutableMap.<MatchField,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>builder()
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpOp.VALUE, ArpOp.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSha.VALUE, ArpSha.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpSpa.VALUE, ArpSpa.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpTha.VALUE, ArpTha.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.ArpTpa.VALUE, ArpTpa.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthDst.VALUE, EthDst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthSrc.VALUE, EthSrc.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.EthType.VALUE, EthType.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Code.VALUE,
+                    Icmpv4Code.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv4Type.VALUE,
+                    Icmpv4Type.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Code.VALUE,
+                    Icmpv6Code.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Icmpv6Type.VALUE,
+                    Icmpv6Type.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPhyPort.VALUE,
+                    InPhyPort.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.InPort.VALUE, InPort.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpDscp.VALUE, IpDscp.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpEcn.VALUE, IpEcn.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.IpProto.VALUE, IpProto.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv4Dst.VALUE, Ipv4Dst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv4Src.VALUE, Ipv4Src.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Dst.VALUE, Ipv6Dst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Exthdr.VALUE,
+                    Ipv6Exthdr.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Flabel.VALUE,
+                    Ipv6Flabel.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdSll.VALUE,
+                    Ipv6NdSll.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTarget.VALUE,
+                    Ipv6NdTarget.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6NdTll.VALUE,
+                    Ipv6NdTll.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Ipv6Src.VALUE, Ipv6Src.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.Metadata.VALUE, Metadata.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsBos.VALUE, MplsBos.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsLabel.VALUE,
+                    MplsLabel.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MplsTc.VALUE, MplsTc.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.PbbIsid.VALUE, PbbIsid.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpDst.VALUE, SctpDst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.SctpSrc.VALUE, SctpSrc.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpDst.VALUE, TcpDst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpSrc.VALUE, TcpSrc.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelId.VALUE, TunnelId.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpDst.VALUE, UdpDst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.UdpSrc.VALUE, UdpSrc.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanPcp.VALUE, VlanPcp.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.VlanVid.VALUE, VlanVid.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Dst.VALUE,
+                    Ipv4Dst.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TunnelIpv4Src.VALUE,
+                    Ipv4Src.VALUE)
+                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TcpFlags.VALUE, TcpFlags.VALUE)
+                .build();
 
     private static List<TableFeatureProperties> toTableProperties(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features
@@ -599,11 +597,11 @@ public class TableFeaturesConvertor extends Convertor<
         List<MatchEntry> matchEntriesList = new ArrayList<>();
 
         for (SetFieldMatch currMatch : setFields.values()) {
-            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField>
-                currMatchType = currMatch.getMatchType();
+            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.MatchField currMatchType =
+                currMatch.getMatchType();
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField>
-                ofTableFeatureClass = SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField ofTableFeatureClass =
+                SAL_TO_OF_TABLE_FEATURES.get(currMatchType);
             setMatchEntry(matchEntryBuilder, ofTableFeatureClass, currMatch.getHasMask());
             matchEntriesList.add(matchEntryBuilder.build());
         }
@@ -614,12 +612,12 @@ public class TableFeaturesConvertor extends Convertor<
     }
 
     private static void setMatchEntry(final MatchEntryBuilder builder,
-            final Class<? extends org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225
-                    .MatchField> field, final Boolean hasMask) {
-        if (field == TcpFlags.class) {
-            builder.setOxmClass(ExperimenterClass.class);
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField field,
+            final Boolean hasMask) {
+        if (TcpFlags.VALUE.equals(field)) {
+            builder.setOxmClass(ExperimenterClass.VALUE);
         } else {
-            builder.setOxmClass(OpenflowBasicClass.class);
+            builder.setOxmClass(OpenflowBasicClass.VALUE);
         }
         builder.setOxmMatchField(field);
         builder.setHasMask(hasMask);

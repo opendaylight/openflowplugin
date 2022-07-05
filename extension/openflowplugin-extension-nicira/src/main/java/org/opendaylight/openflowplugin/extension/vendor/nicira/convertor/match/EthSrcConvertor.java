@@ -49,7 +49,7 @@ public class EthSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         EthSrcCaseValue ethSrcCaseValue = (EthSrcCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(
                 new NxmOfEthSrcBuilder().setMacAddress(ethSrcCaseValue.getEthSrcValues().getMacAddress()).build(), path,
-                NxmOfEthSrcKey.class);
+                NxmOfEthSrcKey.VALUE);
     }
 
     @Override
@@ -63,12 +63,12 @@ public class EthSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         ethSrcCaseValueBuilder.setEthSrcValues(new EthSrcValuesBuilder()
                 .setMacAddress(macAddress).build());
         return MatchUtil.createDefaultMatchEntryBuilder(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthSrc.class,
-                Nxm0Class.class, ethSrcCaseValueBuilder.build()).build();
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfEthSrc.VALUE,
+                Nxm0Class.VALUE, ethSrcCaseValueBuilder.build()).build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfEthSrc value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

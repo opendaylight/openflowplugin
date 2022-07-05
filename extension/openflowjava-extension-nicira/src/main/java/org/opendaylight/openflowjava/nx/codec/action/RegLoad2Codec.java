@@ -90,7 +90,7 @@ public class RegLoad2Codec
                 EncodeConstants.OF_VERSION_1_3,
                 matchEntry.getOxmClass(),
                 matchEntry.getOxmMatchField());
-        if (matchEntry.getOxmClass().equals(ExperimenterClass.class)) {
+        if (ExperimenterClass.VALUE.equals(matchEntry.getOxmClass())) {
             ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) matchEntry.getMatchEntryValue();
             key.setExperimenterId(experimenterIdCase.getExperimenter().getExperimenter().getValue());
         }
@@ -102,11 +102,11 @@ public class RegLoad2Codec
 
     @Override
     public void injectSerializerRegistry(final SerializerRegistry registry) {
-        this.serializerRegistry = registry;
+        serializerRegistry = registry;
     }
 
     @Override
     public void injectDeserializerRegistry(final DeserializerRegistry registry) {
-        this.deserializerRegistry = registry;
+        deserializerRegistry = registry;
     }
 }

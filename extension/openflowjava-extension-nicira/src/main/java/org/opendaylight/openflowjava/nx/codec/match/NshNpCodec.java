@@ -32,7 +32,7 @@ public class NshNpCodec extends AbstractExperimenterMatchCodec {
             createSerializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     NiciraConstants.NX_NSH_VENDOR_ID,
-                    NxmNxNshNp.class);
+                    NxmNxNshNp.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY =
             createDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
@@ -69,7 +69,7 @@ public class NshNpCodec extends AbstractExperimenterMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmNxNshNp.class;
+    public MatchField getNxmField() {
+        return NxmNxNshNp.VALUE;
     }
 }

@@ -33,7 +33,7 @@ public class Ipv6SrcCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 16;
     private static final int NXM_FIELD_CODE = 19;
     public static final MatchEntrySerializerKey<Nxm1Class, NxmOfIpSrc> SERIALIZER_KEY = new MatchEntrySerializerKey<>(
-            EncodeConstants.OF_VERSION_1_3, Nxm1Class.class, NxmOfIpSrc.class);
+            EncodeConstants.OF_VERSION_1_3, Nxm1Class.VALUE, NxmOfIpSrc.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_1_CLASS, NXM_FIELD_CODE);
 
@@ -70,13 +70,13 @@ public class Ipv6SrcCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfIpSrc.class;
+    public MatchField getNxmField() {
+        return NxmOfIpSrc.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm1Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm1Class.VALUE;
     }
 
 }

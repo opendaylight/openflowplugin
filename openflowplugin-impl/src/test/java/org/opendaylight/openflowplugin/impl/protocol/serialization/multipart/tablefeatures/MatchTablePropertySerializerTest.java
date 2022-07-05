@@ -26,7 +26,7 @@ public class MatchTablePropertySerializerTest extends AbstractTablePropertySeria
         final Match property = new MatchBuilder()
             .setMatchSetfield(new MatchSetfieldBuilder()
                 .setSetFieldMatch(BindingMap.of(new SetFieldMatchBuilder()
-                    .setMatchType(ArpOp.class)
+                    .setMatchType(ArpOp.VALUE)
                     .setHasMask(false)
                     .build()))
                 .build())

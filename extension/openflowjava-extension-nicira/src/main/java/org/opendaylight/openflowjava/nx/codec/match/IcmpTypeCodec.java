@@ -32,7 +32,7 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
     private static final int VALUE_LENGTH = 1;
     private static final int NXM_FIELD_CODE = 13;
     public static final MatchEntrySerializerKey<Nxm0Class, NxmOfIcmpType> SERIALIZER_KEY =
-            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm0Class.class, NxmOfIcmpType.class);
+            new MatchEntrySerializerKey<>(EncodeConstants.OF_VERSION_1_3, Nxm0Class.VALUE, NxmOfIcmpType.VALUE);
     public static final MatchEntryDeserializerKey DESERIALIZER_KEY = new MatchEntryDeserializerKey(
             EncodeConstants.OF_VERSION_1_3, OxmMatchConstants.NXM_0_CLASS, NXM_FIELD_CODE);
 
@@ -69,12 +69,12 @@ public class IcmpTypeCodec extends AbstractMatchCodec {
     }
 
     @Override
-    public Class<? extends MatchField> getNxmField() {
-        return NxmOfIcmpType.class;
+    public MatchField getNxmField() {
+        return NxmOfIcmpType.VALUE;
     }
 
     @Override
-    public Class<? extends OxmClassBase> getOxmClass() {
-        return Nxm0Class.class;
+    public OxmClassBase getOxmClass() {
+        return Nxm0Class.VALUE;
     }
 }

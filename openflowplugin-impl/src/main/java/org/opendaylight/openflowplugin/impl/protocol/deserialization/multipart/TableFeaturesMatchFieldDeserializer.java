@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
-import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.openflowjava.protocol.api.keys.MatchEntryDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -60,172 +59,171 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.set.f
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class TableFeaturesMatchFieldDeserializer {
-
     /**
      * Mapping of match entry code to match set field class.
      */
-    private final Map<MatchEntryDeserializerKey, Class<? extends MatchField>> codeToFieldMap = ImmutableMap
-        .<MatchEntryDeserializerKey, Class<? extends MatchField>>builder()
+    private final ImmutableMap<MatchEntryDeserializerKey, MatchField> codeToFieldMap = ImmutableMap
+        .<MatchEntryDeserializerKey, MatchField>builder()
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ARP_OP), ArpOp.class)
+                    OxmMatchConstants.ARP_OP), ArpOp.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ARP_SHA), ArpSha.class)
+                    OxmMatchConstants.ARP_SHA), ArpSha.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ARP_SPA), ArpSpa.class)
+                    OxmMatchConstants.ARP_SPA), ArpSpa.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ARP_THA), ArpTha.class)
+                    OxmMatchConstants.ARP_THA), ArpTha.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ARP_TPA), ArpTpa.class)
+                    OxmMatchConstants.ARP_TPA), ArpTpa.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ETH_DST), EthDst.class)
+                    OxmMatchConstants.ETH_DST), EthDst.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ETH_SRC), EthSrc.class)
+                    OxmMatchConstants.ETH_SRC), EthSrc.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ICMPV4_CODE), Icmpv4Code.class)
+                    OxmMatchConstants.ICMPV4_CODE), Icmpv4Code.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ICMPV4_TYPE), Icmpv4Type.class)
+                    OxmMatchConstants.ICMPV4_TYPE), Icmpv4Type.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ICMPV6_CODE), Icmpv6Code.class)
+                    OxmMatchConstants.ICMPV6_CODE), Icmpv6Code.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.ICMPV6_TYPE), Icmpv6Type.class)
+                    OxmMatchConstants.ICMPV6_TYPE), Icmpv6Type.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IN_PHY_PORT), InPhyPort.class)
+                    OxmMatchConstants.IN_PHY_PORT), InPhyPort.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IN_PORT), InPort.class)
+                    OxmMatchConstants.IN_PORT), InPort.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IP_DSCP), IpDscp.class)
+                    OxmMatchConstants.IP_DSCP), IpDscp.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IP_ECN), IpEcn.class)
+                    OxmMatchConstants.IP_ECN), IpEcn.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IP_PROTO), IpProto.class)
+                    OxmMatchConstants.IP_PROTO), IpProto.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV4_DST), Ipv4Dst.class)
+                    OxmMatchConstants.IPV4_DST), Ipv4Dst.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV4_SRC), Ipv4Src.class)
+                    OxmMatchConstants.IPV4_SRC), Ipv4Src.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_DST), Ipv6Dst.class)
+                    OxmMatchConstants.IPV6_DST), Ipv6Dst.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_SRC), Ipv6Src.class)
+                    OxmMatchConstants.IPV6_SRC), Ipv6Src.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_EXTHDR), Ipv6Exthdr.class)
+                    OxmMatchConstants.IPV6_EXTHDR), Ipv6Exthdr.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_FLABEL), Ipv6Flabel.class)
+                    OxmMatchConstants.IPV6_FLABEL), Ipv6Flabel.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_ND_SLL), Ipv6NdSll.class)
+                    OxmMatchConstants.IPV6_ND_SLL), Ipv6NdSll.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_ND_TLL), Ipv6NdTll.class)
+                    OxmMatchConstants.IPV6_ND_TLL), Ipv6NdTll.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.IPV6_ND_TARGET), Ipv6NdTarget.class)
+                    OxmMatchConstants.IPV6_ND_TARGET), Ipv6NdTarget.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.METADATA), Metadata.class)
+                    OxmMatchConstants.METADATA), Metadata.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.MPLS_BOS), MplsBos.class)
+                    OxmMatchConstants.MPLS_BOS), MplsBos.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.MPLS_LABEL), MplsLabel.class)
+                    OxmMatchConstants.MPLS_LABEL), MplsLabel.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.MPLS_TC), MplsTc.class)
+                    OxmMatchConstants.MPLS_TC), MplsTc.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.PBB_ISID), PbbIsid.class)
+                    OxmMatchConstants.PBB_ISID), PbbIsid.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.SCTP_DST), SctpDst.class)
+                    OxmMatchConstants.SCTP_DST), SctpDst.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.SCTP_SRC), SctpSrc.class)
+                    OxmMatchConstants.SCTP_SRC), SctpSrc.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.TCP_SRC), TcpSrc.class)
+                    OxmMatchConstants.TCP_SRC), TcpSrc.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.TCP_DST), TcpDst.class)
+                    OxmMatchConstants.TCP_DST), TcpDst.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.TUNNEL_ID), TunnelId.class)
+                    OxmMatchConstants.TUNNEL_ID), TunnelId.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.UDP_SRC), UdpSrc.class)
+                    OxmMatchConstants.UDP_SRC), UdpSrc.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.UDP_DST), UdpDst.class)
+                    OxmMatchConstants.UDP_DST), UdpDst.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.VLAN_PCP), VlanPcp.class)
+                    OxmMatchConstants.VLAN_PCP), VlanPcp.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.OPENFLOW_BASIC_CLASS,
-                    OxmMatchConstants.VLAN_VID), VlanVid.class)
+                    OxmMatchConstants.VLAN_VID), VlanVid.VALUE)
         .put(new MatchEntryDeserializerKey(
                     EncodeConstants.OF_VERSION_1_3,
                     OxmMatchConstants.EXPERIMENTER_CLASS,
-                    OxmMatchConstants.NXM_NX_TCP_FLAG), TcpFlags.class)
+                    OxmMatchConstants.NXM_NX_TCP_FLAG), TcpFlags.VALUE)
         .build();
 
     /**
@@ -261,7 +259,7 @@ public class TableFeaturesMatchFieldDeserializer {
                 message.getUnsignedInt(message.readerIndex() + Short.BYTES + 2 * Byte.BYTES)));
         }
 
-        final Class<? extends MatchField> clazz = codeToFieldMap.get(key);
+        final MatchField clazz = codeToFieldMap.get(key);
         return clazz == null ? Optional.empty() : Optional.of(processHeader(message).setMatchType(clazz).build());
     }
 }

@@ -154,7 +154,7 @@ public final class MatchExtensionHelper {
             matchEntry.getOxmMatchField());
 
         // If entry is experimenter, set experimenter ID to key
-        if (matchEntry.getOxmClass().equals(ExperimenterClass.class)) {
+        if (ExperimenterClass.VALUE.equals(matchEntry.getOxmClass())) {
             key.setExperimenterId(
                 ((ExperimenterIdCase) matchEntry.getMatchEntryValue()).getExperimenter().getExperimenter().getValue());
         }

@@ -160,8 +160,8 @@ public final class MatchUtil {
         // Hidden on purpose
     }
 
-    public static MatchEntryBuilder createDefaultMatchEntryBuilder(final Class<? extends MatchField> matchField,
-                                                                   final Class<? extends OxmClassBase> oxmClass,
+    public static MatchEntryBuilder createDefaultMatchEntryBuilder(final MatchField matchField,
+                                                                   final OxmClassBase oxmClass,
                                                                    final MatchEntryValue matchEntryValue) {
         return new MatchEntryBuilder()
             .setHasMask(false)
@@ -171,10 +171,10 @@ public final class MatchUtil {
     }
 
     public static <V extends Augmentation<ExperimenterIdCase>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
-            final Class<? extends MatchField> matchField,
+            final MatchField matchField,
             final Uint32 experimenterId,
             final NxExpMatchEntryValue value) {
-        return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.class, new ExperimenterIdCaseBuilder()
+        return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.VALUE, new ExperimenterIdCaseBuilder()
             .setExperimenter(new ExperimenterBuilder().setExperimenter(new ExperimenterId(experimenterId)).build())
             .addAugmentation(new OfjAugNxExpMatchBuilder().setNxExpMatchEntryValue(value).build())
             .build());

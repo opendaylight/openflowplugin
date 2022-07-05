@@ -17,7 +17,8 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * @param <T> type of key
  */
 public class ConverterExtensionKey<T extends ExtensionKey> extends TypeVersionKey<T> {
-    public ConverterExtensionKey(final Class<T> type, final Uint8 ofVersion) {
-        super(type, ofVersion);
+    @SuppressWarnings("unchecked")
+    public ConverterExtensionKey(final T type, final Uint8 ofVersion) {
+        super((Class<T>) type.implementedInterface(), ofVersion);
     }
 }

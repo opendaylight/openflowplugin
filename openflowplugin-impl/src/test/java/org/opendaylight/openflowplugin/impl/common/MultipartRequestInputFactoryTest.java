@@ -81,7 +81,7 @@ public class MultipartRequestInputFactoryTest {
         Assert.assertNotNull(mpRq.getMatch());
         Assert.assertNull(mpRq.getMatchV10());
 
-        Assert.assertEquals(OxmMatchType.class, mpRq.getMatch().getType());
+        Assert.assertEquals(OxmMatchType.VALUE, mpRq.getMatch().getType());
     }
 
     @Test

@@ -17,11 +17,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddress;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IpAddressBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.SslErrorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.SslErrorType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.node.ssl.connection.error.service.rev190723.ssl.error.SwitchCertificateBuilder;
@@ -142,24 +143,28 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
 
     @Override
     public void onSslConnectionError(final SslConnectionError notification) {
-        final IpAddress ip;
-        if (connectionContext.getConnectionAdapter() != null
-                && connectionContext.getConnectionAdapter().getRemoteAddress() != null
-                && connectionContext.getConnectionAdapter().getRemoteAddress().getAddress() != null) {
-            ip = IpAddressBuilder.getDefaultInstance(
-                    connectionContext.getConnectionAdapter().getRemoteAddress().getAddress().getHostAddress());
-        } else {
-            ip = null;
-        }
-
         final var switchCert = notification.getSwitchCertificate();
 
         notificationPublishService.offerNotification(new SslErrorBuilder()
             .setType(SslErrorType.SslConFailed)
             .setCode(Uint16.valueOf(SslErrorType.SslConFailed.getIntValue()))
-            .setNodeIpAddress(ip)
+            .setNodeIpAddress(remoteAddress())
             .setData(notification.getInfo())
             .setSwitchCertificate(switchCert == null ? null : new SwitchCertificateBuilder(switchCert).build())
             .build());
+    }
+
+    private @Nullable IpAddress remoteAddress() {
+        final var connectionAdapter = connectionContext.getConnectionAdapter();
+        if (connectionAdapter != null) {
+            final var remoteAddress = connectionAdapter.getRemoteAddress();
+            if (remoteAddress != null) {
+                final var inetAddress = remoteAddress.getAddress();
+                if (inetAddress != null) {
+                    return IetfInetUtil.ipAddressFor(inetAddress.getHostAddress());
+                }
+            }
+        }
+        return null;
     }
 }

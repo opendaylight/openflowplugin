@@ -46,7 +46,7 @@ public final class TypeKeyMakerFactory {
                 MatchEntrySerializerKey<?, ?> key;
                 key = new MatchEntrySerializerKey<>(getVersion(), entry.getOxmClass(),
                         entry.getOxmMatchField());
-                if (entry.getOxmClass().equals(ExperimenterClass.class)) {
+                if (ExperimenterClass.VALUE.equals(entry.getOxmClass())) {
                     ExperimenterIdCase entryValue = (ExperimenterIdCase) entry.getMatchEntryValue();
                     key.setExperimenterId(entryValue.getExperimenter().getExperimenter().getValue());
                     return key;

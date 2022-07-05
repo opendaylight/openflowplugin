@@ -47,27 +47,27 @@ public final class BuildSwitchCapabilitiesOF13 implements BuildSwitchFeatures {
             return null;
         }
 
-        final var builder = ImmutableSet.<Class<? extends FeatureCapability>>builder();
+        final var builder = ImmutableSet.<FeatureCapability>builder();
         if (capabilities.getOFPCFLOWSTATS()) {
-            builder.add(FlowFeatureCapabilityFlowStats.class);
+            builder.add(FlowFeatureCapabilityFlowStats.VALUE);
         }
         if (capabilities.getOFPCGROUPSTATS()) {
-            builder.add(FlowFeatureCapabilityGroupStats.class);
+            builder.add(FlowFeatureCapabilityGroupStats.VALUE);
         }
         if (capabilities.getOFPCIPREASM()) {
-            builder.add(FlowFeatureCapabilityIpReasm.class);
+            builder.add(FlowFeatureCapabilityIpReasm.VALUE);
         }
         if (capabilities.getOFPCPORTBLOCKED()) {
-            builder.add(FlowFeatureCapabilityPortBlocked.class);
+            builder.add(FlowFeatureCapabilityPortBlocked.VALUE);
         }
         if (capabilities.getOFPCPORTSTATS()) {
-            builder.add(FlowFeatureCapabilityPortStats.class);
+            builder.add(FlowFeatureCapabilityPortStats.VALUE);
         }
         if (capabilities.getOFPCQUEUESTATS()) {
-            builder.add(FlowFeatureCapabilityQueueStats.class);
+            builder.add(FlowFeatureCapabilityQueueStats.VALUE);
         }
         if (capabilities.getOFPCTABLESTATS()) {
-            builder.add(FlowFeatureCapabilityTableStats.class);
+            builder.add(FlowFeatureCapabilityTableStats.VALUE);
         }
 
         return new SwitchFeaturesBuilder()

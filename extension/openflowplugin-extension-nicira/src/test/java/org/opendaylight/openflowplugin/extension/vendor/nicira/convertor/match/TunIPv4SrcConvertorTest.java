@@ -45,7 +45,7 @@ public class TunIPv4SrcConvertorTest {
     @Mock
     private MatchEntry matchEntry;
 
-    private static final Ipv4Address IPV4_ADDRESS = Ipv4Address.getDefaultInstance("1.2.3.4");
+    private static final Ipv4Address IPV4_ADDRESS = new Ipv4Address("1.2.3.4");
 
     private TunIPv4SrcConvertor tunIPv4DstConvertor;
 
@@ -86,24 +86,24 @@ public class TunIPv4SrcConvertorTest {
                 .convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxTunIpv4Src().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4SrcKey.class);
+        Assert.assertEquals(NxmNxTunIpv4SrcKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIPv4DstConvertor
                 .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxTunIpv4Src().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4SrcKey.class);
+        Assert.assertEquals(NxmNxTunIpv4SrcKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIPv4DstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxTunIpv4Src().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4SrcKey.class);
+        Assert.assertEquals(NxmNxTunIpv4SrcKey.VALUE, extensionAugment.getKey());
 
         final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIPv4DstConvertor
                 .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxTunIpv4Src().getIpv4Address());
-        Assert.assertEquals(extensionAugment.getKey(), NxmNxTunIpv4SrcKey.class);
+        Assert.assertEquals(NxmNxTunIpv4SrcKey.VALUE, extensionAugment.getKey());
     }
 }

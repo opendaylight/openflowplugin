@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.nx.codec.action;
 
 import static org.junit.Assert.assertEquals;
@@ -16,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
-import java.util.Collections;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -97,8 +96,8 @@ public class RegLoad2CodecTest {
         final Action action = createAction();
         MatchEntrySerializerKey<?, ?> key = new MatchEntrySerializerKey<>(
                 EncodeConstants.OF_VERSION_1_3,
-                ExperimenterClass.class,
-                OxmMatchFieldClass.class);
+                ExperimenterClass.VALUE,
+                OxmMatchFieldClass.VALUE);
         key.setExperimenterId(NiciraConstants.NX_NSH_VENDOR_ID);
         when(serializerRegistry.getSerializer(key)).thenReturn(ofSerializer);
         doNothing().when(ofSerializer).serialize(any(), any());
@@ -117,11 +116,11 @@ public class RegLoad2CodecTest {
         ExperimenterIdCaseBuilder expCaseBuilder = new ExperimenterIdCaseBuilder();
         expCaseBuilder.setExperimenter(experimenterBuilder.build());
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setOxmMatchField(OxmMatchFieldClass.class);
-        matchEntryBuilder.setOxmClass(ExperimenterClass.class);
+        matchEntryBuilder.setOxmMatchField(OxmMatchFieldClass.VALUE);
+        matchEntryBuilder.setOxmClass(ExperimenterClass.VALUE);
         matchEntryBuilder.setMatchEntryValue(expCaseBuilder.build());
         NxActionRegLoad2 nxActionRegLoad2 = new NxActionRegLoad2Builder()
-                .setMatchEntry(Collections.singletonList(matchEntryBuilder.build()))
+                .setMatchEntry(List.of(matchEntryBuilder.build()))
                 .build();
         ActionRegLoad2 actionRegLoad2 = new ActionRegLoad2Builder().setNxActionRegLoad2(nxActionRegLoad2).build();
         return new ActionBuilder().setActionChoice(actionRegLoad2).build();

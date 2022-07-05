@@ -50,8 +50,7 @@ public class UdpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         NxmOfUdpSrcBuilder udpSrcBuilder = new NxmOfUdpSrcBuilder();
         udpSrcBuilder.setPort(udpSrcCaseValue.getUdpSrcValues().getPort());
         udpSrcBuilder.setMask(udpSrcCaseValue.getUdpSrcValues().getMask());
-        return resolveAugmentation(udpSrcBuilder.build(), path,
-                NxmOfUdpSrcKey.class);
+        return resolveAugmentation(udpSrcBuilder.build(), path, NxmOfUdpSrcKey.VALUE);
     }
 
     @Override
@@ -67,14 +66,14 @@ public class UdpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
         udpSrcCaseValueBuilder.setUdpSrcValues(udpSrcValuesBuilder.build());
         MatchEntryBuilder ofMatch = MatchUtil
                 .createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight
-                                                .openflowjava.nx.match.rev140421.NxmOfUdpSrc.class,
-                Nxm0Class.class, udpSrcCaseValueBuilder.build());
+                                                .openflowjava.nx.match.rev140421.NxmOfUdpSrc.VALUE,
+                Nxm0Class.VALUE, udpSrcCaseValueBuilder.build());
         ofMatch.setHasMask(true);
         return ofMatch.build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfUdpSrc value,
-            final MatchPath path, final Class<? extends ExtensionKey> key) {
+            final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

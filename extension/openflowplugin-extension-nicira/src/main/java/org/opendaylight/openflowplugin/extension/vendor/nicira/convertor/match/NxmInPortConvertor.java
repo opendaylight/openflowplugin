@@ -46,7 +46,7 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
                 .getMatchEntryValue();
         return NxmInPortConvertor.resolveAugmentation(new OfInPortBuilder()
                 .setValue(inPortCaseValue.getNxmOfInPortValues().getValue())
-                .build(), path, NxmOfInPortKey.class);
+                .build(), path, NxmOfInPortKey.VALUE);
     }
 
     @Override
@@ -60,14 +60,14 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
         inPortCaseValueBuilder.setNxmOfInPortValues(
                 new NxmOfInPortValuesBuilder().setValue(value).build());
         return MatchUtil.createDefaultMatchEntryBuilder(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfInPort.class,
-            Nxm0Class.class, inPortCaseValueBuilder.build())
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfInPort.VALUE,
+            Nxm0Class.VALUE, inPortCaseValueBuilder.build())
             .build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of
-                .in.port.grouping.OfInPort value, final MatchPath path, final Class<? extends ExtensionKey> key) {
+                .in.port.grouping.OfInPort value, final MatchPath path, final ExtensionKey key) {
         switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH:
                 return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

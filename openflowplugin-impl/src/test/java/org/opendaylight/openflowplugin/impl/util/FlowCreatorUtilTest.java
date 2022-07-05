@@ -288,7 +288,7 @@ public class FlowCreatorUtilTest {
     }
 
     private static void assertMatch(final Match match) {
-        assertTrue(match.getType().getClass().isInstance(OxmMatchType.class));
+        assertEquals(OxmMatchType.VALUE, match.getType());
     }
 
     private static void assertMatch(final MatchV10 matchV10) {

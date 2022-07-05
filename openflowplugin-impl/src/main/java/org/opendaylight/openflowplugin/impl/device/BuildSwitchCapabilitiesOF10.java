@@ -48,30 +48,30 @@ public final class BuildSwitchCapabilitiesOF10 implements BuildSwitchFeatures {
             return null;
         }
 
-        final var builder = ImmutableSet.<Class<? extends FeatureCapability>>builder();
+        final var builder = ImmutableSet.<FeatureCapability>builder();
         if (capabilities.getOFPCARPMATCHIP()) {
-            builder.add(FlowFeatureCapabilityArpMatchIp.class);
+            builder.add(FlowFeatureCapabilityArpMatchIp.VALUE);
         }
         if (capabilities.getOFPCFLOWSTATS()) {
-            builder.add(FlowFeatureCapabilityFlowStats.class);
+            builder.add(FlowFeatureCapabilityFlowStats.VALUE);
         }
         if (capabilities.getOFPCIPREASM()) {
-            builder.add(FlowFeatureCapabilityIpReasm.class);
+            builder.add(FlowFeatureCapabilityIpReasm.VALUE);
         }
         if (capabilities.getOFPCPORTSTATS()) {
-            builder.add(FlowFeatureCapabilityPortStats.class);
+            builder.add(FlowFeatureCapabilityPortStats.VALUE);
         }
         if (capabilities.getOFPCQUEUESTATS()) {
-            builder.add(FlowFeatureCapabilityQueueStats.class);
+            builder.add(FlowFeatureCapabilityQueueStats.VALUE);
         }
         if (capabilities.getOFPCRESERVED()) {
-            builder.add(FlowFeatureCapabilityReserved.class);
+            builder.add(FlowFeatureCapabilityReserved.VALUE);
         }
         if (capabilities.getOFPCSTP()) {
-            builder.add(FlowFeatureCapabilityStp.class);
+            builder.add(FlowFeatureCapabilityStp.VALUE);
         }
         if (capabilities.getOFPCTABLESTATS()) {
-            builder.add(FlowFeatureCapabilityTableStats.class);
+            builder.add(FlowFeatureCapabilityTableStats.VALUE);
         }
 
         return new SwitchFeaturesBuilder()
