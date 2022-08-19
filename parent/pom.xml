@@ -61,11 +61,6 @@
             </dependency>
             <!-- thirdparty -->
             <dependency>
-                <groupId>net.sourceforge.argparse4j</groupId>
-                <artifactId>argparse4j</artifactId>
-                <version>0.7.0</version>
-            </dependency>
-            <dependency>
                 <groupId>pl.pragmatists</groupId>
                 <artifactId>JUnitParams</artifactId>
                 <version>1.0.3</version>
