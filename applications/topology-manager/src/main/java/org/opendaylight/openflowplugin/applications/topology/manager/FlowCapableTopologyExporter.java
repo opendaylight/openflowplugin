@@ -8,89 +8,109 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static java.util.Objects.requireNonNull;
-import static org.opendaylight.openflowplugin.applications.topology.manager.FlowCapableNodeMapping.toTopologyLink;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
+import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener;
+import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener.Component;
+import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.FlowTopologyDiscoveryListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkOverutilized;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkUtilizationNormal;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class FlowCapableTopologyExporter implements FlowTopologyDiscoveryListener {
-
+class FlowCapableTopologyExporter {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyExporter.class);
+
     private final InstanceIdentifier<Topology> iiToTopology;
     private final OperationProcessor processor;
 
     FlowCapableTopologyExporter(final OperationProcessor processor, final InstanceIdentifier<Topology> topology) {
         this.processor = requireNonNull(processor);
-        this.iiToTopology = requireNonNull(topology);
+        iiToTopology = requireNonNull(topology);
     }
 
-    @Override
-    @Deprecated
-    public void onLinkDiscovered(final LinkDiscovered notification) {
-        processor.enqueueOperation(new TopologyOperation() {
-            @Override
-            public void applyOperation(final TransactionChainManager manager) {
-                final Link link = toTopologyLink(notification);
-                final InstanceIdentifier<Link> path = TopologyManagerUtil.linkPath(link, iiToTopology);
-                manager.mergeToTransaction(LogicalDatastoreType.OPERATIONAL, path, link, true);
-            }
-
-            @Override
-            public String toString() {
-                return "onLinkDiscovered";
-            }
-        });
+    CompositeListener toListener() {
+        return new CompositeListener(Set.of(
+            new Component(LinkDiscovered.class, (Listener<LinkDiscovered>) this::onLinkDiscovered),
+            new Component(LinkRemoved.class, (Listener<LinkRemoved>) this::onLinkRemoved)));
     }
 
-    @Override
-    @Deprecated
-    public void onLinkOverutilized(final LinkOverutilized notification) {
-        // NOOP
+    @VisibleForTesting
+    void onLinkDiscovered(final LinkDiscovered notification) {
+        processor.enqueueOperation(new OnLinkDiscovered(notification));
     }
 
-    @Override
-    @Deprecated
-    public void onLinkRemoved(final LinkRemoved notification) {
-        processor.enqueueOperation(new TopologyOperation() {
-            @Override
-            public void applyOperation(final TransactionChainManager manager) {
-                Optional<Link> linkOptional = Optional.empty();
-                try {
-                    // read that checks if link exists (if we do not do this we might get an exception on delete)
-                    linkOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL,
-                            TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology)).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LOG.warn("Error occurred when trying to read Link: {}", e.getMessage());
-                    LOG.debug("Error occurred when trying to read Link.. ", e);
-                }
-                if (linkOptional.isPresent()) {
-                    manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL,
-                            TopologyManagerUtil.linkPath(toTopologyLink(notification), iiToTopology));
-                }
-            }
-
-            @Override
-            public String toString() {
-                return "onLinkRemoved";
-            }
-        });
+    @VisibleForTesting
+    void onLinkRemoved(final LinkRemoved notification) {
+        processor.enqueueOperation(new OnLinkRemoved(notification));
     }
 
-    @Override
-    @Deprecated
-    public void onLinkUtilizationNormal(final LinkUtilizationNormal notification) {
-        // NOOP
+    private abstract static class AbstractLinkOperation implements TopologyOperation {
+        private final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.Link link;
+
+        AbstractLinkOperation(
+                final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.Link link) {
+            this.link = requireNonNull(link);
+        }
+
+        @Override
+        public final void applyOperation(final TransactionChainManager manager) {
+            applyOperation(manager, FlowCapableNodeMapping.toTopologyLink(link));
+        }
+
+        abstract void applyOperation(TransactionChainManager manager, Link link);
+    }
+
+    private final class OnLinkDiscovered extends AbstractLinkOperation {
+        OnLinkDiscovered(final LinkDiscovered notification) {
+            super(notification);
+        }
+
+        @Override
+        public void applyOperation(final TransactionChainManager manager, final Link link) {
+            manager.mergeToTransaction(LogicalDatastoreType.OPERATIONAL,
+                TopologyManagerUtil.linkPath(link, iiToTopology), link, true);
+        }
+
+        @Override
+        public String toString() {
+            return "onLinkDiscovered";
+        }
+    }
+
+    private final class OnLinkRemoved extends AbstractLinkOperation {
+        OnLinkRemoved(final LinkRemoved notification) {
+            super(notification);
+        }
+
+        @Override
+        public void applyOperation(final TransactionChainManager manager, final Link link) {
+            final var linkPath = TopologyManagerUtil.linkPath(link, iiToTopology);
+
+            Optional<Link> linkOptional = Optional.empty();
+            try {
+                // read that checks if link exists (if we do not do this we might get an exception on delete)
+                linkOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, linkPath).get();
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("Error occurred when trying to read Link: {}", e.getMessage());
+                LOG.debug("Error occurred when trying to read Link.. ", e);
+            }
+            if (linkOptional.isPresent()) {
+                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath);
+            }
+        }
+
+        @Override
+        public String toString() {
+            return "onLinkRemoved";
+        }
     }
 }
