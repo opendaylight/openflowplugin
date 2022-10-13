@@ -109,7 +109,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -181,7 +180,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
     private static final String IPV4_PREFIX = "10.0.0.1/24";
     private static final String DEST_MAC_ADDRESS = "ff:ff:ff:ff:ff:ff";
     private static final String SRC_MAC_ADDRESS = "00:00:00:00:23:ae";
-    private final SalFlowListener flowEventListener = new FlowEventListenerLoggingImpl();
+
     private final NotificationService notificationService;
 
     public OpenflowpluginTestCommandProvider(final DataBroker dataBroker, final NotificationService notificationService,
@@ -193,7 +192,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
     public void init() {
         // For switch events
-        notificationService.registerNotificationListener(flowEventListener);
+        notificationService.registerCompositeListener(FlowEventListenerLoggingImpl.newListener());
+
         ctx.registerService(CommandProvider.class.getName(), this, null);
         createTestFlow(createTestNode(null), null, null);
     }
@@ -2689,10 +2689,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
 
         TestFlowThread(final int numberOfSwtiches, final int numberOfFlows, final CommandInterpreter ci,
                 final int threadNumber, final int tableID) {
-            this.numberOfSwitches = numberOfSwtiches;
+            numberOfSwitches = numberOfSwtiches;
             this.numberOfFlows = numberOfFlows;
             this.ci = ci;
-            this.theadNumber = threadNumber;
+            theadNumber = threadNumber;
             this.tableID = tableID;
         }
 
@@ -2708,27 +2708,26 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             FlowBuilder tf;
             //String tableId = "0";
 
-            ci.println("New Thread started with id:  ID_"
-                    + this.theadNumber);
+            ci.println("New Thread started with id:  ID_" + theadNumber);
             int totalNumberOfFlows = 0;
             final long startTime = System.currentTimeMillis();
 
-            for (int i = 1; i <= this.numberOfSwitches; i++) {
+            for (int i = 1; i <= numberOfSwitches; i++) {
                 dataPath = "openflow:" + i;
                 tn = createTestNode(dataPath);
-                for (int flow2 = 1; flow2 <= this.numberOfFlows; flow2++) {
-                    tf = createTestFlowPerfTest("f1", "" + this.tableID, flow2);
-                    writeFlow(this.ci, tf, tn);
+                for (int flow2 = 1; flow2 <= numberOfFlows; flow2++) {
+                    tf = createTestFlowPerfTest("f1", "" + tableID, flow2);
+                    writeFlow(ci, tf, tn);
                     totalNumberOfFlows++;
                 }
             }
             final long endTime = System.currentTimeMillis();
             final long timeInSeconds = Math.round((endTime - startTime) / 1000.0F);
             if (timeInSeconds > 0) {
-                ci.println("Total flows added in Thread:" + this.theadNumber + ": Flows/Sec::"
+                ci.println("Total flows added in Thread:" + theadNumber + ": Flows/Sec::"
                     + Math.round((float)totalNumberOfFlows / timeInSeconds));
             } else {
-                ci.println("Total flows added in Thread:" + this.theadNumber + ": Flows/Sec::" + totalNumberOfFlows);
+                ci.println("Total flows added in Thread:" + theadNumber + ": Flows/Sec::" + totalNumberOfFlows);
             }
         }
 
