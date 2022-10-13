@@ -28,9 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private InstanceIdentifier<Topology> topologyPathIID;
     private TransactionChainManager transactionChainManager;
-    private ListenerRegistration<NotificationListener> listenerRegistration;
+    private Registration listenerRegistration;
     private ClusterSingletonServiceRegistration singletonServiceRegistration;
 
     @Inject
@@ -66,31 +65,31 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     @PostConstruct
     public void start() {
         final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
-        this.topologyPathIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
+        topologyPathIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
 
-        final FlowCapableTopologyExporter listener = new FlowCapableTopologyExporter(processor, topologyPathIID);
-        this.listenerRegistration = notificationService.registerNotificationListener(listener);
-        this.transactionChainManager = new TransactionChainManager(dataBroker, TOPOLOGY_PROVIDER);
-        this.transactionChainManager.activateTransactionManager();
-        this.transactionChainManager.initialSubmitWriteTransaction();
-        this.singletonServiceRegistration = this.clusterSingletonServiceProvider.registerClusterSingletonService(this);
+        listenerRegistration = notificationService.registerCompositeListener(
+            new FlowCapableTopologyExporter(processor, topologyPathIID).toListener());
+        transactionChainManager = new TransactionChainManager(dataBroker, TOPOLOGY_PROVIDER);
+        transactionChainManager.activateTransactionManager();
+        transactionChainManager.initialSubmitWriteTransaction();
+        singletonServiceRegistration = clusterSingletonServiceProvider.registerClusterSingletonService(this);
         LOG.info("Topology Manager service started.");
     }
 
     @Override
     @PreDestroy
     public void close() {
-        this.transactionChainManager.close();
-        if (this.listenerRegistration != null) {
+        transactionChainManager.close();
+        if (listenerRegistration != null) {
             LOG.info("Closing notification listener registration.");
-            this.listenerRegistration.close();
-            this.listenerRegistration = null;
+            listenerRegistration.close();
+            listenerRegistration = null;
         }
 
-        if (this.singletonServiceRegistration != null) {
+        if (singletonServiceRegistration != null) {
             LOG.info("Closing clustering singleton service registration.");
-            this.singletonServiceRegistration.close();
-            this.singletonServiceRegistration = null;
+            singletonServiceRegistration.close();
+            singletonServiceRegistration = null;
         }
         LOG.debug("Topology Manager instance is stopped.");
     }
@@ -118,7 +117,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
 
     private boolean isFlowTopologyExist(final InstanceIdentifier<Topology> path) {
         try {
-            Optional<Topology> ofTopology = this.transactionChainManager
+            Optional<Topology> ofTopology = transactionChainManager
                     .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path).get();
             LOG.debug("OpenFlow topology exist in the operational data store at {}", path);
             if (ofTopology.isPresent()) {
