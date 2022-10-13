@@ -12,9 +12,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
-import org.opendaylight.yangtools.yang.binding.NotificationListener;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public class LLDPActivator implements AutoCloseable {
 
     private static String lldpSecureKey;
 
-    private final ListenerRegistration<NotificationListener> lldpNotificationRegistration;
+    private final Registration lldpNotificationRegistration;
 
     @SuppressFBWarnings("ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD")
     @Inject
@@ -35,7 +35,8 @@ public class LLDPActivator implements AutoCloseable {
 
         LOG.info("Starting LLDPActivator with lldpSecureKey: {}", lldpSecureKey);
 
-        lldpNotificationRegistration = notificationService.registerNotificationListener(lldpDiscoveryListener);
+        lldpNotificationRegistration =
+            notificationService.registerListener(PacketReceived.class, lldpDiscoveryListener);
 
         LOG.info("LLDPDiscoveryListener started.");
     }
