@@ -9,24 +9,16 @@ package org.opendaylight.openflowplugin.learningswitch.multi;
 
 import java.util.HashMap;
 import java.util.Map;
+import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
-public class PacketInDispatcherImpl implements PacketProcessingListener {
-
-    private final Map<InstanceIdentifier<Node>, PacketProcessingListener> handlerMapping;
-
-    /**
-     * default constructor.
-     */
-    public PacketInDispatcherImpl() {
-        handlerMapping = new HashMap<>();
-    }
+public class PacketInDispatcherImpl implements Listener<PacketReceived> {
+    private final Map<InstanceIdentifier<Node>, Listener<PacketReceived>> handlerMapping = new HashMap<>();
 
     @Override
-    public void onPacketReceived(PacketReceived notification) {
+    public void onNotification(PacketReceived notification) {
         // find corresponding handler
         /*
          * Notification contains reference to ingress port
@@ -41,17 +33,17 @@ public class PacketInDispatcherImpl implements PacketProcessingListener {
         /**
          * We lookup up the the packet-in listener for this node.
          */
-        PacketProcessingListener nodeHandler = handlerMapping.get(nodeOfPacket);
+        Listener<PacketReceived> nodeHandler = handlerMapping.get(nodeOfPacket);
 
         /**
          * If we have packet-processing listener, we delegate notification.
          */
         if (nodeHandler != null) {
-            nodeHandler.onPacketReceived(notification);
+            nodeHandler.onNotification(notification);
         }
     }
 
-    public Map<InstanceIdentifier<Node>, PacketProcessingListener> getHandlerMapping() {
+    public Map<InstanceIdentifier<Node>, Listener<PacketReceived>> getHandlerMapping() {
         return handlerMapping;
     }
 }
