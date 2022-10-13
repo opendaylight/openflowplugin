@@ -7,12 +7,14 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import java.util.Set;
+import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener;
+import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener.Component;
+import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowAdded;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeErrorNotification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.NodeExperimenterErrorNotification;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SwitchFlowRemoved;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,51 +22,39 @@ import org.slf4j.LoggerFactory;
 /**
  * Dummy implementation flushing events into log.
  */
-public class FlowEventListenerLoggingImpl implements SalFlowListener {
+@Deprecated
+public class FlowEventListenerLoggingImpl {
     private static final Logger LOG = LoggerFactory.getLogger(FlowEventListenerLoggingImpl.class);
 
-    @Override
-    @Deprecated
-    public void onFlowAdded(final FlowAdded notification) {
-        LOG.info("flow to be added {}", notification.toString());
-        LOG.info("added flow Xid {}", notification.getTransactionId().getValue());
+    private FlowEventListenerLoggingImpl() {
+        // Hidden on purpose
     }
 
-    @Override
-    @Deprecated
-    public void onFlowRemoved(final FlowRemoved notification) {
-        LOG.debug("removed flow {}", notification.toString());
-        LOG.debug("remove flow Xid {}", notification.getTransactionId().getValue());
-    }
-
-    @Override
-    @Deprecated
-    public void onFlowUpdated(final FlowUpdated notification) {
-        LOG.debug("updated flow {}", notification.toString());
-        LOG.debug("updated flow Xid {}", notification.getTransactionId().getValue());
-    }
-
-    @Override
-    @Deprecated
-    public void onNodeErrorNotification(final NodeErrorNotification notification) {
-    //commenting as we have a NodeErrorListener
-    /*    LOG.error("Error notification  flow Xid........................."
-                + notification.getTransactionId().getValue());
-        LOG.debug("notification Begin-Transaction:"
-                + notification.getTransactionUri()
-                + "-----------------------------------------------------------------------------------");
-    */
-    }
-
-    @Override
-    @Deprecated
-    public void onNodeExperimenterErrorNotification(final NodeExperimenterErrorNotification notification) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    @Deprecated
-    public void onSwitchFlowRemoved(final SwitchFlowRemoved notification) {
-        LOG.debug("Switch flow removed : Cookies {}", notification.getCookie().toString());
+    static CompositeListener newListener() {
+        return new CompositeListener(Set.of(
+            new Component(FlowAdded.class, (Listener<FlowAdded>) notification -> {
+                LOG.info("flow to be added {}", notification.toString());
+                LOG.info("added flow Xid {}", notification.getTransactionId().getValue());
+            }),
+            new Component(FlowRemoved.class, (Listener<FlowRemoved>) notification -> {
+                LOG.debug("removed flow {}", notification.toString());
+                LOG.debug("remove flow Xid {}", notification.getTransactionId().getValue());
+            }),
+            new Component(FlowUpdated.class, (Listener<FlowUpdated>) notification -> {
+                LOG.debug("updated flow {}", notification.toString());
+                LOG.debug("updated flow Xid {}", notification.getTransactionId().getValue());
+            }),
+            new Component(NodeErrorNotification.class, (Listener<NodeErrorNotification>) notification -> {
+                //commenting as we have a NodeErrorListener
+                /*    LOG.error("Error notification  flow Xid........................."
+                            + notification.getTransactionId().getValue());
+                    LOG.debug("notification Begin-Transaction:"
+                            + notification.getTransactionUri()
+                            + "-----------------------------------------------------------------------------------");
+                */
+            }),
+            new Component(SwitchFlowRemoved.class, (Listener<SwitchFlowRemoved>) notification -> {
+                LOG.debug("Switch flow removed : Cookies {}", notification.getCookie().toString());
+            })));
     }
 }
