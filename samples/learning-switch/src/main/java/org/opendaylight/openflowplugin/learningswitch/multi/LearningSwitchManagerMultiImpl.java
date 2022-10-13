@@ -22,6 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -74,7 +75,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      */
     @Override
     public void setDataBroker(DataBroker broker) {
-        this.data = broker;
+        data = broker;
     }
 
     /**
@@ -88,7 +89,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
         PacketInDispatcherImpl packetInDispatcher = new PacketInDispatcherImpl();
         MultipleLearningSwitchHandlerFacadeImpl learningSwitchHandler = new MultipleLearningSwitchHandlerFacadeImpl(
                 dataStoreAccessor, packetProcessingService, packetInDispatcher);
-        packetInRegistration = notificationService.registerNotificationListener(packetInDispatcher);
+        packetInRegistration = notificationService.registerListener(PacketReceived.class, packetInDispatcher);
 
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);

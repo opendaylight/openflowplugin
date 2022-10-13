@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -68,7 +69,7 @@ public class LearningSwitchManagerSimpleImpl
      */
     @Override
     public void setDataBroker(DataBroker broker) {
-        this.data = broker;
+        data = broker;
     }
 
     /**
@@ -81,7 +82,7 @@ public class LearningSwitchManagerSimpleImpl
 
         LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
                 packetProcessingService, this);
-        packetInRegistration = notificationService.registerNotificationListener(learningSwitchHandler);
+        packetInRegistration = notificationService.registerListener(PacketReceived.class, learningSwitchHandler);
 
         WakeupOnNode wakeupListener = new WakeupOnNode();
         wakeupListener.setLearningSwitchHandler(learningSwitchHandler);

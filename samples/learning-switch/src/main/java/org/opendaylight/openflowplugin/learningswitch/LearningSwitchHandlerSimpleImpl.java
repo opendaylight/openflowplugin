@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
+import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -33,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple Learning Switch implementation which does mac learning for one switch.
  */
-public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, PacketProcessingListener {
+public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, Listener<PacketReceived> {
 
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandlerSimpleImpl.class);
     private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
@@ -116,7 +116,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, P
     }
 
     @Override
-    public void onPacketReceived(PacketReceived notification) {
+    public void onNotification(PacketReceived notification) {
         if (!isLearning) {
             // ignoring packets - this should not happen
             return;
