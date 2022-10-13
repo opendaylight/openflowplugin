@@ -16,6 +16,7 @@ import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.IetfYangUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
@@ -35,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -44,7 +44,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseable {
+abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDropTest.class);
 
     protected static final Uint16 PRIORITY = Uint16.valueOf(4);
@@ -90,8 +90,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     protected volatile int runablesRejected;
 
     public final DropTestStats getStats() {
-        return new DropTestStats(this.sent, this.rcvd, this.excs, this.ftrFailed, this.ftrSuccess,
-                this.runablesExecuted, this.runablesRejected);
+        return new DropTestStats(sent, rcvd, excs, ftrFailed, ftrSuccess, runablesExecuted, runablesRejected);
     }
 
     AbstractDropTest() {
@@ -112,13 +111,13 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     }
 
     public final void clearStats() {
-        this.sent = 0;
-        this.rcvd = 0;
-        this.excs = 0;
-        this.ftrSuccess = 0;
-        this.ftrFailed = 0;
-        this.runablesExecuted = 0;
-        this.runablesRejected = 0;
+        sent = 0;
+        rcvd = 0;
+        excs = 0;
+        ftrSuccess = 0;
+        ftrFailed = 0;
+        runablesExecuted = 0;
+        runablesRejected = 0;
     }
 
     private void incrementRunableExecuted() {
@@ -130,7 +129,7 @@ abstract class AbstractDropTest implements PacketProcessingListener, AutoCloseab
     }
 
     @Override
-    public final void onPacketReceived(final PacketReceived notification) {
+    public final void onNotification(final PacketReceived notification) {
         LOG.debug("onPacketReceived - Entering - {}", notification);
 
         RCVD_UPDATER.incrementAndGet(this);

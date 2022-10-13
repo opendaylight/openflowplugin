@@ -23,7 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -62,7 +63,7 @@ public class DropTestRpcSender extends AbstractDropTest {
 
     private NotificationService notificationService;
 
-    private ListenerRegistration<DropTestRpcSender> notificationRegistration;
+    private Registration notificationRegistration;
 
     /**
      * Start listening on packetIn.
@@ -73,7 +74,7 @@ public class DropTestRpcSender extends AbstractDropTest {
                 STARTUP_LOOP_MAX_RETRIES);
         try {
             notificationRegistration = looper.loopUntilNoException(
-                () -> notificationService.registerNotificationListener(DropTestRpcSender.this));
+                () -> notificationService.registerListener(PacketReceived.class, this));
         } catch (Exception e) {
             LOG.warn("DropTest sender notification listener registration fail!");
             LOG.debug("DropTest sender notification listener registration fail! ..", e);

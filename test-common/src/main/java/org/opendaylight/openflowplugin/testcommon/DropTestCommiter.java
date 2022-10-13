@@ -25,7 +25,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -61,7 +62,7 @@ public class DropTestCommiter extends AbstractDropTest {
 
     private NotificationService notificationService;
 
-    private ListenerRegistration<DropTestCommiter> notificationRegistration;
+    private Registration notificationRegistration;
 
     /**
      * start listening on packetIn.
@@ -71,8 +72,8 @@ public class DropTestCommiter extends AbstractDropTest {
         final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
                 STARTUP_LOOP_MAX_RETRIES);
         try {
-            notificationRegistration = looper.loopUntilNoException(() ->
-                notificationService.registerNotificationListener(DropTestCommiter.this));
+            notificationRegistration = looper.loopUntilNoException(
+                () -> notificationService.registerListener(PacketReceived.class, this));
         } catch (Exception e) {
             LOG.warn("DropTest committer notification listener registration fail!");
             LOG.debug("DropTest committer notification listener registration fail! ..", e);
