@@ -16,7 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -62,6 +62,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SwitchConnectionProviderImpl02Test {
+    @Mock DiagStatusService diagStatusService;
     @Mock SwitchConnectionHandler handler;
     @Mock OFGeneralSerializer serializer;
     @Mock OFGeneralDeserializer deserializer;
@@ -74,7 +75,6 @@ public class SwitchConnectionProviderImpl02Test {
     @Mock OFSerializer<ExperimenterDataOfChoice> serializerMultipartRequestExpCase;
     @Mock OFSerializer<MeterBandExperimenterCase> serializerMeterBandExpCase;
     @Mock ConnectionConfigurationImpl config;
-    @Mock OpenflowDiagStatusProvider openflowPluginDiagStatusProvider;
     private static final int CHANNEL_OUTBOUND_QUEUE_SIZE = 1024;
     private static final int SWITCH_IDLE_TIMEOUT = 2000;
     private TlsConfiguration tlsConfiguration;
@@ -90,7 +90,7 @@ public class SwitchConnectionProviderImpl02Test {
         if (protocol != null) {
             createConfig(protocol);
         }
-        provider = new SwitchConnectionProviderImpl(config,openflowPluginDiagStatusProvider);
+        provider = new SwitchConnectionProviderImpl(diagStatusService, config);
     }
 
     private void createConfig(final TransportProtocol protocol) throws UnknownHostException {

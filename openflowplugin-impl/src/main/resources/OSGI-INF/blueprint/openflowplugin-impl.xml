@@ -17,7 +17,7 @@
     <argument ref="clusterSingletonServiceProvider"/>
     <argument ref="entityOwnershipService"/>
     <argument ref="mastershipChangeServiceManagerImpl"/>
-    <argument ref="openflowDiagStatusProvider"/>
+    <argument ref="diagStatusProvider"/>
     <argument ref="systemReadyMonitor"/>
   </bean>
   <service ref="openFlowPluginProviderImpl">
@@ -76,8 +76,8 @@
              interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
   <reference id="entityOwnershipService"
              interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
-  <reference id="openflowDiagStatusProvider"
-             interface="org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider"/>
+  <reference id="diagStatusProvider"
+             interface="org.opendaylight.openflowplugin.impl.DiagStatusProvider"/>
   <reference id="systemReadyMonitor"
              interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
 

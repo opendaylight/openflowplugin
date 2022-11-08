@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowjava.protocol.spi.connection;
 
-import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
 
 /**
@@ -22,6 +21,5 @@ public interface SwitchConnectionProviderFactory {
      * @param config the SwitchConnectionConfig
      * @return a SwitchConnectionProvider instance
      */
-    SwitchConnectionProvider newInstance(SwitchConnectionConfig config,
-                                         OpenflowDiagStatusProvider openflowPluginDiagStatusProvider);
+    SwitchConnectionProvider newInstance(SwitchConnectionConfig config);
 }
