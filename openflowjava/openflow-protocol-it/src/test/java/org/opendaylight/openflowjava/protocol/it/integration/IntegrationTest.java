@@ -22,7 +22,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
@@ -99,8 +99,7 @@ public class IntegrationTest {
         connConfig.setTransferProtocol(protocol);
         mockPlugin = new MockPlugin(executorService);
 
-        switchConnectionProvider = new SwitchConnectionProviderImpl(connConfig,
-                Mockito.mock(OpenflowDiagStatusProvider.class));
+        switchConnectionProvider = new SwitchConnectionProviderImpl(Mockito.mock(DiagStatusService.class), connConfig);
         switchConnectionProvider.setSwitchConnectionHandler(mockPlugin);
         switchConnectionProvider.startup().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         if (protocol.equals(TransportProtocol.TCP) || protocol.equals(TransportProtocol.TLS)) {

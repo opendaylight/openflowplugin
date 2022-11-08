@@ -44,9 +44,5 @@
             <groupId>io.netty</groupId>
             <artifactId>netty-buffer</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.opendaylight.infrautils</groupId>
-            <artifactId>diagstatus-api</artifactId>
-        </dependency>
     </dependencies>
 </project>

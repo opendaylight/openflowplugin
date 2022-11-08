@@ -14,9 +14,8 @@ import java.net.UnknownHostException;
 import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.kohsuke.MetaInfServices;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
-import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
@@ -27,24 +26,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.T
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Threads;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506._switch.connection.config.Tls;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Implementation of the SwitchConnectionProviderFactory interface.
  */
-@MetaInfServices
 @Singleton
-@Component(immediate = true)
+@Component
 public class SwitchConnectionProviderFactoryImpl implements SwitchConnectionProviderFactory {
+    private final DiagStatusService diagStatus;
+
     @Inject
-    public SwitchConnectionProviderFactoryImpl() {
-        // Exposed for DI
+    @Activate
+    public SwitchConnectionProviderFactoryImpl(@Reference final DiagStatusService diagStatus) {
+        this.diagStatus = requireNonNull(diagStatus);
     }
 
     @Override
-    public SwitchConnectionProvider newInstance(final SwitchConnectionConfig config,
-                                                final OpenflowDiagStatusProvider diagStatus) {
-        return new SwitchConnectionProviderImpl(new ConnectionConfigurationImpl(config), diagStatus);
+    public SwitchConnectionProvider newInstance(final SwitchConnectionConfig config) {
+        return new SwitchConnectionProviderImpl(diagStatus, new ConnectionConfigurationImpl(config));
     }
 
     private static class ConnectionConfigurationImpl implements ConnectionConfiguration {
