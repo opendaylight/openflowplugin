@@ -22,10 +22,15 @@ import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceRegistration;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
+@Component
 public final class DefaultOpenflowDiagStatusProvider implements OpenflowDiagStatusProvider {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultOpenflowDiagStatusProvider.class);
     private static final String OPENFLOW_SERVICE = "OPENFLOW";
@@ -42,17 +47,21 @@ public final class DefaultOpenflowDiagStatusProvider implements OpenflowDiagStat
     private ServiceRegistration reg;
 
     @Inject
-    public DefaultOpenflowDiagStatusProvider(final DiagStatusService diagStatusService) {
+    @Activate
+    public DefaultOpenflowDiagStatusProvider(@Reference final DiagStatusService diagStatusService) {
         this.diagStatusService = diagStatusService;
         reg = diagStatusService.register(OPENFLOW_SERVICE_AGGREGATE);
+        LOG.debug("OpenFlow diagnostic status provider activated");
     }
 
     @PreDestroy
+    @Deactivate
     public void close() {
         if (reg != null) {
             reg.unregister();
             reg = null;
         }
+        LOG.debug("OpenFlow diagnostic status provider deactivated");
     }
 
     @Override
