@@ -45,7 +45,6 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
@@ -126,7 +125,7 @@ public class OpenFlowPluginProviderImpl implements
     private ConnectionManager connectionManager;
     private ExecutorService executorService;
     private ContextChainHolderImpl contextChainHolder;
-    private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
+    private final DiagStatusProvider diagStatusProvider;
     private final SystemReadyMonitor systemReadyMonitor;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
@@ -144,20 +143,20 @@ public class OpenFlowPluginProviderImpl implements
                                final ClusterSingletonServiceProvider singletonServiceProvider,
                                final EntityOwnershipService entityOwnershipService,
                                final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final OpenflowDiagStatusProvider openflowDiagStatusProvider,
+                               final DiagStatusProvider diagStatusProvider,
                                final SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
-        this.dataBroker = pingPongDataBroker;
+        dataBroker = pingPongDataBroker;
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.notificationPublishService = notificationPublishService;
-        this.singletonServicesProvider = singletonServiceProvider;
+        singletonServicesProvider = singletonServiceProvider;
         this.entityOwnershipService = entityOwnershipService;
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
         config = new OpenFlowProviderConfigImpl(configurationService);
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
-        this.openflowDiagStatusProvider = openflowDiagStatusProvider;
+        this.diagStatusProvider = diagStatusProvider;
         this.systemReadyMonitor = systemReadyMonitor;
     }
 
@@ -181,14 +180,14 @@ public class OpenFlowPluginProviderImpl implements
             @Override
             public void onSuccess(final List<Boolean> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
-                openflowDiagStatusProvider.reportStatus(OPENFLOW_SERVICE_NAME, ServiceState.OPERATIONAL);
+                diagStatusProvider.reportStatus(ServiceState.OPERATIONAL);
                 fullyStarted.set(null);
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.warn("Some switchConnectionProviders failed to start.", throwable);
-                openflowDiagStatusProvider.reportStatus(OPENFLOW_SERVICE_NAME, throwable);
+                diagStatusProvider.reportStatus(ServiceState.ERROR, throwable);
                 fullyStarted.setException(throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -328,7 +327,7 @@ public class OpenFlowPluginProviderImpl implements
         gracefulShutdown(executorService);
         gracefulShutdown(hashedWheelTimer);
         unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
-        openflowDiagStatusProvider.reportStatus(ServiceState.UNREGISTERED);
+        diagStatusProvider.reportStatus(ServiceState.UNREGISTERED);
         try {
             if (connectionManager != null) {
                 connectionManager.close();

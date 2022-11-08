@@ -10,6 +10,7 @@
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -19,10 +20,12 @@ import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import org.eclipse.jdt.annotation.Nullable;
+import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
+import org.opendaylight.infrautils.diagstatus.ServiceRegistration;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
-import org.opendaylight.openflowjava.protocol.api.connection.OpenflowDiagStatusProvider;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
@@ -68,7 +71,6 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer {
-
     private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderImpl.class);
     private static final String THREAD_NAME_PREFIX = "OFP-SwitchConnectionProvider-Udp/TcpHandler";
     private static final String OPENFLOW_JAVA_SERVICE_NAME_PREFIX = "OPENFLOW_SERVER";
@@ -81,17 +83,22 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
     private final ListeningExecutorService listeningExecutorService;
+    private final DiagStatusService diagStatus;
     private final String diagStatusIdentifier;
     private final String threadName;
-    private TcpConnectionInitializer connectionInitializer;
-    private final OpenflowDiagStatusProvider openflowDiagStatusProvider;
 
-    public SwitchConnectionProviderImpl(final @Nullable ConnectionConfiguration connConfig,
-            final OpenflowDiagStatusProvider openflowDiagStatusProvider) {
+    private TcpConnectionInitializer connectionInitializer;
+    // FIXME: clean this up when no longer needed
+    private final ServiceRegistration diagReg;
+
+    public SwitchConnectionProviderImpl(final DiagStatusService diagStatus,
+            final @Nullable ConnectionConfiguration connConfig) {
         this.connConfig = connConfig;
         String connectionSuffix = createConnectionSuffix(connConfig);
+        this.diagStatus = requireNonNull(diagStatus);
         diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
-        this.openflowDiagStatusProvider = openflowDiagStatusProvider;
+        diagReg = diagStatus.register(diagStatusIdentifier);
+
         threadName = THREAD_NAME_PREFIX + connectionSuffix;
         listeningExecutorService = Executors.newListeningSingleThreadExecutor(threadName, LOG);
         serializerRegistry = new SerializerRegistryImpl();
@@ -140,13 +147,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, throwable);
+                    diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
                 }
 
                 @Override
                 public void onSuccess(final Object result) {
-                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.ERROR,
-                            threadName + " terminated");
+                    diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR,
+                        threadName + " terminated"));
                 }
             }, MoreExecutors.directExecutor());
             return serverFacade.getIsOnlineFuture();
@@ -175,8 +182,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         boolean isEpollEnabled = Epoll.isAvailable();
 
         if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
-            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(), () ->
-                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.OPERATIONAL));
+            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),
+                () -> diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
             final TcpChannelInitializer channelInitializer = factory.createPublishingChannelInitializer();
             ((TcpHandler) server).setChannelInitializer(channelInitializer);
             ((TcpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
@@ -185,8 +192,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             connectionInitializer.setChannelInitializer(channelInitializer);
             connectionInitializer.run();
         } else if (TransportProtocol.UDP.equals(transportProtocol)) {
-            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(), () ->
-                    openflowDiagStatusProvider.reportStatus(diagStatusIdentifier, ServiceState.OPERATIONAL));
+            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(),
+                () -> diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
             ((UdpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
             ((UdpHandler) server).setChannelInitializer(factory.createUdpChannelInitializer());
         } else {
