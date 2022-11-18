@@ -9,12 +9,14 @@ package org.opendaylight.openflowplugin.test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener;
+import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener.Component;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.OpendaylightInventoryListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,46 +33,37 @@ public class OpenflowpluginTestNodeConnectorNotification {
 
     public void init() {
         // For switch events
-        notificationService.registerNotificationListener(portEventListener);
+        notificationService.registerCompositeListener(portEventListener.toListener());
     }
 
-    private static final class PortEventListener implements OpendaylightInventoryListener {
-
+    private static final class PortEventListener {
         List<NodeUpdated> nodeUpdated = new ArrayList<>();
         List<NodeRemoved> nodeRemoved = new ArrayList<>();
         List<NodeConnectorUpdated> nodeConnectorUpdated = new ArrayList<>();
         List<NodeConnectorRemoved> nodeConnectorRemoved = new ArrayList<>();
 
-        @Override
-        @Deprecated
-        public void onNodeConnectorRemoved(final NodeConnectorRemoved notification) {
-            LOG.debug("NodeConnectorRemoved Notification");
-            LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
-            nodeConnectorRemoved.add(notification);
-        }
-
-        @Override
-        @Deprecated
-        public void onNodeConnectorUpdated(final NodeConnectorUpdated notification) {
-            LOG.debug("NodeConnectorUpdated Notification");
-            LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
-            nodeConnectorUpdated.add(notification);
-        }
-
-        @Override
-        @Deprecated
-        public void onNodeRemoved(final NodeRemoved notification) {
-            LOG.debug("NodeRemoved Notification");
-            LOG.debug("NodeRef {}", notification.getNodeRef());
-            nodeRemoved.add(notification);
-        }
-
-        @Override
-        @Deprecated
-        public void onNodeUpdated(final NodeUpdated notification) {
-            LOG.debug("NodeUpdated Notification");
-            LOG.debug("NodeRef {}", notification.getNodeRef());
-            nodeUpdated.add(notification);
+        CompositeListener toListener() {
+            return new CompositeListener(Set.of(
+                new Component<>(NodeConnectorRemoved.class, notification -> {
+                    LOG.debug("NodeConnectorRemoved Notification");
+                    LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
+                    nodeConnectorRemoved.add(notification);
+                }),
+                new Component<>(NodeConnectorUpdated.class, notification -> {
+                    LOG.debug("NodeConnectorUpdated Notification");
+                    LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
+                    nodeConnectorUpdated.add(notification);
+                }),
+                new Component<>(NodeRemoved.class, notification -> {
+                    LOG.debug("NodeRemoved Notification");
+                    LOG.debug("NodeRef {}", notification.getNodeRef());
+                    nodeRemoved.add(notification);
+                }),
+                new Component<>(NodeUpdated.class, notification -> {
+                    LOG.debug("NodeUpdated Notification");
+                    LOG.debug("NodeRef {}", notification.getNodeRef());
+                    nodeUpdated.add(notification);
+                })));
         }
     }
 }
