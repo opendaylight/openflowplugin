@@ -17,7 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.FlowRemovedMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PacketInMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.async.body.grouping.PortStatusMask;
-import org.opendaylight.yangtools.yang.binding.Enumeration;
+import org.opendaylight.yangtools.yang.binding.EnumTypeObject;
 
 /**
  * Translates GetAsyncOutput messages.
@@ -60,10 +60,10 @@ public class GetAsyncReplyMessageFactory implements OFSerializer<GetAsyncOutput>
         }
     }
 
-    private static void serializeReasons(final Collection<? extends Enumeration> reasons, final ByteBuf outBuffer) {
+    private static void serializeReasons(final Collection<? extends EnumTypeObject> reasons, final ByteBuf outBuffer) {
         if (reasons != null) {
             int bitmap = 0;
-            for (Enumeration reason : reasons) {
+            for (var reason : reasons) {
                 bitmap |= 1 << reason.getIntValue();
             }
             outBuffer.writeInt(bitmap);

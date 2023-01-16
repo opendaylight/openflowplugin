@@ -72,20 +72,6 @@ public class SwitchFeaturesUtilTest {
 
     /**
      * Test method for
-     * {@link SwitchFeaturesUtil#buildSwitchFeatures} for malformed switch feature capabilities
-     * - at least one feature is null
-     * .
-     */
-    //@Test TODO:do we need to check if capability is null?
-    public void testSwFeaturesCapabilitiesMalformed() {
-        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, null);
-        featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion(Uint8.ONE);
-
-        assertNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
-    }
-
-    /**
-     * Test method for
      * {@link SwitchFeaturesUtil#buildSwitchFeatures} for mismatch between
      * version and switch feature capabilities
      * .
