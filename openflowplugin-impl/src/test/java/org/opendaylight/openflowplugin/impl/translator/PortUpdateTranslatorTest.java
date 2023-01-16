@@ -19,6 +19,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.State;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfigV10;
@@ -43,14 +44,14 @@ public class PortUpdateTranslatorTest {
     private DeviceInfo deviceInfo;
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig portConfig;
-    private StateBuilder portStateBld;
+    private State portState;
     private PortStatusMessageBuilder portBld;
 
     @Before
     public void setUp() {
         portUpdateTranslator = new PortUpdateTranslator();
 
-        portStateBld = new StateBuilder().setLive(true);
+        portState = new StateBuilder().setLive(true).setBlocked(false).setLinkDown(false).build();
         portConfig = org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig
                 .getDefaultInstance("nOFWD");
         portBld = assemblePortStatusMessage(21L, 84L);
@@ -75,7 +76,7 @@ public class PortUpdateTranslatorTest {
         Assert.assertEquals(portFeatures, nodeConnector.getAdvertisedFeatures());
         Assert.assertEquals(portFeatures, nodeConnector.getPeerFeatures());
         Assert.assertEquals(portFeatures, nodeConnector.getSupported());
-        Assert.assertEquals(portStateBld.build(), nodeConnector.getState());
+        Assert.assertEquals(portState, nodeConnector.getState());
         Assert.assertNull(nodeConnector.getQueue());
     }
 
@@ -92,8 +93,8 @@ public class PortUpdateTranslatorTest {
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                        null, null, null, false, false, true, null, null,
-                        null, false, false, null, null, null, null, null
+                        false, false, false, false, false, true,  false, false,
+                        false, false, false, false, false, false, false, false
                 );
 
         final FlowCapableNodeConnector nodeConnector =
@@ -106,7 +107,7 @@ public class PortUpdateTranslatorTest {
         Assert.assertEquals(portFeatures, nodeConnector.getAdvertisedFeatures());
         Assert.assertEquals(portFeatures, nodeConnector.getPeerFeatures());
         Assert.assertEquals(portFeatures, nodeConnector.getSupported());
-        Assert.assertEquals(portStateBld.build(), nodeConnector.getState());
+        Assert.assertEquals(portState, nodeConnector.getState());
         Assert.assertNull(nodeConnector.getQueue());
     }
 

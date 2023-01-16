@@ -195,9 +195,5 @@ public class OpenflowPortsUtilTest {
 
         portNumber = new PortNumberUni(OutputPortValues.FLOOD.toString());
         Assert.assertEquals("FLOOD", OpenflowPortsUtil.portNumberToString(portNumber));
-
-
-        portNumber = new PortNumberUni((String) null);
-        Assert.assertNotNull(portNumber);
     }
 }

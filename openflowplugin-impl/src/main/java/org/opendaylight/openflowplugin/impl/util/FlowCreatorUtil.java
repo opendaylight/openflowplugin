@@ -165,11 +165,11 @@ public final class FlowCreatorUtil {
             f2 = flags2 == null ? DEFAULT_FLOW_MOD_FLAGS : flags2;
         }
 
-        return equalsWithDefault(f1.getCHECKOVERLAP(), f2.getCHECKOVERLAP(), Boolean.FALSE)
-            && equalsWithDefault(f1.getNOBYTCOUNTS(), f2.getNOBYTCOUNTS(), Boolean.FALSE)
-            && equalsWithDefault(f1.getNOPKTCOUNTS(), f2.getNOPKTCOUNTS(), Boolean.FALSE)
-            && equalsWithDefault(f1.getRESETCOUNTS(), f2.getRESETCOUNTS(), Boolean.FALSE)
-            && equalsWithDefault(f1.getSENDFLOWREM(), f2.getSENDFLOWREM(), Boolean.FALSE);
+        return f1.getCHECKOVERLAP() == f2.getCHECKOVERLAP()
+            && f1.getNOBYTCOUNTS() == f2.getNOBYTCOUNTS()
+            && f1.getNOPKTCOUNTS() == f2.getNOPKTCOUNTS()
+            && f1.getRESETCOUNTS() == f2.getRESETCOUNTS()
+            && f1.getSENDFLOWREM() == f2.getSENDFLOWREM();
     }
 
     /**
