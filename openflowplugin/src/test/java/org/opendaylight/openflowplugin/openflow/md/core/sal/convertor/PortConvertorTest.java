@@ -35,14 +35,16 @@ public class PortConvertorTest {
 
     private static final String DEFAULT_MAC_ADDRESS = "01:02:03:04:05:06";
 
-    private final PortFeatures features = new PortFeatures(true, null, null, null, null, null, null, null, null, null,
-            null, null, null, null, null, null);
+    private final PortFeatures features = new PortFeatures(
+        true,  false, false, false, false, false, false, false,
+        false, false, false, false, false, false, false, false);
 
     private final PortConfig config = new PortConfig(false, false, false, false);
 
     private final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures portf31 =
-            new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures(
-                    null, null, null, null, null, null, null, null, null, null, true, null, null, null, null, null);
+        new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortFeatures(
+            false, false, false, false, false, false, false, false,
+            false, false, true,  false, false, false, false, false);
 
     private final org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig config31 =
             new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortConfig(
@@ -85,8 +87,9 @@ public class PortConvertorTest {
 
         portModInputBld.setConfigV10(portConfV10);
         portModInputBld.setMaskV10(portConfMaskV10);
-        portModInputBld.setAdvertiseV10(
-                new PortFeaturesV10(null, null, null, null, null, null, null, true, null, null, null, null));
+        portModInputBld.setAdvertiseV10(new PortFeaturesV10(
+            false, false, false, false, false, false,
+            false, true,  false, false, false, false));
 
         portModInputBld.setVersion(EncodeConstants.OF_VERSION_1_3);
 
