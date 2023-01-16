@@ -188,10 +188,13 @@ public class FlowCreatorUtilTest {
      */
     @Test
     public void testEqualsFlowModFlags() {
-        final FlowModFlags[] defaults = {null, new FlowModFlags(false, false, false, false, false), new FlowModFlags(
-                false, null, false, null, Boolean.FALSE),};
+        final FlowModFlags[] defaults = {
+            null,
+            new FlowModFlags(false, false, false, false, false),
+            new FlowModFlags(false, false, false, false, false),
+        };
         final FlowModFlags all = new FlowModFlags(true, true, true, true, true);
-        final FlowModFlags none = new FlowModFlags(null, null, null, null, null);
+        final FlowModFlags none = new FlowModFlags(false, false, false, false, false);
 
         for (final FlowModFlags f : defaults) {
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(f, null));

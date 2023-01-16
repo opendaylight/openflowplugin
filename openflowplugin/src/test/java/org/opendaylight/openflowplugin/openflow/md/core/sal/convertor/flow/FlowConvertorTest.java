@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -396,6 +397,16 @@ public class FlowConvertorTest {
         @Override
         public Uri getTransactionUri() {
             return null;
+        }
+
+        @Override
+        public Match nonnullMatch() {
+            return Objects.requireNonNullElse(getMatch(), MatchBuilder.empty());
+        }
+
+        @Override
+        public Instructions nonnullInstructions() {
+            return Objects.requireNonNullElse(getInstructions(), InstructionsBuilder.empty());
         }
     }
 }

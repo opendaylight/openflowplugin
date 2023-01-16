@@ -99,7 +99,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", false, builtByFactory.getFlags().getOFPMPFREQMORE().booleanValue());
+        Assert.assertFalse("Wrong flag", builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyDescCase messageCase = (MultipartReplyDescCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyDesc message = messageCase.getMultipartReplyDesc();
         Assert.assertEquals("Wrong mfrDesc", "Manufacturer description", message.getMfrDesc());
@@ -126,7 +126,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x01, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE().booleanValue());
+        Assert.assertTrue("Wrong flag", builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyFlowCase messageCase = (MultipartReplyFlowCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyFlow message = messageCase.getMultipartReplyFlow();
         Assert.assertEquals("Wrong tableId", 1, message.getFlowStats().get(0).getTableId().intValue());
@@ -166,7 +166,7 @@ public class OF10StatsReplyMessageFactoryTest {
 
         BufferHelper.checkHeaderV10(builtByFactory);
         Assert.assertEquals("Wrong type", 0x02, builtByFactory.getType().getIntValue());
-        Assert.assertEquals("Wrong flag", true, builtByFactory.getFlags().getOFPMPFREQMORE().booleanValue());
+        Assert.assertTrue("Wrong flag", builtByFactory.getFlags().getOFPMPFREQMORE());
         MultipartReplyAggregateCase messageCase = (MultipartReplyAggregateCase) builtByFactory.getMultipartReplyBody();
         MultipartReplyAggregate message = messageCase.getMultipartReplyAggregate();
         Assert.assertEquals("Wrong packet-count", Uint64.valueOf("FF01020304050607", 16), message.getPacketCount());

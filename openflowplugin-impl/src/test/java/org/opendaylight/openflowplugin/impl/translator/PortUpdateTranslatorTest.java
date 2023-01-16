@@ -92,8 +92,8 @@ public class PortUpdateTranslatorTest {
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_0);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                        null, null, null, false, false, true, null, null,
-                        null, false, false, null, null, null, null, null
+                        false, false, false, false, false, true,  false, false,
+                        false, false, false, false, false, false, false, false
                 );
 
         final FlowCapableNodeConnector nodeConnector =

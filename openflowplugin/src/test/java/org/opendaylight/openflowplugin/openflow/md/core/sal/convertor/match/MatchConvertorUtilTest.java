@@ -24,8 +24,8 @@ public class MatchConvertorUtilTest {
     public void testIpv6ExthdrFlagsToInt() throws Exception {
         Ipv6ExthdrFlags flags;
         Constructor<Ipv6ExthdrFlags> ctor = Ipv6ExthdrFlags.class.getConstructor(
-                Boolean.class, Boolean.class, Boolean.class, Boolean.class,
-                Boolean.class, Boolean.class, Boolean.class, Boolean.class, Boolean.class);
+                boolean.class, boolean.class, boolean.class, boolean.class,
+                boolean.class, boolean.class, boolean.class, boolean.class, boolean.class);
 
         int[] expectedFlagCumulants = new int[] { 4, 8, 2, 16, 64, 1, 32, 128, 256 };
 

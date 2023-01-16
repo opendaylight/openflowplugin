@@ -78,7 +78,7 @@ public class SwitchFeaturesUtilTest {
      */
     //@Test TODO:do we need to check if capability is null?
     public void testSwFeaturesCapabilitiesMalformed() {
-        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, null);
+        CapabilitiesV10 capabilities = new CapabilitiesV10(true, false, true, false, true, false, true, false);
         featuresOutputBuilder.setCapabilitiesV10(capabilities).setCapabilities(null).setVersion(Uint8.ONE);
 
         assertNull(SwitchFeaturesUtil.buildSwitchFeatures(featuresOutputBuilder.build()));
