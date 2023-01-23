@@ -36,58 +36,47 @@ public abstract class PortTranslatorUtil {
     private static final Logger LOG = LoggerFactory.getLogger(PortTranslatorUtil.class);
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
-        translatePortFeatures(
-            final PortFeatures apf) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
-        if (apf != null) {
-            napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                    apf.getAutoneg(), //_autoeng
-                    apf.getCopper(), //_copper
-                    apf.getFiber(), //_fiber
-                    apf.get_40gbFd(), //_fortyGbFd
-                    apf.get_100gbFd(), //_hundredGbFd
-                    apf.get_100mbFd(), //_hundredMbFd
-                    apf.get_100mbHd(), //_hundredMbHd
-                    apf.get_1gbFd(), //_oneGbFd
-                    apf.get_1gbHd(), //_oneGbHd
-                    apf.get_1tbFd(), //_oneTbFd
-                    apf.getOther(), //_other
-                    apf.getPause(), //_pause
-                    apf.getPauseAsym(), //_pauseAsym
-                    apf.get_10gbFd(), //_tenGbFd
-                    apf.get_10mbFd(), //_tenMbFd
-                    apf.get_10mbHd()//_tenMbHd
-            );
-
-        }
-        return napf;
+            translatePortFeatures(final PortFeatures apf) {
+        return apf == null ? null
+            : new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
+                apf.getAutoneg(),   //_autoeng
+                apf.getCopper(),    //_copper
+                apf.getFiber(),     //_fiber
+                apf.get_40gbFd(),   //_fortyGbFd
+                apf.get_100gbFd(),  //_hundredGbFd
+                apf.get_100mbFd(),  //_hundredMbFd
+                apf.get_100mbHd(),  //_hundredMbHd
+                apf.get_1gbFd(),    //_oneGbFd
+                apf.get_1gbHd(),    //_oneGbHd
+                apf.get_1tbFd(),    //_oneTbFd
+                apf.getOther(),     //_other
+                apf.getPause(),     //_pause
+                apf.getPauseAsym(), //_pauseAsym
+                apf.get_10gbFd(),   //_tenGbFd
+                apf.get_10mbFd(),   //_tenMbFd
+                apf.get_10mbHd());  //_tenMbHd
     }
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
-        translatePortFeatures(
-            final PortFeaturesV10 apf) {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures napf = null;
-        if (apf != null) {
-            napf = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
-                    apf.getAutoneg(), //_autoeng
-                    apf.getCopper(), //_copper
-                    apf.getFiber(), //_fiber
-                    false, //_fortyGbFd
-                    false, //_hundredGbFd
-                    apf.get_100mbFd(), //_hundredMbFd
-                    apf.get_100mbHd(), //_hundredMbHd
-                    apf.get_1gbFd(), //_oneGbFd
-                    apf.get_1gbHd(), //_oneGbHd
-                    false, //_oneTbFd
-                    false, //_other
-                    apf.getPause(), //_pause
-                    apf.getPauseAsym(), //_pauseAsym
-                    apf.get_10gbFd(), //_tenGbFd
-                    apf.get_10mbFd(), //_tenMbFd
-                    apf.get_10mbHd()//_tenMbHd
-            );
-        }
-        return napf;
+            translatePortFeatures(final PortFeaturesV10 apf) {
+        return apf == null ? null
+            : new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures(
+                apf.getAutoneg(),   //_autoeng
+                apf.getCopper(),    //_copper
+                apf.getFiber(),     //_fiber
+                false,              //_fortyGbFd
+                false,              //_hundredGbFd
+                apf.get_100mbFd(),  //_hundredMbFd
+                apf.get_100mbHd(),  //_hundredMbHd
+                apf.get_1gbFd(),    //_oneGbFd
+                apf.get_1gbHd(),    //_oneGbHd
+                false,              //_oneTbFd
+                false,              //_other
+                apf.getPause(),     //_pause
+                apf.getPauseAsym(), //_pauseAsym
+                apf.get_10gbFd(),   //_tenGbFd
+                apf.get_10mbFd(),   //_tenMbFd
+                apf.get_10mbHd());  //_tenMbHd
     }
 
     public static State translatePortState(final PortState state) {

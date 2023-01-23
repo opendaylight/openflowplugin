@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
-import java.util.Collections;
+import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
@@ -44,11 +44,11 @@ public class PortUpdateTranslator implements MessageTranslator<PortGrouping, Flo
             builder.setPeerFeatures(PortTranslatorUtil.translatePortFeatures(input.getPeerFeatures()));
             builder.setState(PortTranslatorUtil.translatePortState(input.getState()));
             builder.setSupported(PortTranslatorUtil.translatePortFeatures(input.getSupportedFeatures()));
-            builder.setQueue(Collections.emptyMap());
+            builder.setQueue(Map.of());
         }
-        if (input instanceof PortStatusMessage) {
-            if (((PortStatusMessage) input).getReason() != null) {
-                builder.setReason(PortReason.forValue(((PortStatusMessage) input).getReason().getIntValue()));
+        if (input instanceof PortStatusMessage portStatus) {
+            if (portStatus.getReason() != null) {
+                builder.setReason(PortReason.forValue(portStatus.getReason().getIntValue()));
             } else {
                 LOG.debug("PortStatus Message has reason as null");
             }
