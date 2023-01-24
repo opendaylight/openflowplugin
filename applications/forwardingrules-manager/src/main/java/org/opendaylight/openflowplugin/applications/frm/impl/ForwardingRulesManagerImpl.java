@@ -71,8 +71,6 @@ import org.slf4j.LoggerFactory;
 public final class ForwardingRulesManagerImpl implements ForwardingRulesManager {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
 
-    static final int STARTUP_LOOP_TICK = 1000;
-    static final int STARTUP_LOOP_MAX_RETRIES = 240;
     private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.reconciliation.priority", 1);
     private static final String SERVICE_NAME = "FRM";
 
@@ -165,7 +163,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         devicesGroupRegistry = new DevicesGroupRegistry();
         nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING, flowGroupCacheManager);
-        if (this.isReconciliationDisabled()) {
+        if (isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {
             reconciliationNotificationRegistration = reconciliationManager.registerService(nodeListener);

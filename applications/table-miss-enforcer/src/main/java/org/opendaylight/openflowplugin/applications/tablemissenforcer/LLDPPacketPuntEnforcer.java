@@ -19,7 +19,6 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
@@ -42,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -53,15 +52,14 @@ import org.slf4j.LoggerFactory;
 
 public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
-    private static final long STARTUP_LOOP_TICK = 500L;
-    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final Uint8 TABLE_ID = Uint8.ZERO;
     private static final String LLDP_PUNT_WHOLE_PACKET_FLOW = "LLDP_PUNT_WHOLE_PACKET_FLOW";
     private static final String DEFAULT_FLOW_ID = "42";
+
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
     private final DeviceOwnershipService deviceOwnershipService;
-    private ListenerRegistration<?> listenerRegistration;
+    private Registration listenerRegistration;
 
     public LLDPPacketPuntEnforcer(final SalFlowService flowService, final DataBroker dataBroker,
             final DeviceOwnershipService deviceOwnershipService) {
@@ -70,19 +68,11 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
     }
 
-    @SuppressWarnings("IllegalCatch")
     public void start() {
-        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
-                LogicalDatastoreType.OPERATIONAL, path);
-        SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-        try {
-            listenerRegistration = looper.loopUntilNoException(() ->
-                dataBroker.registerDataTreeChangeListener(identifier, LLDPPacketPuntEnforcer.this));
-        } catch (Exception e) {
-            throw new IllegalStateException("registerDataTreeChangeListener failed", e);
-        }
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)),
+            this);
     }
 
     @Override
@@ -102,7 +92,7 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
                     AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
                     addFlowInput.setNode(new NodeRef(modification.getRootPath()
                             .getRootIdentifier().firstIdentifierOf(Node.class)));
-                    LoggingFutures.addErrorLogging(this.flowService.addFlow(addFlowInput.build()), LOG, "addFlow");
+                    LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput.build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);
                 }
