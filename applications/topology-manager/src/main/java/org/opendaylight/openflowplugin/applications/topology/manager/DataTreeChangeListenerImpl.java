@@ -7,11 +7,11 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
@@ -22,33 +22,21 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>,
         AutoCloseable {
+    static final InstanceIdentifier<Topology> II_TO_TOPOLOGY = InstanceIdentifier.create(NetworkTopology.class)
+        .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
 
-    private static final Logger LOG = LoggerFactory.getLogger(DataTreeChangeListenerImpl.class);
-    private static final long STARTUP_LOOP_TICK = 500L;
-    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
     protected final ListenerRegistration<?> listenerRegistration;
     protected OperationProcessor operationProcessor;
 
-    static final InstanceIdentifier<Topology> II_TO_TOPOLOGY = InstanceIdentifier.create(NetworkTopology.class)
-            .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
-
-    @SuppressWarnings("checkstyle:IllegalCatch")
+    @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
+        justification = "'this' passed to registerDataTreeChangeListener")
     public DataTreeChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
-                               final InstanceIdentifier<T> ii) {
-        final DataTreeIdentifier<T> identifier = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii);
-        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-        try {
-            listenerRegistration = looper.loopUntilNoException(
-                () -> dataBroker.registerDataTreeChangeListener(identifier, DataTreeChangeListenerImpl.this));
-        } catch (Exception e) {
-            LOG.error("Data listener registration failed!");
-            throw new IllegalStateException("TopologyManager startup fail! TM bundle needs restart.", e);
-        }
+            final InstanceIdentifier<T> ii) {
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii), this);
         this.operationProcessor = operationProcessor;
     }
 
@@ -57,7 +45,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
         listenerRegistration.close();
     }
 
-    <T extends DataObject> void sendToTransactionChain(final T node, final InstanceIdentifier<T> iiToTopologyNode) {
+    <O extends DataObject> void sendToTransactionChain(final O node, final InstanceIdentifier<O> iiToTopologyNode) {
         operationProcessor.enqueueOperation(
             manager -> manager.mergeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true));
     }

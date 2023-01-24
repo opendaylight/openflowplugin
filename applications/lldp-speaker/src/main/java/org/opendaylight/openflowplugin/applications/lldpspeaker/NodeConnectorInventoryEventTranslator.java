@@ -16,11 +16,9 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
@@ -29,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.f
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -39,7 +37,7 @@ import org.slf4j.LoggerFactory;
  * NodeConnectorInventoryEventTranslator is listening for changes in inventory operational DOM tree
  * and update LLDPSpeaker and topology.
  */
-public class NodeConnectorInventoryEventTranslator<T extends DataObject>
+public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
         implements ClusteredDataTreeChangeListener<T>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
 
@@ -51,35 +49,22 @@ public class NodeConnectorInventoryEventTranslator<T extends DataObject>
             = InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
             .augmentation(FlowCapableNodeConnector.class).build();
 
-    private static final long STARTUP_LOOP_TICK = 500L;
-    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
-
-    private final ListenerRegistration<DataTreeChangeListener> listenerOnPortRegistration;
-    private final ListenerRegistration<DataTreeChangeListener> listenerOnPortStateRegistration;
+    private final Registration listenerOnPortRegistration;
+    private final Registration listenerOnPortStateRegistration;
     private final Set<NodeConnectorEventsObserver> observers;
     private final Map<InstanceIdentifier<?>, FlowCapableNodeConnector> iiToDownFlowCapableNodeConnectors
             = new HashMap<>();
 
-    @SuppressWarnings("IllegalCatch")
     public NodeConnectorInventoryEventTranslator(final DataBroker dataBroker,
             final NodeConnectorEventsObserver... observers) {
         this.observers = ImmutableSet.copyOf(observers);
+
         final DataTreeIdentifier dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                                                                                    II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
         final DataTreeIdentifier dtiToNodeConnectorState = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                                                                                    II_TO_STATE);
-        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-        try {
-            listenerOnPortRegistration = looper.loopUntilNoException(() ->
-                    dataBroker.registerDataTreeChangeListener(dtiToNodeConnector,
-                            NodeConnectorInventoryEventTranslator.this));
-            listenerOnPortStateRegistration = looper.loopUntilNoException(() ->
-                    dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState,
-                            NodeConnectorInventoryEventTranslator.this));
-        } catch (Exception e) {
-            LOG.error("DataTreeChangeListeners registration failed", e);
-            throw new IllegalStateException("NodeConnectorInventoryEventTranslator startup failed!", e);
-        }
+        listenerOnPortRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, this);
+        listenerOnPortStateRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState, this);
         LOG.info("NodeConnectorInventoryEventTranslator has started.");
     }
 

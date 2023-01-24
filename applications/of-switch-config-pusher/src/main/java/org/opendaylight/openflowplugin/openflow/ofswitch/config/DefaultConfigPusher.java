@@ -23,7 +23,6 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -31,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +38,12 @@ import org.slf4j.LoggerFactory;
 @Singleton
 public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultConfigPusher.class);
-    private static final long STARTUP_LOOP_TICK = 500L;
-    private static final int STARTUP_LOOP_MAX_RETRIES = 8;
+
     private final NodeConfigService nodeConfigService;
     private final DataBroker dataBroker;
     private final DeviceOwnershipService deviceOwnershipService;
-    private ListenerRegistration<?> listenerRegistration;
+
+    private Registration listenerRegistration;
 
     @Inject
     public DefaultConfigPusher(final NodeConfigService nodeConfigService, final DataBroker dataBroker,
@@ -54,21 +53,12 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
     }
 
-    @SuppressWarnings("checkstyle:IllegalCatch")
     @PostConstruct
     public void start() {
-        try {
-            final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
-                    .augmentation(FlowCapableNode.class);
-            final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
-                    LogicalDatastoreType.OPERATIONAL, path);
-            final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK, STARTUP_LOOP_MAX_RETRIES);
-            listenerRegistration = looper.loopUntilNoException(
-                () -> dataBroker.registerDataTreeChangeListener(identifier, DefaultConfigPusher.this));
-        } catch (Exception e) {
-            LOG.error("DataTreeChangeListener registration failed", e);
-            throw new IllegalStateException("DefaultConfigPusher startup failed!", e);
-        }
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)),
+            this);
         LOG.info("DefaultConfigPusher has started.");
     }
 
