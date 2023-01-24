@@ -20,7 +20,6 @@ import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.slf4j.Logger;
@@ -47,8 +46,7 @@ public class ListenerRegistrationHelper {
     }
 
     public <T extends DataObject, L extends ClusteredDataTreeChangeListener<T>>
-        ListenableFuture<ListenerRegistration<L>>
-        checkedRegisterListener(DataTreeIdentifier<T> treeId, L listener) {
+            ListenableFuture<ListenerRegistration<L>>checkedRegisterListener(DataTreeIdentifier<T> treeId, L listener) {
         return listeningExecutorService.submit(() -> {
             while (! getInventoryConfigDataStoreStatus().equals(operational)) {
                 try {
@@ -59,9 +57,7 @@ public class ListenerRegistrationHelper {
                     Thread.currentThread().interrupt();
                 }
             }
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            return looper.loopUntilNoException(() -> dataBroker.registerDataTreeChangeListener(treeId, listener));
+            return dataBroker.registerDataTreeChangeListener(treeId, listener);
         });
     }
 
