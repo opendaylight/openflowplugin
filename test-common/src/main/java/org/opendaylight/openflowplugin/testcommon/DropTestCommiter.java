@@ -12,7 +12,6 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -45,19 +44,16 @@ public class DropTestCommiter extends AbstractDropTest {
     private static final AtomicLong ID_COUNTER = new AtomicLong();
 
     private static final ThreadLocal<FlowBuilder> BUILDER = ThreadLocal.withInitial(() -> {
-        final FlowBuilder fb = new FlowBuilder();
-
-        fb.setPriority(PRIORITY);
-        fb.setBufferId(BUFFER_ID);
-        final FlowCookie cookie = new FlowCookie(Uint64.TEN);
-        fb.setCookie(cookie);
-        fb.setCookieMask(cookie);
-
-        fb.setTableId(TABLE_ID);
-        fb.setHardTimeout(HARD_TIMEOUT);
-        fb.setIdleTimeout(IDLE_TIMEOUT);
-        fb.setFlags(new FlowModFlags(false, false, false, false, false));
-        return fb;
+        final var cookie = new FlowCookie(Uint64.TEN);
+        return new FlowBuilder()
+            .setPriority(PRIORITY)
+            .setBufferId(BUFFER_ID)
+            .setCookie(cookie)
+            .setCookieMask(cookie)
+            .setTableId(TABLE_ID)
+            .setHardTimeout(HARD_TIMEOUT)
+            .setIdleTimeout(IDLE_TIMEOUT)
+            .setFlags(new FlowModFlags(false, false, false, false, false));
     });
 
     private NotificationService notificationService;
@@ -67,18 +63,8 @@ public class DropTestCommiter extends AbstractDropTest {
     /**
      * start listening on packetIn.
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public void start() {
-        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
-                STARTUP_LOOP_MAX_RETRIES);
-        try {
-            notificationRegistration = looper.loopUntilNoException(
-                () -> notificationService.registerListener(PacketReceived.class, this));
-        } catch (Exception e) {
-            LOG.warn("DropTest committer notification listener registration fail!");
-            LOG.debug("DropTest committer notification listener registration fail! ..", e);
-            throw new IllegalStateException("DropTest startup fail! Try again later.", e);
-        }
+        notificationRegistration = notificationService.registerListener(PacketReceived.class, this);
     }
 
     public void setDataService(final DataBroker dataService) {
@@ -117,17 +103,11 @@ public class DropTestCommiter extends AbstractDropTest {
     }
 
     @Override
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         super.close();
-        try {
-            LOG.debug("DropTestProvider stopped.");
-            if (notificationRegistration != null) {
-                notificationRegistration.close();
-            }
-        } catch (RuntimeException e) {
-            LOG.warn("unregistration of notification listener failed: {}", e.getMessage());
-            LOG.debug("unregistration of notification listener failed.. ", e);
+        LOG.debug("DropTestProvider stopped.");
+        if (notificationRegistration != null) {
+            notificationRegistration.close();
         }
     }
 

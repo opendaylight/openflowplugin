@@ -53,13 +53,10 @@ abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseab
     protected static final Uint16 IDLE_TIMEOUT = Uint16.valueOf(240);
     protected static final Uint8 TABLE_ID = Uint8.ZERO;
 
-    static final long STARTUP_LOOP_TICK = 500L;
-    static final int STARTUP_LOOP_MAX_RETRIES = 8;
     private static final int PROCESSING_POOL_SIZE = 10000;
 
     private static final int POOL_THREAD_AMOUNT = 8;
     private final ExecutorService executorService;
-
 
     private static final AtomicIntegerFieldUpdater<AbstractDropTest> SENT_UPDATER = AtomicIntegerFieldUpdater
             .newUpdater(AbstractDropTest.class, "sent");

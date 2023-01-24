@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -45,20 +44,16 @@ public class DropTestRpcSender extends AbstractDropTest {
     }
 
     private static final ThreadLocal<AddFlowInputBuilder> BUILDER = ThreadLocal.withInitial(() -> {
-        final AddFlowInputBuilder fb = new AddFlowInputBuilder();
-
-        fb.setPriority(PRIORITY);
-        fb.setBufferId(BUFFER_ID);
-
-        final FlowCookie cookie = new FlowCookie(Uint64.TEN);
-        fb.setCookie(cookie);
-        fb.setCookieMask(cookie);
-        fb.setTableId(TABLE_ID);
-        fb.setHardTimeout(HARD_TIMEOUT);
-        fb.setIdleTimeout(IDLE_TIMEOUT);
-        fb.setFlags(new FlowModFlags(false, false, false, false, false));
-
-        return fb;
+        final var cookie = new FlowCookie(Uint64.TEN);
+        return new AddFlowInputBuilder()
+            .setPriority(PRIORITY)
+            .setBufferId(BUFFER_ID)
+            .setCookie(cookie)
+            .setCookieMask(cookie)
+            .setTableId(TABLE_ID)
+            .setHardTimeout(HARD_TIMEOUT)
+            .setIdleTimeout(IDLE_TIMEOUT)
+            .setFlags(new FlowModFlags(false, false, false, false, false));
     });
 
     private NotificationService notificationService;
@@ -68,18 +63,8 @@ public class DropTestRpcSender extends AbstractDropTest {
     /**
      * Start listening on packetIn.
      */
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public void start() {
-        final SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(STARTUP_LOOP_TICK,
-                STARTUP_LOOP_MAX_RETRIES);
-        try {
-            notificationRegistration = looper.loopUntilNoException(
-                () -> notificationService.registerListener(PacketReceived.class, this));
-        } catch (Exception e) {
-            LOG.warn("DropTest sender notification listener registration fail!");
-            LOG.debug("DropTest sender notification listener registration fail! ..", e);
-            throw new IllegalStateException("DropTest startup fail! Try again later.", e);
-        }
+        notificationRegistration = notificationService.registerListener(PacketReceived.class, this);
     }
 
     @Override
@@ -97,9 +82,7 @@ public class DropTestRpcSender extends AbstractDropTest {
 
         // Add flow
         final AddFlowInput flow = fb.build();
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
-        }
+        LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
         ListenableFuture<RpcResult<AddFlowOutput>> result = flowService.addFlow(flow);
         Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
@@ -119,17 +102,11 @@ public class DropTestRpcSender extends AbstractDropTest {
     }
 
     @Override
-    @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         super.close();
-        try {
-            LOG.debug("DropTestProvider stopped.");
-            if (notificationRegistration != null) {
-                notificationRegistration.close();
-            }
-        } catch (RuntimeException e) {
-            LOG.warn("unregistration of notification listener failed: {}", e.getMessage());
-            LOG.debug("unregistration of notification listener failed.. ", e);
+        LOG.debug("DropTestProvider stopped.");
+        if (notificationRegistration != null) {
+            notificationRegistration.close();
         }
     }
 }
