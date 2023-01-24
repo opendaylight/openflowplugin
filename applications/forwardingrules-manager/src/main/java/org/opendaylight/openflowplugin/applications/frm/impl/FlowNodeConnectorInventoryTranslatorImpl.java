@@ -18,12 +18,11 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeConnectorInventoryTranslator;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,40 +30,24 @@ import org.slf4j.LoggerFactory;
 public final class FlowNodeConnectorInventoryTranslatorImpl
         extends AbstractNodeConnectorCommitter<FlowCapableNodeConnector>
         implements FlowNodeConnectorInventoryTranslator {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeConnectorInventoryTranslatorImpl.class);
-
-    private ListenerRegistration<FlowNodeConnectorInventoryTranslatorImpl> dataTreeChangeListenerRegistration;
-
     private static final String SEPARATOR = ":";
-
-    private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR
-            = InstanceIdentifier.builder(Nodes.class)
+    private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR =
+        InstanceIdentifier.builder(Nodes.class)
             .child(Node.class)
             .child(NodeConnector.class)
             .augmentation(FlowCapableNodeConnector.class)
             .build();
 
-    private final Multimap<BigInteger, String> dpnToPortMultiMap = Multimaps
-            .synchronizedListMultimap(ArrayListMultimap.create());
+    private Registration listenerRegistration;
 
-    @SuppressWarnings("IllegalCatch")
+    private final Multimap<BigInteger, String> dpnToPortMultiMap = Multimaps.synchronizedListMultimap(
+        ArrayListMultimap.create());
+
     public FlowNodeConnectorInventoryTranslatorImpl(final DataBroker dataBroker) {
         requireNonNull(dataBroker, "DataBroker can not be null!");
-
-        final DataTreeIdentifier<FlowCapableNodeConnector> treeId =
-                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
-        try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-            dataTreeChangeListenerRegistration = looper.loopUntilNoException(() -> dataBroker
-                    .registerDataTreeChangeListener(treeId, FlowNodeConnectorInventoryTranslatorImpl.this));
-        } catch (final Exception e) {
-            LOG.warn(" FlowNodeConnectorInventoryTranslatorImpl listener registration fail!");
-            LOG.debug("FlowNodeConnectorInventoryTranslatorImpl DataTreeChangeListener registration fail ..", e);
-            throw new
-            IllegalStateException("FlowNodeConnectorInventoryTranslatorImpl startup fail! System needs restart.", e);
-        }
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, getWildCardPath()), this);
     }
 
     @Override
@@ -77,9 +60,9 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
 
     @Override
     public void close() {
-        if (dataTreeChangeListenerRegistration != null) {
-            dataTreeChangeListenerRegistration.close();
-            dataTreeChangeListenerRegistration = null;
+        if (listenerRegistration != null) {
+            listenerRegistration.close();
+            listenerRegistration = null;
         }
     }
 

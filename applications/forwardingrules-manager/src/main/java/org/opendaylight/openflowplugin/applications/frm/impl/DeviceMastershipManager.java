@@ -29,7 +29,6 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeR
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
-import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -52,7 +51,6 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
 
     private final ClusterSingletonServiceProvider clusterSingletonService;
     private final FlowNodeReconciliation reconcliationAgent;
-    private final DataBroker dataBroker;
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
     private final Object lockObj = new Object();
     private final RpcProviderService rpcProviderService;
@@ -73,8 +71,9 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         this.reconcliationAgent = reconcliationAgent;
         this.rpcProviderService = rpcProviderService;
         reconcliationService = reconciliationService;
-        this.dataBroker = dataBroker;
-        registerNodeListener();
+        listenerRegistration = dataBroker.registerDataTreeChangeListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
         mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
     }
 
@@ -185,28 +184,6 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         if (nodeId != null && deviceMasterships.containsKey(nodeId)) {
             deviceMasterships.get(nodeId).setDeviceOperationalStatus(status);
             LOG.debug("Operational status of device {} is set to {}", nodeId, status);
-        }
-    }
-
-    @SuppressWarnings("IllegalCatch")
-    private void registerNodeListener() {
-
-        final InstanceIdentifier<FlowCapableNode> flowNodeWildCardIdentifier = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class).augmentation(FlowCapableNode.class);
-
-        final DataTreeIdentifier<FlowCapableNode> treeId = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
-                flowNodeWildCardIdentifier);
-
-        try {
-            SimpleTaskRetryLooper looper = new SimpleTaskRetryLooper(ForwardingRulesManagerImpl.STARTUP_LOOP_TICK,
-                    ForwardingRulesManagerImpl.STARTUP_LOOP_MAX_RETRIES);
-
-            listenerRegistration = looper.loopUntilNoException(
-                () -> dataBroker.registerDataTreeChangeListener(treeId, DeviceMastershipManager.this));
-        } catch (Exception e) {
-            LOG.warn("Data listener registration failed: {}", e.getMessage());
-            LOG.debug("Data listener registration failed ", e);
-            throw new IllegalStateException("Node listener registration failed!", e);
         }
     }
 
