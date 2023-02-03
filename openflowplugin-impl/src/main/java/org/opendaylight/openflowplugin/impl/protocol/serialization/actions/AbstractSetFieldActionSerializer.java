@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -24,7 +25,7 @@ public abstract class AbstractSetFieldActionSerializer extends AbstractActionSer
 
     @Override
     public void serialize(final Action input, final ByteBuf outBuffer) {
-        final OFSerializer<Action> serializer = Preconditions.checkNotNull(registry)
+        final OFSerializer<Action> serializer = requireNonNull(registry)
                 .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, SetFieldCase.class));
 
         serializer.serialize(buildAction(input), outBuffer);

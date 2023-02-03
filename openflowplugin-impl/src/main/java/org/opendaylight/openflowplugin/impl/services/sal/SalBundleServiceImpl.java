@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -41,11 +42,12 @@ import org.slf4j.LoggerFactory;
  */
 public class SalBundleServiceImpl implements SalBundleService {
     private static final Logger LOG = LoggerFactory.getLogger(SalBundleServiceImpl.class);
+
     private final SalExperimenterMessageService experimenterMessageService;
 
     public SalBundleServiceImpl(final SalExperimenterMessageService experimenterMessageService) {
-        this.experimenterMessageService = Preconditions
-                .checkNotNull(experimenterMessageService, "SalExperimenterMessageService can not be null!");
+        this.experimenterMessageService = requireNonNull(experimenterMessageService,
+            "SalExperimenterMessageService can not be null!");
     }
 
     @Override

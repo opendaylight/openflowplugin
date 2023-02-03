@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.connection;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -198,7 +199,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
 
         @Override
         public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<Node>> changes) {
-            Preconditions.checkNotNull(changes, "Changes must not be null!");
+            requireNonNull(changes, "Changes must not be null!");
             for (DataTreeModification<Node> change : changes) {
                 final DataObjectModification<Node> mod = change.getRootNode();
                 switch (mod.getModificationType()) {

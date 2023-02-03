@@ -5,12 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.multilayer;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -46,7 +45,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFlowMultipartService<MultipartReply> {
-
     private final TranslatorLibrary translatorLibrary;
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
@@ -68,9 +66,9 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
         final MultipartRequestAggregateCaseBuilder multipartRequestAggregateCaseBuilder
                 = new MultipartRequestAggregateCaseBuilder();
         final MultipartRequestAggregateBuilder mprAggregateRequestBuilder = new MultipartRequestAggregateBuilder();
-        final Uint8 tableId = MoreObjects.firstNonNull(input.getTableId(), OFConstants.OFPTT_ALL);
+        final Uint8 tableId = requireNonNullElse(input.getTableId(), OFConstants.OFPTT_ALL);
         mprAggregateRequestBuilder.setTableId(tableId);
-        long outputPortValue = MoreObjects.firstNonNull(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
+        long outputPortValue = requireNonNullElse(input.getOutPort(), OFConstants.OFPP_ANY).longValue();
         mprAggregateRequestBuilder.setOutPort(Uint32.valueOf(outputPortValue));
 
         final Uint8 version = getVersion();
@@ -80,16 +78,16 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
                 mprAggregateRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
             } else {
                 mprAggregateRequestBuilder
-                        .setCookie(MoreObjects.firstNonNull(input.getCookie().getValue(), OFConstants.DEFAULT_COOKIE));
+                        .setCookie(requireNonNullElse(input.getCookie().getValue(), OFConstants.DEFAULT_COOKIE));
             }
 
             if (input.getCookieMask() == null) {
                 mprAggregateRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
             } else {
                 mprAggregateRequestBuilder.setCookieMask(
-                        MoreObjects.firstNonNull(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
+                    requireNonNullElse(input.getCookieMask().getValue(), OFConstants.DEFAULT_COOKIE_MASK));
             }
-            Uint32 outGroup = MoreObjects.firstNonNull(input.getOutGroup(), OFConstants.OFPG_ANY);
+            Uint32 outGroup = requireNonNullElse(input.getOutGroup(), OFConstants.OFPG_ANY);
             mprAggregateRequestBuilder.setOutGroup(outGroup);
         } else {
             mprAggregateRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);

@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 
-import com.google.common.base.MoreObjects;
+import static java.util.Objects.requireNonNullElse;
+
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
@@ -23,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.P
  * OF protocol versions: 1.3.
  */
 public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage> {
-
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_01 = 4;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_02 = 2;
     private static final byte PADDING_IN_PORT_MOD_MESSAGE_03 = 4;
@@ -40,8 +40,7 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
         outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(message.getHardwareAddress()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_02);
         outBuffer.writeInt(createPortConfigBitMask(message.getConfiguration()));
-        outBuffer.writeInt(MoreObjects
-                .firstNonNull(createPortConfigBitMask(message.getMask()), DEFAULT_PORT_CONFIG_MASK));
+        outBuffer.writeInt(requireNonNullElse(createPortConfigBitMask(message.getMask()), DEFAULT_PORT_CONFIG_MASK));
         outBuffer.writeInt(createPortFeaturesBitMask(message.getAdvertisedFeatures()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_03);
         outBuffer.setShort(index + 2, outBuffer.writerIndex() - index);
