@@ -7,13 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.verify;
 
-import java.util.function.Function;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
@@ -21,12 +21,9 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCou
  * Test for {@link ShowEventTimesComandProvider}.
  */
 public class ShowEventTimesComandProviderTest extends AbstractKarafTest {
-
     private ShowEventTimesComandProvider showEventTimesComandProvider;
-    private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
     @Override
-
     public void doSetUp() {
         showEventTimesComandProvider = new ShowEventTimesComandProvider();
         EventsTimeCounter.resetAllCounters();
@@ -42,10 +39,10 @@ public class ShowEventTimesComandProviderTest extends AbstractKarafTest {
      */
     @Test
     public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        showEventTimesComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print("");
+        assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        showEventTimesComandProvider.execute(console);
+        assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        verify(console).print("");
     }
 
     /**
@@ -54,14 +51,14 @@ public class ShowEventTimesComandProviderTest extends AbstractKarafTest {
     @Test
     public void testDoExecute_dirty() throws Exception {
         final EventIdentifier dummyEvent = new EventIdentifier("junit", "junitDevice");
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
 
         EventsTimeCounter.markStart(dummyEvent);
         EventsTimeCounter.markEnd(dummyEvent);
-        Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
 
-        showEventTimesComandProvider.execute(cmdSession);
-        Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print(contains("junitDevice"));
+        showEventTimesComandProvider.execute(console);
+        assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        verify(console).print(contains("junitDevice"));
     }
 }
