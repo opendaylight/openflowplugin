@@ -5,28 +5,24 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.verify;
 
-import java.util.function.Function;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
  * Test for {@link ShowSessionStatsCommandProvider}.
  */
 public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
-
     private ShowSessionStatsCommandProvider showSessionStatsCommandProvider;
-    private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
     @Override
-
     public void doSetUp() {
         showSessionStatsCommandProvider = new ShowSessionStatsCommandProvider();
         SessionStatistics.resetAllCounters();
@@ -42,10 +38,10 @@ public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
      */
     @Test
     public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        showSessionStatsCommandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print("");
+        assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        showSessionStatsCommandProvider.execute(console);
+        assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        verify(console).print("");
     }
 
     /**
@@ -54,13 +50,13 @@ public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
     @Test
     public void testDoExecute_dirty() throws Exception {
         final String dummySessionId = "junitSessionId";
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
 
         SessionStatistics.countEvent(dummySessionId, SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
-        Assert.assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
 
-        showSessionStatsCommandProvider.execute(cmdSession);
-        Assert.assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print(contains(dummySessionId));
+        showSessionStatsCommandProvider.execute(console);
+        assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        verify(console).print(contains(dummySessionId));
     }
 }
