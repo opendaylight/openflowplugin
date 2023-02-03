@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.impl.connection.HandshakeStepWrapper;
@@ -123,7 +123,7 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
      */
     protected boolean checkState(final ConnectionContext.CONNECTION_STATE expectedState) {
         boolean verdict = true;
-        if (! Objects.equal(connectionContext.getConnectionState(), expectedState)) {
+        if (!Objects.equals(connectionContext.getConnectionState(), expectedState)) {
             verdict = false;
             LOG.info("Expected state: {}, actual state: {}", expectedState,
                     connectionContext.getConnectionState());

@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -24,7 +25,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public final class SalEchoServiceImpl implements SalEchoService {
-
     private final EchoService echoService;
 
     public SalEchoServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
@@ -41,7 +41,7 @@ public final class SalEchoServiceImpl implements SalEchoService {
     private static ListenableFuture<RpcResult<SendEchoOutput>>
             transform(final ListenableFuture<RpcResult<EchoOutput>> rpcResultListenableFuture) {
         return Futures.transform(rpcResultListenableFuture, input -> {
-            Preconditions.checkNotNull(input, "echoOutput value is never expected to be NULL");
+            requireNonNull(input, "echoOutput value is never expected to be NULL");
             final RpcResult<SendEchoOutput> rpcOutput;
             if (input.isSuccessful()) {
                 final SendEchoOutput sendEchoOutput = new SendEchoOutputBuilder()

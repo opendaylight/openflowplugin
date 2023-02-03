@@ -8,9 +8,8 @@
 package org.opendaylight.openflowplugin.impl.connection;
 
 import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,13 +38,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ConnectionContextImpl implements ConnectionContext {
+    private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
 
     private final ConnectionAdapter connectionAdapter;
     private volatile CONNECTION_STATE connectionState;
     private FeaturesReply featuresReply;
     private NodeId nodeId;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
-    private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
     private OutboundQueueProvider outboundQueueProvider;
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
     private HandshakeContext handshakeContext;
@@ -71,13 +70,13 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public OutboundQueue getOutboundQueueProvider() {
-        return this.outboundQueueProvider;
+        return outboundQueueProvider;
     }
 
     @Override
     public void setOutboundQueueProvider(final OutboundQueueProvider outboundQueueProvider) {
         this.outboundQueueProvider = outboundQueueProvider;
-        ((DeviceInfoImpl)this.deviceInfo).setOutboundQueueProvider(this.outboundQueueProvider);
+        ((DeviceInfoImpl)deviceInfo).setOutboundQueueProvider(this.outboundQueueProvider);
     }
 
     @Override
@@ -107,7 +106,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public void setFeatures(final FeaturesReply newFeaturesReply) {
-        this.featuresReply = newFeaturesReply;
+        featuresReply = newFeaturesReply;
     }
 
     @Override
@@ -195,7 +194,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     @Override
     public void setOutboundQueueHandleRegistration(
             final OutboundQueueHandlerRegistration<OutboundQueueProvider> newRegistration) {
-        this.outboundQueueHandlerRegistration = newRegistration;
+        outboundQueueHandlerRegistration = newRegistration;
     }
 
     private void unregisterOutboundQueue() {
@@ -228,7 +227,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         LOG.info("Received early port status message for node {} with reason {} and state {}",
                 getSafeNodeIdForLOG(),
                 portStatusMessage.getReason(),
-                MoreObjects.firstNonNull(portStatusMessage.getState(), portStatusMessage.getStateV10()));
+                requireNonNullElse(portStatusMessage.getState(), portStatusMessage.getStateV10()));
 
         LOG.debug("Early port status message body is {}", portStatusMessage);
         portStatusMessages.add(portStatusMessage);
@@ -243,14 +242,14 @@ public class ConnectionContextImpl implements ConnectionContext {
 
     @Override
     public DeviceInfo getDeviceInfo() {
-        return this.deviceInfo;
+        return deviceInfo;
     }
 
     @Override
     public void handshakeSuccessful() {
-        Preconditions.checkNotNull(nodeId, "Cannot create DeviceInfo if 'NodeId' is not set!");
-        Preconditions.checkNotNull(featuresReply, "Cannot create DeviceInfo if 'features' is not set!");
-        this.deviceInfo = new DeviceInfoImpl(
+        requireNonNull(nodeId, "Cannot create DeviceInfo if 'NodeId' is not set!");
+        requireNonNull(featuresReply, "Cannot create DeviceInfo if 'features' is not set!");
+        deviceInfo = new DeviceInfoImpl(
                 nodeId,
                 DeviceStateUtil.createNodeInstanceIdentifier(nodeId),
                 featuresReply.getVersion(),
@@ -315,7 +314,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             this.version = requireNonNull(version);
             this.datapathId = datapathId;
             this.outboundQueueProvider = outboundQueueProvider;
-            this.serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
+            serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
         }
 
         @Override
@@ -340,7 +339,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         @Override
         public ServiceGroupIdentifier getServiceIdentifier() {
-            return this.serviceGroupIdentifier;
+            return serviceGroupIdentifier;
         }
 
         @Override

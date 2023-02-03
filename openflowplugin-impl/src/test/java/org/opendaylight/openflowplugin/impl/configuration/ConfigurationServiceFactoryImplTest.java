@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableMap;
-import java.util.Hashtable;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -92,12 +91,10 @@ public class ConfigurationServiceFactoryImplTest {
         when(config.getDeviceConnectionHoldTimeInSeconds()).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
         when(config.getDeviceDatastoreRemovalDelay()).thenReturn(new NonZeroUint32Type(DEVICE_DATASTORE_REMOVAL_DELAY));
 
-        final Map<String, String> properties = new Hashtable<>();
-        properties.put(ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
-                Boolean.toString(IS_STATISTICS_POLLING_ON));
-
         configurationService = new ConfigurationServiceFactoryImpl().newInstance(config);
-        configurationService.update(properties);
+        configurationService.update(Map.of(
+            ConfigurationProperty.IS_STATISTICS_POLLING_ON.toString(),
+            Boolean.toString(IS_STATISTICS_POLLING_ON)));
     }
 
     @Test

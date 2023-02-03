@@ -7,9 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -22,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.m
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MultipartReplyMessageDeserializer implements OFDeserializer<MultipartReply>, DeserializerRegistryInjector {
-
     private static final byte PADDING_IN_MULTIPART_REPLY_HEADER = 4;
 
     private DeserializerRegistry registry;
@@ -34,7 +33,7 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
         final boolean reqMore = (message.readUnsignedShort() & 0x01) != 0;
         message.skipBytes(PADDING_IN_MULTIPART_REPLY_HEADER);
 
-        final OFDeserializer<MultipartReplyBody> deserializer = Preconditions.checkNotNull(registry)
+        final OFDeserializer<MultipartReplyBody> deserializer = requireNonNull(registry)
             .getDeserializer(new MessageCodeKey(EncodeConstants.OF_VERSION_1_3, type, MultipartReplyBody.class));
 
         return new MultipartReplyBuilder()
@@ -49,5 +48,4 @@ public class MultipartReplyMessageDeserializer implements OFDeserializer<Multipa
     public void injectDeserializerRegistry(final DeserializerRegistry deserializerRegistry) {
         registry = deserializerRegistry;
     }
-
 }

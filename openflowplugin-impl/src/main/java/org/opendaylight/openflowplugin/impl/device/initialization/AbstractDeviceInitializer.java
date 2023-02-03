@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
 import java.util.concurrent.Future;
@@ -23,7 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractDeviceInitializer {
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDeviceInitializer.class);
 
     /**
@@ -41,7 +41,7 @@ public abstract class AbstractDeviceInitializer {
                                    final boolean skipTableFeatures,
                                    @Nullable final MultipartWriterProvider multipartWriterProvider,
                                    @Nullable final ConvertorExecutor convertorExecutor) {
-        Preconditions.checkNotNull(deviceContext);
+        requireNonNull(deviceContext);
 
         // Write node to datastore
         LOG.debug("Initializing node information for node {}", deviceContext.getDeviceInfo());

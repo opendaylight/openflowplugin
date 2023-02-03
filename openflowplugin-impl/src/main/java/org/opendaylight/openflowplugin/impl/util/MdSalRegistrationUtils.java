@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -172,7 +173,7 @@ public final class MdSalRegistrationUtils {
 
         AtomicLong compatibilityXidSeed = new AtomicLong();
         // pickup low statistics service
-        final OpendaylightFlowStatisticsService flowStatisticsService = Preconditions.checkNotNull(
+        final OpendaylightFlowStatisticsService flowStatisticsService = requireNonNull(
                 rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
 
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)

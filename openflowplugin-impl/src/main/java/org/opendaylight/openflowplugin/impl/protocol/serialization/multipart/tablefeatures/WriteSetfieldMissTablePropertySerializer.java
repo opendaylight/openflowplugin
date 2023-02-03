@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.tablefeatures;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -28,7 +29,7 @@ public class WriteSetfieldMissTablePropertySerializer extends
         property
             .getWriteSetfieldMiss()
             .nonnullSetFieldMatch().values()
-            .forEach(setFieldMatch -> Preconditions.checkNotNull(registry)
+            .forEach(setFieldMatch -> requireNonNull(registry)
                 .<MatchField, OFSerializer<SetFieldMatch>>getSerializer(new MessageTypeKey<>(
                     EncodeConstants.OF_VERSION_1_3, setFieldMatch.getMatchType().implementedInterface()))
                 .serialize(setFieldMatch, byteBuf));

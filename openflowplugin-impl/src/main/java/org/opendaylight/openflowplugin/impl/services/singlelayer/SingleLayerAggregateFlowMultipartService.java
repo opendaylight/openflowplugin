@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.services.singlelayer;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -32,7 +32,6 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 public class SingleLayerAggregateFlowMultipartService
         extends AbstractAggregateFlowMultipartService<MultipartReply> {
-
     public SingleLayerAggregateFlowMultipartService(final RequestContextStack requestContextStack,
                                                     final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext);
@@ -54,7 +53,7 @@ public class SingleLayerAggregateFlowMultipartService
     public ListenableFuture<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> handleAndReply(
             final GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput input) {
         return Futures.transform(handleServiceCall(input), result -> {
-            if (Preconditions.checkNotNull(result).isSuccessful()) {
+            if (requireNonNull(result).isSuccessful()) {
                 return RpcResultBuilder
                         .success(new GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutputBuilder()
                                 .setAggregatedFlowStatistics(result

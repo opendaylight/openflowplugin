@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,7 +45,7 @@ public final class NodeConnectorRefToPortTranslator {
      */
     @Nullable
     public static NodeConnectorRef toNodeConnectorRef(@NonNull final PacketIn packetIn, final Uint64 dataPathId) {
-        Preconditions.checkNotNull(packetIn);
+        requireNonNull(packetIn);
 
         NodeConnectorRef ref = null;
         Uint32 port = getPortNoFromPacketIn(packetIn);
@@ -67,7 +68,7 @@ public final class NodeConnectorRefToPortTranslator {
     @SuppressWarnings("unchecked")
     @Nullable
     public static Uint32 fromNodeConnectorRef(@NonNull final NodeConnectorRef nodeConnectorRef, final Uint8 version) {
-        Preconditions.checkNotNull(nodeConnectorRef);
+        requireNonNull(nodeConnectorRef);
 
         Uint32 port = null;
 
@@ -88,7 +89,7 @@ public final class NodeConnectorRefToPortTranslator {
     @VisibleForTesting
     @Nullable
     static Uint32 getPortNoFromPacketIn(@NonNull final PacketIn packetIn) {
-        Preconditions.checkNotNull(packetIn);
+        requireNonNull(packetIn);
 
         Uint32 port = null;
 

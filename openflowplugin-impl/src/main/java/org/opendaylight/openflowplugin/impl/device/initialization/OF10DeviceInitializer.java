@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -55,10 +56,9 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
-        final ConnectionContext connectionContext =
-                Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
-        final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
-        final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
+        final ConnectionContext connectionContext = requireNonNull(deviceContext.getPrimaryConnectionContext());
+        final DeviceState deviceState = requireNonNull(deviceContext.getDeviceState());
+        final DeviceInfo deviceInfo = requireNonNull(deviceContext.getDeviceInfo());
         final CapabilitiesV10 capabilitiesV10 = connectionContext.getFeatures().getCapabilitiesV10();
 
         // Set capabilities for this device based on capabilities of connection context

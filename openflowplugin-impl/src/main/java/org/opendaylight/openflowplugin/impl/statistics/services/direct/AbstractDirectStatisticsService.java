@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -81,13 +82,13 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
     }
 
     private RpcResult<O> transformResult(final RpcResult<List<T>> input) {
-        return Preconditions.checkNotNull(input).isSuccessful()
+        return requireNonNull(input).isSuccessful()
                 ? RpcResultBuilder.success(buildReply(input.getResult(), input.isSuccessful())).build()
                 : RpcResultBuilder.<O>failed().withRpcErrors(input.getErrors()).build();
     }
 
     private RpcResult<O> storeResult(final RpcResult<O> input) {
-        Preconditions.checkNotNull(input);
+        requireNonNull(input);
 
         if (input.isSuccessful()) {
             multipartWriterProvider.lookup(multipartType).ifPresent(writer -> {

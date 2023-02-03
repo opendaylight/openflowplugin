@@ -5,11 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+import static java.util.Objects.requireNonNullElse;
+
 import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -38,12 +38,11 @@ public final class FlowRegistryKeyFactory {
     @NonNull
     public static FlowRegistryKey create(final Uint8 version, @NonNull final Flow flow) {
         //TODO: mandatory flow input values (or default values) should be specified via yang model
-        final Uint8 tableId = Preconditions.checkNotNull(flow.getTableId(), "flow tableId must not be null");
-        final Uint16 priority = MoreObjects.firstNonNull(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
-        final Uint64 cookie =
-                MoreObjects.firstNonNull(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
-        Match match = MatchNormalizationUtil
-                .normalizeMatch(MoreObjects.firstNonNull(flow.getMatch(), OFConstants.EMPTY_MATCH), version);
+        final Uint8 tableId = requireNonNull(flow.getTableId(), "flow tableId must not be null");
+        final Uint16 priority = requireNonNullElse(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
+        final Uint64 cookie = requireNonNullElse(flow.getCookie(), OFConstants.DEFAULT_FLOW_COOKIE).getValue();
+        Match match = MatchNormalizationUtil.normalizeMatch(
+            requireNonNullElse(flow.getMatch(), OFConstants.EMPTY_MATCH), version);
         return new FlowRegistryKeyDto(tableId.toJava(), priority.toJava(), cookie, match);
     }
 
@@ -69,11 +68,9 @@ public final class FlowRegistryKeyFactory {
                 return true;
             }
 
-            if (object == null || !(object instanceof FlowRegistryKey)) {
+            if (object == null || !(object instanceof FlowRegistryKey that)) {
                 return false;
             }
-
-            final FlowRegistryKey that = (FlowRegistryKey) object;
 
             return getPriority() == that.getPriority()
                     && getTableId() == that.getTableId()
