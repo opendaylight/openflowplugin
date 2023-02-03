@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -55,7 +56,6 @@ import org.slf4j.LoggerFactory;
  * Default implementation of {@link SalMetersBatchService} - delegates work to {@link SalMeterService}.
  */
 public class SalMetersBatchServiceImpl implements SalMetersBatchService {
-
     private static final Logger LOG = LoggerFactory.getLogger(SalMetersBatchServiceImpl.class);
 
     private final SalMeterService salMeterService;
@@ -63,8 +63,8 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
     public SalMetersBatchServiceImpl(final SalMeterService salMeterService,
                                      final FlowCapableTransactionService transactionService) {
-        this.salMeterService = Preconditions.checkNotNull(salMeterService);
-        this.transactionService = Preconditions.checkNotNull(transactionService);
+        this.salMeterService = requireNonNull(salMeterService);
+        this.transactionService = requireNonNull(transactionService);
     }
 
     @Override

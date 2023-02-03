@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.HeaderSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
@@ -34,7 +34,7 @@ public class SetFieldActionSerializer extends AbstractActionSerializer<SetFieldC
 
         // Serialize match (using small workaround with serializeHeader method to serialize only match entries)
         final SetField setField = action.getSetField();
-        final HeaderSerializer<Match> serializer = Preconditions.checkNotNull(registry)
+        final HeaderSerializer<Match> serializer = requireNonNull(registry)
                 .getSerializer(new MessageTypeKey<>(EncodeConstants.OF_VERSION_1_3, Match.class));
         serializer.serializeHeader(setField, outBuffer);
 

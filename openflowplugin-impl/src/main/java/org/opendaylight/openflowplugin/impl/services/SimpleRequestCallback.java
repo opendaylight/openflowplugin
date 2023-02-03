@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public final class SimpleRequestCallback<T extends DataObject> extends AbstractRequestCallback<T> {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleRequestCallback.class);
+
     private final Class<T> clazz;
 
     private SimpleRequestCallback(final RequestContext<T> context,
@@ -26,7 +28,7 @@ public final class SimpleRequestCallback<T extends DataObject> extends AbstractR
                                   final MessageSpy spy,
                                   final Class<T> clazz) {
         super(context, requestType, spy, null);
-        this.clazz = Preconditions.checkNotNull(clazz);
+        this.clazz = requireNonNull(clazz);
     }
 
     public static <T extends DataObject> FutureCallback<OfHeader> create(final RequestContext<T> context,

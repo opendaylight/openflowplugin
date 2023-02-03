@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.actions;
 
-import com.google.common.base.MoreObjects;
+import static java.util.Objects.requireNonNullElse;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
@@ -31,7 +32,7 @@ public class OutputActionSerializer extends AbstractActionSerializer<OutputActio
                     + outputAction.getOutputNodeConnector().getValue());
         }
         outBuffer.writeInt(value.intValue());
-        outBuffer.writeShort(MoreObjects.firstNonNull(outputAction.getMaxLength(), Uint16.ZERO).toJava());
+        outBuffer.writeShort(requireNonNullElse(outputAction.getMaxLength(), Uint16.ZERO).toJava());
         outBuffer.writeZero(ActionConstants.OUTPUT_PADDING);
     }
 

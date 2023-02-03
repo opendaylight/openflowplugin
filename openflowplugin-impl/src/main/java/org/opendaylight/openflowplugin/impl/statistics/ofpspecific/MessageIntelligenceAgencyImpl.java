@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
  * Class counts message of {@link StatisticsGroup} type and provides info as debug log.
  */
 public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency, MessageIntelligenceAgencyMXBean {
-
     private static final Logger LOG = LoggerFactory.getLogger(MessageIntelligenceAgencyImpl.class);
 
     private static final class MessageCounters {
@@ -56,7 +55,7 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
 
     @Override
     public void spyMessage(final Class<?> message, final StatisticsGroup statGroup) {
-        Preconditions.checkNotNull(message, "Message can't be null.");
+        requireNonNull(message, "Message can't be null.");
         getCounters(message, statGroup).increment();
     }
 

@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput>
                                       implements SalRoleService  {
-
     private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
     private static final Uint64 MAX_GENERATION_ID = Uint64.valueOf("ffffffffffffffff", 16);
 
@@ -40,8 +40,8 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
 
     public SalRoleServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext, SetRoleOutput.class);
-        this.deviceContext = Preconditions.checkNotNull(deviceContext);
-        this.roleService =  new RoleService(requestContextStack, deviceContext, RoleRequestOutput.class);
+        this.deviceContext = requireNonNull(deviceContext);
+        roleService =  new RoleService(requestContextStack, deviceContext, RoleRequestOutput.class);
     }
 
     @Override

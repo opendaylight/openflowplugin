@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.multipart;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,8 +83,7 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
                     .setPacketCount(new Counter64(readUint64(itemMessage)))
                     .setByteCount(new Counter64(readUint64(itemMessage)));
 
-            final OFDeserializer<Match> matchDeserializer =
-                    Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+            final OFDeserializer<Match> matchDeserializer = requireNonNull(registry).getDeserializer(MATCH_KEY);
             itemBuilder.setMatch(MatchUtil.transformMatch(matchDeserializer.deserialize(itemMessage),
                     org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class));
 
