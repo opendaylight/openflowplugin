@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 final class PacketInRateLimiter extends SimpleRatelimiter {
     private static final Logger LOG = LoggerFactory.getLogger(PacketInRateLimiter.class);
+
     private final float rejectedDrainFactor;
     private final ConnectionAdapter connectionAdapter;
     private final MessageSpy messageSpy;
@@ -26,10 +29,10 @@ final class PacketInRateLimiter extends SimpleRatelimiter {
                         final MessageSpy messageSpy,
                         float rejectedDrainFactor) {
         super(lowWatermark, highWatermark);
-        Preconditions.checkArgument(rejectedDrainFactor > 0 && rejectedDrainFactor < 1);
+        checkArgument(rejectedDrainFactor > 0 && rejectedDrainFactor < 1);
         this.rejectedDrainFactor = rejectedDrainFactor;
-        this.connectionAdapter = Preconditions.checkNotNull(connectionAdapter);
-        this.messageSpy = Preconditions.checkNotNull(messageSpy);
+        this.connectionAdapter = requireNonNull(connectionAdapter);
+        this.messageSpy = requireNonNull(messageSpy);
     }
 
     @Override

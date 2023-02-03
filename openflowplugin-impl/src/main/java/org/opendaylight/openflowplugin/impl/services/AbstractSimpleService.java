@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
@@ -22,7 +23,7 @@ public abstract class AbstractSimpleService<I, O extends DataObject> extends Abs
                                     final DeviceContext deviceContext,
                                     final Class<O> clazz) {
         super(requestContextStack, deviceContext);
-        this.clazz = Preconditions.checkNotNull(clazz);
+        this.clazz = requireNonNull(clazz);
     }
 
     @Override

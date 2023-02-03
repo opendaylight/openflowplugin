@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart;
 
-import com.google.common.base.MoreObjects;
+import static java.util.Objects.requireNonNullElse;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -17,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.queue.rev130925.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStats;
 
 public class MultipartRequestQueueStatsSerializer implements OFSerializer<MultipartRequestQueueStats> {
-
     @Override
     public void serialize(final MultipartRequestQueueStats multipartRequestQueueStats, final ByteBuf byteBuf) {
         if (multipartRequestQueueStats.getNodeConnectorId() == null) {
@@ -29,8 +29,7 @@ public class MultipartRequestQueueStatsSerializer implements OFSerializer<Multip
                     multipartRequestQueueStats.getNodeConnectorId()).intValue());
         }
 
-        byteBuf.writeInt(MoreObjects
-            .firstNonNull(multipartRequestQueueStats.getQueueId(), new QueueId(OFConstants.OFPQ_ALL))
+        byteBuf.writeInt(requireNonNullElse(multipartRequestQueueStats.getQueueId(), new QueueId(OFConstants.OFPQ_ALL))
                 .getValue().intValue());
     }
 }

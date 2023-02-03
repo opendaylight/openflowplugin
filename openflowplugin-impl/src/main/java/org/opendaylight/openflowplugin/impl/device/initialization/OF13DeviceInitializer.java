@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -40,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OF13DeviceInitializer extends AbstractDeviceInitializer {
-
     private static final Logger LOG = LoggerFactory.getLogger(OF13DeviceInitializer.class);
 
     @Override
@@ -49,10 +49,9 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                                                      final boolean skipTableFeatures,
                                                      @Nullable final MultipartWriterProvider multipartWriterProvider,
                                                      @Nullable final ConvertorExecutor convertorExecutor) {
-        final ConnectionContext connectionContext =
-                Preconditions.checkNotNull(deviceContext.getPrimaryConnectionContext());
-        final DeviceState deviceState = Preconditions.checkNotNull(deviceContext.getDeviceState());
-        final DeviceInfo deviceInfo = Preconditions.checkNotNull(deviceContext.getDeviceInfo());
+        final ConnectionContext connectionContext = requireNonNull(deviceContext.getPrimaryConnectionContext());
+        final DeviceState deviceState = requireNonNull(deviceContext.getDeviceState());
+        final DeviceInfo deviceInfo = requireNonNull(deviceContext.getDeviceInfo());
         final Capabilities capabilities = connectionContext.getFeatures().getCapabilities();
         LOG.debug("Setting capabilities for device {}", deviceInfo);
         DeviceStateUtil.setDeviceStateBasedOnV13Capabilities(deviceState, capabilities);
@@ -195,9 +194,7 @@ public class OF13DeviceInitializer extends AbstractDeviceInitializer {
                             // If we collected meter features, check if we have support for meters
                             // and pass this information to device context
                             if (MultipartType.OFPMPMETERFEATURES.equals(type)
-                                    && translatedReply instanceof MeterFeatures) {
-                                final MeterFeatures meterFeatures = (MeterFeatures) translatedReply;
-
+                                    && translatedReply instanceof MeterFeatures meterFeatures) {
                                 if (meterFeatures.getMaxMeter().getValue().toJava() > 0) {
                                     deviceContext.getDeviceState().setMeterAvailable(true);
                                 }

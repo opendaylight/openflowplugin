@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -67,7 +67,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
 
         message.skipBytes(PADDING);
 
-        final OFDeserializer<Match> matchDeserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+        final OFDeserializer<Match> matchDeserializer = requireNonNull(registry).getDeserializer(MATCH_KEY);
         builder.setMatch(new MatchBuilder(matchDeserializer.deserialize(message)).build());
 
         final int length = message.readableBytes();
@@ -84,13 +84,13 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                 OFDeserializer<Instruction> deserializer = null;
 
                 if (InstructionConstants.APPLY_ACTIONS_TYPE == type) {
-                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
+                    deserializer = requireNonNull(registry).getDeserializer(
                             new MessageCodeActionExperimenterKey(
                                 EncodeConstants.OF_VERSION_1_3, type, Instruction.class,
                                 ActionPath.INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS,
                                 null));
                 } else if (InstructionConstants.WRITE_ACTIONS_TYPE == type) {
-                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
+                    deserializer = requireNonNull(registry).getDeserializer(
                             new MessageCodeActionExperimenterKey(
                                 EncodeConstants.OF_VERSION_1_3, type, Instruction.class,
                                 ActionPath.INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS,
@@ -102,7 +102,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                         expId = message.getUnsignedInt(message.readerIndex() + 2 * Short.BYTES);
                     }
 
-                    deserializer = Preconditions.checkNotNull(registry).getDeserializer(
+                    deserializer = requireNonNull(registry).getDeserializer(
                             new MessageCodeExperimenterKey(
                                 EncodeConstants.OF_VERSION_1_3, type, Instruction.class, expId));
                 }
