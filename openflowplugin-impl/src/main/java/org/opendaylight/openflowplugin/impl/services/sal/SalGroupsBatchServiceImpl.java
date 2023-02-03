@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -55,7 +56,6 @@ import org.slf4j.LoggerFactory;
  * Default implementation of {@link SalGroupsBatchService} - delegates work to {@link SalGroupService}.
  */
 public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
-
     private static final Logger LOG = LoggerFactory.getLogger(SalGroupsBatchServiceImpl.class);
 
     private final SalGroupService salGroupService;
@@ -63,8 +63,8 @@ public class SalGroupsBatchServiceImpl implements SalGroupsBatchService {
 
     public SalGroupsBatchServiceImpl(final SalGroupService salGroupService,
                                      final FlowCapableTransactionService transactionService) {
-        this.salGroupService = Preconditions.checkNotNull(salGroupService);
-        this.transactionService = Preconditions.checkNotNull(transactionService);
+        this.salGroupService = requireNonNull(salGroupService);
+        this.transactionService = requireNonNull(transactionService);
     }
 
     @Override

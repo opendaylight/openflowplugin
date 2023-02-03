@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.action;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -36,7 +37,7 @@ public class SetFieldActionDeserializer extends AbstractActionDeserializer
 
     @Override
     public Action deserialize(final ByteBuf message) {
-        final MatchEntryDeserializer deserializer = Preconditions.checkNotNull(registry).getDeserializer(MATCH_KEY);
+        final MatchEntryDeserializer deserializer = requireNonNull(registry).getDeserializer(MATCH_KEY);
         final MatchBuilder builder = new MatchBuilder();
 
         final int startIndex = message.readerIndex();

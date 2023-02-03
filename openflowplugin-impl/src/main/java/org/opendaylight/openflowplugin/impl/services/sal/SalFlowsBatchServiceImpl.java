@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -59,9 +60,8 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
     public SalFlowsBatchServiceImpl(final SalFlowService salFlowService,
                                     final FlowCapableTransactionService transactionService) {
-        this.salFlowService = Preconditions.checkNotNull(salFlowService, "delegate flow service must not be null");
-        this.transactionService =
-                Preconditions.checkNotNull(transactionService, "delegate transaction service must not be null");
+        this.salFlowService = requireNonNull(salFlowService, "delegate flow service must not be null");
+        this.transactionService = requireNonNull(transactionService, "delegate transaction service must not be null");
     }
 
     @Override

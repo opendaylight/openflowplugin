@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.base.Objects;
+import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -26,13 +26,11 @@ public final class FlowDescriptorFactory {
         // Hide implicit constructor
     }
 
-    @NonNull
-    public static FlowDescriptor create(final Uint8 tableId, @NonNull final FlowId flowId) {
+    public static @NonNull FlowDescriptor create(final Uint8 tableId, @NonNull final FlowId flowId) {
         return new FlowDescriptorDto(new TableKey(tableId), requireNonNull(flowId));
     }
 
     private static final class FlowDescriptorDto implements FlowDescriptor {
-
         private final FlowId flowId;
         private final TableKey tableKey;
 
@@ -42,20 +40,14 @@ public final class FlowDescriptorFactory {
         }
 
         @Override
-        public boolean equals(final Object object) {
-            if (this == object) {
-                return true;
-            }
-            if (object == null || getClass() != object.getClass()) {
-                return false;
-            }
-            FlowDescriptorDto that = (FlowDescriptorDto) object;
-            return Objects.equal(flowId, that.flowId) && Objects.equal(tableKey, that.tableKey);
+        public boolean equals(final Object obj) {
+            return this == obj || obj instanceof FlowDescriptorDto other && Objects.equals(flowId, other.flowId)
+                && Objects.equals(tableKey, other.tableKey);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(flowId, tableKey);
+            return Objects.hash(flowId, tableKey);
         }
 
         @Override

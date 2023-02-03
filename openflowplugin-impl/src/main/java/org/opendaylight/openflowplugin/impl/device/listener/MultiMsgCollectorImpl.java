@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.device.listener;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.annotation.NonNull;
@@ -31,22 +33,23 @@ import org.slf4j.LoggerFactory;
  */
 public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollector<T> {
     private static final Logger LOG = LoggerFactory.getLogger(MultiMsgCollectorImpl.class);
+
     private final List<T> replyCollection = new ArrayList<>();
     private final RequestContext<List<T>> requestContext;
     private final DeviceReplyProcessor deviceReplyProcessor;
 
     public MultiMsgCollectorImpl(final DeviceReplyProcessor deviceReplyProcessor,
                                  final RequestContext<List<T>> requestContext) {
-        this.deviceReplyProcessor = Preconditions.checkNotNull(deviceReplyProcessor);
-        this.requestContext = Preconditions.checkNotNull(requestContext);
+        this.deviceReplyProcessor = requireNonNull(deviceReplyProcessor);
+        this.requestContext = requireNonNull(requestContext);
     }
 
     @Override
     public void addMultipartMsg(@NonNull final T reply, final boolean reqMore,
                                 @Nullable final EventIdentifier eventIdentifier) {
-        Preconditions.checkNotNull(reply);
-        Preconditions.checkNotNull(requestContext.getXid());
-        Preconditions.checkArgument(requestContext.getXid().getValue().equals(reply.getXid()));
+        requireNonNull(reply);
+        requireNonNull(requestContext.getXid());
+        checkArgument(requestContext.getXid().getValue().equals(reply.getXid()));
         LOG.trace("Try to add Multipart reply msg with XID {}", reply.getXid());
         replyCollection.add(reply);
 

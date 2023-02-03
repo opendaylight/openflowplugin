@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Verify;
+import static com.google.common.base.Verify.verify;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -114,7 +115,7 @@ public abstract class AbstractService<I, O> {
 
     public ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input,
             @Nullable final Function<OfHeader, Boolean> isComplete) {
-        Preconditions.checkNotNull(input);
+        requireNonNull(input);
 
         final Class<?> requestType = input instanceof DataContainer
             ? ((DataContainer) input).implementedInterface()
@@ -147,7 +148,7 @@ public abstract class AbstractService<I, O> {
         OfHeader request = null;
         try {
             request = buildRequest(xid, input);
-            Verify.verify(xid.getValue().equals(request.getXid()),
+            verify(xid.getValue().equals(request.getXid()),
                           "Expected XID %s got %s",
                           xid.getValue(),
                           request.getXid());

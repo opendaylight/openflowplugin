@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -34,9 +35,9 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
                             final Class<?> requestType,
                             final MessageSpy spy,
                             final EventIdentifier eventIdentifier) {
-        this.context = Preconditions.checkNotNull(context);
-        this.requestType = Preconditions.checkNotNull(requestType);
-        this.spy = Preconditions.checkNotNull(spy);
+        this.context = requireNonNull(context);
+        this.requestType = requireNonNull(requestType);
+        this.spy = requireNonNull(spy);
         this.eventIdentifier = eventIdentifier;
     }
 
@@ -46,7 +47,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     }
 
     protected final void spyMessage(@NonNull final StatisticsGroup group) {
-        spy.spyMessage(requestType, Preconditions.checkNotNull(group));
+        spy.spyMessage(requestType, requireNonNull(group));
     }
 
     public EventIdentifier getEventIdentifier() {
