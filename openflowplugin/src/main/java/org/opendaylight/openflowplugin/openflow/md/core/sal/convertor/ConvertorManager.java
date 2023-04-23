@@ -108,15 +108,14 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         }
 
         final Optional<F> firstOptional = source.values().stream().findFirst();
-
-        if (!firstOptional.isPresent()) {
+        if (firstOptional.isEmpty()) {
             LOG.trace("Cannot extract type from empty collection");
             return result;
         }
 
-        final F first = firstOptional.get();
+        final F first = firstOptional.orElseThrow();
 
-        final Class<?> type = first instanceof DataContainer ? ((DataContainer) first).implementedInterface()
+        final Class<?> type = first instanceof DataContainer dataContainer? dataContainer.implementedInterface()
                 : first.getClass();
 
         if (type == null) {
@@ -138,15 +137,13 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
         }
 
         final Optional<F> firstOptional = source.stream().findFirst();
-
-        if (!firstOptional.isPresent()) {
+        if (firstOptional.isEmpty()) {
             LOG.trace("Cannot extract type from empty collection");
             return result;
         }
 
-        final F first = firstOptional.get();
-
-        final Class<?> type = first instanceof DataContainer ? ((DataContainer) first).implementedInterface()
+        final F first = firstOptional.orElseThrow();
+        final Class<?> type = first instanceof DataContainer dataContainer? dataContainer.implementedInterface()
                 : first.getClass();
 
         if (type == null) {

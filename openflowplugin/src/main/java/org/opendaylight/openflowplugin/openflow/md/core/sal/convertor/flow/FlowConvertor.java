@@ -335,7 +335,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
                     .build())
                 .build());
             if (optional.isPresent()) {
-                list.add(toFlowModInput(optional.get(), versionDatapathIdConverterData));
+                list.add(toFlowModInput(optional.orElseThrow(), versionDatapathIdConverterData));
             }
         } else {
             // create 2 flows
@@ -344,7 +344,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             Optional<? extends Flow> optional1 = injectMatchAndAction(srcFlow,
                 new MatchBuilder(srcMatch).setVlanMatch(VLAN_MATCH_FALSE).build());
             if (optional1.isPresent()) {
-                list.add(toFlowModInput(optional1.get(), versionDatapathIdConverterData));
+                list.add(toFlowModInput(optional1.orElseThrow(), versionDatapathIdConverterData));
             }
 
             //flow2
@@ -352,7 +352,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             Optional<? extends Flow> optional2 = injectMatchToFlow(srcFlow,
                 new MatchBuilder(srcMatch).setVlanMatch(VLAN_MATCH_TRUE).build());
             if (optional2.isPresent()) {
-                list.add(toFlowModInput(optional2.get(), versionDatapathIdConverterData));
+                list.add(toFlowModInput(optional2.orElseThrow(), versionDatapathIdConverterData));
             }
         }
         return list;
@@ -409,9 +409,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
             final var curSrcInstruction = srcInstruction.getInstruction();
 
             if (curSrcInstruction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
-                    .instruction.instruction.ApplyActionsCase) {
-                final var applyActionscase = (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
-                            .rev131026.instruction.instruction.ApplyActionsCase) curSrcInstruction;
+                    .instruction.instruction.ApplyActionsCase applyActionscase) {
                 final var srcActionList = applyActionscase.getApplyActions().nonnullAction();
 
                 int offset = 0;

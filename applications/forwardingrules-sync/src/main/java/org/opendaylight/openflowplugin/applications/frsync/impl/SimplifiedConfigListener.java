@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Collection;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -44,7 +43,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 
@@ -61,7 +60,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         configSnapshot.updateCache(nodeId, Optional.ofNullable(modification.getRootNode().getDataAfter()));
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
-        if (!operationalNode.isPresent()) {
+        if (operationalNode.isEmpty()) {
             LOG.debug("Skip syncup, {} operational is not present", nodeId.getValue());
             return Optional.empty();
         }
@@ -71,7 +70,7 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         final FlowCapableNode dataAfter = configModification.getDataAfter();
         final ListenableFuture<Boolean> endResult;
         if (dataBefore == null && dataAfter != null) {
-            endResult = onNodeAdded(nodePath, dataAfter, operationalNode.get());
+            endResult = onNodeAdded(nodePath, dataAfter, operationalNode.orElseThrow());
         } else if (dataBefore != null && dataAfter == null) {
             endResult = onNodeDeleted(nodePath, dataBefore);
         } else {

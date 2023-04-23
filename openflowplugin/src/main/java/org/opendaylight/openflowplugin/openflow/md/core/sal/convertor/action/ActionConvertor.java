@@ -5,15 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import com.google.common.collect.Ordering;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.SalToOfCopyTtlInCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases.SalToOfCopyTtlOutCase;
@@ -132,7 +129,7 @@ public final class ActionConvertor extends Convertor<
             // Try to convert action grouping using converters from openflowplugin-extension
             .addCase(new SalToOfGeneralExtensionGroupingCase());
 
-    private static final Set<Class<?>> TYPES = Collections.singleton(org.opendaylight.yang.gen.v1.urn.opendaylight
+    private static final Set<Class<?>> TYPES = Set.of(org.opendaylight.yang.gen.v1.urn.opendaylight
             .action.types.rev131112.action.list.Action.class);
     private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
             .action.list.Action> ACTION_ORDERING = Ordering.from(OrderComparator.build());
@@ -143,24 +140,15 @@ public final class ActionConvertor extends Convertor<
     }
 
     @Override
-    public List<Action> convert(Collection<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-            .list.Action> source, ActionConvertorData data) {
+    public List<Action> convert(final Collection<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
+            .action.list.Action> source, final ActionConvertorData data) {
         // Prepare list of converted actions
-        final List<Action> result = new ArrayList<>();
+        final var result = new ArrayList<Action>();
 
         // Iterate over SAL actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
-            final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
-                sortedActions = ACTION_ORDERING.sortedCopy(source);
-
-            for (final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action action :
-                    sortedActions) {
-                final Optional<Action> convertedAction = PROCESSOR.process(action.getAction(), data,
-                        getConvertorExecutor());
-
-                if (convertedAction.isPresent()) {
-                    result.add(convertedAction.get());
-                }
+            for (var action : ACTION_ORDERING.sortedCopy(source)) {
+                PROCESSOR.process(action.getAction(), data, getConvertorExecutor()).ifPresent(result::add);
             }
         }
 

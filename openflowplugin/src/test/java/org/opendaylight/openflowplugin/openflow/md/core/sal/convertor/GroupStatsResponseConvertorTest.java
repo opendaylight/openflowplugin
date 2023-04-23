@@ -43,13 +43,8 @@ public class GroupStatsResponseConvertorTest {
      */
     @Test
     public void testEmptyGroupStats() {
-        List<GroupStats> groupStats = new ArrayList<>();
-
-        Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats>> salGroupStats = convertorManager.convert(groupStats,
-                        new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-
-        Assert.assertFalse("Group stats response should be not present", salGroupStats.isPresent());
+        Assert.assertEquals(Optional.empty(), convertorManager.convert(List.of(),
+            new VersionConvertorData(OFConstants.OFP_VERSION_1_3)));
     }
 
     /**
@@ -118,7 +113,7 @@ public class GroupStatsResponseConvertorTest {
                         new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats> salGroupStats = salGroupStatsOptional.get();
+                .GroupStats> salGroupStats = salGroupStatsOptional.orElseThrow();
 
         Assert.assertEquals("Wrong group stats size", 2, salGroupStats.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
@@ -173,7 +168,7 @@ public class GroupStatsResponseConvertorTest {
                         new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
         Assert.assertTrue("Group stats response convertor not found", salGroupStatsOptional.isPresent());
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
-                .GroupStats> salGroupStats = salGroupStatsOptional.get();
+                .GroupStats> salGroupStats = salGroupStatsOptional.orElseThrow();
 
         Assert.assertEquals("Wrong group stats size", 1, salGroupStats.size());
         org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.statistics.reply
