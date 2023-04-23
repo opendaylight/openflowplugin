@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -15,7 +14,6 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.PktMarkCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.PktMarkCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.pkt.mark.grouping.PktMarkValuesBuilder;
@@ -31,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxPktMarkGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxPktMarkKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.pkt.mark.grouping.NxmNxPktMark;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.pkt.mark.grouping.NxmNxPktMarkBuilder;
@@ -41,51 +38,46 @@ public class PktMarkConvertor implements ConvertorToOFJava<MatchEntry>, Converto
 
     @Override
     public MatchEntry convert(final Extension extension) {
-        Optional<NxmNxPktMarkGrouping> matchGrouping = MatchUtil.PKT_MARK_RESOLVER.findExtension(extension);
-        if (!matchGrouping.isPresent()) {
+        final var matchGrouping = MatchUtil.PKT_MARK_RESOLVER.findExtension(extension);
+        if (matchGrouping.isEmpty()) {
             throw new CodecPreconditionException(extension);
         }
-        PktMarkCaseValueBuilder pktMarkCaseValueBuilder = new PktMarkCaseValueBuilder();
-        PktMarkValuesBuilder pktMarkValuesBuilder = new PktMarkValuesBuilder();
-        pktMarkValuesBuilder.setPktMark(matchGrouping.get().getNxmNxPktMark().getPktMark());
-        pktMarkValuesBuilder.setMask(matchGrouping.get().getNxmNxPktMark().getMask());
-        pktMarkCaseValueBuilder.setPktMarkValues(pktMarkValuesBuilder.build());
-        MatchEntryBuilder ofMatch = MatchUtil
-                .createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn
-                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark.VALUE,
-                        Nxm1Class.VALUE, pktMarkCaseValueBuilder.build());
-        return ofMatch.build();
+        final var pktMark = matchGrouping.orElseThrow().getNxmNxPktMark();
+
+        return MatchUtil.createDefaultMatchEntryBuilder(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxPktMark.VALUE,
+            Nxm1Class.VALUE,
+            new PktMarkCaseValueBuilder()
+                .setPktMarkValues(new PktMarkValuesBuilder()
+                    .setPktMark(pktMark.getPktMark())
+                    .setMask(pktMark.getMask())
+                    .build())
+                .build())
+            .build();
     }
 
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
-        PktMarkCaseValue pktMarkCaseValue = (PktMarkCaseValue) input.getMatchEntryValue();
-        NxmNxPktMarkBuilder pktMarkBuilder = new NxmNxPktMarkBuilder();
-        pktMarkBuilder.setPktMark(pktMarkCaseValue.getPktMarkValues().getPktMark());
-        pktMarkBuilder.setMask(pktMarkCaseValue.getPktMarkValues().getMask());
-        return resolveAugmentation(pktMarkBuilder.build(), path, NxmNxPktMarkKey.VALUE);
+        final var pktMark = ((PktMarkCaseValue) input.getMatchEntryValue()).getPktMarkValues();
+        return resolveAugmentation(new NxmNxPktMarkBuilder()
+            .setPktMark(pktMark.getPktMark())
+            .setMask(pktMark.getMask())
+            .build(), path, NxmNxPktMarkKey.VALUE);
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxPktMark value,
             final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxPktMark(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxPktMark(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxPktMark(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxPktMark(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxPktMark(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxPktMark(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxPktMark(value).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
+                new NxAugMatchNotifPacketInBuilder().setNxmNxPktMark(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxPktMark(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                new NxAugMatchPacketInMessageBuilder().setNxmNxPktMark(value).build(), key);
+        };
     }
 }

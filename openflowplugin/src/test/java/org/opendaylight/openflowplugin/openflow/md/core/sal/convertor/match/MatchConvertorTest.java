@@ -230,7 +230,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 24, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, InPort.VALUE, false);
@@ -351,7 +351,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -378,7 +378,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -402,7 +402,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, UdpSrc.VALUE, false);
@@ -425,7 +425,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv4Src.VALUE, false);
@@ -448,7 +448,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, SctpSrc.VALUE, false);
@@ -479,7 +479,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 5, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, ArpOp.VALUE, false);
@@ -524,7 +524,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 4, entries.size());
         MatchEntry entry = entries.get(0);
         entry = entries.get(0);
@@ -574,7 +574,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 7, entries.size());
         MatchEntry entry = entries.get(0);
         /* Due to conversion ambiguities, we always get "has mask" because
@@ -620,7 +620,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Src.VALUE, true);
@@ -651,7 +651,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 1, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Ipv6Exthdr.VALUE, true);
@@ -702,7 +702,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 8, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, Metadata.VALUE, true);
@@ -773,7 +773,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 2, entries.size());
 
         MatchEntry entry = entries.get(0);
@@ -794,7 +794,7 @@ public class MatchConvertorTest {
 
         Optional<List<MatchEntry>> entriesOptional =
                 converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_3));
-        List<MatchEntry> entries = entriesOptional.get();
+        List<MatchEntry> entries = entriesOptional.orElseThrow();
         assertEquals("Wrong entries size", 1, entries.size());
         MatchEntry entry = entries.get(0);
         checkEntryHeader(entry, PacketType.VALUE, false);

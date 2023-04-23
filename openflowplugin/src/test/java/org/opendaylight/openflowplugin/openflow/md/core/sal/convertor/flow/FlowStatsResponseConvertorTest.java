@@ -160,10 +160,10 @@ public class FlowStatsResponseConvertorTest {
         assertEquals(PRESET_COUNT, instructions.getInstruction().size());
     }
 
-    private Instructions convert(List<Instruction> instructionsList, VersionConvertorData data) {
+    private Instructions convert(final List<Instruction> instructionsList, final VersionConvertorData data) {
         Optional<Instructions> instructionsOptional = convertorManager.convert(instructionsList, data);
         assertTrue("Flow instruction response convertor not found", instructionsOptional.isPresent());
-        return instructionsOptional.get();
+        return instructionsOptional.orElseThrow();
     }
 
     private interface MockActionBase extends ActionBase {

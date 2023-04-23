@@ -211,20 +211,18 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
             if (isSuccess) {
                 if (count.isPresent()) {
-                    long successCount = count.get().getSuccessCount().toJava();
+                    long successCount = count.orElseThrow().getSuccessCount().toJava();
                     counterBuilder.setSuccessCount(Uint32.valueOf(++successCount));
                     LOG.debug("Reconcile success count {} for the node: {} ", successCount, nodeId);
                 } else {
                     counterBuilder.setSuccessCount(Uint32.ONE);
                 }
+            } else if (count.isPresent()) {
+                long failureCount = count.orElseThrow().getFailureCount().toJava();
+                counterBuilder.setFailureCount(Uint32.valueOf(++failureCount));
+                LOG.debug("Reconcile failure count {} for the node: {} ", failureCount, nodeId);
             } else {
-                if (count.isPresent()) {
-                    long failureCount = count.get().getFailureCount().toJava();
-                    counterBuilder.setFailureCount(Uint32.valueOf(++failureCount));
-                    LOG.debug("Reconcile failure count {} for the node: {} ", failureCount, nodeId);
-                } else {
-                    counterBuilder.setFailureCount(Uint32.ONE);
-                }
+                counterBuilder.setFailureCount(Uint32.ONE);
             }
             try {
                 tx.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier,

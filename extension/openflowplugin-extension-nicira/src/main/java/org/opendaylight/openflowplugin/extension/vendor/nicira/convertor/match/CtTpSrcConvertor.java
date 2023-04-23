@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -15,7 +14,6 @@ import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntryBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtTpSrcCaseValue;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtTpSrcCaseValueBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.nxm.nx.match.ct.tp.src.grouping.CtTpSrcValuesBuilder;
@@ -31,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpSrcGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtTpSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.ct.tp.src.grouping.NxmNxCtTpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.ct.tp.src.grouping.NxmNxCtTpSrcBuilder;
@@ -41,49 +38,42 @@ public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Converto
 
     @Override
     public MatchEntry convert(final Extension extension) {
-        Optional<NxmNxCtTpSrcGrouping> matchGrouping = MatchUtil.CT_TP_SRC_RESOLVER.findExtension(extension);
-        if (!matchGrouping.isPresent()) {
+        final var matchGrouping = MatchUtil.CT_TP_SRC_RESOLVER.findExtension(extension);
+        if (matchGrouping.isEmpty()) {
             throw new CodecPreconditionException(extension);
         }
-        CtTpSrcCaseValueBuilder ctTpSrcCaseValueBuilder = new CtTpSrcCaseValueBuilder();
-        CtTpSrcValuesBuilder ctTpSrcValuesBuilder = new CtTpSrcValuesBuilder();
-        ctTpSrcValuesBuilder.setCtTpSrc(matchGrouping.get().getNxmNxCtTpSrc().getCtTpSrc());
-        ctTpSrcCaseValueBuilder.setCtTpSrcValues(ctTpSrcValuesBuilder.build());
-        MatchEntryBuilder ofMatch = MatchUtil
-                .createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn
-                                .opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc.VALUE,
-                        Nxm1Class.VALUE, ctTpSrcCaseValueBuilder.build());
-        return ofMatch.build();
+        return MatchUtil.createDefaultMatchEntryBuilder(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxCtTpSrc.VALUE,
+            Nxm1Class.VALUE,
+            new CtTpSrcCaseValueBuilder()
+                .setCtTpSrcValues(new CtTpSrcValuesBuilder()
+                    .setCtTpSrc(matchGrouping.orElseThrow().getNxmNxCtTpSrc().getCtTpSrc())
+                    .build())
+                .build())
+            .build();
     }
 
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
         CtTpSrcCaseValue ctTpSrcCaseValue = (CtTpSrcCaseValue) input.getMatchEntryValue();
-        NxmNxCtTpSrcBuilder ctTpSrcBuilder = new NxmNxCtTpSrcBuilder();
-        ctTpSrcBuilder.setCtTpSrc(ctTpSrcCaseValue.getCtTpSrcValues().getCtTpSrc());
-        return resolveAugmentation(ctTpSrcBuilder.build(), path, NxmNxCtTpSrcKey.VALUE);
+        return resolveAugmentation(new NxmNxCtTpSrcBuilder()
+            .setCtTpSrc(ctTpSrcCaseValue.getCtTpSrcValues().getCtTpSrc())
+            .build(), path, NxmNxCtTpSrcKey.VALUE);
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtTpSrc value,
             final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxCtTpSrc(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxCtTpSrc(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxCtTpSrc(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxCtTpSrc(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxCtTpSrc(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxCtTpSrc(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxCtTpSrc(value).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
+                new NxAugMatchNotifPacketInBuilder().setNxmNxCtTpSrc(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxCtTpSrc(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                new NxAugMatchPacketInMessageBuilder().setNxmNxCtTpSrc(value).build(), key);
+        };
     }
 }

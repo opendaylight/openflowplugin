@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -65,7 +64,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<Node>> modifications) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<Node>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 
@@ -157,8 +156,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
                     .child(Node.class, new NodeKey(ModificationUtil.nodeId(modification)))
                     .augmentation(FlowCapableNode.class);
             final FlowCapableNode fcOperationalNode = ModificationUtil.flowCapableNodeAfter(modification);
-            final SyncupEntry syncupEntry = new SyncupEntry(nodeConfiguration.get(), LogicalDatastoreType.CONFIGURATION,
-                                                            fcOperationalNode, dsType());
+            final SyncupEntry syncupEntry = new SyncupEntry(nodeConfiguration.orElseThrow(),
+                LogicalDatastoreType.CONFIGURATION, fcOperationalNode, dsType());
             return Optional.of(reactor.syncup(nodePath, syncupEntry));
         } else {
             LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());

@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import java.util.Collections;
-import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlowWriteActionsSetField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralExtensionListGrouping;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class SetFieldExtensionTest {
     @Test
@@ -29,26 +29,22 @@ public class SetFieldExtensionTest {
         eqGroup.add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class);
         eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        ExtensionList extension1 = new ExtensionListBuilder().setExtensionKey(ZVendorExt1.VALUE).build();
         SetField setField1 = new SetFieldBuilder()
-                .addAugmentation(new GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder()
-                    .setExtensionList(Collections.singletonMap(extension1.key(), extension1))
-                    .build())
-                .build();
+            .addAugmentation(new GeneralAugMatchRpcAddFlowWriteActionsSetFieldBuilder()
+                .setExtensionList(BindingMap.of(new ExtensionListBuilder().setExtensionKey(ZVendorExt1.VALUE).build()))
+                .build())
+            .build();
 
-        ExtensionList extension2 = new ExtensionListBuilder().setExtensionKey(ZVendorExt2.VALUE).build();
         SetField setField2 = new SetFieldBuilder()
-                .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
-                    .setExtensionList(Collections.singletonMap(extension2.key(), extension2))
-                    .build())
-                .build();
+            .addAugmentation(new GeneralAugMatchNodesNodeTableFlowWriteActionsSetFieldBuilder()
+                .setExtensionList(BindingMap.of(new ExtensionListBuilder().setExtensionKey(ZVendorExt2.VALUE).build()))
+                .build())
+            .build();
 
-        Assert.assertEquals(ZVendorExt1.VALUE,
-                eqGroup.getExtension(setField1).get().nonnullExtensionList().values().iterator().next()
-                        .getExtensionKey());
-        Assert.assertEquals(ZVendorExt2.VALUE,
-                eqGroup.getExtension(setField2).get().nonnullExtensionList().values().iterator().next()
-                        .getExtensionKey());
+        assertEquals(ZVendorExt1.VALUE, eqGroup.getExtension(setField1).orElseThrow()
+            .nonnullExtensionList().values().iterator().next().getExtensionKey());
+        assertEquals(ZVendorExt2.VALUE, eqGroup.getExtension(setField2).orElseThrow()
+            .nonnullExtensionList().values().iterator().next() .getExtensionKey());
     }
 
     private interface ZVendorExt1 extends ExtensionKey {

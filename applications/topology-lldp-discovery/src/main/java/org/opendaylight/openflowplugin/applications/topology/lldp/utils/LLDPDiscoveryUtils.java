@@ -18,7 +18,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Optional;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.eos.binding.api.Entity;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
@@ -155,15 +155,7 @@ public final class LLDPDiscoveryUtils {
 
     public static boolean isEntityOwned(final EntityOwnershipService eos, final String nodeId) {
         requireNonNull(eos, "Entity ownership service must not be null");
-
-        EntityOwnershipState state = null;
-        Optional<EntityOwnershipState> status = getCurrentOwnershipStatus(eos, nodeId);
-        if (status.isPresent()) {
-            state = status.get();
-        } else {
-            LOG.error("Fetching ownership status failed for node {}", nodeId);
-        }
-        return state != null && state.equals(EntityOwnershipState.IS_OWNER);
+        return EntityOwnershipState.IS_OWNER == currentOwnershipStatus(eos, nodeId);
     }
 
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819
@@ -207,34 +199,26 @@ public final class LLDPDiscoveryUtils {
         return secAuthenticatorOk;
     }
 
-    private static Optional<EntityOwnershipState> getCurrentOwnershipStatus(final EntityOwnershipService eos,
+    private static @Nullable EntityOwnershipState currentOwnershipStatus(final EntityOwnershipService eos,
             final String nodeId) {
-        Entity entity = createNodeEntity(nodeId);
-        Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
-
-        if (ownershipStatus.isPresent()) {
-            LOG.debug("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.get());
+        var optStatus = eos.getOwnershipState(new Entity(SERVICE_ENTITY_TYPE, nodeId));
+        if (optStatus.isEmpty()) {
+            LOG.error("Fetching ownership status failed for node {}", nodeId);
+            return null;
         }
-        return ownershipStatus;
-    }
 
-    private static Entity createNodeEntity(final String nodeId) {
-        return new Entity(SERVICE_ENTITY_TYPE, nodeId);
+        final var status = optStatus.orElseThrow();
+        LOG.debug("Fetched ownership status for node {} is {}", nodeId, status);
+        return status;
     }
 
     private static NodeConnectorRef getNodeConnectorRefFromLink(final TpId tpId, final org.opendaylight.yang.gen.v1.urn
             .tbd.params.xml.ns.yang.network.topology.rev131021.NodeId nodeId) {
         String nodeConnectorId = tpId.getValue();
-        InstanceIdentifier<NodeConnector> nciid
-                = InstanceIdentifier.builder(Nodes.class)
-                .child(
-                        Node.class,
-                        new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
-                                .NodeId(nodeId)))
-                .child(
-                        NodeConnector.class,
-                        new NodeConnectorKey(new NodeConnectorId(nodeConnectorId)))
-                .build();
-        return new NodeConnectorRef(nciid);
+        return new NodeConnectorRef(InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class,
+                new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
+            .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId(nodeConnectorId)))
+            .build());
     }
 }

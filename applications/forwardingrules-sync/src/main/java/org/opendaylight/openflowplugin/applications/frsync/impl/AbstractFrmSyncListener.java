@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
@@ -27,28 +26,25 @@ import org.slf4j.LoggerFactory;
  * Abstract Listener for node changes.
  */
 public abstract class AbstractFrmSyncListener<T extends DataObject> implements NodeListener<T> {
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractFrmSyncListener.class);
 
     @Override
-    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<T>> modifications) {
+    public void onDataTreeChanged(final Collection<DataTreeModification<T>> modifications) {
         for (DataTreeModification<T> modification : modifications) {
             final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
             if (LOG.isTraceEnabled()) {
                 LOG.trace("DataTreeModification of {} in {} datastore", nodeId.getValue(), dsType());
             }
-            try {
-                final Optional<ListenableFuture<Boolean>> optFuture = processNodeModification(modification);
-                if (optFuture.isPresent()) {
-                    final ListenableFuture<Boolean> future = optFuture.get();
+            processNodeModification(modification).ifPresent(future -> {
+                try {
                     future.get(15000, TimeUnit.MILLISECONDS);
                     if (LOG.isTraceEnabled()) {
                         LOG.trace("Syncup for {} return from {} listener", nodeId.getValue(), dsType());
                     }
+                } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                    LOG.error("Error processing inventory node modification: {}", nodeId.getValue(), e);
                 }
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                LOG.error("Error processing inventory node modification: {}", nodeId.getValue(), e);
-            }
+            });
         }
     }
 
@@ -56,5 +52,4 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
             DataTreeModification<T> modification);
 
     protected abstract LogicalDatastoreType dsType();
-
 }

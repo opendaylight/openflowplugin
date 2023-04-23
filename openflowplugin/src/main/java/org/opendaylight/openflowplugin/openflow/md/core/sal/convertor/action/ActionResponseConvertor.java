@@ -5,14 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ActionExtensionHelper;
@@ -100,7 +97,7 @@ public final class ActionResponseConvertor extends Convertor<
             .addCase(new OfToSalSetVlanPcpCase())
             .addCase(new OfToSalSetVlanIdCase())
             .addCase(new OfToSalStripVlanCase());
-    private static final Set<Class<?>> TYPES = Collections.singleton(Action.class);
+    private static final Set<Class<?>> TYPES = Set.of(Action.class);
 
     @Override
     public Collection<Class<?>> getTypes() {
@@ -109,28 +106,25 @@ public final class ActionResponseConvertor extends Convertor<
 
     @Override
     public List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>
-            convert(List<Action> source, ActionResponseConvertorData data) {
-        final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> result =
-                new ArrayList<>();
-        final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
+            convert(final List<Action> source, final ActionResponseConvertorData data) {
+        final var result =
+            new ArrayList<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>();
 
         // Iterate over Openflow actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
-            for (final Action action : source) {
-                final Optional<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>
-                    convertedAction = PROCESSOR.process(action.getActionChoice(), data, getConvertorExecutor());
-
+            final var ofVersion = OpenflowVersion.get(data.getVersion());
+            for (var action : source) {
+                final var convertedAction = PROCESSOR.process(action.getActionChoice(), data, getConvertorExecutor());
                 if (convertedAction.isPresent()) {
-                    result.add(convertedAction.get());
+                    result.add(convertedAction.orElseThrow());
                 } else {
                     /*
                      * TODO: EXTENSION PROPOSAL (action, OFJava to MD-SAL)
                      * - we might also need a way on how to identify exact type of augmentation to be
                      *   used as match can be bound to multiple models
                      */
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action processedAction =
-                            ActionExtensionHelper.processAlienAction(action, ofVersion, data.getActionPath());
-
+                    var processedAction = ActionExtensionHelper.processAlienAction(action, ofVersion,
+                        data.getActionPath());
                     if (processedAction != null) {
                         result.add(processedAction);
                     }
