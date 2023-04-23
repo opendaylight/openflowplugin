@@ -20,64 +20,46 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 final class TopologyManagerUtil {
-
     private static final Logger LOG = LoggerFactory.getLogger(TopologyManagerUtil.class);
 
     private TopologyManagerUtil() {
+        // Hidden on purpose
     }
 
     static void removeAffectedLinks(final NodeId id, final TransactionChainManager manager,
-                                    InstanceIdentifier<Topology> topology) {
-        Optional<Topology> topologyOptional = Optional.empty();
+                                    final InstanceIdentifier<Topology> topology) {
+        final Optional<Topology> topologyOptional;
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Error reading topology data for topology {}: {}", topology, e.getMessage());
             LOG.debug("Error reading topology data for topology.. ", e);
-        }
-        if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, manager, topology);
-        }
-    }
-
-    private static void removeAffectedLinks(final NodeId id, Optional<Topology> topologyOptional,
-                                            TransactionChainManager manager,
-                                            final InstanceIdentifier<Topology> topology) {
-        if (!topologyOptional.isPresent()) {
             return;
         }
-
-        for (Link link : topologyOptional.get().nonnullLink().values()) {
-            if (id.equals(link.getSource().getSourceNode()) || id.equals(link.getDestination().getDestNode())) {
-                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+        if (topologyOptional.isPresent()) {
+            for (Link link : topologyOptional.orElseThrow().nonnullLink().values()) {
+                if (id.equals(link.getSource().getSourceNode()) || id.equals(link.getDestination().getDestNode())) {
+                    manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                }
             }
         }
     }
 
     static void removeAffectedLinks(final TpId id, final TransactionChainManager manager,
                                     final InstanceIdentifier<Topology> topology) {
-        Optional<Topology> topologyOptional = Optional.empty();
+        final Optional<Topology> topologyOptional;
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.warn("Error reading topology data for topology {}: {}", topology, e.getMessage());
             LOG.debug("Error reading topology data for topology..", e);
-        }
-        if (topologyOptional.isPresent()) {
-            removeAffectedLinks(id, topologyOptional, manager, topology);
-        }
-    }
-
-    private static void removeAffectedLinks(final TpId id, Optional<Topology> topologyOptional,
-                                            TransactionChainManager manager,
-                                            final InstanceIdentifier<Topology> topology) {
-        if (!topologyOptional.isPresent()) {
             return;
         }
-
-        for (Link link : topologyOptional.get().nonnullLink().values()) {
-            if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
-                manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+        if (topologyOptional.isPresent()) {
+            for (Link link : topologyOptional.orElseThrow().nonnullLink().values()) {
+                if (id.equals(link.getSource().getSourceTp()) || id.equals(link.getDestination().getDestTp())) {
+                    manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, linkPath(link, topology));
+                }
             }
         }
     }
@@ -85,6 +67,4 @@ final class TopologyManagerUtil {
     static InstanceIdentifier<Link> linkPath(final Link link, final InstanceIdentifier<Topology> topology) {
         return topology.child(Link.class, link.key());
     }
-
-
 }

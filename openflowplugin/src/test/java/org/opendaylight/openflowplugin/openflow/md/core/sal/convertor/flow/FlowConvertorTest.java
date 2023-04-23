@@ -266,7 +266,7 @@ public class FlowConvertorTest {
     private List<FlowModInputBuilder> convert(final Flow flow, final VersionDatapathIdConvertorData data) {
         Optional<List<FlowModInputBuilder>> flowModOptional = convertorManager.convert(flow, data);
         assertTrue("Flow convertor not found", flowModOptional.isPresent());
-        return flowModOptional.get();
+        return flowModOptional.orElseThrow();
     }
 
     private static Action createAction(

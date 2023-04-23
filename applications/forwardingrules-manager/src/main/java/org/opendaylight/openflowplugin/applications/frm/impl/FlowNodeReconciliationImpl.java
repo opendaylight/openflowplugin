@@ -146,7 +146,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     public FlowNodeReconciliationImpl(final ForwardingRulesManager manager, final DataBroker db,
                                       final String serviceName, final int priority, final ResultState resultState,
                                       final FlowGroupCacheManager flowGroupCacheManager) {
-        this.provider = requireNonNull(manager, "ForwardingRulesManager can not be null!");
+        provider = requireNonNull(manager, "ForwardingRulesManager can not be null!");
         dataBroker = requireNonNull(db, "DataBroker can not be null!");
         this.serviceName = serviceName;
         this.priority = priority;
@@ -261,25 +261,25 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                 /* Push flows and groups via bundle add messages */
                 Optional<FlowCapableNode> finalFlowNode = flowNode;
-                ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture
-                        = Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
-                                return Futures.allAsList(addBundleMessages(finalFlowNode.get(), bundleIdValue,
-                                        nodeIdentity));
-                            }
-                            return Futures.immediateFuture(null);
-                        }, service);
+                ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture =
+                    Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
+                        if (rpcResult.isSuccessful()) {
+                            LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
+                            return Futures.allAsList(addBundleMessages(finalFlowNode.orElseThrow(), bundleIdValue,
+                                nodeIdentity));
+                        }
+                        return Futures.immediateFuture(null);
+                    }, service);
 
                     /* Commit the bundle on the openflow switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture
-                        = Futures.transformAsync(addbundlesFuture, rpcResult -> {
-                            LOG.debug("Adding bundle messages completed for device {}", dpnId);
-                            return salBundleService.controlBundle(commitBundleInput);
-                        }, service);
+                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture =
+                    Futures.transformAsync(addbundlesFuture, rpcResult -> {
+                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
+                        return salBundleService.controlBundle(commitBundleInput);
+                    }, service);
 
                 /* Bundles not supported for meters */
-                Collection<Meter> meters = flowNode.get().nonnullMeter().values();
+                Collection<Meter> meters = finalFlowNode.orElseThrow().nonnullMeter().values();
                 Futures.transformAsync(commitBundleFuture,
                     rpcResult -> {
                         if (rpcResult.isSuccessful()) {
@@ -365,26 +365,26 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             BigInteger dpnId = getDpnIdFromNodeName(node);
             OF_EVENT_LOG.debug("Reconciliation Start, Node: {}", dpnId);
 
-            Optional<FlowCapableNode> flowNode;
+            Optional<FlowCapableNode> optFlowNode;
             // initialize the counter
             int counter = 0;
             try (ReadTransaction trans = provider.getReadTransaction()) {
-                flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
+                optFlowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdentity).get();
             } catch (ExecutionException | InterruptedException e) {
                 LOG.warn("Fail with read Config/DS for Node {} !", nodeIdentity, e);
                 return false;
             }
 
-            if (flowNode.isPresent()) {
+            if (optFlowNode.isPresent()) {
                 /* Tables - have to be pushed before groups */
                 // CHECK if while pushing the update, updateTableInput can be null to emulate a
                 // table add
-                ReconciliationState reconciliationState = new ReconciliationState(
-                        STARTED, LocalDateTime.now());
+                ReconciliationState reconciliationState = new ReconciliationState(STARTED, LocalDateTime.now());
                 //put the dpn info into the map
                 reconciliationStates.put(dpnId.toString(), reconciliationState);
                 LOG.debug("Triggering reconciliation for node {} with state: {}", dpnId, STARTED);
-                Collection<TableFeatures> tableList = flowNode.get().nonnullTableFeatures().values();
+                FlowCapableNode flowNode = optFlowNode.orElseThrow();
+                Collection<TableFeatures> tableList = flowNode.nonnullTableFeatures().values();
                 for (TableFeatures tableFeaturesItem : tableList) {
                     TableFeaturesKey tableKey = tableFeaturesItem.key();
                     KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> tableFeaturesII = nodeIdentity
@@ -393,9 +393,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 }
 
                 /* Groups - have to be first */
-                Collection<Group> groups = flowNode.get().nonnullGroup().values();
-                List<Group> toBeInstalledGroups = new ArrayList<>();
-                toBeInstalledGroups.addAll(groups);
+                List<Group> toBeInstalledGroups = new ArrayList<>(flowNode.nonnullGroup().values());
                 // new list for suspected groups pointing to ports .. when the ports come up
                 // late
                 List<Group> suspectedGroups = new ArrayList<>();
@@ -487,14 +485,13 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 if (!toBeInstalledGroups.isEmpty()) {
                     for (Group group : toBeInstalledGroups) {
                         LOG.debug(
-                                "Installing the group {} finally although "
-                                        + "the port is not up after checking for {} times ",
-                                group.getGroupId(), provider.getReconciliationRetryCount());
+                            "Installing the group {} finally although the port is not up after checking for {} times ",
+                            group.getGroupId(), provider.getReconciliationRetryCount());
                         addGroup(groupFutures, group);
                     }
                 }
                 /* Meters */
-                Collection<Meter> meters = flowNode.get().nonnullMeter().values();
+                Collection<Meter> meters = flowNode.nonnullMeter().values();
                 for (Meter meter : meters) {
                     final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity.child(Meter.class,
                             meter.key());
@@ -506,10 +503,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 awaitGroups(node, groupFutures.values());
 
                 /* Flows */
-                Collection<Table> tables = flowNode.get().getTable() != null ? flowNode.get().nonnullTable().values()
-                        : Collections.<Table>emptyList();
                 int flowCount = 0;
-                for (Table table : tables) {
+                for (Table table : flowNode.nonnullTable().values()) {
                     final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdentity.child(Table.class,
                             table.key());
                     Collection<Flow> flows = table.nonnullFlow().values();
@@ -604,20 +599,20 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         List<InstanceIdentifier<StaleGroup>> staleGroupsToBeBulkDeleted = new ArrayList<>();
         List<InstanceIdentifier<StaleMeter>> staleMetersToBeBulkDeleted = new ArrayList<>();
 
-        Optional<FlowCapableNode> flowNode = Optional.empty();
+        Optional<FlowCapableNode> optFlowNode = Optional.empty();
 
         try (ReadTransaction trans = provider.getReadTransaction()) {
-            flowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
+            optFlowNode = trans.read(LogicalDatastoreType.CONFIGURATION, nodeIdent).get();
         } catch (ExecutionException | InterruptedException e) {
             LOG.warn("Reconciliation Pre-Processing Fail with read Config/DS for Node {} !", nodeIdent, e);
         }
 
-        if (flowNode.isPresent()) {
-
+        if (optFlowNode.isPresent()) {
+            final FlowCapableNode flowNode = optFlowNode.orElseThrow();
             LOG.debug("Proceeding with deletion of stale-marked Flows on switch {} using Openflow interface",
                     nodeIdent);
             /* Stale-Flows - Stale-marked Flows have to be removed first for safety */
-            Collection<Table> tables = flowNode.get().nonnullTable().values();
+            Collection<Table> tables = flowNode.nonnullTable().values();
             for (Table table : tables) {
                 final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdent.child(Table.class,
                         table.key());
@@ -630,7 +625,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
                             toBeDeletedFlow.key());
 
-                    this.provider.getFlowCommiter().remove(flowIdent, toBeDeletedFlow, nodeIdent);
+                    provider.getFlowCommiter().remove(flowIdent, toBeDeletedFlow, nodeIdent);
 
                     staleFlowsToBeBulkDeleted.add(getStaleFlowInstanceIdentifier(staleFlow, nodeIdent));
                 }
@@ -644,16 +639,14 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             // before attempting to delete groups - just in case there are references
 
             /* Stale-marked Groups - Can be deleted after flows */
-            Collection<StaleGroup> staleGroups = flowNode.get().nonnullStaleGroup().values();
-            for (StaleGroup staleGroup : staleGroups) {
-
+            for (StaleGroup staleGroup : flowNode.nonnullStaleGroup().values()) {
                 GroupBuilder groupBuilder = new GroupBuilder(staleGroup);
                 Group toBeDeletedGroup = groupBuilder.setGroupId(staleGroup.getGroupId()).build();
 
                 final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class,
                         toBeDeletedGroup.key());
 
-                this.provider.getGroupCommiter().remove(groupIdent, toBeDeletedGroup, nodeIdent);
+                provider.getGroupCommiter().remove(groupIdent, toBeDeletedGroup, nodeIdent);
 
                 staleGroupsToBeBulkDeleted.add(getStaleGroupInstanceIdentifier(staleGroup, nodeIdent));
             }
@@ -661,9 +654,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             LOG.debug("Proceeding with deletion of stale-marked Meters for switch {} using Openflow interface",
                     nodeIdent);
             /* Stale-marked Meters - can be deleted anytime - so least priority */
-            Collection<StaleMeter> staleMeters = flowNode.get().getStaleMeter().values();
-
-            for (StaleMeter staleMeter : staleMeters) {
+            for (StaleMeter staleMeter : flowNode.nonnullStaleMeter().values()) {
 
                 MeterBuilder meterBuilder = new MeterBuilder(staleMeter);
                 Meter toBeDeletedMeter = meterBuilder.setMeterId(staleMeter.getMeterId()).build();
@@ -671,7 +662,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class,
                         toBeDeletedMeter.key());
 
-                this.provider.getMeterCommiter().remove(meterIdent, toBeDeletedMeter, nodeIdent);
+                provider.getMeterCommiter().remove(meterIdent, toBeDeletedMeter, nodeIdent);
 
                 staleMetersToBeBulkDeleted.add(getStaleMeterInstanceIdentifier(staleMeter, nodeIdent));
             }

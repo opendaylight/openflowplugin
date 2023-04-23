@@ -126,7 +126,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                 Uint8 ipProtocol = null;
 
                 if (matchBuilderOptional.isPresent()) {
-                    final MatchBuilder matchBuilder = matchBuilderOptional.get();
+                    final MatchBuilder matchBuilder = matchBuilderOptional.orElseThrow();
                     final IpMatch ipMatch = matchBuilder.getIpMatch();
                     if (ipMatch != null) {
                         ipProtocol = ipMatch.getIpProtocol();
@@ -146,7 +146,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                         flowStats.getMatch(), data);
 
                 if (matchBuilderOptional.isPresent()) {
-                    final MatchBuilder matchBuilder = matchBuilderOptional.get();
+                    final MatchBuilder matchBuilder = matchBuilderOptional.orElseThrow();
 
                     final AugmentTuple<Match> matchExtensionWrap =
                             MatchExtensionHelper.processAllExtensions(

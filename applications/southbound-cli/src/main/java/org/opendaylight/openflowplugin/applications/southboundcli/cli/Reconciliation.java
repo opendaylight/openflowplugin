@@ -32,7 +32,7 @@ public class Reconciliation extends OsgiCommandSupport {
     private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
     private ReconciliationService reconciliationService;
 
-    public void setReconciliationService(ReconciliationService reconciliationService) {
+    public void setReconciliationService(final ReconciliationService reconciliationService) {
         this.reconciliationService = reconciliationService;
     }
 
@@ -58,7 +58,7 @@ public class Reconciliation extends OsgiCommandSupport {
                 System.out.println("Reconciliation triggered for the node(s)");
                 printInProgressNodes(rpcResult.getResult());
             } else {
-                System.out.println(rpcResult.getErrors().stream().findFirst().get().getMessage());
+                System.out.println(rpcResult.getErrors().stream().findFirst().orElseThrow().getMessage());
             }
         } catch (ExecutionException e) {
             LOG.error("Error occurred while invoking reconcile RPC for node {}", nodes, e);
@@ -67,7 +67,7 @@ public class Reconciliation extends OsgiCommandSupport {
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private static void printInProgressNodes(ReconcileOutput reconcileOutput) {
+    private static void printInProgressNodes(final ReconcileOutput reconcileOutput) {
         Set<Uint64> inprogressNodes = reconcileOutput.getInprogressNodes();
         if (inprogressNodes.size() > 0) {
             StringBuilder stringBuilder = new StringBuilder();

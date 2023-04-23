@@ -138,7 +138,7 @@ public class Icmpv6NDOptionsTypeConvertorTest {
                     .setExtensionList(BindingMap.of(extListBld.build())).build())
                 .build();
 
-        assertEquals(Icmpv6NdOptionsTypeKey.VALUE, eqGroup.getExtension(setField).get().nonnullExtensionList()
-                 .values().iterator().next().getExtensionKey());
+        assertEquals(Icmpv6NdOptionsTypeKey.VALUE, eqGroup.getExtension(setField).orElseThrow()
+            .nonnullExtensionList().values().iterator().next().getExtensionKey());
     }
 }
