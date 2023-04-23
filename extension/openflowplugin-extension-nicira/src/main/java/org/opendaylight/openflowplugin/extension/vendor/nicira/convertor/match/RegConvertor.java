@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.util.Optional;
 import org.opendaylight.openflowjava.nx.codec.match.NiciraMatchCodecs;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -40,7 +39,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxReg5Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxReg6Key;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxReg7Key;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxRegGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.reg.grouping.NxmNxReg;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.reg.grouping.NxmNxRegBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
@@ -82,20 +80,16 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
 
     @Override
     public MatchEntry convert(final Extension extension) {
-        Optional<NxmNxRegGrouping> matchGrouping = MatchUtil.REG_RESOLVER.findExtension(extension);
-        if (!matchGrouping.isPresent()) {
+        final var matchGrouping = MatchUtil.REG_RESOLVER.findExtension(extension);
+        if (matchGrouping.isEmpty()) {
             throw new CodecPreconditionException(extension);
         }
-        NxmNxReg nxmNxReg = matchGrouping.get().getNxmNxReg();
-        RegValuesBuilder regValuesBuilder = new RegValuesBuilder()
-            .setValue(nxmNxReg.getValue())
-            .setMask(nxmNxReg.getMask());
+        final var nxmNxReg = matchGrouping.orElseThrow().getNxmNxReg();
 
-        RegCaseValueBuilder regCaseValueBuilder = new RegCaseValueBuilder();
-        regCaseValueBuilder.setRegValues(regValuesBuilder.build());
-        return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(),
-                Nxm1Class.VALUE,
-                regCaseValueBuilder.build())
+        return MatchUtil.createDefaultMatchEntryBuilder(nxmNxReg.getReg(), Nxm1Class.VALUE,
+            new RegCaseValueBuilder()
+                .setRegValues(new RegValuesBuilder().setValue(nxmNxReg.getValue()).setMask(nxmNxReg.getMask()).build())
+                .build())
             .setHasMask(nxmNxReg.getMask() != null)
             .build();
     }
@@ -131,24 +125,17 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxReg nxmNxReg,
             final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxReg(nxmNxReg).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxReg(nxmNxReg).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxReg(nxmNxReg).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxReg(nxmNxReg).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
+                new NxAugMatchNotifPacketInBuilder().setNxmNxReg(nxmNxReg).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxReg(nxmNxReg).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                new NxAugMatchPacketInMessageBuilder().setNxmNxReg(nxmNxReg).build(), key);
+        };
     }
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.onf.converter;
 
 import java.util.Collection;
@@ -125,10 +124,10 @@ public class BundleAddMessageConverter implements
             flowModInputs = Optional.empty();
         }
 
-        if (!flowModInputs.isPresent()) {
+        if (flowModInputs.isEmpty()) {
             throw new ConversionException("BundleFlowCase conversion unsuccessful.");
         }
-        final List<FlowModInputBuilder> inputs = flowModInputs.get();
+        final List<FlowModInputBuilder> inputs = flowModInputs.orElseThrow();
         if (inputs.size() != 1) {
             throw new ConversionException(
                 "BundleFlowCase conversion unsuccessful - not able to convert to multiple flows.");
@@ -158,14 +157,14 @@ public class BundleAddMessageConverter implements
             groupModInput = Optional.empty();
         }
 
-        if (!groupModInput.isPresent()) {
+        if (groupModInput.isEmpty()) {
             throw new ConversionException("BundleGroupCase conversion unsuccessful.");
         }
 
         return new BundleGroupModCaseBuilder()
-                .setGroupModCaseData(new GroupModCaseDataBuilder(groupModInput.get().setXid(data.getXid()).build())
-                    .build())
-                .build();
+            .setGroupModCaseData(new GroupModCaseDataBuilder(groupModInput.orElseThrow().setXid(data.getXid()).build())
+                .build())
+            .build();
     }
 
     private static BundlePortModCase convertBundlePortCase(final BundleInnerMessage messageCase,
@@ -181,12 +180,12 @@ public class BundleAddMessageConverter implements
             portModInput = Optional.empty();
         }
 
-        if (!portModInput.isPresent()) {
+        if (portModInput.isEmpty()) {
             throw new ConversionException("BundlePortCase conversion unsuccessful.");
         }
         return new BundlePortModCaseBuilder()
-                .setPortModCaseData(new PortModCaseDataBuilder(portModInput.get()).setXid(data.getXid()).build())
-                .build();
+            .setPortModCaseData(new PortModCaseDataBuilder(portModInput.orElseThrow()).setXid(data.getXid()).build())
+            .build();
     }
 
     @Override

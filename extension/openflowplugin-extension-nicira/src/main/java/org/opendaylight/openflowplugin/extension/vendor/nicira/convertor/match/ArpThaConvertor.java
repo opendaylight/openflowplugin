@@ -7,13 +7,11 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.CodecPreconditionException;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Nxm1Class;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.ArpThaCaseValue;
@@ -31,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpThaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.arp.tha.grouping.NxmNxArpTha;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.arp.tha.grouping.NxmNxArpThaBuilder;
@@ -54,39 +51,34 @@ public class ArpThaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
 
     @Override
     public MatchEntry convert(final Extension extension) {
-        Optional<NxmNxArpThaGrouping> matchGrouping = MatchUtil.ARP_THA_RESOLVER.findExtension(extension);
-        if (!matchGrouping.isPresent()) {
+        final var matchGrouping = MatchUtil.ARP_THA_RESOLVER.findExtension(extension);
+        if (matchGrouping.isEmpty()) {
             throw new CodecPreconditionException(extension);
         }
-        MacAddress macAddress = matchGrouping.get().getNxmNxArpTha().getMacAddress();
-        ArpThaCaseValueBuilder arpThaCaseValueBuilder = new ArpThaCaseValueBuilder();
-        arpThaCaseValueBuilder.setArpThaValues(new ArpThaValuesBuilder()
-                .setMacAddress(macAddress).build());
-        return MatchUtil.createDefaultMatchEntryBuilder(org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx
-                .match.rev140421.NxmNxArpTha.VALUE, Nxm1Class.VALUE, arpThaCaseValueBuilder.build()).build();
-
+        return MatchUtil.createDefaultMatchEntryBuilder(
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxArpTha.VALUE,
+            Nxm1Class.VALUE,
+            new ArpThaCaseValueBuilder()
+                .setArpThaValues(new ArpThaValuesBuilder()
+                    .setMacAddress(matchGrouping.orElseThrow().getNxmNxArpTha().getMacAddress())
+                    .build())
+                .build())
+            .build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxArpTha value,
             final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxArpTha(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxArpTha(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class, new NxAugMatchNotifPacketInBuilder()
-                        .setNxmNxArpTha(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxArpTha(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxArpTha(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxArpTha(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxArpTha(value).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
+                new NxAugMatchNotifPacketInBuilder().setNxmNxArpTha(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxArpTha(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                new NxAugMatchPacketInMessageBuilder().setNxmNxArpTha(value).build(), key);
+        };
     }
 }

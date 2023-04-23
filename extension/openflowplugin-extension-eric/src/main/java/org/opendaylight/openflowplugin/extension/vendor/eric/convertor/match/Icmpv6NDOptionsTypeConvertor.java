@@ -57,10 +57,10 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
     public MatchEntry convert(final Extension extension) {
         Optional<EricOfIcmpv6NdOptionsTypeGrouping> matchGrouping = MatchUtil.ICMPV6_ND_OPTIONS_TYPE_RESOLVER
                 .getExtension(extension);
-        if (!matchGrouping.isPresent()) {
+        if (matchGrouping.isEmpty()) {
             throw new CodecPreconditionException(extension);
         }
-        Uint8 value = matchGrouping.get().getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType();
+        Uint8 value = matchGrouping.orElseThrow().getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType();
         Icmpv6NdOptionsTypeCaseValueBuilder icmpv6NdOptionsTypeCaseValueBuilder
                 = new Icmpv6NdOptionsTypeCaseValueBuilder();
         icmpv6NdOptionsTypeCaseValueBuilder.setIcmpv6NdOptionsTypeValues(new Icmpv6NdOptionsTypeValuesBuilder()
@@ -71,24 +71,17 @@ public class Icmpv6NDOptionsTypeConvertor implements ConvertorToOFJava<MatchEntr
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
             final EricOfIcmpv6NdOptionsType value, final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
-                        new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(EricAugMatchRpcGetFlowStats.class,
-                        new EricAugMatchRpcGetFlowStatsBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(EricAugMatchNotifPacketIn.class, new EricAugMatchNotifPacketInBuilder()
-                        .setEricOfIcmpv6NdOptionsType(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(EricAugMatchNotifSwitchFlowRemoved.class,
-                      new EricAugMatchNotifSwitchFlowRemovedBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(EricAugMatchPacketInMessage.class,
-                        new EricAugMatchPacketInMessageBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
+                new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(EricAugMatchRpcGetFlowStats.class,
+                new EricAugMatchRpcGetFlowStatsBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(EricAugMatchNotifPacketIn.class,
+                new EricAugMatchNotifPacketInBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(EricAugMatchNotifSwitchFlowRemoved.class,
+                new EricAugMatchNotifSwitchFlowRemovedBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(EricAugMatchPacketInMessage.class,
+                new EricAugMatchPacketInMessageBuilder().setEricOfIcmpv6NdOptionsType(value).build(), key);
+        };
     }
 }

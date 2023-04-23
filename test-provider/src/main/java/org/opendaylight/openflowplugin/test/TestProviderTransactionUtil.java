@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -26,17 +25,13 @@ public final class TestProviderTransactionUtil {
         // Hidden on purpose
     }
 
-    public static <T extends DataObject> T getDataObject(ReadTransaction readOnlyTransaction,
-            InstanceIdentifier<T> identifier) {
-        Optional<T> optionalData = null;
+    public static <T extends DataObject> T getDataObject(final ReadTransaction readOnlyTransaction,
+            final InstanceIdentifier<T> identifier) {
         try {
-            optionalData = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get();
-            if (optionalData.isPresent()) {
-                return optionalData.get();
-            }
+            return readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, identifier).get().orElse(null);
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Read transaction for identifier {} failed.", identifier, e);
+            return null;
         }
-        return null;
     }
 }
