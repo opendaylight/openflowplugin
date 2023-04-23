@@ -5,16 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -36,11 +35,11 @@ public class ConvertorManagerTest {
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<Action, String, VersionConvertorData>() {
                     @Override
                     public Collection<Class<?>> getTypes() {
-                        return Collections.singleton(Action.class);
+                        return Set.of(Action.class);
                     }
 
                     @Override
-                    public String convert(Action source, VersionConvertorData data) {
+                    public String convert(final Action source, final VersionConvertorData data) {
                         return null;
                     }
                 });
@@ -55,11 +54,11 @@ public class ConvertorManagerTest {
                 .registerConvertor(OFConstants.OFP_VERSION_1_3, new Convertor<Action, String, VersionConvertorData>() {
                     @Override
                     public Collection<Class<?>> getTypes() {
-                        return Collections.singleton(Action.class);
+                        return Set.of(Action.class);
                     }
 
                     @Override
-                    public String convert(Action source, VersionConvertorData data) {
+                    public String convert(final Action source, final VersionConvertorData data) {
                         return String.valueOf(source) + String.valueOf(data);
                     }
                 });
@@ -67,10 +66,7 @@ public class ConvertorManagerTest {
         final Action source = new ActionBuilder().setOrder(0).build();
         final VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
         final String expectedResult = String.valueOf(source) + String.valueOf(data);
-        final Optional<String> result = convertorManager.convert(source, data);
-
-        assertTrue("Failed to convert action to string", result.isPresent());
-        assertEquals("Result and expected result do not match", result.get(), expectedResult);
+        assertEquals(Optional.of(expectedResult), convertorManager.convert(source, data));
     }
 
     /**
@@ -83,21 +79,18 @@ public class ConvertorManagerTest {
                 new Convertor<List<Action>, String, VersionConvertorData>() {
                     @Override
                     public Collection<Class<?>> getTypes() {
-                        return Collections.singleton(Action.class);
+                        return Set.of(Action.class);
                     }
 
                     @Override
-                    public String convert(List<Action> source, VersionConvertorData data) {
+                    public String convert(final List<Action> source, final VersionConvertorData data) {
                         return String.valueOf(source) + String.valueOf(data);
                     }
                 });
 
-        final List<Action> source = Collections.singletonList(new ActionBuilder().setOrder(0).build());
+        final List<Action> source = List.of(new ActionBuilder().setOrder(0).build());
         final VersionConvertorData data = new VersionConvertorData(OFConstants.OFP_VERSION_1_3);
         final String expectedResult = String.valueOf(source) + String.valueOf(data);
-        final Optional<String> result = convertorManager.convert(source, data);
-
-        assertTrue("Failed to convert action to string", result.isPresent());
-        assertEquals("Result and expected result do not match", result.get(), expectedResult);
+        assertEquals(Optional.of(expectedResult), convertorManager.convert(source, data));
     }
 }

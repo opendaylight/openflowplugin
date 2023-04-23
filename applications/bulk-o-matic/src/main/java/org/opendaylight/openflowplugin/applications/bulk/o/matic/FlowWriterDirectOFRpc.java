@@ -77,7 +77,7 @@ public class FlowWriterDirectOFRpc {
         try (ReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
             Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes).get();
             if (nodesDataNode.isPresent()) {
-                Collection<Node> nodesCollection = nodesDataNode.get().nonnullNode().values();
+                Collection<Node> nodesCollection = nodesDataNode.orElseThrow().nonnullNode().values();
                 if (!nodesCollection.isEmpty()) {
                     for (Node node : nodesCollection) {
                         LOG.info("Switch with ID {} discovered !!", node.getId().getValue());

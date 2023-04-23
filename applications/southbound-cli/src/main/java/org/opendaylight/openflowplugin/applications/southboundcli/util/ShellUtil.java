@@ -79,7 +79,7 @@ public final class ShellUtil {
         try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
             Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
             if (result.isPresent()) {
-                Node node = result.get();
+                Node node = result.orElseThrow();
                 String name;
                 Collection<NodeConnector> nodeConnectors = node.nonnullNodeConnector().values();
                 List<String> portList = new ArrayList<>();
@@ -115,16 +115,12 @@ public final class ShellUtil {
     public static Collection<ReconcileCounter> getReconcileCount(final DataBroker dataBroker) {
         InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier
                 .builder(ReconciliationCounter.class).build();
-        Collection<ReconcileCounter> output = Collections.emptyList();
         try (ReadTransaction tx = dataBroker.newReadOnlyTransaction()) {
-            Optional<ReconciliationCounter> result =
-                    tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
-            if (result.isPresent()) {
-                output = result.get().nonnullReconcileCounter().values();
-            }
+            final var result = tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+            return result.map(counter -> counter.nonnullReconcileCounter().values()).orElse(List.of());
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Error reading reconciliation counter from datastore", e);
+            return List.of();
         }
-        return output;
     }
 }

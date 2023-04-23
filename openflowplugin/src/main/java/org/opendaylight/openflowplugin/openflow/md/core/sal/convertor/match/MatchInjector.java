@@ -33,7 +33,7 @@ public final class MatchInjector {
     public static <F, T> void inject(final Optional<F> source, final T target, final Uint8 version) {
         F sourceResult;
         if (source.isPresent()) {
-            sourceResult = source.get();
+            sourceResult = source.orElseThrow();
         } else if (OFConstants.OFP_VERSION_1_0.equals(version)) {
             sourceResult = (F) MatchV10Convertor.defaultResult();
         } else {

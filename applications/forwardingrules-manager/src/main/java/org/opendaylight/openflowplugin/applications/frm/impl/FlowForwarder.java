@@ -335,7 +335,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         try (ReadTransaction readTransaction = provider.getReadTransaction()) {
             Optional<Group> group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
             if (group.isPresent()) {
-                final AddGroupInputBuilder builder = new AddGroupInputBuilder(group.get());
+                final AddGroupInputBuilder builder = new AddGroupInputBuilder(group.orElseThrow());
                 builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
                 builder.setGroupRef(new GroupRef(nodeIdent));
                 builder.setTransactionUri(new Uri(provider.getNewTransactionId()));

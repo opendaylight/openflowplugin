@@ -138,8 +138,8 @@ public class Icmpv6NDReservedConvertorTest {
                     .build())
                 .build();
 
-        assertEquals(Icmpv6NdReservedKey.VALUE, eqGroup.getExtension(setField).get().nonnullExtensionList()
-                .values().iterator().next().getExtensionKey());
+        assertEquals(Icmpv6NdReservedKey.VALUE, eqGroup.getExtension(setField).orElseThrow()
+            .nonnullExtensionList().values().iterator().next().getExtensionKey());
     }
 
 }

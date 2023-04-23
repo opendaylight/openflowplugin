@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.match;
 
-import java.util.Optional;
 import org.opendaylight.openflowplugin.extension.api.ConvertorFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
 import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
@@ -30,20 +29,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchPacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStatsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfInPortGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfInPortKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.in.port.grouping.OfInPortBuilder;
 import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.common.Uint16;
 
-public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
-        ConvertorFromOFJava<MatchEntry, MatchPath> {
+public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
     public ExtensionAugment<? extends Augmentation<Extension>> convert(
             final MatchEntry input, final MatchPath path) {
-        OfInPortCaseValue inPortCaseValue = (OfInPortCaseValue) input
-                .getMatchEntryValue();
+        OfInPortCaseValue inPortCaseValue = (OfInPortCaseValue) input.getMatchEntryValue();
         return NxmInPortConvertor.resolveAugmentation(new OfInPortBuilder()
                 .setValue(inPortCaseValue.getNxmOfInPortValues().getValue())
                 .build(), path, NxmOfInPortKey.VALUE);
@@ -51,41 +46,35 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>,
 
     @Override
     public MatchEntry convert(final Extension extension) {
-        Optional<NxmOfInPortGrouping> matchGrouping = MatchUtil.NXM_OF_INPORT_RESOLVER.findExtension(extension);
-        if (!matchGrouping.isPresent()) {
+        final var matchGrouping = MatchUtil.NXM_OF_INPORT_RESOLVER.findExtension(extension);
+        if (matchGrouping.isEmpty()) {
             throw new CodecPreconditionException(extension);
         }
-        Uint16 value = matchGrouping.get().getOfInPort().getValue();
-        OfInPortCaseValueBuilder inPortCaseValueBuilder = new OfInPortCaseValueBuilder();
-        inPortCaseValueBuilder.setNxmOfInPortValues(
-                new NxmOfInPortValuesBuilder().setValue(value).build());
         return MatchUtil.createDefaultMatchEntryBuilder(
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmOfInPort.VALUE,
-            Nxm0Class.VALUE, inPortCaseValueBuilder.build())
+            Nxm0Class.VALUE,
+            new OfInPortCaseValueBuilder()
+                .setNxmOfInPortValues(new NxmOfInPortValuesBuilder()
+                    .setValue(matchGrouping.orElseThrow().getOfInPort().getValue())
+                    .build())
+                .build())
             .build();
     }
 
     private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of
                 .in.port.grouping.OfInPort value, final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setOfInPort(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setOfInPort(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
-                        new NxAugMatchNotifPacketInBuilder().setOfInPort(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setOfInPort(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setOfInPort(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                new NxAugMatchNodesNodeTableFlowBuilder().setOfInPort(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                new NxAugMatchRpcGetFlowStatsBuilder().setOfInPort(value).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
+                new NxAugMatchNotifPacketInBuilder().setOfInPort(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                new NxAugMatchNotifSwitchFlowRemovedBuilder().setOfInPort(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                new NxAugMatchPacketInMessageBuilder().setOfInPort(value).build(), key);
+        };
     }
 }
