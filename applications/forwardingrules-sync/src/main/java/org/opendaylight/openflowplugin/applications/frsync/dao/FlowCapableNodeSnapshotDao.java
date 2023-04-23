@@ -17,20 +17,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
  * Adding cache to data access object of {@link FlowCapableNode}.
  */
 public class FlowCapableNodeSnapshotDao implements FlowCapableNodeDao {
-
     private final ConcurrentHashMap<String, FlowCapableNode> cache = new ConcurrentHashMap<>();
 
-    public void updateCache(@NonNull NodeId nodeId, Optional<FlowCapableNode> dataAfter) {
+    public void updateCache(final @NonNull NodeId nodeId, final Optional<FlowCapableNode> dataAfter) {
         if (dataAfter.isPresent()) {
-            cache.put(nodeId.getValue(), dataAfter.get());
+            cache.put(nodeId.getValue(), dataAfter.orElseThrow());
         } else {
             cache.remove(nodeId.getValue());
         }
     }
 
     @Override
-    public Optional<FlowCapableNode> loadByNodeId(@NonNull NodeId nodeId) {
-        final FlowCapableNode node = cache.get(nodeId.getValue());
-        return Optional.ofNullable(node);
+    public Optional<FlowCapableNode> loadByNodeId(final NodeId nodeId) {
+        return Optional.ofNullable(cache.get(nodeId.getValue()));
     }
 }

@@ -91,7 +91,7 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
                     if (flowOptional.isPresent()) {
                         flowCount.incrementAndGet();
                         if (verbose) {
-                            LOG.info("Flow found: {}", flowOptional.get());
+                            LOG.info("Flow found: {}", flowOptional.orElseThrow());
                         }
                     } else {
                         if (verbose) {

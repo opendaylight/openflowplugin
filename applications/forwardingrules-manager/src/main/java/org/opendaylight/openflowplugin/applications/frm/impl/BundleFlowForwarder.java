@@ -164,14 +164,16 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                 InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
                 LOG.info("Reading the group from config inventory: {}", groupId);
                 try (ReadTransaction readTransaction = forwardingRulesManager.getReadTransaction()) {
-                    Optional<Group> group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
-                    if (group.isPresent()) {
-                        final AddGroupInputBuilder builder = new AddGroupInputBuilder(group.get());
+                    Optional<Group> optGroup = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent)
+                        .get();
+                    if (optGroup.isPresent()) {
+                        final Group group = optGroup.orElseThrow();
+                        final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
                         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
                         builder.setGroupRef(new GroupRef(nodeIdent));
                         builder.setTransactionUri(new Uri(forwardingRulesManager.getNewTransactionId()));
                         BundleInnerMessage bundleInnerMessage = new BundleAddGroupCaseBuilder()
-                                .setAddGroupCaseData(new AddGroupCaseDataBuilder(group.get()).build()).build();
+                                .setAddGroupCaseData(new AddGroupCaseDataBuilder(group).build()).build();
                         Message groupMessage = new MessageBuilder()
                                 .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
                                 .setBundleInnerMessage(bundleInnerMessage)

@@ -47,9 +47,8 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * }
  * </pre>
  */
-public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, List<GroupDescStats>,
-        VersionConvertorData> {
-
+public class GroupDescStatsResponseConvertor
+        extends Convertor<List<GroupDesc>, List<GroupDescStats>, VersionConvertorData> {
     private static final Set<Class<?>> TYPES = Set.of(GroupDesc.class);
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(
@@ -70,13 +69,12 @@ public class GroupDescStatsResponseConvertor extends Convertor<List<GroupDesc>, 
 
                 int actionKey = 0;
 
-                for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action :
-                        convertedSalActions.get()) {
-                    ActionBuilder wrappedAction = new ActionBuilder();
-                    wrappedAction.setAction(action);
-                    wrappedAction.withKey(new ActionKey(actionKey));
-                    wrappedAction.setOrder(actionKey);
-                    actions.add(wrappedAction.build());
+                for (var action : convertedSalActions.orElseThrow()) {
+                    actions.add(new ActionBuilder()
+                        .setAction(action)
+                        .withKey(new ActionKey(actionKey))
+                        .setOrder(actionKey)
+                        .build());
                     actionKey++;
                 }
 
