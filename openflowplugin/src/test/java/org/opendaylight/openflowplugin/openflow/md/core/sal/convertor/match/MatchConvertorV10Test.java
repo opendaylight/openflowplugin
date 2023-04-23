@@ -72,7 +72,7 @@ public class MatchConvertorV10Test {
 
         Optional<MatchV10> matchV10Optional = converterManager.convert(createL4UdpMatch().build(),
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        MatchV10 matchV10 = matchV10Optional.get();
+        MatchV10 matchV10 = matchV10Optional.orElseThrow();
 
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
@@ -89,13 +89,13 @@ public class MatchConvertorV10Test {
 
         matchV10Optional = converterManager.convert(createL4TcpMatch().build(),
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        matchV10 = matchV10Optional.get();
+        matchV10 = matchV10Optional.orElseThrow();
         assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpSrc());
         assertEquals(DEFAULT_PORT.getValue(), matchV10.getTpDst());
 
         matchV10Optional = converterManager.convert(createVlanTcpMatch().build(),
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        matchV10 = matchV10Optional.get();
+        matchV10 = matchV10Optional.orElseThrow();
         assertEquals(DEFAULT_VLAN_ID.getValue(), matchV10.getDlVlan());
     }
 
@@ -105,7 +105,7 @@ public class MatchConvertorV10Test {
         Match match = matchBuilder.build();
         Optional<MatchV10> matchV10Optional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        MatchV10 matchV10 = matchV10Optional.get();
+        MatchV10 matchV10 = matchV10Optional.orElseThrow();
 
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
@@ -135,7 +135,7 @@ public class MatchConvertorV10Test {
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).build();
         matchV10Optional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        matchV10 = matchV10Optional.get();
+        matchV10 = matchV10Optional.orElseThrow();
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
         assertEquals(0, matchV10.getDlType().intValue());
@@ -161,7 +161,7 @@ public class MatchConvertorV10Test {
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).build();
         matchV10Optional = converterManager.convert(match,
                 new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        matchV10 = matchV10Optional.get();
+        matchV10 = matchV10Optional.orElseThrow();
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
         assertEquals(Uint16.ZERO, matchV10.getDlType());
@@ -183,7 +183,7 @@ public class MatchConvertorV10Test {
         wc = new FlowWildcardsV10(false, false, false, true, true, false, false, false, wcTpDst, wcTpSrc);
         match = matchBuilder.setIcmpv4Match(icmpv4MatchBuilder.build()).build();
         matchV10Optional = converterManager.convert(match, new VersionConvertorData(OFConstants.OFP_VERSION_1_0));
-        matchV10 = matchV10Optional.get();
+        matchV10 = matchV10Optional.orElseThrow();
         assertEquals(ZERO_MAC, matchV10.getDlDst());
         assertEquals(FF_MAC, matchV10.getDlSrc());
         assertEquals(Uint16.ZERO, matchV10.getDlType());

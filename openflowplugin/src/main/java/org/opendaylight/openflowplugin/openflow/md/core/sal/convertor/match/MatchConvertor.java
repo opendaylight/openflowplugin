@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -133,7 +132,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Utility class for converting a MD-SAL Flow into the OF flow mod.
  */
 public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionConvertorData> {
-    private static final List<Class<?>> TYPES = Arrays.asList(
+    private static final List<Class<?>> TYPES = List.of(
             Match.class,
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match.class,
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.mod.removed.Match.class,
@@ -163,22 +162,12 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
     private static void layer3Match(final List<MatchEntry> matchEntryList, final Layer3Match layer3Match,
                                     final ConvertorExecutor converterExecutor,
                                     final ExtensionConverterProvider extensionConvertorProvider) {
-        java.util.Optional<List<MatchEntry>> result = LAYER3_PROCESSOR.process(layer3Match, converterExecutor
-        );
-
-        if (result.isPresent()) {
-            matchEntryList.addAll(result.get());
-        }
+        LAYER3_PROCESSOR.process(layer3Match, converterExecutor).ifPresent(matchEntryList::addAll);
     }
 
     private static void layer4Match(final List<MatchEntry> matchEntryList, final Layer4Match layer4Match,
             final ConvertorExecutor converterExecutor, final ExtensionConverterProvider extensionConvertorProvider) {
-        java.util.Optional<List<MatchEntry>> result = LAYER4_PROCESSOR.process(layer4Match, converterExecutor
-        );
-
-        if (result.isPresent()) {
-            matchEntryList.addAll(result.get());
-        }
+        LAYER4_PROCESSOR.process(layer4Match, converterExecutor).ifPresent(matchEntryList::addAll);
     }
 
     private static void inPortMatch(final List<MatchEntry> matchEntryList, final NodeConnectorId inPort) {
@@ -650,7 +639,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         Optional<GeneralExtensionListGrouping> extensionListOpt =
                 ExtensionResolvers.getMatchExtensionResolver().getExtension(source);
         if (extensionListOpt.isPresent()) {
-            for (ExtensionList extensionItem : extensionListOpt.get().nonnullExtensionList().values()) {
+            for (ExtensionList extensionItem : extensionListOpt.orElseThrow().nonnullExtensionList().values()) {
                 // TODO: get real version
                 ConverterExtensionKey<? extends ExtensionKey> key =
                         new ConverterExtensionKey<>(extensionItem.getExtensionKey(), OFConstants.OFP_VERSION_1_3);
@@ -658,8 +647,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
                 if (convertor == null) {
                     throw new IllegalStateException("No converter found for key: " + key.toString());
                 }
-                MatchEntry ofMatch = convertor.convert(extensionItem.getExtension());
-                result.add(ofMatch);
+                result.add(convertor.convert(extensionItem.getExtension()));
             }
         }
 

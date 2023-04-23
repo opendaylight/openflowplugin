@@ -479,6 +479,6 @@ public class GroupConvertorTest {
     private GroupModInputBuilder convert(final Group group, final VersionDatapathIdConvertorData data) {
         final Optional<GroupModInputBuilder> outAddGroupInputOptional = convertorManager.convert(group, data);
         assertTrue("Group convertor not found", outAddGroupInputOptional.isPresent());
-        return outAddGroupInputOptional.get();
+        return outAddGroupInputOptional.orElseThrow();
     }
 }

@@ -105,7 +105,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         return reconciliationState;
     }
 
-    private void printReconciliationStates(List<String> result) {
+    private void printReconciliationStates(final List<String> result) {
         session.getConsole().println(getHeaderOutput());
         session.getConsole().println(getLineSeparator());
         result.stream().forEach(p -> session.getConsole().println(p));
@@ -147,7 +147,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
     }
 
     @SuppressWarnings("IllegalCatch")
-    private Map<String, String> getRemoteReconciliationStates(String ipAddress) {
+    private Map<String, String> getRemoteReconciliationStates(final String ipAddress) {
         Map<String, String> jmxReconciliationStates = new HashMap<>();
         try {
             String getReconcilationRemoteResponse = invokeRemoteRestOperation(ipAddress);
@@ -167,7 +167,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
         return reconciliationJMXServiceMBean.acquireReconciliationStates();
     }
 
-    private String invokeRemoteRestOperation(String ipAddress) throws Exception {
+    private String invokeRemoteRestOperation(final String ipAddress) throws Exception {
         String restUrl = buildRemoteReconcilationUrl(ipAddress);
         LOG.info("invokeRemoteReconcilationState() REST URL: {}", restUrl);
         String authString = JMX_REST_HTTP_AUTH_UNAME_PWD;
@@ -181,7 +181,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
 
         LOG.debug("sending http request for accessing remote reconcilation");
         HttpResponse<String> response = HttpClient.newBuilder()
-                                .connectTimeout(request.timeout().get().plusMillis(1000))
+                                .connectTimeout(request.timeout().orElseThrow().plusMillis(1000))
                                 .build()
                                 .send(request, HttpResponse.BodyHandlers.ofString());
         // Response code for success should be 200
@@ -200,7 +200,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
     }
 
 
-    String buildRemoteReconcilationUrl(String host) {
+    String buildRemoteReconcilationUrl(final String host) {
         String targetHostAsString;
         InetAddress hostInetAddress = InetAddresses.forString(host);
         if (hostInetAddress instanceof Inet6Address) {
