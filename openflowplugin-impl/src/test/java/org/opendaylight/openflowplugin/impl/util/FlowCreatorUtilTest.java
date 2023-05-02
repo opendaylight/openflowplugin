@@ -264,14 +264,14 @@ public class FlowCreatorUtilTest {
         }
 
         // Integer
-        final Integer[] integers = {-100, 0, 100,};
+        final Integer[] integers = {-1000, 0, 1000,};
         for (final Integer def : integers) {
-            final Integer same = new Integer(def);
+            final Integer same = Integer.valueOf(def);
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(same, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, same, def));
 
-            final Integer diff = new Integer(def.intValue() + 1);
+            final Integer diff = Integer.valueOf(def.intValue() + 1);
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, diff, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(diff, null, def));
         }
