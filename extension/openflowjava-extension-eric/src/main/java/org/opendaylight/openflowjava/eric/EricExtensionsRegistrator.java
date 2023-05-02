@@ -7,7 +7,8 @@
  */
 package org.opendaylight.openflowjava.eric;
 
-import com.google.common.base.Preconditions;
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowjava.eric.api.EricExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.eric.codec.match.Icmpv6NDOptionsTypeCodec;
 import org.opendaylight.openflowjava.eric.codec.match.Icmpv6NDReservedCodec;
@@ -15,8 +16,8 @@ import org.opendaylight.openflowjava.eric.codec.match.Icmpv6NDReservedCodec;
 public class EricExtensionsRegistrator implements AutoCloseable {
     private final EricExtensionCodecRegistrator registrator;
 
-    public EricExtensionsRegistrator(EricExtensionCodecRegistrator registrator) {
-        this.registrator = Preconditions.checkNotNull(registrator);
+    public EricExtensionsRegistrator(final EricExtensionCodecRegistrator registrator) {
+        this.registrator = requireNonNull(registrator);
         registrator.registerMatchEntrySerializer(Icmpv6NDReservedCodec.SERIALIZER_KEY,
                 Icmpv6NDReservedCodec.INSTANCE);
         registrator.registerMatchEntrySerializer(Icmpv6NDOptionsTypeCodec.SERIALIZER_KEY,

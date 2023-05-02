@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowjava.eric.codec.match;
 
-import com.google.common.primitives.Ints;
-
 /**
  * Eric header.
  */
@@ -21,11 +19,11 @@ public class EricHeader {
     private final int length;
 
     public EricHeader(final long header) {
-        this.headerAsLong = header;
-        this.oxmClass = Ints.checkedCast(extractSub(header, 16, 16));
-        this.ericField = Ints.checkedCast(extractSub(header, 7, 9));
-        this.hasMask = extractSub(header, 1, 8) == 1;
-        this.length = Ints.checkedCast(extractSub(header, 8, 0));
+        headerAsLong = header;
+        oxmClass = Math.toIntExact(extractSub(header, 16, 16));
+        ericField = Math.toIntExact(extractSub(header, 7, 9));
+        hasMask = extractSub(header, 1, 8) == 1;
+        length = Math.toIntExact(extractSub(header, 8, 0));
     }
 
     public EricHeader(final int oxmClass, final int ericField, final boolean hasMask, final int length) {
@@ -33,7 +31,7 @@ public class EricHeader {
         this.ericField = ericField;
         this.hasMask = hasMask;
         this.length = length;
-        this.headerAsLong = (long) oxmClass << 16 | ericField << 9 | (hasMask ? 1 : 0) << 8 | length;
+        headerAsLong = (long) oxmClass << 16 | ericField << 9 | (hasMask ? 1 : 0) << 8 | length;
     }
 
     private static long extractSub(final long value, final int nrBits, final int offset) {
