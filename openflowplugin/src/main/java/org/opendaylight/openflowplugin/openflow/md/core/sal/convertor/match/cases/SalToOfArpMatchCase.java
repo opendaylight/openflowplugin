@@ -126,7 +126,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             arpShaBuilder.setMacAddress(arpSourceHardwareAddress.getAddress());
             boolean hasMask = false;
             if (null != arpSourceHardwareAddress.getMask()) {
-                arpShaBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(arpSourceHardwareAddress.getMask()));
+                arpShaBuilder.setMask(IetfYangUtil.macAddressBytes(arpSourceHardwareAddress.getMask()));
                 hasMask = true;
             }
             arpShaCaseBuilder.setArpSha(arpShaBuilder.build());
@@ -146,7 +146,7 @@ public class SalToOfArpMatchCase extends ConvertorCase<ArpMatch, List<MatchEntry
             arpThaBuilder.setMacAddress(arpTargetHardwareAddress.getAddress());
             boolean hasMask = false;
             if (null != arpTargetHardwareAddress.getMask()) {
-                arpThaBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddress.getMask()));
+                arpThaBuilder.setMask(IetfYangUtil.macAddressBytes(arpTargetHardwareAddress.getMask()));
                 hasMask = true;
             }
             arpThaCaseBuilder.setArpTha(arpThaBuilder.build());

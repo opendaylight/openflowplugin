@@ -39,7 +39,7 @@ public class OfToSalEthSrcCase extends ConvertorCase<EthSrcCase, MatchBuilder, M
             byte[] mask = ethSrcCase.getMask();
 
             if (mask != null) {
-                ethSourceBuilder.setMask(IetfYangUtil.INSTANCE.macAddressFor(mask));
+                ethSourceBuilder.setMask(IetfYangUtil.macAddressFor(mask));
             }
 
             ethMatchBuilder.setEthernetSource(ethSourceBuilder.build());

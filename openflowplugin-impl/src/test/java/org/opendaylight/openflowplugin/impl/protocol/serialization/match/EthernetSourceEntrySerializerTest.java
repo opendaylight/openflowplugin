@@ -37,11 +37,11 @@ public class EthernetSourceEntrySerializerTest extends AbstractMatchEntrySeriali
         assertMatch(match, true, (out) -> {
             final byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
+            assertEquals(address, IetfYangUtil.macAddressFor(addressBytes));
 
             final byte[] maskBytes = new byte[6];
             out.readBytes(maskBytes);
-            assertEquals(mask, IetfYangUtil.INSTANCE.macAddressFor(maskBytes));
+            assertEquals(mask, IetfYangUtil.macAddressFor(maskBytes));
         });
 
         final Match matchNoMask = new MatchBuilder()
@@ -55,7 +55,7 @@ public class EthernetSourceEntrySerializerTest extends AbstractMatchEntrySeriali
         assertMatch(matchNoMask, false, (out) -> {
             final byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
+            assertEquals(address, IetfYangUtil.macAddressFor(addressBytes));
         });
     }
 

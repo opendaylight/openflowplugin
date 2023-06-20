@@ -261,12 +261,12 @@ public class ConntrackCodec extends AbstractActionCodec {
     }
 
     private static IpAddress readIpv4Address(final ByteBuf message) {
-        return new IpAddress(IetfInetUtil.INSTANCE.ipv4AddressFor(message.readInt()));
+        return new IpAddress(IetfInetUtil.ipv4AddressFor(message.readInt()));
     }
 
     private static void writeIpv4Address(final ByteBuf outBuffer, final IpAddress ipAddress) {
         if (ipAddress != null) {
-            outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(ipAddress.getIpv4Address()));
+            outBuffer.writeBytes(IetfInetUtil.ipv4AddressBytes(ipAddress.getIpv4Address()));
         }
     }
 

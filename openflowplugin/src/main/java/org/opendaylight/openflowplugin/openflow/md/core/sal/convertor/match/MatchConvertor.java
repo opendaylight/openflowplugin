@@ -403,7 +403,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             boolean hasMask = ethernetDestination.getMask() != null;
 
             if (hasMask) {
-                ethDstBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(ethernetDestination.getMask()));
+                ethDstBuilder.setMask(IetfYangUtil.macAddressBytes(ethernetDestination.getMask()));
             }
 
             ethDstCaseBuilder.setEthDst(ethDstBuilder.build());
@@ -423,7 +423,7 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
             boolean hasMask = ethernetSource.getMask() != null;
 
             if (hasMask) {
-                ethDstBuilder.setMask(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSource.getMask()));
+                ethDstBuilder.setMask(IetfYangUtil.macAddressBytes(ethernetSource.getMask()));
             }
 
             ethSrcCaseBuilder.setEthSrc(ethDstBuilder.build());

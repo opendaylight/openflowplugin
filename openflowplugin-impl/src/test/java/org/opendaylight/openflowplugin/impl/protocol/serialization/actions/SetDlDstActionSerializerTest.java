@@ -31,7 +31,7 @@ public class SetDlDstActionSerializerTest extends AbstractSetFieldActionSerializ
         assertAction(action, out -> {
             byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
+            assertEquals(address, IetfYangUtil.macAddressFor(addressBytes));
         });
     }
 

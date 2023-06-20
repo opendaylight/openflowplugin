@@ -32,7 +32,7 @@ public class Ipv4SourceEntryDeserializerTest extends AbstractMatchEntryDeseriali
         final Iterator<String> addressParts = IpConversionUtil.splitToParts(address);
 
         writeHeader(in, true);
-        in.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(new Ipv4Address(addressParts.next())));
+        in.writeBytes(IetfInetUtil.ipv4AddressBytes(new Ipv4Address(addressParts.next())));
         in.writeBytes(MatchConvertorUtil.extractIpv4Mask(addressParts));
 
         final Ipv4Match match = (Ipv4Match) deserialize(in).getLayer3Match();

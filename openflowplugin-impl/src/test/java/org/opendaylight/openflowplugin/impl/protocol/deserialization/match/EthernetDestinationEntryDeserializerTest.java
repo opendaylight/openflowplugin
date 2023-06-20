@@ -27,15 +27,15 @@ public class EthernetDestinationEntryDeserializerTest extends AbstractMatchEntry
         final MacAddress ethernetDestinationAddressMask = new MacAddress("00:00:00:00:00:00");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetDestinationAddress));
+        in.writeBytes(IetfYangUtil.macAddressBytes(ethernetDestinationAddress));
 
         assertEquals(ethernetDestinationAddress.getValue(), deserialize(in).getEthernetMatch().getEthernetDestination()
                 .getAddress().getValue());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetDestinationAddress));
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetDestinationAddressMask));
+        in.writeBytes(IetfYangUtil.macAddressBytes(ethernetDestinationAddress));
+        in.writeBytes(IetfYangUtil.macAddressBytes(ethernetDestinationAddressMask));
 
         final EthernetDestination desAddress = deserialize(in).getEthernetMatch().getEthernetDestination();
         assertEquals(ethernetDestinationAddress.getValue(), desAddress.getAddress().getValue());
