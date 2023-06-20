@@ -30,7 +30,7 @@ public class OF10PortModInputMessageFactory implements OFSerializer<PortModInput
     public void serialize(final PortModInput message, final ByteBuf outBuffer) {
         ByteBufUtils.writeOFHeader(MESSAGE_TYPE, message, outBuffer, EncodeConstants.EMPTY_LENGTH);
         outBuffer.writeShort(message.getPortNo().getValue().intValue());
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(message.getHwAddress()));
+        outBuffer.writeBytes(IetfYangUtil.macAddressBytes(message.getHwAddress()));
         outBuffer.writeInt(createPortConfigBitmask(message.getConfigV10()));
         outBuffer.writeInt(createPortConfigBitmask(message.getMaskV10()));
         outBuffer.writeInt(createPortFeaturesBitmask(message.getAdvertiseV10()));

@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
-import static java.util.Objects.requireNonNull;
-
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -29,14 +27,11 @@ public final class DefaultDiagStatusProvider implements DiagStatusProvider {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDiagStatusProvider.class);
     private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
 
-    private final DiagStatusService diagStatusService;
-
     private ServiceRegistration reg;
 
     @Inject
     @Activate
     public DefaultDiagStatusProvider(@Reference final DiagStatusService diagStatusService) {
-        this.diagStatusService = requireNonNull(diagStatusService);
         reg = diagStatusService.register(OPENFLOW_SERVICE_NAME);
     }
 
@@ -44,26 +39,26 @@ public final class DefaultDiagStatusProvider implements DiagStatusProvider {
     @Deactivate
     public void close() {
         if (reg != null) {
-            reg.unregister();
+            reg.close();
             reg = null;
         }
     }
 
     @Override
-    public void reportStatus(ServiceState serviceState) {
+    public void reportStatus(final ServiceState serviceState) {
         LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
-        diagStatusService.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState));
+        reg.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState));
     }
 
     @Override
-    public void reportStatus(ServiceState serviceState, Throwable throwable) {
+    public void reportStatus(final ServiceState serviceState, final Throwable throwable) {
         LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
-        diagStatusService.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, throwable));
+        reg.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, throwable));
     }
 
     @Override
-    public void reportStatus(ServiceState serviceState, String description) {
+    public void reportStatus(final ServiceState serviceState, final String description) {
         LOG.debug("reporting status as {} for {}", serviceState, OPENFLOW_SERVICE_NAME);
-        diagStatusService.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState, description));
+        reg.report(new ServiceDescriptor(OPENFLOW_SERVICE_NAME, serviceState, description));
     }
 }

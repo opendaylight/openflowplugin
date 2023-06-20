@@ -28,7 +28,7 @@ public class Ipv6DestinationEntryDeserializerTest extends AbstractMatchEntryDese
         final Ipv6Prefix address = new Ipv6Prefix("fe80::200:f8ff:fe21:67cf/30");
 
         writeHeader(in, true);
-        in.writeBytes(IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(address)));
+        in.writeBytes(IetfInetUtil.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(address)));
         in.writeBytes(IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(address)));
 
         final Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();

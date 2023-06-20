@@ -172,7 +172,7 @@ abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseab
             //TODO: use HEX, use binary form
             //Hex.decodeHex("000000000001".toCharArray());
 
-            ethSourceBuilder.setAddress(IetfYangUtil.INSTANCE.macAddressFor(srcMac));
+            ethSourceBuilder.setAddress(IetfYangUtil.macAddressFor(srcMac));
             ethernetMatch.setEthernetSource(ethSourceBuilder.build());
             match.setEthernetMatch(ethernetMatch.build());
 

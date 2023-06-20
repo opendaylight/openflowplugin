@@ -89,7 +89,7 @@ public class PortModInputMessageFactoryTest {
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_01);
         byte[] address = new byte[6];
         out.readBytes(address);
-        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(), IetfYangUtil.INSTANCE.macAddressFor(address));
+        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(), IetfYangUtil.macAddressFor(address));
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_02);
         Assert.assertEquals("Wrong config", message.getConfig(), createPortConfig(out.readInt()));
         Assert.assertEquals("Wrong mask", message.getMask(), createPortConfig(out.readInt()));

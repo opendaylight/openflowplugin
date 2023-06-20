@@ -115,13 +115,13 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         if (!source.getWildcards().getDLTYPE() && source.getNwSrc() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwSrcMask() != null) {
-                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwSrc(), source.getNwSrcMask().toJava());
+                prefix = IetfInetUtil.ipv4PrefixFor(source.getNwSrc(), source.getNwSrcMask().toJava());
             } else {
                 //Openflow Spec : 1.3.2
                 //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
                 // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
                 // statistics response.
-                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwSrc());
+                prefix = IetfInetUtil.ipv4PrefixFor(source.getNwSrc());
             }
             if (!NO_IP.equals(prefix.getValue())) {
                 ipv4MatchBuilder.setIpv4Source(prefix);
@@ -131,13 +131,13 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
         if (!source.getWildcards().getDLTYPE() && source.getNwDst() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwDstMask() != null) {
-                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwDst(), source.getNwDstMask().toJava());
+                prefix = IetfInetUtil.ipv4PrefixFor(source.getNwDst(), source.getNwDstMask().toJava());
             } else {
                 //Openflow Spec : 1.3.2
                 //An all-one-bits oxm_mask is equivalent to specifying 0 for oxm_hasmask and omitting oxm_mask.
                 // So when user specify 32 as a mast, switch omit that mast and we get null as a mask in flow
                 // statistics response.
-                prefix = IetfInetUtil.INSTANCE.ipv4PrefixFor(source.getNwDst());
+                prefix = IetfInetUtil.ipv4PrefixFor(source.getNwDst());
             }
             if (!NO_IP.equals(prefix.getValue())) {
                 ipv4MatchBuilder.setIpv4Destination(prefix);
