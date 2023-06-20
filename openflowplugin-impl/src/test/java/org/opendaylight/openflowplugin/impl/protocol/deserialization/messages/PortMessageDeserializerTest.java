@@ -65,7 +65,7 @@ public class PortMessageDeserializerTest extends AbstractDeserializerTest {
         buffer.writeInt(XID);
         buffer.writeInt(PORT);
         buffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_1);
-        buffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ADDRESS));
+        buffer.writeBytes(IetfYangUtil.macAddressBytes(ADDRESS));
 
         final int config = ByteBufUtils.fillBitMaskFromMap(ImmutableMap
                 .<Integer, Boolean>builder()

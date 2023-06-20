@@ -74,7 +74,7 @@ public class OF10PortStatusMessageFactoryTest {
         byte[] address = new byte[6];
         serializedBuffer.readBytes(address);
         Assert.assertEquals("Wrong MacAddress", message.getHwAddr().getValue().toLowerCase(),
-                IetfYangUtil.INSTANCE.macAddressFor(address).getValue().toLowerCase());
+                IetfYangUtil.macAddressFor(address).getValue().toLowerCase());
         byte[] name = new byte[16];
         serializedBuffer.readBytes(name);
         Assert.assertEquals("Wrong name", message.getName(), new String(name).trim());

@@ -114,7 +114,7 @@ public final class IpConversionUtil {
     */
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address) {
-        return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address);
+        return IetfInetUtil.ipv4PrefixFor(ipv4Address);
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final String mask) {
@@ -132,7 +132,7 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final int intmask) {
-        return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, intmask);
+        return IetfInetUtil.ipv4PrefixFor(ipv4Address, intmask);
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask) {
@@ -140,11 +140,11 @@ public final class IpConversionUtil {
             return createPrefix(ipv4Address);
         }
 
-        return IetfInetUtil.INSTANCE.ipv4PrefixFor(ipv4Address, countBits(bytemask));
+        return IetfInetUtil.ipv4PrefixFor(ipv4Address, countBits(bytemask));
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address) {
-        return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address);
+        return IetfInetUtil.ipv6PrefixFor(ipv6Address);
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final String mask) {
@@ -162,7 +162,7 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final int intmask) {
-        return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, intmask);
+        return IetfInetUtil.ipv6PrefixFor(ipv6Address, intmask);
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask) {
@@ -170,7 +170,7 @@ public final class IpConversionUtil {
             return createPrefix(ipv6Address);
         }
 
-        return IetfInetUtil.INSTANCE.ipv6PrefixFor(ipv6Address, countBits(bytemask));
+        return IetfInetUtil.ipv6PrefixFor(ipv6Address, countBits(bytemask));
     }
 
     public static DottedQuad createArbitraryBitMask(final byte[] bitmask)  {
@@ -207,11 +207,11 @@ public final class IpConversionUtil {
     }
 
     public static Integer extractPrefix(final Ipv4Prefix ipv4Prefix) {
-        return IetfInetUtil.INSTANCE.splitIpv4Prefix(ipv4Prefix).getValue();
+        return IetfInetUtil.splitIpv4Prefix(ipv4Prefix).getValue();
     }
 
     public static Integer extractPrefix(final Ipv6Prefix ipv6Prefix) {
-        return IetfInetUtil.INSTANCE.splitIpv6Prefix(ipv6Prefix).getValue();
+        return IetfInetUtil.splitIpv6Prefix(ipv6Prefix).getValue();
     }
 
     public static Integer extractPrefix(final Ipv4Address ipv4Prefix) {
@@ -656,11 +656,11 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Address extractIpv6Address(final Ipv6Prefix ipv6Prefix) {
-        return IetfInetUtil.INSTANCE.ipv6AddressFrom(ipv6Prefix);
+        return IetfInetUtil.ipv6AddressFrom(ipv6Prefix);
     }
 
     public static Ipv4Address extractIpv4Address(final Ipv4Prefix ipv4Prefix) {
-        return IetfInetUtil.INSTANCE.ipv4AddressFrom(ipv4Prefix);
+        return IetfInetUtil.ipv4AddressFrom(ipv4Prefix);
     }
 
     public static DottedQuad extractIpv4AddressMask(final Ipv4Prefix ipv4Prefix) {
@@ -692,7 +692,7 @@ public final class IpConversionUtil {
     }
 
     public static Integer extractIpv6Prefix(final Ipv6Prefix ipv6Prefix) {
-        return IetfInetUtil.INSTANCE.splitIpv6Prefix(ipv6Prefix).getValue();
+        return IetfInetUtil.splitIpv6Prefix(ipv6Prefix).getValue();
     }
 
     public static int countBits(final byte[] mask) {

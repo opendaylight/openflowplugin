@@ -5,12 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static com.google.common.base.Preconditions.checkState;
-import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -83,7 +80,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
     private final ListeningExecutorService listeningExecutorService;
-    private final DiagStatusService diagStatus;
     private final String diagStatusIdentifier;
     private final String threadName;
 
@@ -95,7 +91,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             final @Nullable ConnectionConfiguration connConfig) {
         this.connConfig = connConfig;
         String connectionSuffix = createConnectionSuffix(connConfig);
-        this.diagStatus = requireNonNull(diagStatus);
         diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
         diagReg = diagStatus.register(diagStatusIdentifier);
 
@@ -147,12 +142,12 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
                 @Override
                 public void onFailure(final Throwable throwable) {
-                    diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
+                    diagReg.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
                 }
 
                 @Override
                 public void onSuccess(final Object result) {
-                    diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR,
+                    diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR,
                         threadName + " terminated"));
                 }
             }, MoreExecutors.directExecutor());
@@ -183,7 +178,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
         if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
             server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),
-                () -> diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+                () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
             final TcpChannelInitializer channelInitializer = factory.createPublishingChannelInitializer();
             ((TcpHandler) server).setChannelInitializer(channelInitializer);
             ((TcpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
@@ -193,7 +188,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
             connectionInitializer.run();
         } else if (TransportProtocol.UDP.equals(transportProtocol)) {
             server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(),
-                () -> diagStatus.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+                () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
             ((UdpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
             ((UdpHandler) server).setChannelInitializer(factory.createUdpChannelInitializer());
         } else {

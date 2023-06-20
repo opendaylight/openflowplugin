@@ -34,7 +34,7 @@ public class ArpShaCodecTest {
     private static final int NXM_FIELD_CODE = 17;
 
     private static byte[] resAddress = new byte[VALUE_LENGTH];
-    private static final MacAddress RESULT_ADDRESS = IetfYangUtil.INSTANCE.macAddressFor(resAddress);
+    private static final MacAddress RESULT_ADDRESS = IetfYangUtil.macAddressFor(resAddress);
 
     @Before
     public void setUp() {
@@ -81,7 +81,7 @@ public class ArpShaCodecTest {
         matchEntryBuilder.setHasMask(false);
 
 
-        valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));
+        valuesBuilder.setMacAddress(IetfYangUtil.macAddressFor(new byte[VALUE_LENGTH]));
 
         caseBuilder.setArpShaValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

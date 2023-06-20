@@ -27,15 +27,15 @@ public class EthernetSourceEntryDeserializerTest extends AbstractMatchEntryDeser
         final MacAddress ethernetSourceAddressMask = new MacAddress("00:00:00:00:00:00");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSourceAddress));
+        in.writeBytes(IetfYangUtil.macAddressBytes(ethernetSourceAddress));
 
         assertEquals(ethernetSourceAddress.getValue(),
                 deserialize(in).getEthernetMatch().getEthernetSource().getAddress().getValue());
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSourceAddress));
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethernetSourceAddressMask));
+        in.writeBytes(IetfYangUtil.macAddressBytes(ethernetSourceAddress));
+        in.writeBytes(IetfYangUtil.macAddressBytes(ethernetSourceAddressMask));
 
         final EthernetSource desAddress = deserialize(in).getEthernetMatch().getEthernetSource();
         assertEquals(ethernetSourceAddress.getValue(), desAddress.getAddress().getValue());

@@ -7,6 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.it.integration;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -20,9 +25,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.diagstatus.ServiceRegistration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
 import org.opendaylight.openflowjava.protocol.impl.clients.ClientEvent;
@@ -79,8 +84,8 @@ public class IntegrationTest {
 
     public void setUp(final TransportProtocol protocol) throws Exception {
         LOGGER.debug("\n starting test -------------------------------");
-        Mockito.doAnswer(invocation -> {
-            ((Runnable)invocation.getArguments()[0]).run();
+        doAnswer(invocation -> {
+            invocation.getArgument(0, Runnable.class).run();
             return null;
         }).when(executorService).execute(ArgumentMatchers.any());
 
@@ -99,7 +104,10 @@ public class IntegrationTest {
         connConfig.setTransferProtocol(protocol);
         mockPlugin = new MockPlugin(executorService);
 
-        switchConnectionProvider = new SwitchConnectionProviderImpl(Mockito.mock(DiagStatusService.class), connConfig);
+        final var diagStatusService = mock(DiagStatusService.class);
+        doReturn(mock(ServiceRegistration.class)).when(diagStatusService).register(any());
+
+        switchConnectionProvider = new SwitchConnectionProviderImpl(diagStatusService, connConfig);
         switchConnectionProvider.setSwitchConnectionHandler(mockPlugin);
         switchConnectionProvider.startup().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         if (protocol.equals(TransportProtocol.TCP) || protocol.equals(TransportProtocol.TLS)) {

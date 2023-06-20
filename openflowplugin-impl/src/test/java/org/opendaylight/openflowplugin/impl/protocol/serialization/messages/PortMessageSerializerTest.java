@@ -116,7 +116,7 @@ public class PortMessageSerializerTest extends AbstractSerializerTest {
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_01);
         byte[] address = new byte[6];
         out.readBytes(address);
-        assertEquals(new MacAddress(MAC_ADDRESS), IetfYangUtil.INSTANCE.macAddressFor(address));
+        assertEquals(new MacAddress(MAC_ADDRESS), IetfYangUtil.macAddressFor(address));
         out.skipBytes(PADDING_IN_PORT_MOD_MESSAGE_02);
 
         // Port config
