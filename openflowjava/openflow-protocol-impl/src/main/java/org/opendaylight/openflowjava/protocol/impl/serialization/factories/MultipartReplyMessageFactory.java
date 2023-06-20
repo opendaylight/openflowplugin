@@ -727,7 +727,7 @@ public class MultipartReplyMessageFactory implements OFSerializer<MultipartReply
             outBuffer.writeInt(port.getPortNo().intValue()); // Assuming PortNo
                                                              // = PortId
             outBuffer.writeZero(PORT_DESC_PADDING_1);
-            outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(port.getHwAddr()));
+            outBuffer.writeBytes(IetfYangUtil.macAddressBytes(port.getHwAddr()));
             outBuffer.writeZero(PORT_DESC_PADDING_2);
             writeName(port.getName(), outBuffer);
             writePortConfig(port.getConfig(), outBuffer);

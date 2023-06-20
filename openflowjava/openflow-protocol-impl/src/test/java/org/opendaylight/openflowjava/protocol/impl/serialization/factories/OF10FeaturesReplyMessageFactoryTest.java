@@ -80,7 +80,7 @@ public class OF10FeaturesReplyMessageFactoryTest {
         byte[] address = new byte[6];
         serializedBuffer.readBytes(address);
         Assert.assertEquals("Wrong MacAddress", port.getHwAddr().getValue().toLowerCase(),
-                IetfYangUtil.INSTANCE.macAddressFor(address).getValue().toLowerCase());
+                IetfYangUtil.macAddressFor(address).getValue().toLowerCase());
         byte[] name = new byte[16];
         serializedBuffer.readBytes(name);
         Assert.assertEquals("Wrong name", port.getName(), new String(name).trim());

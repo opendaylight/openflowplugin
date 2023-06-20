@@ -174,7 +174,7 @@ public abstract class AbstractMatchEntrySerializer<E, M> implements MatchEntrySe
      * @param outBuffer output buffer
      */
     protected static void writeIpv4Address(final Ipv4Address address, final ByteBuf outBuffer) {
-        outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(address));
+        outBuffer.writeBytes(IetfInetUtil.ipv4AddressBytes(address));
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class AbstractMatchEntrySerializer<E, M> implements MatchEntrySe
      * @param outBuffer output buffer
      */
     protected static void writeIpv6Address(final Ipv6Address address, final ByteBuf outBuffer) {
-        outBuffer.writeBytes(IetfInetUtil.INSTANCE.ipv6AddressBytes(address));
+        outBuffer.writeBytes(IetfInetUtil.ipv6AddressBytes(address));
     }
 
     /**
@@ -195,7 +195,7 @@ public abstract class AbstractMatchEntrySerializer<E, M> implements MatchEntrySe
      */
     protected static void writeMacAddress(final MacAddress address, final ByteBuf outBuffer) {
         // 48 b + mask [OF 1.3.2 spec]
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(address));
+        outBuffer.writeBytes(IetfYangUtil.macAddressBytes(address));
     }
 
     /**
@@ -207,7 +207,7 @@ public abstract class AbstractMatchEntrySerializer<E, M> implements MatchEntrySe
     protected static void writeIpv4Prefix(final @NonNull Ipv4Prefix prefix, final @Nullable Integer mask,
             final @NonNull ByteBuf outBuffer) {
         // Write address part of prefix
-        writeIpv4Address(IetfInetUtil.INSTANCE.ipv4AddressFrom(prefix), outBuffer);
+        writeIpv4Address(IetfInetUtil.ipv4AddressFrom(prefix), outBuffer);
 
         // If prefix had mask, also write prefix
         if (mask != null) {

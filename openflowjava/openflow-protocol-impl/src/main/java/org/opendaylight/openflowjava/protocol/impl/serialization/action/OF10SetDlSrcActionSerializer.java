@@ -25,7 +25,7 @@ public class OF10SetDlSrcActionSerializer extends AbstractActionSerializer {
 
     @Override
     protected void serializeBody(final Action action, final ByteBuf outBuffer) {
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(((SetDlSrcCase) action.getActionChoice())
+        outBuffer.writeBytes(IetfYangUtil.macAddressBytes(((SetDlSrcCase) action.getActionChoice())
                 .getSetDlSrcAction().getDlSrcAddress()));
         outBuffer.writeZero(ActionConstants.PADDING_IN_DL_ADDRESS_ACTION);
     }

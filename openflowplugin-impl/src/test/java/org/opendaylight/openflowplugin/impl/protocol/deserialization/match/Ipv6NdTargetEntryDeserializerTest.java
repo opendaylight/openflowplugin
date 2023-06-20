@@ -28,12 +28,12 @@ public class Ipv6NdTargetEntryDeserializerTest extends AbstractMatchEntryDeseria
         final Ipv6Address address = new Ipv6Address("2001:db8::");
 
         writeHeader(in, false);
-        in.writeBytes(IetfInetUtil.INSTANCE.ipv6AddressBytes(address));
+        in.writeBytes(IetfInetUtil.ipv6AddressBytes(address));
 
         Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertArrayEquals(
-                IetfInetUtil.INSTANCE.ipv6AddressBytes(address),
-                IetfInetUtil.INSTANCE.ipv6AddressBytes(match.getIpv6NdTarget()));
+                IetfInetUtil.ipv6AddressBytes(address),
+                IetfInetUtil.ipv6AddressBytes(match.getIpv6NdTarget()));
         assertEquals(0, in.readableBytes());
     }
 

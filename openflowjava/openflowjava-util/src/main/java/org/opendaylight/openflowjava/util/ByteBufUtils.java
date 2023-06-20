@@ -231,19 +231,19 @@ public abstract class ByteBufUtils {
     }
 
     public static Ipv4Address readIetfIpv4Address(final ByteBuf buf) {
-        return IetfInetUtil.INSTANCE.ipv4AddressFor(buf.readInt());
+        return IetfInetUtil.ipv4AddressFor(buf.readInt());
     }
 
     public static Ipv6Address readIetfIpv6Address(final ByteBuf buf) {
         final byte[] tmp = new byte[16];
         buf.readBytes(tmp);
-        return IetfInetUtil.INSTANCE.ipv6AddressFor(tmp);
+        return IetfInetUtil.ipv6AddressFor(tmp);
     }
 
     public static MacAddress readIetfMacAddress(final ByteBuf buf) {
         final byte[] tmp = new byte[EncodeConstants.MAC_ADDRESS_LENGTH];
         buf.readBytes(tmp);
-        return IetfYangUtil.INSTANCE.macAddressFor(tmp);
+        return IetfYangUtil.macAddressFor(tmp);
     }
 
     public static byte[] serializeList(final List<Short> list) {

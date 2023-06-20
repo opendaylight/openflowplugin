@@ -28,7 +28,7 @@ public class ArpTargetHardwareAddressEntryDeserializerTest extends AbstractMatch
         final MacAddress arpTargetHardwareAddressMask = new MacAddress("00:00:00:00:00:00");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddress));
+        in.writeBytes(IetfYangUtil.macAddressBytes(arpTargetHardwareAddress));
 
         assertEquals(arpTargetHardwareAddress.getValue(),
                 ((ArpMatch) deserialize(in).getLayer3Match()).getArpTargetHardwareAddress().getAddress()
@@ -36,8 +36,8 @@ public class ArpTargetHardwareAddressEntryDeserializerTest extends AbstractMatch
         assertEquals(0, in.readableBytes());
 
         writeHeader(in, true);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddress));
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpTargetHardwareAddressMask));
+        in.writeBytes(IetfYangUtil.macAddressBytes(arpTargetHardwareAddress));
+        in.writeBytes(IetfYangUtil.macAddressBytes(arpTargetHardwareAddressMask));
 
         final ArpTargetHardwareAddress desAddress =
                 ((ArpMatch) deserialize(in).getLayer3Match()).getArpTargetHardwareAddress();

@@ -35,7 +35,7 @@ public class ArpThaCodecTest {
     private static final int NXM_FIELD_CODE = 18;
 
     private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
-    private static final MacAddress TEST_ADDRESS = IetfYangUtil.INSTANCE.macAddressFor(TEST_ADDR);
+    private static final MacAddress TEST_ADDRESS = IetfYangUtil.macAddressFor(TEST_ADDR);
 
     @Before
     public void setUp() {
@@ -78,7 +78,7 @@ public class ArpThaCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmNxArpTha.VALUE);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));
+        valuesBuilder.setMacAddress(IetfYangUtil.macAddressFor(new byte[VALUE_LENGTH]));
 
         caseBuilder.setArpThaValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

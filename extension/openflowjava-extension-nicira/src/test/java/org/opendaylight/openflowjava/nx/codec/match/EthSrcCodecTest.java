@@ -35,7 +35,7 @@ public class EthSrcCodecTest {
     private static final int NXM_FIELD_CODE = 2;
 
     private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
-    private static final MacAddress TEST_ADDRESS = IetfYangUtil.INSTANCE.macAddressFor(TEST_ADDR);
+    private static final MacAddress TEST_ADDRESS = IetfYangUtil.macAddressFor(TEST_ADDR);
 
     @Test
     public void serializeTest() {
@@ -74,7 +74,7 @@ public class EthSrcCodecTest {
         matchEntryBuilder.setHasMask(false);
 
 
-        valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));
+        valuesBuilder.setMacAddress(IetfYangUtil.macAddressFor(new byte[VALUE_LENGTH]));
 
         caseBuilder.setEthSrcValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
