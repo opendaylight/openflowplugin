@@ -34,7 +34,7 @@ public class Ipv6NdTargetEntrySerializerTest extends AbstractMatchEntrySerialize
         assertMatch(ipv6NdTargetMatch, false, (out) -> {
             byte[] addressBytes = new byte[16];
             out.readBytes(addressBytes);
-            assertArrayEquals(addressBytes, IetfInetUtil.INSTANCE.ipv6AddressBytes(ipv6NdTarget));
+            assertArrayEquals(addressBytes, IetfInetUtil.ipv6AddressBytes(ipv6NdTarget));
         });
     }
 

@@ -70,7 +70,7 @@ public final class AddressNormalizationUtil {
             return null;
         }
 
-        final byte[] address = IetfInetUtil.INSTANCE.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Prefix));
+        final byte[] address = IetfInetUtil.ipv6AddressBytes(IpConversionUtil.extractIpv6Address(ipv6Prefix));
         final byte[] mask =
                 IpConversionUtil.convertIpv6PrefixToByteArray(IpConversionUtil.extractIpv6Prefix(ipv6Prefix));
         return normalizeIpv6Address(address, mask);
@@ -89,7 +89,7 @@ public final class AddressNormalizationUtil {
             return null;
         }
 
-        final byte[] address = IetfInetUtil.INSTANCE.ipv6AddressBytes(ipv6Address);
+        final byte[] address = IetfInetUtil.ipv6AddressBytes(ipv6Address);
         final byte[] mask = IpConversionUtil.convertIpv6ArbitraryMaskToByteArray(ipv4Mask);
         return normalizeIpv6Address(address, mask);
     }
@@ -116,7 +116,7 @@ public final class AddressNormalizationUtil {
             return null;
         }
 
-        final byte[] address = IetfInetUtil.INSTANCE.ipv4AddressBytes(IpConversionUtil.extractIpv4Address(ipv4Prefix));
+        final byte[] address = IetfInetUtil.ipv4AddressBytes(IpConversionUtil.extractIpv4Address(ipv4Prefix));
         final byte[] mask =
                 IpConversionUtil.convertArbitraryMaskToByteArray(IpConversionUtil.extractIpv4AddressMask(ipv4Prefix));
         return normalizeIpv4Address(address, mask);
@@ -135,7 +135,7 @@ public final class AddressNormalizationUtil {
             return null;
         }
 
-        final byte[] address = IetfInetUtil.INSTANCE.ipv4AddressBytes(ipv4Address);
+        final byte[] address = IetfInetUtil.ipv4AddressBytes(ipv4Address);
         final byte[] mask = IpConversionUtil.convertArbitraryMaskToByteArray(ipv4Mask);
         return normalizeIpv4Address(address, mask);
     }

@@ -39,7 +39,7 @@ public class OfToSalEthDstCase extends ConvertorCase<EthDstCase, MatchBuilder, M
             byte[] destinationMask = ethDstCase.getMask();
 
             if (destinationMask != null) {
-                ethDestinationBuilder.setMask(IetfYangUtil.INSTANCE.macAddressFor(destinationMask));
+                ethDestinationBuilder.setMask(IetfYangUtil.macAddressFor(destinationMask));
             }
 
             ethMatchBuilder.setEthernetDestination(ethDestinationBuilder.build());

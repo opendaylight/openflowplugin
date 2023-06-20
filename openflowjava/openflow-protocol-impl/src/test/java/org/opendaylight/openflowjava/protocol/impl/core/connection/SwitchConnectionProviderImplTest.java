@@ -12,6 +12,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import java.net.InetAddress;
@@ -19,11 +22,13 @@ import java.net.UnknownHostException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
+import org.opendaylight.infrautils.diagstatus.ServiceRegistration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.TlsConfigurationImpl;
@@ -51,11 +56,15 @@ public class SwitchConnectionProviderImplTest {
     private SwitchConnectionProviderImpl provider;
     private ConnectionConfigurationImpl config;
 
+    @Before
+    public void before() {
+        doReturn(mock(ServiceRegistration.class)).when(diagStatus).register(any());
+    }
+
     /**
      * Creates new {@link SwitchConnectionProvider} instance for each test.
      * @param protocol communication protocol
      */
-
     public void startUp(final TransportProtocol protocol) throws UnknownHostException {
         config = null;
         if (protocol != null) {

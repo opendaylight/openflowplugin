@@ -70,7 +70,7 @@ public class OF10PortModInputMessageFactoryTest {
         Assert.assertEquals("Wrong PortNo", message.getPortNo().getValue().longValue(), out.readUnsignedShort());
         byte[] address = new byte[6];
         out.readBytes(address);
-        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(), IetfYangUtil.INSTANCE.macAddressFor(address));
+        Assert.assertEquals("Wrong MacAddress", message.getHwAddress(), IetfYangUtil.macAddressFor(address));
         Assert.assertEquals("Wrong config", 21, out.readUnsignedInt());
         Assert.assertEquals("Wrong mask", 98, out.readUnsignedInt());
         Assert.assertEquals("Wrong advertise", 652, out.readUnsignedInt());

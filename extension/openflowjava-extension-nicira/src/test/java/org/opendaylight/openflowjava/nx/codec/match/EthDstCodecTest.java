@@ -34,7 +34,7 @@ public class EthDstCodecTest {
     private static final int NXM_FIELD_CODE = 1;
 
     private static final byte[] TEST_ADDR = new byte[VALUE_LENGTH];
-    private static final MacAddress TEST_ADDRESS = IetfYangUtil.INSTANCE.macAddressFor(TEST_ADDR);
+    private static final MacAddress TEST_ADDRESS = IetfYangUtil.macAddressFor(TEST_ADDR);
 
     @Test
     public void serializeTest() {
@@ -72,7 +72,7 @@ public class EthDstCodecTest {
         matchEntryBuilder.setOxmMatchField(NxmOfEthDst.VALUE);
         matchEntryBuilder.setHasMask(false);
 
-        valuesBuilder.setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(new byte[VALUE_LENGTH]));
+        valuesBuilder.setMacAddress(IetfYangUtil.macAddressFor(new byte[VALUE_LENGTH]));
 
         caseBuilder.setEthDstValues(valuesBuilder.build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());

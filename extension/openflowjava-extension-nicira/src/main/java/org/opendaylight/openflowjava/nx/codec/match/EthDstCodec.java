@@ -35,7 +35,7 @@ public class EthDstCodec extends AbstractMatchCodec {
     public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         EthDstCaseValue ethDstCase = (EthDstCaseValue) input.getMatchEntryValue();
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(ethDstCase.getEthDstValues().getMacAddress()));
+        outBuffer.writeBytes(IetfYangUtil.macAddressBytes(ethDstCase.getEthDstValues().getMacAddress()));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class EthDstCodec extends AbstractMatchCodec {
         message.readBytes(address);
         EthDstCaseValueBuilder caseBuilder = new EthDstCaseValueBuilder();
         caseBuilder.setEthDstValues(new EthDstValuesBuilder()
-            .setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(address))
+            .setMacAddress(IetfYangUtil.macAddressFor(address))
             .build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();

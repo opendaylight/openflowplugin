@@ -37,11 +37,11 @@ public class ArpSourceHardwareAddressEntrySerializerTest extends AbstractMatchEn
         assertMatch(arpShaMatch, true, (out) -> {
             byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
+            assertEquals(address, IetfYangUtil.macAddressFor(addressBytes));
 
             byte[] maskBytes = new byte[6];
             out.readBytes(maskBytes);
-            assertEquals(mask, IetfYangUtil.INSTANCE.macAddressFor(maskBytes));
+            assertEquals(mask, IetfYangUtil.macAddressFor(maskBytes));
         });
 
         final Match arpShaMatchNoMask = new MatchBuilder()
@@ -55,7 +55,7 @@ public class ArpSourceHardwareAddressEntrySerializerTest extends AbstractMatchEn
         assertMatch(arpShaMatchNoMask, false, (out) -> {
             byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(address, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
+            assertEquals(address, IetfYangUtil.macAddressFor(addressBytes));
         });
     }
 
