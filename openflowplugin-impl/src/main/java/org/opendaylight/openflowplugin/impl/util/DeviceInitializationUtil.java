@@ -103,7 +103,7 @@ public final class DeviceInitializationUtil {
         if (address == null) {
             return null;
         }
-        final IpAddress ipAddress = IetfInetUtil.INSTANCE.ipAddressFor(address.getAddress());
+        final IpAddress ipAddress = IetfInetUtil.ipAddressFor(address.getAddress());
         LOG.info("IP address of the node {} is: {}", node, ipAddress);
         return ipAddress;
     }

@@ -29,7 +29,7 @@ public abstract class AbstractMacAddressFilterEntrySerializer<E extends MacAddre
     protected final void serializeEntry(final E entry, final MacAddress mask, final ByteBuf outBuffer) {
         writeMacAddress(entry.getAddress(), outBuffer);
         if (mask != null) {
-            writeMask(IetfYangUtil.INSTANCE.macAddressBytes(mask), outBuffer, EncodeConstants.MAC_ADDRESS_LENGTH);
+            writeMask(IetfYangUtil.macAddressBytes(mask), outBuffer, EncodeConstants.MAC_ADDRESS_LENGTH);
         }
     }
 }

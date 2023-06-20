@@ -181,10 +181,10 @@ public final class MatchUtil {
     }
 
     public static Uint32 ipv4ToUint32(final Ipv4Address ipv4) {
-        return Uint32.fromIntBits(IetfInetUtil.INSTANCE.ipv4AddressBits(ipv4));
+        return Uint32.fromIntBits(IetfInetUtil.ipv4AddressBits(ipv4));
     }
 
     public static Ipv4Address uint32ToIpv4Address(final Uint32 value) {
-        return IetfInetUtil.INSTANCE.ipv4AddressFor(value.intValue());
+        return IetfInetUtil.ipv4AddressFor(value.intValue());
     }
 }

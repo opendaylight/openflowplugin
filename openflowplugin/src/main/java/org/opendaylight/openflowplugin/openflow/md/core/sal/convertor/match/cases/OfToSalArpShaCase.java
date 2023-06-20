@@ -41,7 +41,7 @@ public class OfToSalArpShaCase extends ConvertorCase<ArpShaCase, MatchBuilder, M
             byte[] mask = arpSha.getMask();
 
             if (mask != null) {
-                arpSourceHardwareAddressBuilder.setMask(IetfYangUtil.INSTANCE.macAddressFor(mask));
+                arpSourceHardwareAddressBuilder.setMask(IetfYangUtil.macAddressFor(mask));
             }
 
             arpMatchBuilder.setArpSourceHardwareAddress(arpSourceHardwareAddressBuilder.build());

@@ -44,6 +44,6 @@ public final class OxmDeserializerHelper {
     public static MacAddress convertMacAddress(final ByteBuf input) {
         byte[] address = new byte[EncodeConstants.MAC_ADDRESS_LENGTH];
         input.readBytes(address);
-        return IetfYangUtil.INSTANCE.macAddressFor(address);
+        return IetfYangUtil.macAddressFor(address);
     }
 }

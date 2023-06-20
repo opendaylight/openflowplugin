@@ -30,7 +30,7 @@ public class Ipv6NdTllEntrySerializerTest extends AbstractMatchEntrySerializerTe
         assertMatch(ipv6NdTllMatch, false, (out) -> {
             byte[] addressBytes = new byte[6];
             out.readBytes(addressBytes);
-            assertEquals(ipv6NdTll, IetfYangUtil.INSTANCE.macAddressFor(addressBytes));
+            assertEquals(ipv6NdTll, IetfYangUtil.macAddressFor(addressBytes));
         });
     }
 

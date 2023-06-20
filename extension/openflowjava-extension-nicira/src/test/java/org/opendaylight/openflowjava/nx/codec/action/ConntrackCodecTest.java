@@ -264,9 +264,9 @@ public class ConntrackCodecTest {
         //RANGE PRESENT
         message.writeShort(0x3F);
         //IP ADDRESS MIN
-        message.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(new Ipv4Address("192.168.0.0")));
+        message.writeBytes(IetfInetUtil.ipv4AddressBytes(new Ipv4Address("192.168.0.0")));
         //IP ADDRESS MAX
-        message.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(new Ipv4Address("192.168.10.0")));
+        message.writeBytes(IetfInetUtil.ipv4AddressBytes(new Ipv4Address("192.168.10.0")));
         //PORT MIN
         message.writeShort(3000);
         //PORT MAX
@@ -283,7 +283,7 @@ public class ConntrackCodecTest {
         //RANGE PRESENT
         message.writeShort(0x21);
         //IP ADDRESS MIN
-        message.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(new Ipv4Address("192.168.0.0")));
+        message.writeBytes(IetfInetUtil.ipv4AddressBytes(new Ipv4Address("192.168.0.0")));
         //PORT MAX
         message.writeShort(4000);
         message.writeZero(2);

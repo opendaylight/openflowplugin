@@ -35,7 +35,7 @@ public class ArpThaCodec extends AbstractMatchCodec {
     public void serialize(final MatchEntry input, final ByteBuf outBuffer) {
         serializeHeader(input, outBuffer);
         ArpThaCaseValue arpThaCase = (ArpThaCaseValue) input.getMatchEntryValue();
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(arpThaCase.getArpThaValues().getMacAddress()));
+        outBuffer.writeBytes(IetfYangUtil.macAddressBytes(arpThaCase.getArpThaValues().getMacAddress()));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class ArpThaCodec extends AbstractMatchCodec {
         message.readBytes(address);
         ArpThaCaseValueBuilder caseBuilder = new ArpThaCaseValueBuilder();
         caseBuilder.setArpThaValues(new ArpThaValuesBuilder()
-            .setMacAddress(IetfYangUtil.INSTANCE.macAddressFor(address))
+            .setMacAddress(IetfYangUtil.macAddressFor(address))
             .build());
         matchEntryBuilder.setMatchEntryValue(caseBuilder.build());
         return matchEntryBuilder.build();

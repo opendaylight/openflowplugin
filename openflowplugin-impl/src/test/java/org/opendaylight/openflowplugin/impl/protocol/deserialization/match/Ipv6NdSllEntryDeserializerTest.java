@@ -26,7 +26,7 @@ public class Ipv6NdSllEntryDeserializerTest extends AbstractMatchEntryDeserializ
         final MacAddress address = new MacAddress("00:01:02:03:04:05");
 
         writeHeader(in, false);
-        in.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(address));
+        in.writeBytes(IetfYangUtil.macAddressBytes(address));
 
         Ipv6Match match = (Ipv6Match) deserialize(in).getLayer3Match();
         assertEquals(address.getValue(), match.getIpv6NdSll().getValue());
