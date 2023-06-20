@@ -33,6 +33,6 @@ public abstract class AbstractOxmIpv4AddressSerializer extends AbstractOxmMatchE
     }
 
     protected static void writeIpv4Address(final Ipv4Address address, final ByteBuf out) {
-        out.writeBytes(IetfInetUtil.INSTANCE.ipv4AddressBytes(address));
+        out.writeBytes(IetfInetUtil.ipv4AddressBytes(address));
     }
 }

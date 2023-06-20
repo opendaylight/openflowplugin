@@ -103,7 +103,7 @@ public class DeviceInitializationUtilTest {
     @Test
     public void getIpAddress() {
         final IpAddress ipAddress = DeviceInitializationUtil.getIpAddress(connectionContext, NODE_II);
-        assertEquals(ipAddress, IetfInetUtil.INSTANCE.ipAddressFor(INET_SOCKET_ADDRESS.getAddress()));
+        assertEquals(ipAddress, IetfInetUtil.ipAddressFor(INET_SOCKET_ADDRESS.getAddress()));
     }
 
     @Test

@@ -80,7 +80,7 @@ public class PortStatusMessageFactoryTest {
         byte[] address = new byte[6];
         serializedBuffer.readBytes(address);
         Assert.assertEquals("Wrong MacAddress", message.getHwAddr().getValue().toLowerCase(),
-                IetfYangUtil.INSTANCE.macAddressFor(address).getValue().toLowerCase());
+                IetfYangUtil.macAddressFor(address).getValue().toLowerCase());
         serializedBuffer.skipBytes(PORT_PADDING_2);
         byte[] name = new byte[16];
         serializedBuffer.readBytes(name);

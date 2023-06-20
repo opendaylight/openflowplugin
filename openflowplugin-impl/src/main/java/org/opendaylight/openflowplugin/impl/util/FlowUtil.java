@@ -12,7 +12,6 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +35,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.Identifiable;
-import org.opendaylight.yangtools.yang.binding.Identifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Key;
+import org.opendaylight.yangtools.yang.binding.KeyAware;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -50,7 +49,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public final class FlowUtil {
 
     private static final RpcResultBuilder<List<BatchFailedFlowsOutput>> SUCCESSFUL_FLOW_OUTPUT_RPC_RESULT =
-            RpcResultBuilder.success(Collections.emptyList());
+            RpcResultBuilder.success(List.of());
 
     /**
      * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;.
@@ -121,7 +120,7 @@ public final class FlowUtil {
         // Hidden on purpose
     }
 
-    static <K extends Identifier<V>, V extends Identifiable<K>> Map<K, V> index(final List<V> list) {
+    static <K extends Key<V>, V extends KeyAware<K>> Map<K, V> index(final List<V> list) {
         return list == null ? null : BindingMap.ordered(list);
     }
 

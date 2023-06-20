@@ -38,7 +38,7 @@ public class Ipv6ArbitraryBitMaskSourceEntrySerializerTest extends AbstractMatch
         assertMatch(ipv6abmMatch, true, (out) -> {
             byte[] address = new byte[16];
             out.readBytes(address);
-            assertArrayEquals(address, IetfInetUtil.INSTANCE.ipv6AddressBytes(ipv6Address));
+            assertArrayEquals(address, IetfInetUtil.ipv6AddressBytes(ipv6Address));
 
             byte[] mask = new byte[16];
             out.readBytes(mask);
@@ -54,7 +54,7 @@ public class Ipv6ArbitraryBitMaskSourceEntrySerializerTest extends AbstractMatch
         assertMatch(ipv6abmMatchNoMask, false, (out) -> {
             byte[] address = new byte[16];
             out.readBytes(address);
-            assertArrayEquals(address, IetfInetUtil.INSTANCE.ipv6AddressBytes(ipv6Address));
+            assertArrayEquals(address, IetfInetUtil.ipv6AddressBytes(ipv6Address));
         });
     }
 

@@ -104,7 +104,7 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
         Nodes nodes = new NodesBuilder()
             .setNode(BindingMap.of(new NodeBuilder()
                 .withKey(nodeKey)
-                .addAugmentation(new FlowCapableNodeBuilder().build())
+                .addAugmentation(new FlowCapableNodeBuilder().setDescription("test node").build())
                 .build()))
             .build();
 

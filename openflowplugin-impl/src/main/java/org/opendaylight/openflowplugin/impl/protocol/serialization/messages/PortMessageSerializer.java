@@ -37,7 +37,7 @@ public class PortMessageSerializer extends AbstractMessageSerializer<PortMessage
         outBuffer.writeInt(OpenflowPortsUtil
                 .getProtocolPortNumber(OpenflowVersion.OF13, message.getPortNumber()).intValue());
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_01);
-        outBuffer.writeBytes(IetfYangUtil.INSTANCE.macAddressBytes(message.getHardwareAddress()));
+        outBuffer.writeBytes(IetfYangUtil.macAddressBytes(message.getHardwareAddress()));
         outBuffer.writeZero(PADDING_IN_PORT_MOD_MESSAGE_02);
         outBuffer.writeInt(createPortConfigBitMask(message.getConfiguration()));
         outBuffer.writeInt(requireNonNullElse(createPortConfigBitMask(message.getMask()), DEFAULT_PORT_CONFIG_MASK));
