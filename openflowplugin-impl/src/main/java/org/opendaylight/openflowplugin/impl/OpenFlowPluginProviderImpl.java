@@ -199,6 +199,9 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
+        if (switchConnectionProviders == null) {
+            return Futures.immediateFuture(List.of());
+        }
         final ListenableFuture<List<Boolean>> listListenableFuture =
                 Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
                     // Revert deserializers to their original state

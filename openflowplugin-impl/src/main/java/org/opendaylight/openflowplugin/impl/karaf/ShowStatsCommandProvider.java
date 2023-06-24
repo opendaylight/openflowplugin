@@ -5,31 +5,23 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.PrintStream;
-import java.util.List;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 
+@Service
 @Command(scope = "ofp", name = "showStats", description = "Show openflow statistics.")
-public class ShowStatsCommandProvider extends OsgiCommandSupport {
-
+public class ShowStatsCommandProvider extends AbstractAction {
     @Override
-    protected Object doExecute() {
-        PrintStream out = session.getConsole();
-        final MessageIntelligenceAgency messageIntelligenceAgency =
-                OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
-        final List<String> statistics = messageIntelligenceAgency.provideIntelligence();
-        final StringBuilder result = new StringBuilder();
-        for (String line : statistics) {
-            result.append(line);
-            result.append("\n");
+    void execute(final PrintStream out) {
+        final var sb = new StringBuilder();
+        // FIXME: static wiring
+        for (var line : OpenFlowPluginProviderImpl.getMessageIntelligenceAgency().provideIntelligence()) {
+            sb.append(line).append('\n');
         }
-        out.print(result.toString());
-        return null;
+        out.print(sb.toString());
     }
 }

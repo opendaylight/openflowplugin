@@ -5,31 +5,25 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.PrintStream;
-import java.util.List;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
  */
+@Service
 @Command(scope = "ofp", name = "show-time-counters", description = "Shows time counts for events.")
-public class ShowEventTimesComandProvider extends OsgiCommandSupport {
-
+public class ShowEventTimesComandProvider extends AbstractAction {
     @Override
-    protected Object doExecute() {
-        PrintStream out = session.getConsole();
-        final List<String> statistics = EventsTimeCounter.provideTimes();
-        final StringBuilder result = new StringBuilder();
-        for (String line : statistics) {
-            result.append(line);
-            result.append("\n");
+    void execute(final PrintStream out) {
+        final var sb = new StringBuilder();
+        for (var line : EventsTimeCounter.provideTimes()) {
+            sb.append(line).append('\n');
         }
-        out.print(result.toString());
-        return null;
+        out.print(sb.toString());
     }
 }
