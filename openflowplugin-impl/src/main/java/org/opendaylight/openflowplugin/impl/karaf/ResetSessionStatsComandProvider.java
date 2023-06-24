@@ -5,25 +5,23 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.PrintStream;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
  */
+@Service
 @Command(scope = "ofp", name = "reset-session-stats", description = "Resets session statistics counters.")
-public class ResetSessionStatsComandProvider extends OsgiCommandSupport {
-
+public class ResetSessionStatsComandProvider extends AbstractAction {
     @Override
-    protected Object doExecute() {
-        PrintStream out = session.getConsole();
+    void execute(final PrintStream out) {
+        // FIXME: static wiring
         SessionStatistics.resetAllCounters();
-        out.print("Session statistics counters reset.\n");
-        return null;
+        out.println("Session statistics counters reset.");
     }
 }
