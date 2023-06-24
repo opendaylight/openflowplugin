@@ -5,17 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Function;
-import org.apache.felix.service.command.CommandSession;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 /**
@@ -23,14 +20,13 @@ import org.mockito.junit.MockitoJUnitRunner;
  */
 @RunWith(MockitoJUnitRunner.class)
 public abstract class AbstractKarafTest {
-    @Mock
-    protected CommandSession cmdSession;
+    protected static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
+
     @Mock
     protected PrintStream console;
 
     @Before
     public void setUp() {
-        Mockito.when(cmdSession.getConsole()).thenReturn(console);
         doSetUp();
     }
 
