@@ -11,28 +11,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.reply.multipart.reply.body.MultipartReplyPortStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.multipart.request.multipart.request.body.MultipartRequestPortStats;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.node.connector.statistics.and.port.number.map.NodeConnectorStatisticsAndPortNumberMapKey;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -49,13 +41,11 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
 
     @Override
     public void testBuildRequestBody() {
-        final GetNodeConnectorStatisticsInput input = mock(GetNodeConnectorStatisticsInput.class);
-
-        lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
-        when(input.getNodeConnectorId()).thenReturn(nodeConnectorId);
-
-        final MultipartRequestPortStats body = (MultipartRequestPortStats) ((MultipartRequest)service
-            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
+        final var body = (MultipartRequestPortStats) ((MultipartRequest)service
+            .buildRequest(new Xid(Uint32.valueOf(42L)), new GetNodeConnectorStatisticsInputBuilder()
+                .setNode(createNodeRef(NODE_ID))
+                .setNodeConnectorId(nodeConnectorId)
+                .build()))
             .getMultipartRequestBody();
 
         assertEquals(nodeConnectorId, body.getNodeConnectorId());
@@ -63,37 +53,26 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
 
     @Override
     public void testBuildReply() {
-        final NodeConnectorStatisticsAndPortNumberMap portStat = new NodeConnectorStatisticsAndPortNumberMapBuilder()
-                .setNodeConnectorId(nodeConnectorId)
-                .build();
-
-        final MultipartReply reply = new MultipartReplyBuilder()
-                .setMultipartReplyBody(new MultipartReplyPortStatsBuilder()
-                        .setNodeConnectorStatisticsAndPortNumberMap(BindingMap.of(portStat))
-                        .build())
-                .build();
-
-        final List<MultipartReply> input = Collections.singletonList(reply);
-        final GetNodeConnectorStatisticsOutput output = service.buildReply(input, true);
+        final var output = service.buildReply(List.of(new MultipartReplyBuilder()
+            .setMultipartReplyBody(new MultipartReplyPortStatsBuilder()
+                .setNodeConnectorStatisticsAndPortNumberMap(BindingMap.of(
+                    new NodeConnectorStatisticsAndPortNumberMapBuilder().setNodeConnectorId(nodeConnectorId).build()))
+                .build())
+            .build()), true);
         assertTrue(output.nonnullNodeConnectorStatisticsAndPortNumberMap().size() > 0);
 
-        final NodeConnectorStatisticsAndPortNumberMap stats =
-                output.nonnullNodeConnectorStatisticsAndPortNumberMap().values().iterator().next();
+        final var stats = output.nonnullNodeConnectorStatisticsAndPortNumberMap().values().iterator().next();
 
         assertEquals(stats.getNodeConnectorId(), nodeConnectorId);
     }
 
     @Override
     public void testStoreStatistics() {
-        final NodeConnectorStatisticsAndPortNumberMap stat = mock(NodeConnectorStatisticsAndPortNumberMap.class);
-        when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
-
-        final Map<NodeConnectorStatisticsAndPortNumberMapKey, NodeConnectorStatisticsAndPortNumberMap> stats
-                = Collections.singletonMap(stat.key(), stat);
-        final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
-        when(output.nonnullNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
-
-        multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).get().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).orElseThrow()
+            .write(new GetNodeConnectorStatisticsOutputBuilder()
+                .setNodeConnectorStatisticsAndPortNumberMap(BindingMap.of(
+                    new NodeConnectorStatisticsAndPortNumberMapBuilder().setNodeConnectorId(nodeConnectorId).build()))
+                .build(), true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

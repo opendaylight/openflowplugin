@@ -11,9 +11,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
@@ -84,7 +84,7 @@ public final class StatisticsGatheringUtils {
                         final List<DataContainer> allMultipartData = rpcResult.getResult().stream()
                                 .map(reply -> MultipartReplyTranslatorUtil
                                                     .translate(reply, deviceInfo, convertorExecutor, null))
-                                .filter(Optional::isPresent).map(Optional::get)
+                                .filter(Optional::isPresent).map(Optional::orElseThrow)
                                 .collect(Collectors.toList());
 
                         return processStatistics(type, allMultipartData, txFacade, registry, deviceInfo,
@@ -183,8 +183,8 @@ public final class StatisticsGatheringUtils {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.get().nonnullTable().values()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Collections.emptyMap()).build();
+                        for (final Table tableData : flowCapNodeOpt.orElseThrow().nonnullTable().values()) {
+                            final Table table = new TableBuilder(tableData).setFlow(Map.of()).build();
                             final InstanceIdentifier<Table> iiToTable = instanceIdentifier
                                 .child(Table.class, tableData.key());
                             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);

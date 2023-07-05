@@ -176,14 +176,12 @@ public final class ContextChainHolderImpl implements ContextChainHolder, MasterC
                 LOG.warn("An auxiliary connection for device {}, but no primary connection. Refusing connection.",
                          deviceInfo);
                 return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
+            } else if (contextChain.addAuxiliaryConnection(connectionContext)) {
+                LOG.info("An auxiliary connection was added to device: {}", deviceInfo);
+                return ConnectionStatus.MAY_CONTINUE;
             } else {
-                if (contextChain.addAuxiliaryConnection(connectionContext)) {
-                    LOG.info("An auxiliary connection was added to device: {}", deviceInfo);
-                    return ConnectionStatus.MAY_CONTINUE;
-                } else {
-                    LOG.warn("Not able to add auxiliary connection to the device {}", deviceInfo);
-                    return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
-                }
+                LOG.warn("Not able to add auxiliary connection to the device {}", deviceInfo);
+                return ConnectionStatus.REFUSING_AUXILIARY_CONNECTION;
             }
         } else {
             LOG.info("Device {} connected.", deviceInfo);
@@ -436,12 +434,13 @@ public final class ContextChainHolderImpl implements ContextChainHolder, MasterC
 
     private @Nullable EntityOwnershipState getCurrentOwnershipStatus(final String nodeId) {
         org.opendaylight.mdsal.eos.binding.api.Entity entity = createNodeEntity(nodeId);
-        Optional<EntityOwnershipState> ownershipStatus
+        Optional<EntityOwnershipState> optOwnershipStatus
                 = entityOwnershipService.getOwnershipState(entity);
 
-        if (ownershipStatus.isPresent()) {
-            LOG.debug("Current ownership status for node {} is {}", nodeId, ownershipStatus.get());
-            return ownershipStatus.get();
+        if (optOwnershipStatus.isPresent()) {
+            final var ownershipStatus = optOwnershipStatus.orElseThrow();
+            LOG.debug("Current ownership status for node {} is {}", nodeId, ownershipStatus);
+            return ownershipStatus;
         }
 
         LOG.trace("Ownership status is not available for node {}", nodeId);

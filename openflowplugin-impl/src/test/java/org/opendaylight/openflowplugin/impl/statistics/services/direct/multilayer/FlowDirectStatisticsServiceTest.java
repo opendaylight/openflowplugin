@@ -15,7 +15,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -86,12 +85,12 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
                 .setFlags(mock(FlowModFlags.class))
                 .setMatch(new org.opendaylight.yang.gen.v1.urn
                         .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
-                        .setMatchEntry(Collections.emptyList())
+                        .setMatchEntry(List.of())
                         .build())
                 .build();
 
-        final List<FlowStats> flowStats = Collections.singletonList(flowStat);
-        final List<MultipartReply> input = Collections.singletonList(reply);
+        final List<FlowStats> flowStats = List.of(flowStat);
+        final List<MultipartReply> input = List.of(reply);
 
         when(flow.getFlowStats()).thenReturn(flowStats);
         when(flowCase.getMultipartReplyFlow()).thenReturn(flow);
@@ -111,11 +110,11 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(stat.getTableId()).thenReturn(TABLE_NO);
         when(stat.getMatch()).thenReturn(new MatchBuilder().build());
 
-        final List<FlowAndStatisticsMapList> stats = Collections.singletonList(stat);
+        final List<FlowAndStatisticsMapList> stats = List.of(stat);
         final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
         when(output.nonnullFlowAndStatisticsMapList()).thenReturn(stats);
 
-        multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).get().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).orElseThrow().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

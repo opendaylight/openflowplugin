@@ -680,8 +680,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 .lookup(deviceInfo.getVersion());
 
         if (initializer.isPresent()) {
-            final Future<Void> initialize = initializer
-                    .get()
+            final Future<Void> initialize = initializer.orElseThrow()
                     .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
 
             try {
@@ -770,7 +769,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                 if (result != null) {
                     for (Optional<FlowCapableNode> optNode : result) {
                         if (optNode.isPresent()) {
-                            flowCount += optNode.get().nonnullTable().values().stream()
+                            flowCount += optNode.orElseThrow().nonnullTable().values().stream()
                                     .filter(Objects::nonNull)
                                     .flatMap(table -> table.nonnullFlow().values().stream())
                                     .filter(Objects::nonNull)
