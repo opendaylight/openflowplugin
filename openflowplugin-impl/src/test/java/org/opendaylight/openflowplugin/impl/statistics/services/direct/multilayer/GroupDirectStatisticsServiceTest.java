@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -33,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestGroupCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.group._case.MultipartRequestGroup;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
@@ -74,14 +74,14 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                         .opendaylight.openflow.common.types.rev130731.GroupId(GROUP_NO))
                 .setByteCount(Uint64.ONE)
                 .setPacketCount(Uint64.ONE)
-                .setBucketStats(Collections.emptyList())
+                .setBucketStats(List.of())
                 .setDurationSec(Uint32.ONE)
                 .setDurationNsec(Uint32.ONE)
                 .setRefCount(Uint32.ZERO)
                 .build();
 
-        final List<GroupStats> groupStats = Collections.singletonList(groupStat);
-        final List<MultipartReply> input = Collections.singletonList(reply);
+        final List<GroupStats> groupStats = List.of(groupStat);
+        final List<MultipartReply> input = List.of(reply);
 
         when(group.getGroupStats()).thenReturn(groupStats);
         when(groupCase.getMultipartReplyGroup()).thenReturn(group);
@@ -103,9 +103,9 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                 .GroupStatsBuilder().setGroupId(new GroupId(GROUP_NO)).build();
 
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
-        when(output.nonnullGroupStats()).thenReturn(Collections.singletonMap(stat.key(), stat));
+        when(output.nonnullGroupStats()).thenReturn(BindingMap.of(stat));
 
-        multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).get().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).orElseThrow().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

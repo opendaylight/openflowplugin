@@ -35,7 +35,7 @@ public class DeviceInitializerProviderTest {
         provider.register(OFConstants.OFP_VERSION_1_3, abstractDeviceInitializer);
         final Optional<AbstractDeviceInitializer> lookup = provider.lookup(OFConstants.OFP_VERSION_1_3);
         assertTrue(lookup.isPresent());
-        assertEquals(abstractDeviceInitializer, lookup.get());
+        assertEquals(abstractDeviceInitializer, lookup.orElseThrow());
     }
 
     @Test

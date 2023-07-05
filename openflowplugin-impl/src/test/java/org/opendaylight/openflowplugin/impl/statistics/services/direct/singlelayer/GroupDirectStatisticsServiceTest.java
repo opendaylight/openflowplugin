@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -34,6 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReplyBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
@@ -70,11 +70,11 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
 
         final MultipartReply reply = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyGroupStatsBuilder()
-                        .setGroupStats(Collections.singletonMap(groupStat.key(), groupStat))
+                        .setGroupStats(BindingMap.of(groupStat))
                         .build())
                 .build();
 
-        final List<MultipartReply> input = Collections.singletonList(reply);
+        final List<MultipartReply> input = List.of(reply);
 
         final GetGroupStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.nonnullGroupStats().size() > 0);
@@ -94,11 +94,11 @@ public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
                         .opendaylight.group.types.rev131018.group.statistics.reply.GroupStats.class);
         when(stat.getGroupId()).thenReturn(new GroupId(GROUP_NO));
 
-        final Map<GroupStatsKey, GroupStats> stats = Collections.singletonMap(stat.key(), stat);
+        final Map<GroupStatsKey, GroupStats> stats = BindingMap.of(stat);
         final GetGroupStatisticsOutput output = mock(GetGroupStatisticsOutput.class);
         when(output.nonnullGroupStats()).thenReturn(stats);
 
-        multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).get().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPGROUP).orElseThrow().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

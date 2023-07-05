@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -102,7 +101,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
         final MultipartReply reply = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyFlowStatsBuilder()
-                        .setFlowAndStatisticsMapList(Collections.singletonList(flowStat))
+                        .setFlowAndStatisticsMapList(List.of(flowStat))
                         .build())
                 .build();
 
@@ -129,7 +128,7 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
         final MultipartReply reply1 = new MultipartReplyBuilder()
                 .setMultipartReplyBody(new MultipartReplyFlowStatsBuilder()
-                        .setFlowAndStatisticsMapList(Collections.singletonList(flowStat1))
+                        .setFlowAndStatisticsMapList(List.of(flowStat1))
                         .build())
                 .build();
         final List<MultipartReply> input = new ArrayList<>();
@@ -149,12 +148,11 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         when(stat.getTableId()).thenReturn(TABLE_NO);
         when(stat.getMatch()).thenReturn(new MatchBuilder().build());
 
-        final List<FlowAndStatisticsMapList> stats
-                = Collections.singletonList(stat);
+        final List<FlowAndStatisticsMapList> stats = List.of(stat);
         final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
         when(output.nonnullFlowAndStatisticsMapList()).thenReturn(stats);
 
-        multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).get().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).orElseThrow().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }

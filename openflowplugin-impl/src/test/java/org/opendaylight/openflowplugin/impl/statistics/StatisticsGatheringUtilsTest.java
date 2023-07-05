@@ -13,11 +13,9 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -199,7 +197,8 @@ public class StatisticsGatheringUtilsTest {
         final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
 
-        provider.lookup(MultipartType.OFPMPFLOW).get().write(prepareFlowStatisticsData().iterator().next(), false);
+        provider.lookup(MultipartType.OFPMPFLOW).orElseThrow().write(prepareFlowStatisticsData().iterator().next(),
+            false);
 
         Mockito.verify(deviceContext).writeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
@@ -215,11 +214,10 @@ public class StatisticsGatheringUtilsTest {
         flowAndStatsMapListBld.setMatch(new MatchBuilder().build());
 
         final FlowsStatisticsUpdateBuilder flowStatsUpdateBld1 = new FlowsStatisticsUpdateBuilder();
-        flowStatsUpdateBld1.setFlowAndStatisticsMapList(Lists.newArrayList(flowAndStatsMapListBld.build()));
+        flowStatsUpdateBld1.setFlowAndStatisticsMapList(List.of(flowAndStatsMapListBld.build()));
 
-        return Lists.newArrayList(flowStatsUpdateBld1.build());
+        return List.of(flowStatsUpdateBld1.build());
     }
-
 
     @Test
     public void testGatherStatistics_group() throws Exception {
@@ -227,7 +225,7 @@ public class StatisticsGatheringUtilsTest {
         final Uint32 groupIdValue = Uint32.valueOf(19);
 
         final GroupStatsBuilder groupStatsBld = new GroupStatsBuilder()
-                .setBucketStats(Lists.newArrayList(createBucketStat(21L, 42L)))
+                .setBucketStats(List.of(createBucketStat(21L, 42L)))
                 .setByteCount(Uint64.valueOf(84))
                 .setPacketCount(Uint64.valueOf(63))
                 .setDurationSec(Uint32.valueOf(11))
@@ -235,12 +233,12 @@ public class StatisticsGatheringUtilsTest {
                 .setRefCount(Uint32.valueOf(13))
                 .setGroupId(new GroupId(groupIdValue));
         final MultipartReplyGroupBuilder mpReplyGroupBld = new MultipartReplyGroupBuilder();
-        mpReplyGroupBld.setGroupStats(Lists.newArrayList(groupStatsBld.build()));
+        mpReplyGroupBld.setGroupStats(List.of(groupStatsBld.build()));
         final MultipartReplyGroupCaseBuilder mpReplyGroupCaseBld = new MultipartReplyGroupCaseBuilder();
         mpReplyGroupCaseBld.setMultipartReplyGroup(mpReplyGroupBld.build());
 
         final MultipartReply groupStatsUpdated = assembleMPReplyMessage(type, mpReplyGroupCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(groupStatsUpdated);
+        final List<MultipartReply> statsData = List.of(groupStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -261,16 +259,16 @@ public class StatisticsGatheringUtilsTest {
         final BucketsListBuilder bucketsListBld = new BucketsListBuilder()
                 .setWatchPort(new PortNumber(Uint32.valueOf(5)));
         final GroupDescBuilder groupStatsBld = new GroupDescBuilder()
-                .setBucketsList(Lists.newArrayList(bucketsListBld.build()))
+                .setBucketsList(List.of(bucketsListBld.build()))
                 .setGroupId(new GroupId(groupIdValue))
                 .setType(GroupType.OFPGTALL);
         final MultipartReplyGroupDescBuilder mpReplyGroupBld = new MultipartReplyGroupDescBuilder();
-        mpReplyGroupBld.setGroupDesc(Lists.newArrayList(groupStatsBld.build()));
+        mpReplyGroupBld.setGroupDesc(List.of(groupStatsBld.build()));
         final MultipartReplyGroupDescCaseBuilder mpReplyGroupCaseBld = new MultipartReplyGroupDescCaseBuilder();
         mpReplyGroupCaseBld.setMultipartReplyGroupDesc(mpReplyGroupBld.build());
 
         final MultipartReply groupStatsUpdated = assembleMPReplyMessage(type, mpReplyGroupCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(groupStatsUpdated);
+        final List<MultipartReply> statsData = List.of(groupStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -301,14 +299,14 @@ public class StatisticsGatheringUtilsTest {
                 .setDurationNsec(Uint32.valueOf(113))
                 .setFlowCount(Uint32.valueOf(114))
                 .setPacketInCount(Uint64.valueOf(115))
-                .setMeterBandStats(Lists.newArrayList(meterBandStatsBld.build()));
+                .setMeterBandStats(List.of(meterBandStatsBld.build()));
         final MultipartReplyMeterBuilder mpReplyMeterBld = new MultipartReplyMeterBuilder();
-        mpReplyMeterBld.setMeterStats(Lists.newArrayList(meterStatsBld.build()));
+        mpReplyMeterBld.setMeterStats(List.of(meterStatsBld.build()));
         final MultipartReplyMeterCaseBuilder mpReplyMeterCaseBld = new MultipartReplyMeterCaseBuilder();
         mpReplyMeterCaseBld.setMultipartReplyMeter(mpReplyMeterBld.build());
 
         final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyMeterCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final List<MultipartReply> statsData = List.of(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -328,12 +326,12 @@ public class StatisticsGatheringUtilsTest {
         final PortStatsBuilder portStatsBld = new PortStatsBuilder()
                 .setPortNo(Uint32.valueOf(11));
         final MultipartReplyPortStatsBuilder mpReplyMeterBld = new MultipartReplyPortStatsBuilder();
-        mpReplyMeterBld.setPortStats(Lists.newArrayList(portStatsBld.build()));
+        mpReplyMeterBld.setPortStats(List.of(portStatsBld.build()));
         final MultipartReplyPortStatsCaseBuilder mpReplyMeterCaseBld = new MultipartReplyPortStatsCaseBuilder();
         mpReplyMeterCaseBld.setMultipartReplyPortStats(mpReplyMeterBld.build());
 
         final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyMeterCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final List<MultipartReply> statsData = List.of(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -358,12 +356,12 @@ public class StatisticsGatheringUtilsTest {
                 .setMatchedCount(Uint64.valueOf(35))
                 .setTableId(Uint8.ZERO);
         final MultipartReplyTableBuilder mpReplyTableBld = new MultipartReplyTableBuilder();
-        mpReplyTableBld.setTableStats(Lists.newArrayList(tableStatsBld.build()));
+        mpReplyTableBld.setTableStats(List.of(tableStatsBld.build()));
         final MultipartReplyTableCaseBuilder mpReplyTableCaseBld = new MultipartReplyTableCaseBuilder();
         mpReplyTableCaseBld.setMultipartReplyTable(mpReplyTableBld.build());
 
         final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyTableCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final List<MultipartReply> statsData = List.of(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -393,12 +391,12 @@ public class StatisticsGatheringUtilsTest {
                 .setQueueId(queueIdValue);
 
         final MultipartReplyQueueBuilder mpReplyQueueBld = new MultipartReplyQueueBuilder();
-        mpReplyQueueBld.setQueueStats(Lists.newArrayList(queueStatsBld.build()));
+        mpReplyQueueBld.setQueueStats(List.of(queueStatsBld.build()));
         final MultipartReplyQueueCaseBuilder mpReplyQueueCaseBld = new MultipartReplyQueueCaseBuilder();
         mpReplyQueueCaseBld.setMultipartReplyQueue(mpReplyQueueBld.build());
 
         final MultipartReply meterStatsUpdated = assembleMPReplyMessage(type, mpReplyQueueCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(meterStatsUpdated);
+        final List<MultipartReply> statsData = List.of(meterStatsUpdated);
 
         fireAndCheck(type, statsData);
 
@@ -431,7 +429,7 @@ public class StatisticsGatheringUtilsTest {
         final org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder matchBld =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
-                        .setMatchEntry(Collections.emptyList());
+                        .setMatchEntry(List.of());
         final FlowStatsBuilder flowStatsBld = new FlowStatsBuilder()
                 .setByteCount(Uint64.valueOf(55))
                 .setPacketCount(Uint64.valueOf(56))
@@ -442,12 +440,12 @@ public class StatisticsGatheringUtilsTest {
                 .setFlags(new FlowModFlags(true, false, false, false, true));
 
         final MultipartReplyFlowBuilder mpReplyFlowBld = new MultipartReplyFlowBuilder();
-        mpReplyFlowBld.setFlowStats(Lists.newArrayList(flowStatsBld.build()));
+        mpReplyFlowBld.setFlowStats(List.of(flowStatsBld.build()));
         final MultipartReplyFlowCaseBuilder mpReplyFlowCaseBld = new MultipartReplyFlowCaseBuilder();
         mpReplyFlowCaseBld.setMultipartReplyFlow(mpReplyFlowBld.build());
 
         final MultipartReply flowStatsUpdated = assembleMPReplyMessage(type, mpReplyFlowCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(flowStatsUpdated);
+        final List<MultipartReply> statsData = List.of(flowStatsUpdated);
         fireAndCheck(type, statsData);
 
         final FlowBuilder flowBld = new FlowBuilder()
@@ -474,16 +472,16 @@ public class StatisticsGatheringUtilsTest {
         final MeterConfigBuilder meterConfigBld = new MeterConfigBuilder()
                 .setMeterId(new MeterId(meterIdValue))
                 .setFlags(new MeterFlags(false, true, false, true))
-                .setBands(Collections.emptyList());
+                .setBands(List.of());
 
         final MultipartReplyMeterConfigBuilder mpReplyMeterConfigBld = new MultipartReplyMeterConfigBuilder();
-        mpReplyMeterConfigBld.setMeterConfig(Lists.newArrayList(meterConfigBld.build()));
+        mpReplyMeterConfigBld.setMeterConfig(List.of(meterConfigBld.build()));
         final MultipartReplyMeterConfigCaseBuilder mpReplyMeterConfigCaseBld =
                 new MultipartReplyMeterConfigCaseBuilder();
         mpReplyMeterConfigCaseBld.setMultipartReplyMeterConfig(mpReplyMeterConfigBld.build());
 
         final MultipartReply meterConfigUpdated = assembleMPReplyMessage(type, mpReplyMeterConfigCaseBld.build());
-        final List<MultipartReply> statsData = Collections.singletonList(meterConfigUpdated);
+        final List<MultipartReply> statsData = List.of(meterConfigUpdated);
 
         fireAndCheck(type, statsData);
 

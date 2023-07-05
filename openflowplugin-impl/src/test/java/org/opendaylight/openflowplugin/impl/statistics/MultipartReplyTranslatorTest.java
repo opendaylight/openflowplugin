@@ -12,8 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,7 +98,7 @@ public class MultipartReplyTranslatorTest {
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
                 CONVERTOR_MANAGER,
-            mockedDeviceContext.oook()).get();
+            mockedDeviceContext.oook()).orElseThrow();
 
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof FlowAndStatisticsMapList);
@@ -116,7 +115,7 @@ public class MultipartReplyTranslatorTest {
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
                 CONVERTOR_MANAGER,
-            mockedDeviceContext.oook()).get();
+            mockedDeviceContext.oook()).orElseThrow();
 
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof AggregateFlowStatistics);
@@ -137,7 +136,7 @@ public class MultipartReplyTranslatorTest {
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
                 CONVERTOR_MANAGER,
-            mockedDeviceContext.oook()).get();
+            mockedDeviceContext.oook()).orElseThrow();
 
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof org.opendaylight.yang.gen.v1.urn
@@ -177,7 +176,7 @@ public class MultipartReplyTranslatorTest {
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
                 CONVERTOR_MANAGER,
-            mockedDeviceContext.oook()).get();
+            mockedDeviceContext.oook()).orElseThrow();
 
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupStatisticsReply);
@@ -205,7 +204,7 @@ public class MultipartReplyTranslatorTest {
             multipartReplyMessage,
             mockedDeviceContext.getDeviceInfo(),
                 CONVERTOR_MANAGER,
-            mockedDeviceContext.oook()).get();
+            mockedDeviceContext.oook()).orElseThrow();
 
         DataContainer dataObject = validateOutput(result);
         assertTrue(dataObject instanceof GroupDescStatsReply);
@@ -218,12 +217,12 @@ public class MultipartReplyTranslatorTest {
     }
 
     private static MultipartReplyBody prepareMultipartReplyGroupDesc() {
-        GroupDescBuilder groupDescBuilder = new GroupDescBuilder();
-        groupDescBuilder.setGroupId(DUMMY_GROUP_ID);
-        groupDescBuilder.setBucketsList(Collections.emptyList());
-        groupDescBuilder.setType(DUMMY_GROUP_TYPE);
-        MultipartReplyGroupDescBuilder multipartReplyGroupDescBuilder = new MultipartReplyGroupDescBuilder();
-        multipartReplyGroupDescBuilder.setGroupDesc(Lists.newArrayList(groupDescBuilder.build()));
+        GroupDescBuilder groupDescBuilder = new GroupDescBuilder()
+            .setGroupId(DUMMY_GROUP_ID)
+            .setBucketsList(List.of())
+            .setType(DUMMY_GROUP_TYPE);
+        MultipartReplyGroupDescBuilder multipartReplyGroupDescBuilder = new MultipartReplyGroupDescBuilder()
+            .setGroupDesc(List.of(groupDescBuilder.build()));
         MultipartReplyGroupDescCaseBuilder multipartReplyGroupDescCaseBuilder =
                 new MultipartReplyGroupDescCaseBuilder();
         multipartReplyGroupDescCaseBuilder.setMultipartReplyGroupDesc(multipartReplyGroupDescBuilder.build());
@@ -233,14 +232,14 @@ public class MultipartReplyTranslatorTest {
     private static MultipartReplyBody prepareMultipartReplyGroup() {
         GroupStatsBuilder groupStatsBuilder = new GroupStatsBuilder();
         groupStatsBuilder.setByteCount(DUMMY_BYTE_COUNT);
-        groupStatsBuilder.setBucketStats(Collections.emptyList());
+        groupStatsBuilder.setBucketStats(List.of());
         groupStatsBuilder.setDurationSec(DUMMY_DURATION_SEC);
         groupStatsBuilder.setDurationNsec(DUMMY_DURATION_NSEC);
         groupStatsBuilder.setGroupId(DUMMY_GROUP_ID);
         groupStatsBuilder.setPacketCount(DUMMY_PACKET_COUNT);
         groupStatsBuilder.setRefCount(DUMMY_REF_COUNT);
-        MultipartReplyGroupBuilder multipartReplyGroupBuilder = new MultipartReplyGroupBuilder();
-        multipartReplyGroupBuilder.setGroupStats(Lists.newArrayList(groupStatsBuilder.build()));
+        MultipartReplyGroupBuilder multipartReplyGroupBuilder = new MultipartReplyGroupBuilder()
+            .setGroupStats(List.of(groupStatsBuilder.build()));
         MultipartReplyGroupCaseBuilder multipartReplyGroupCaseBuilder = new MultipartReplyGroupCaseBuilder();
         multipartReplyGroupCaseBuilder.setMultipartReplyGroup(multipartReplyGroupBuilder.build());
         return multipartReplyGroupCaseBuilder.build();
@@ -261,8 +260,8 @@ public class MultipartReplyTranslatorTest {
         dummyPortStatBuilder.setRxOverErr(DUMMY_OVER_ERR);
         dummyPortStatBuilder.setTxDropped(DUMMY_TX_DROPPED);
         dummyPortStatBuilder.setTxErrors(DUMMY_TX_ERRORS);
-        MultipartReplyPortStatsBuilder multipartReplyPortStatsBuilder = new MultipartReplyPortStatsBuilder();
-        multipartReplyPortStatsBuilder.setPortStats(Lists.newArrayList(dummyPortStatBuilder.build()));
+        MultipartReplyPortStatsBuilder multipartReplyPortStatsBuilder = new MultipartReplyPortStatsBuilder()
+            .setPortStats(List.of(dummyPortStatBuilder.build()));
         MultipartReplyPortStatsCaseBuilder multipartReplyPortStatsCaseBuilder =
                 new MultipartReplyPortStatsCaseBuilder();
         multipartReplyPortStatsCaseBuilder.setMultipartReplyPortStats(multipartReplyPortStatsBuilder.build());
@@ -284,7 +283,7 @@ public class MultipartReplyTranslatorTest {
     private static MultipartReplyBody prepareMultipartReplyFlow() {
         MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder();
         MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder();
-        multipartReplyFlowBuilder.setFlowStats(Collections.emptyList());
+        multipartReplyFlowBuilder.setFlowStats(List.of());
         multipartReplyFlowCaseBuilder.setMultipartReplyFlow(multipartReplyFlowBuilder.build());
         return multipartReplyFlowCaseBuilder.build();
     }

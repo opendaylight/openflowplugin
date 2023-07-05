@@ -16,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -73,7 +72,7 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
                         .build())
                 .build();
 
-        final List<MultipartReply> input = Collections.singletonList(reply);
+        final List<MultipartReply> input = List.of(reply);
         final GetNodeConnectorStatisticsOutput output = service.buildReply(input, true);
         assertTrue(output.nonnullNodeConnectorStatisticsAndPortNumberMap().size() > 0);
 
@@ -89,11 +88,11 @@ public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStat
         when(stat.getNodeConnectorId()).thenReturn(nodeConnectorId);
 
         final Map<NodeConnectorStatisticsAndPortNumberMapKey, NodeConnectorStatisticsAndPortNumberMap> stats
-                = Collections.singletonMap(stat.key(), stat);
+                = BindingMap.of(stat);
         final GetNodeConnectorStatisticsOutput output = mock(GetNodeConnectorStatisticsOutput.class);
         when(output.nonnullNodeConnectorStatisticsAndPortNumberMap()).thenReturn(stats);
 
-        multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).get().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPPORTSTATS).orElseThrow().write(output, true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }
