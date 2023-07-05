@@ -21,11 +21,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.AbstractDirectStatisticsServiceTest;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowAndStatisticsMap;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapList;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.and.statistics.map.list.FlowAndStatisticsMapListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -33,10 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlow;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -58,15 +55,13 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
 
     @Override
     public void testBuildRequestBody() {
-        final GetFlowStatisticsInput input = mock(GetFlowStatisticsInput.class);
-
-        when(input.getTableId()).thenReturn(TABLE_NO);
-
-        final MultipartRequestFlowCase body = (MultipartRequestFlowCase) ((MultipartRequestInput) service
-            .buildRequest(new Xid(Uint32.valueOf(42L)), input))
+        final var body = (MultipartRequestFlowCase) ((MultipartRequestInput) service
+            .buildRequest(new Xid(Uint32.valueOf(42L)), new GetFlowStatisticsInputBuilder()
+                .setTableId(TABLE_NO)
+                .build()))
             .getMultipartRequestBody();
 
-        final MultipartRequestFlow flow = body.getMultipartRequestFlow();
+        final var flow = body.getMultipartRequestFlow();
 
         assertEquals(TABLE_NO, flow.getTableId());
     }
@@ -76,45 +71,36 @@ public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsSer
         final MultipartReply reply = mock(MultipartReply.class);
         final MultipartReplyFlowCase flowCase = mock(MultipartReplyFlowCase.class);
         final MultipartReplyFlow flow = mock(MultipartReplyFlow.class);
-        final FlowStats flowStat = new FlowStatsBuilder()
-                .setDurationSec(Uint32.ONE)
-                .setDurationNsec(Uint32.ONE)
-                .setTableId(TABLE_NO)
-                .setByteCount(Uint64.ONE)
-                .setPacketCount(Uint64.ONE)
-                .setFlags(mock(FlowModFlags.class))
-                .setMatch(new org.opendaylight.yang.gen.v1.urn
-                        .opendaylight.openflow.oxm.rev150225.match.grouping.MatchBuilder()
-                        .setMatchEntry(List.of())
-                        .build())
-                .build();
 
-        final List<FlowStats> flowStats = List.of(flowStat);
-        final List<MultipartReply> input = List.of(reply);
-
-        when(flow.getFlowStats()).thenReturn(flowStats);
+        when(flow.getFlowStats()).thenReturn(List.of(new FlowStatsBuilder()
+            .setDurationSec(Uint32.ONE)
+            .setDurationNsec(Uint32.ONE)
+            .setTableId(TABLE_NO)
+            .setByteCount(Uint64.ONE)
+            .setPacketCount(Uint64.ONE)
+            .setFlags(mock(FlowModFlags.class))
+            .setMatch(new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.grouping
+                .MatchBuilder().setMatchEntry(List.of()).build())
+            .build()));
         when(flowCase.getMultipartReplyFlow()).thenReturn(flow);
         when(reply.getMultipartReplyBody()).thenReturn(flowCase);
 
-        final GetFlowStatisticsOutput output = service.buildReply(input, true);
+        final var output = service.buildReply(List.of(reply), true);
         assertTrue(output.nonnullFlowAndStatisticsMapList().size() > 0);
 
-        final FlowAndStatisticsMap stats = output.nonnullFlowAndStatisticsMapList().iterator().next();
+        final var stats = output.nonnullFlowAndStatisticsMapList().iterator().next();
 
         assertEquals(stats.getTableId(), TABLE_NO);
     }
 
     @Override
     public void testStoreStatistics() {
-        final FlowAndStatisticsMapList stat = mock(FlowAndStatisticsMapList.class);
-        when(stat.getTableId()).thenReturn(TABLE_NO);
-        when(stat.getMatch()).thenReturn(new MatchBuilder().build());
-
-        final List<FlowAndStatisticsMapList> stats = List.of(stat);
-        final GetFlowStatisticsOutput output = mock(GetFlowStatisticsOutput.class);
-        when(output.nonnullFlowAndStatisticsMapList()).thenReturn(stats);
-
-        multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).orElseThrow().write(output, true);
+        multipartWriterProvider.lookup(MultipartType.OFPMPFLOW).orElseThrow().write(new GetFlowStatisticsOutputBuilder()
+            .setFlowAndStatisticsMapList(List.of(new FlowAndStatisticsMapListBuilder()
+                .setTableId(TABLE_NO)
+                .setMatch(new MatchBuilder().build())
+                .build()))
+            .build(), true);
         verify(deviceContext).writeToTransactionWithParentsSlow(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
     }
 }
