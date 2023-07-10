@@ -110,27 +110,27 @@ public final class SrmCliUtils {
     }
 
     public static String getTypeHelp() {
-        StringBuilder help = new StringBuilder("Supported Entity Types are:\n");
+        var sb = new StringBuilder("Supported Entity Types are:\n");
         for (String entityType : SrmCliUtils.ENTITY_TYPE_MAP.keySet()) {
-            help.append("\t").append(entityType).append("/").append(entityType.toLowerCase(Locale.ROOT)).append("\n");
+            sb.append("\t").append(entityType).append("/").append(entityType.toLowerCase(Locale.ROOT)).append("\n");
         }
-        return help.toString();
+        return sb.toString();
     }
 
     public static String getNameHelp(EntityTypeBase entityType) {
-        StringBuilder help = new StringBuilder("Supported Entity Names for type");
+        var str = new StringBuilder("Supported Entity Names for type");
 
         if (EntityTypeService.VALUE.equals(entityType)) {
-            help.append(" SERVICE are:\n");
+            str.append(" SERVICE are:\n");
             for (String entityName : SrmCliUtils.SERVICE_NAME_MAP.keySet()) {
-                help.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
+                str.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
             }
         } else if (EntityTypeInstance.VALUE.equals(entityType)) {
-            help.append(" INSTANCE are:\n");
+            str.append(" INSTANCE are:\n");
             for (String entityName : SrmCliUtils.INSTANCE_NAME_MAP.keySet()) {
-                help.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
+                str.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
             }
         }
-        return help.toString();
+        return str.toString();
     }
 }

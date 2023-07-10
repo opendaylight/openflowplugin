@@ -7,9 +7,11 @@
  */
 package org.opendaylight.serviceutils.srm.shell;
 
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -18,21 +20,21 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.ServiceOps;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
+/**
+ * Implementation class of "srm:debug" Karaf shell command.
+ */
+@Service
 @Command(scope = "srm", name = "debug", description = "SRM debug commands")
-public class SrmDebugCommand extends OsgiCommandSupport {
+public class SrmDebugCommand implements Action {
     @Option(name = "-c", aliases = {"--clear-ops"}, description = "Clear operations DS",
         required = true, multiValued = false)
-    boolean clearOps;
-    private final DataBroker txDataBroker;
-
-    public SrmDebugCommand(DataBroker dataBroker) {
-        txDataBroker = dataBroker;
-    }
+    private boolean clearOps;
+    @Reference
+    private DataBroker txDataBroker;
 
     @Override
-    @Deprecated
-    protected @Nullable Object doExecute() throws Exception {
-        if (clearOps) {
+    public @Nullable Object execute() throws Exception {
+        if (clearOps && txDataBroker != null) {
             clearOpsDs();
         }
         return null;
