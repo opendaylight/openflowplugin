@@ -254,7 +254,7 @@ public class ConnectionAdapterImplStatisticsTest {
      * Empty channel Handler for testing.
      * @author madamjak
      */
-    private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
+    private static final class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         // no operation need to test
     }
 }

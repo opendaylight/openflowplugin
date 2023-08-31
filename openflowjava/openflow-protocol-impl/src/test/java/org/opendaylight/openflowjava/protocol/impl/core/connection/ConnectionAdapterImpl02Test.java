@@ -210,15 +210,13 @@ public class ConnectionAdapterImpl02Test {
      * Channel Handler for testing.
      * @author madamjak
      */
-    private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
+    private final class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         @Override
         public void write(final ChannelHandlerContext ctx, final Object msg,
                 final ChannelPromise promise) {
             responseOfCall = null;
-            if (msg instanceof MessageListenerWrapper) {
-                final MessageListenerWrapper listener = (MessageListenerWrapper) msg;
-                final OfHeader ofHeader = listener.getMsg();
-                responseOfCall = ofHeader;
+            if (msg instanceof MessageListenerWrapper listener) {
+                responseOfCall = listener.getMsg();
             }
         }
     }

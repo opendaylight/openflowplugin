@@ -25,9 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyAggregateCase;
 
 public class TranslatorLibratyUtilTest {
-
-    private static class TranslatorLibrarianTestImpl implements TranslatorLibrarian {
-
+    private static final class TranslatorLibrarianTestImpl implements TranslatorLibrarian {
         private TranslatorLibrary translatorLibrary;
 
         @Override
@@ -36,7 +34,7 @@ public class TranslatorLibratyUtilTest {
         }
 
         @Override
-        public void setTranslatorLibrary(TranslatorLibrary translatorLibrary) {
+        public void setTranslatorLibrary(final TranslatorLibrary translatorLibrary) {
             this.translatorLibrary = translatorLibrary;
         }
     }

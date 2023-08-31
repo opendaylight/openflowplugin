@@ -83,7 +83,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
         return sendExperimenterInputBld.build();
     }
 
-    private static class DummyExperimenter implements ExperimenterMessageOfChoice {
+    private static final class DummyExperimenter implements ExperimenterMessageOfChoice {
         @Override
         public Class<DummyExperimenter> implementedInterface() {
             return DummyExperimenter.class;
