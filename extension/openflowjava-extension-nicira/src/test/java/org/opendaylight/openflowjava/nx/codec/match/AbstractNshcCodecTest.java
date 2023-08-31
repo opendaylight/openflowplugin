@@ -21,9 +21,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev14
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class AbstractNshcCodecTest {
-
-    private class TestCodec extends AbstractNshcCodec {
-
+    private static final class TestCodec extends AbstractNshcCodec {
         @Override
         public int getNxmFieldCode() {
             return 0;

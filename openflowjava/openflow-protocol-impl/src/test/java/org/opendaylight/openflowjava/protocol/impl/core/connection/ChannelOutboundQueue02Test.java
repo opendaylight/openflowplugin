@@ -133,7 +133,7 @@ public class ChannelOutboundQueue02Test {
      * Channel Handler for testing.
      * @author madamjak
      */
-    private class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
+    private static final class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
         @Override
         public void write(final ChannelHandlerContext ctx, final Object msg,
                 final ChannelPromise promise) {
@@ -147,7 +147,7 @@ public class ChannelOutboundQueue02Test {
      * Class for testing - channel can change state to read only or writable.
      * @author madamjak
      */
-    private static class ChangeWritableEmbededChannel extends EmbeddedChannel {
+    private static final class ChangeWritableEmbededChannel extends EmbeddedChannel {
         private boolean isWrittable;
 
         ChangeWritableEmbededChannel(final ChannelHandler channelHandler) {

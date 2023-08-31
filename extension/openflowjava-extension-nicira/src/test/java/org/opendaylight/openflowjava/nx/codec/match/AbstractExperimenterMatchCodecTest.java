@@ -40,7 +40,7 @@ public class AbstractExperimenterMatchCodecTest {
     private ByteBuf buffer;
     private TestCodec testCodec;
 
-    private static class TestNxmField implements MatchField {
+    private static final class TestNxmField implements MatchField {
         // test class
 
         @Override
@@ -49,7 +49,7 @@ public class AbstractExperimenterMatchCodecTest {
         }
     }
 
-    private static class TestCodec extends AbstractExperimenterMatchCodec {
+    private static final class TestCodec extends AbstractExperimenterMatchCodec {
 
         @Override
         protected void serializeValue(final NxExpMatchEntryValue value, final boolean hasMask,

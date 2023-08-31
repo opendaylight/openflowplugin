@@ -158,7 +158,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
         linkToDate.remove(linkDiscovered);
     }
 
-    private class LLDPAgingTask extends TimerTask {
+    private final class LLDPAgingTask extends TimerTask {
         @Override
         public void run() {
             for (Entry<LinkDiscovered, Date> entry : linkToDate.entrySet()) {

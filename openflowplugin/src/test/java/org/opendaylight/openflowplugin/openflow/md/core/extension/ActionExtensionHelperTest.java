@@ -62,8 +62,7 @@ public class ActionExtensionHelperTest {
         assertEquals(MockAction.class, action.implementedInterface());
     }
 
-
-    private class MockAction implements Action {
+    private static final class MockAction implements Action {
 
         @Override
         public Class<? extends DataContainer> implementedInterface() {

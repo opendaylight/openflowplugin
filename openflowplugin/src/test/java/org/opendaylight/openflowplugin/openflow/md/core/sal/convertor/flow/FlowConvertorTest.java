@@ -282,7 +282,7 @@ public class FlowConvertorTest {
                 .build();
     }
 
-    private static class MockFlow extends AbstractAugmentable<AddFlowInput> implements AddFlowInput {
+    private static final class MockFlow extends AbstractAugmentable<AddFlowInput> implements AddFlowInput {
         private Instructions instructions;
         private Match match;
 
