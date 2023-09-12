@@ -7,20 +7,14 @@
  */
 package org.opendaylight.serviceutils.srm.shell;
 
-import java.util.concurrent.Future;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.eclipse.jdt.annotation.Nullable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.OdlSrmRpcsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverInput;
+import org.opendaylight.serviceutils.srm.spi.RegistryControl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityNameBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityTypeBase;
-import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RpcSuccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,57 +33,44 @@ public class RecoverCommand implements Action {
     @Argument(index = 2, name = "id", description = "EntityId, optional", required = false, multiValued = false)
     private String id;
     @Reference
-    private OdlSrmRpcsService srmRpcService;
+    private RegistryControl control;
 
     @Override
-    public @Nullable Object execute() throws Exception {
-        RecoverInput input = getInput();
-        if (input == null || srmRpcService == null) {
-            // We've already shown the relevant error msg
-            return null;
-        }
-        Future<RpcResult<RecoverOutput>> result = srmRpcService.recover(input);
-        RpcResult<RecoverOutput> recoverResult = result.get();
-        printResult(recoverResult);
-        return null;
-    }
-
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private static void printResult(RpcResult<RecoverOutput> recoverResult) {
-        var sb = new StringBuilder("");
-        if (recoverResult.isSuccessful()) {
-            sb.append("RPC call to recover was successful");
-            LOG.trace("RPC Result: {}", recoverResult.getResult());
-        } else {
-            sb.append("RPC Call to recover failed.\n")
-                .append("ErrorCode: ").append(recoverResult.getResult().getResponse())
-                .append("ErrorMsg: ").append(recoverResult.getResult().getMessage());
-            LOG.trace("RPC Result: {}", recoverResult.getResult());
-        }
-        System.out.println(sb.toString());
-    }
-
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private @Nullable RecoverInput getInput() {
+    public Object execute() {
         if (type == null || name == null) {
             return null;
         }
-        EntityTypeBase entityType = SrmCliUtils.getEntityType(type);
+        var entityType = SrmCliUtils.getEntityType(type);
         if (entityType == null) {
             System.out.println(SrmCliUtils.getTypeHelp());
             return null;
         }
-        EntityNameBase entityName = SrmCliUtils.getEntityName(entityType, name);
+        var entityName = SrmCliUtils.getEntityName(entityType, name);
         if (entityName == null) {
             System.out.println(SrmCliUtils.getNameHelp(entityType));
             return null;
         }
-        var inputBuilder = new RecoverInputBuilder()
-            .setEntityType(entityType)
-            .setEntityName(entityName);
-        if (id != null) {
-            inputBuilder.setEntityId(id);
+
+        if (control != null) {
+            var inputBuilder = new RecoverInputBuilder()
+                .setEntityType(entityType)
+                .setEntityName(entityName);
+            if (id != null) {
+                inputBuilder.setEntityId(id);
+            }
+            var output = control.recover(inputBuilder.build());
+
+            LOG.trace("RPC Result: {}", output);
+            var response = output.getResponse();
+            if (RpcSuccess.VALUE.equals(response)) {
+                System.out.println("RPC call to recover was successful");
+            } else {
+                System.out.println("RPC call to recover failed.");
+                System.out.println("ErrorCode: " + response);
+                System.out.println("ErrorMsg: " + output.getMessage());
+            }
         }
-        return inputBuilder.build();
+        return null;
     }
 }

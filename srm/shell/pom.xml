@@ -33,28 +33,24 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>org.eclipse.jdt</groupId>
-        <artifactId>org.eclipse.jdt.annotation</artifactId>
+      <groupId>org.eclipse.jdt</groupId>
+      <artifactId>org.eclipse.jdt.annotation</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.opendaylight.mdsal</groupId>
-        <artifactId>mdsal-binding-api</artifactId>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-binding-api</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.opendaylight.mdsal</groupId>
-        <artifactId>mdsal-common-api</artifactId>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>mdsal-common-api</artifactId>
     </dependency>
     <dependency>
-        <groupId>org.opendaylight.mdsal</groupId>
-        <artifactId>yang-binding</artifactId>
+      <groupId>org.opendaylight.mdsal</groupId>
+      <artifactId>yang-binding</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.serviceutils</groupId>
       <artifactId>srm-api</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.opendaylight.yangtools</groupId>
-        <artifactId>yang-common</artifactId>
     </dependency>
   </dependencies>
 

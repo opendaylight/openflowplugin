@@ -7,19 +7,30 @@
  */
 package org.opendaylight.serviceutils.srm.impl;
 
+import static java.util.Objects.requireNonNull;
+
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.util.concurrent.Futures;
 import java.util.concurrent.ExecutionException;
+import javax.annotation.PreDestroy;
+import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.serviceutils.srm.spi.RegistryControl;
+import org.opendaylight.serviceutils.tools.rpc.FutureRpcResults;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.ServiceOps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.Services;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.ServicesKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.services.Operations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.services.OperationsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.Recover;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.Reinstall;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.ReinstallInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.ReinstallOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.ReinstallOutputBuilder;
@@ -53,21 +64,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.Ofplugin;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.ServiceOpRecover;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.ServiceOpReinstall;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * The Utility class for SRM Shell.
- */
-public final class SrmRpcUtils {
-    private static final Logger LOG = LoggerFactory.getLogger(SrmRpcUtils.class);
+@Singleton
+@Component(immediate = true, service = RegistryControl.class)
+public final class RegistryControlImpl implements RegistryControl, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(RegistryControlImpl.class);
     private static final Boolean REINSTALL_FAILED = Boolean.FALSE;
     private static final Boolean REINSTALL_SUCCESS = Boolean.TRUE;
-
-    private SrmRpcUtils() {
-        // Hidden on purpose
-    }
 
     private static final ImmutableMap<EntityNameBase, EntityTypeBase> NAME_TO_TYPE_MAP =
         ImmutableMap.<EntityNameBase, EntityTypeBase>builder()
@@ -115,8 +127,29 @@ public final class SrmRpcUtils {
             .put(NetvirtQosPolicyInstance.VALUE, NetvirtQos.VALUE)
             .build();
 
+    private final DataBroker dataBroker;
+    private final Registration reg;
 
-    public static RecoverOutput callSrmOp(DataBroker broker, RecoverInput input) {
+    @Activate
+    public RegistryControlImpl(@Reference DataBroker dataBroker, @Reference RpcProviderService rpcProvider) {
+        this.dataBroker = requireNonNull(dataBroker);
+        reg = rpcProvider.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(Recover.class, input -> FutureRpcResults.fromListenableFuture(LOG, "recover", input,
+                () -> Futures.immediateFuture(recover(input))).build())
+            .put(Reinstall.class, input -> FutureRpcResults.fromListenableFuture(LOG, "reinstall", input,
+                () -> Futures.immediateFuture(reinstall(input))).build())
+            .build());
+    }
+
+    @Override
+    @Deactivate
+    @PreDestroy
+    public void close() {
+        reg.close();
+    }
+
+    @Override
+    public RecoverOutput recover(RecoverInput input) {
         RecoverOutputBuilder outputBuilder = new RecoverOutputBuilder();
         if (input.getEntityName() == null) {
             outputBuilder.setResponse(RpcFailEntityName.VALUE)
@@ -159,9 +192,10 @@ public final class SrmRpcUtils {
         }
         Operations operation = opsBuilder.build();
         InstanceIdentifier<Operations> opsIid = getInstanceIdentifier(operation, serviceName);
-        WriteTransaction tx = broker.newWriteOnlyTransaction();
+        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.mergeParentStructurePut(LogicalDatastoreType.OPERATIONAL, opsIid, operation);
         try {
+            // FIXME: we are in RPC invocation path, we should not be blocking here
             tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error writing RecoveryOp to datastore. path:{}, data:{}", opsIid, operation);
@@ -172,7 +206,8 @@ public final class SrmRpcUtils {
         return outputBuilder.build();
     }
 
-    public static ReinstallOutput callSrmOp(DataBroker broker, ReinstallInput input) {
+    @Override
+    public ReinstallOutput reinstall(ReinstallInput input) {
         ReinstallOutputBuilder outputBuilder = new ReinstallOutputBuilder();
         if (input.getEntityName() == null) {
             outputBuilder.setSuccessful(REINSTALL_FAILED)
@@ -213,9 +248,10 @@ public final class SrmRpcUtils {
             .setTriggerOperation(ServiceOpReinstall.VALUE);
         Operations operation = opsBuilder.build();
         InstanceIdentifier<Operations> opsIid = getInstanceIdentifier(operation, serviceName);
-        WriteTransaction tx = broker.newWriteOnlyTransaction();
+        WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
         tx.mergeParentStructurePut(LogicalDatastoreType.OPERATIONAL, opsIid, operation);
         try {
+            // FIXME: we are in RPC invocation path, we should not be blocking here
             tx.commit().get();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error writing RecoveryOp to datastore. path:{}, data:{}", opsIid, operation);
