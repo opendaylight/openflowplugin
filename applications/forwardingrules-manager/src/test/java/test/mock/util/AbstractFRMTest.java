@@ -30,19 +30,13 @@ import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowService
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfigBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -70,19 +64,6 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
     private FlowGroupCacheManager flowGroupCacheManager;
 
     protected void setUpForwardingRulesManager() {
-        when(rpcConsumerRegistry.getRpcService(SalFlowService.class))
-                .thenReturn(new SalFlowServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalGroupService.class))
-                .thenReturn(new SalGroupServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalMeterService.class))
-                .thenReturn(new SalMeterServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalTableService.class))
-                .thenReturn(new SalTableServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalBundleService.class))
-                .thenReturn(new SalBundleServiceMock());
-        when(rpcConsumerRegistry.getRpcService(ArbitratorReconcileService.class))
-                .thenReturn(new ArbitratorReconcileServiceMock());
-
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcConsumerRegistry,
                 rpcProviderService, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
                 getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,

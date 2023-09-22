@@ -39,6 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
@@ -59,8 +60,7 @@ public class RpcContextImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private ObjectRegistration<TestRpcService> routedRpcReg;
-
+    private Registration routedRpcReg;
     @Mock
     private NotificationPublishService notificationPublishService;
     @Mock
@@ -93,7 +93,7 @@ public class RpcContextImplTest {
                 convertorExecutor,
                 notificationPublishService, true);
 
-        when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
+        when(rpcProviderRegistry.registerRpcImplementations(eq(serviceInstance)., anySet()))
                 .thenReturn(routedRpcReg);
     }
 

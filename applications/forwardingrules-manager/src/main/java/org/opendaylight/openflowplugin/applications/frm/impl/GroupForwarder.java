@@ -23,12 +23,15 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
@@ -109,8 +112,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                         .build();
 
                 final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
-                    this.provider.getSalGroupService()
-                            .removeGroup(removeGroup);
+                    this.provider.getRpcRegistry().getRpc(RemoveGroup.class).invoke(removeGroup);
                 Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
@@ -131,7 +133,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalGroupService().removeGroup(builder.build());
+        return this.provider.getRpcRegistry().getRpc(RemoveGroup.class).invoke(builder.build());
     }
 
     @Override
@@ -152,8 +154,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
                 builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
                 UpdateGroupInput updateGroupInput = builder.build();
-                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = this.provider.getSalGroupService()
-                        .updateGroup(updateGroupInput);
+                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = this.provider.getRpcRegistry()
+                    .getRpc(UpdateGroup.class).invoke(updateGroupInput);
                 LoggingFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
                 Futures.addCallback(resultFuture,
                         new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
@@ -180,7 +182,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
                         AddGroupInput addGroupInput = builder.build();
                         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture;
-                        resultFuture = this.provider.getSalGroupService().addGroup(addGroupInput);
+                        resultFuture = this.provider.getRpcRegistry().getRpc(AddGroup.class).invoke(addGroupInput);
                         Futures.addCallback(resultFuture,
                                 new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
                                 MoreExecutors.directExecutor());

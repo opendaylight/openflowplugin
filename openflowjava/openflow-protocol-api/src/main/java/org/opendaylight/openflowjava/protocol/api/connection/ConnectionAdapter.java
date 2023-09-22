@@ -17,7 +17,6 @@ import java.util.concurrent.Future;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 
 /**
@@ -26,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
  * @author mirehak
  * @author michal.polkorab
  */
-public interface ConnectionAdapter extends OpenflowProtocolService {
+public interface ConnectionAdapter {
 
     /**
      * Disconnect corresponding switch.

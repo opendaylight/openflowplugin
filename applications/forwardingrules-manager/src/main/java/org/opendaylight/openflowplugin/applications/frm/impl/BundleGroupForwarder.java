@@ -25,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
@@ -83,7 +84,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
             LOG.trace("Pushing group remove message {} to bundle {} for device {}", addBundleMessagesInput,
                     bundleId.getValue(), nodeId);
             final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                    .getSalBundleService().addBundleMessages(addBundleMessagesInput);
+                .getRpcRegistry().getRpc(AddBundleMessages.class).invoke(addBundleMessagesInput);
             Futures.addCallback(resultFuture,
                     new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
@@ -119,8 +120,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
             LOG.trace("Pushing group update message {} to bundle {} for device {}", addBundleMessagesInput,
                     bundleId.getValue(), nodeId);
             final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                    .getSalBundleService()
-                    .addBundleMessages(addBundleMessagesInput);
+                .getRpcRegistry().getRpc(AddBundleMessages.class).invoke(addBundleMessagesInput);
             Futures.addCallback(resultFuture,
                     new BundleUpdateGroupCallBack(originalGroup.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
@@ -160,8 +160,8 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
             LOG.trace("Pushing group add message {} to bundle {} for device {}", addBundleMessagesInput,
                     bundleId.getValue(), nodeId);
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                    .getSalBundleService()
-                    .addBundleMessages(addBundleMessagesInput);
+                .getRpcRegistry().getRpc(AddBundleMessages.class)
+                .invoke(addBundleMessagesInput);
             Futures.addCallback(resultFuture,
                     new BundleAddGroupCallBack(groupId, nodeId),
                     MoreExecutors.directExecutor());

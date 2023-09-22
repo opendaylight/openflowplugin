@@ -10,12 +10,15 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
@@ -36,10 +39,10 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
         UpdateGroupOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
-    private final SalGroupService salGroupService;
+    private final SalGroupRpcs salGroupRpcs;
 
-    public GroupForwarder(SalGroupService salGroupService) {
-        this.salGroupService = salGroupService;
+    public GroupForwarder(SalGroupRpcs salGroupRpcs) {
+        this.salGroupRpcs = salGroupRpcs;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
         builder.setGroupRef(new GroupRef(identifier));
         // fix group removal - no buckets allowed
         builder.setBuckets(null);
-        return salGroupService.removeGroup(builder.build());
+        return salGroupRpcs.getRpcClassToInstanceMap().getInstance(RemoveGroup.class).invoke(builder.build());
     }
 
     @Override
@@ -71,7 +74,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
         builder.setUpdatedGroup(new UpdatedGroupBuilder(update).build());
         builder.setOriginalGroup(new OriginalGroupBuilder(original).build());
 
-        return salGroupService.updateGroup(builder.build());
+        return salGroupRpcs.getRpcClassToInstanceMap().getInstance(UpdateGroup.class).invoke(builder.build());
     }
 
     @Override
@@ -84,7 +87,7 @@ public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupO
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
-        return salGroupService.addGroup(builder.build());
+        return salGroupRpcs.getRpcClassToInstanceMap().getInstance(AddGroup.class).invoke(builder.build());
     }
 
 }

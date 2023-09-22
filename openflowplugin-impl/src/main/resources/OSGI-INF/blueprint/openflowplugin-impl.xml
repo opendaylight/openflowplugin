@@ -81,5 +81,5 @@
   <reference id="systemReadyMonitor"
              interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
 
-  <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
+  <odl:action-provider interface="org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc"/>
 </blueprint>

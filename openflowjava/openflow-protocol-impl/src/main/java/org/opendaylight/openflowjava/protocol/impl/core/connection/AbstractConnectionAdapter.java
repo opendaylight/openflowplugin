@@ -14,6 +14,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.channel.Channel;
@@ -25,54 +27,72 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Barrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Echo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsync;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Hello;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOut;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsync;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModOutput;
 import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * {@link ConnectionAdapter} interface contains couple of OF message handling approaches.
- * {@link AbstractConnectionAdapter} class contains direct RPC processing from OpenflowProtocolService
- * {@link org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolService}
  */
 abstract class AbstractConnectionAdapter implements ConnectionAdapter {
 
@@ -120,101 +140,106 @@ abstract class AbstractConnectionAdapter implements ConnectionAdapter {
         return handleTransportChannelFuture(disconnectResult);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<BarrierOutput>> barrier(final BarrierInput input) {
+    private ListenableFuture<RpcResult<BarrierOutput>> barrier(final BarrierInput input) {
         return sendToSwitchExpectRpcResultFuture(input, BarrierOutput.class, "barrier-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<EchoOutput>> echo(final EchoInput input) {
+    private ListenableFuture<RpcResult<EchoOutput>> echo(final EchoInput input) {
         return sendToSwitchExpectRpcResultFuture(input, EchoOutput.class, "echo-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<EchoReplyOutput>> echoReply(final EchoReplyInput input) {
+    private ListenableFuture<RpcResult<EchoReplyOutput>> echoReply(final EchoReplyInput input) {
         return sendToSwitchFuture(input, "echo-reply sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ExperimenterOutput>> experimenter(final ExperimenterInput input) {
+    private ListenableFuture<RpcResult<ExperimenterOutput>> experimenter(final ExperimenterInput input) {
         return sendToSwitchFuture(input, "experimenter sending failed");
     }
 
-    @Override
     public ListenableFuture<RpcResult<FlowModOutput>> flowMod(final FlowModInput input) {
         return sendToSwitchFuture(input, "flow-mod sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetConfigOutput>> getConfig(final GetConfigInput input) {
+    private ListenableFuture<RpcResult<GetConfigOutput>> getConfig(final GetConfigInput input) {
         return sendToSwitchExpectRpcResultFuture(input, GetConfigOutput.class, "get-config-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetFeaturesOutput>> getFeatures(final GetFeaturesInput input) {
+    private ListenableFuture<RpcResult<GetFeaturesOutput>> getFeatures(final GetFeaturesInput input) {
         return sendToSwitchExpectRpcResultFuture(input, GetFeaturesOutput.class, "get-features-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetQueueConfigOutput>> getQueueConfig(final GetQueueConfigInput input) {
+    private ListenableFuture<RpcResult<GetQueueConfigOutput>> getQueueConfig(final GetQueueConfigInput input) {
         return sendToSwitchExpectRpcResultFuture(input, GetQueueConfigOutput.class,
                 "get-queue-config-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GroupModOutput>> groupMod(final GroupModInput input) {
+    private ListenableFuture<RpcResult<GroupModOutput>> groupMod(final GroupModInput input) {
         return sendToSwitchFuture(input, "group-mod-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<HelloOutput>> hello(final HelloInput input) {
+    private ListenableFuture<RpcResult<HelloOutput>> hello(final HelloInput input) {
         return sendToSwitchFuture(input, "hello-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<MeterModOutput>> meterMod(final MeterModInput input) {
+    private ListenableFuture<RpcResult<MeterModOutput>> meterMod(final MeterModInput input) {
         return sendToSwitchFuture(input, "meter-mod-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<PacketOutOutput>> packetOut(final PacketOutInput input) {
+    private ListenableFuture<RpcResult<PacketOutOutput>> packetOut(final PacketOutInput input) {
         return sendToSwitchFuture(input, "packet-out-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<MultipartRequestOutput>> multipartRequest(final MultipartRequestInput input) {
+    private ListenableFuture<RpcResult<MultipartRequestOutput>> multipartRequest(final MultipartRequestInput input) {
         return sendToSwitchFuture(input, "multi-part-request sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<PortModOutput>> portMod(final PortModInput input) {
+    private ListenableFuture<RpcResult<PortModOutput>> portMod(final PortModInput input) {
         return sendToSwitchFuture(input, "port-mod-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RoleRequestOutput>> roleRequest(final RoleRequestInput input) {
+    private ListenableFuture<RpcResult<RoleRequestOutput>> roleRequest(final RoleRequestInput input) {
         return sendToSwitchExpectRpcResultFuture(input, RoleRequestOutput.class,
                 "role-request-config-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
+    private ListenableFuture<RpcResult<SetConfigOutput>> setConfig(final SetConfigInput input) {
         return sendToSwitchFuture(input, "set-config-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<TableModOutput>> tableMod(final TableModInput input) {
+    private ListenableFuture<RpcResult<TableModOutput>> tableMod(final TableModInput input) {
         return sendToSwitchFuture(input, "table-mod-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetAsyncOutput>> getAsync(final GetAsyncInput input) {
+    private ListenableFuture<RpcResult<GetAsyncOutput>> getAsync(final GetAsyncInput input) {
         return sendToSwitchExpectRpcResultFuture(input, GetAsyncOutput.class, "get-async-input sending failed");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<SetAsyncOutput>> setAsync(final SetAsyncInput input) {
+    private ListenableFuture<RpcResult<SetAsyncOutput>> setAsync(final SetAsyncInput input) {
         return sendToSwitchFuture(input, "set-async-input sending failed");
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(Barrier.class, this::barrier)
+            .put(Echo.class, this::echo)
+            .put(EchoReply.class, this::echoReply)
+            .put(Experimenter.class, this::experimenter)
+            .put(FlowMod.class, this::flowMod)
+            .put(GetConfig.class, this::getConfig)
+            .put(GetFeatures.class, this::getFeatures)
+            .put(GetQueueConfig.class, this::getQueueConfig)
+            .put(GroupMod.class, this::groupMod)
+            .put(Hello.class, this::hello)
+            .put(MeterMod.class, this::meterMod)
+            .put(PacketOut.class, this::packetOut)
+            .put(MultipartRequest.class, this::multipartRequest)
+            .put(PortMod.class, this::portMod)
+            .put(RoleRequest.class, this::roleRequest)
+            .put(SetConfig.class, this::setConfig)
+            .put(TableMod.class, this::tableMod)
+            .put(GetAsync.class, this::getAsync)
+            .put(SetAsync.class, this::setAsync)
+            .build();
     }
 
     @Override

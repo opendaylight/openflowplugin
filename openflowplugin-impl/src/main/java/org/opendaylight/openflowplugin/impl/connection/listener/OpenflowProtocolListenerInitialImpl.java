@@ -53,6 +53,7 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
         builder.setData(echoRequestMessage.getData());
 
         connectionContext.getConnectionAdapter().echoReply(builder.build());
+
     }
 
     @Override

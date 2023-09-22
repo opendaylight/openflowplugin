@@ -8,13 +8,14 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesUpdateCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
@@ -33,10 +34,10 @@ import org.slf4j.LoggerFactory;
 public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatures, UpdateTableOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
-    private final SalTableService salTableService;
+    private final RpcConsumerRegistry rpcRegistry;
 
-    public TableForwarder(final SalTableService salTableService) {
-        this.salTableService = salTableService;
+    public TableForwarder(final RpcConsumerRegistry rpcRegistry) {
+        this.rpcRegistry = rpcRegistry;
     }
 
     @Override
@@ -47,8 +48,8 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
         final InstanceIdentifier<Table> iiToTable = nodeIdent.child(Table.class,
                 new TableKey(identifier.firstKeyOf(TableFeatures.class).getTableId()));
 
-        LOG.debug("Invoking SalTableService {}", nodeIdent);
-        return salTableService.updateTable(new UpdateTableInputBuilder()
+        LOG.debug("Invoking SalTableRpc {}", nodeIdent);
+        return rpcRegistry.getRpc(UpdateTable.class).invoke(new UpdateTableInputBuilder()
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setTableRef(new TableRef(iiToTable))
             .setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(BindingMap.of(update)).build())

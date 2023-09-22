@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.failure.ids.aug.FlatBatchFailureMeterIdCaseBuilder;
@@ -54,8 +55,7 @@ public final class FlatBatchMeterAdapters {
      * Adapt flat batch add meter.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.meters.service.rev160316.SalMetersBatchService#addMetersBatch(AddMetersBatchInput)}
+     * @return input suitable for {@link SalMetersBatchRpcs#addMetersBatch(AddMetersBatchInput)}
      */
     public static AddMetersBatchInput adaptFlatBatchAddMeter(final BatchPlanStep planStep, final NodeRef node) {
         final var batchMeters = planStep.<FlatBatchAddMeter>getTaskBag().stream()
@@ -75,8 +75,7 @@ public final class FlatBatchMeterAdapters {
      * Adapt flat batch remove meter.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.meters.service.rev160316.SalMetersBatchService#removeMetersBatch(RemoveMetersBatchInput)}
+     * @return input suitable for {@link SalMetersBatchRpcs#removeMetersBatch(RemoveMetersBatchInput)}
      */
     public static RemoveMetersBatchInput adaptFlatBatchRemoveMeter(final BatchPlanStep planStep, final NodeRef node) {
         final var batchMeters = planStep.<FlatBatchRemoveMeter>getTaskBag().stream()
@@ -96,8 +95,7 @@ public final class FlatBatchMeterAdapters {
      * Adapt flat batch update meter.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.meters.service.rev160316.SalMetersBatchService#updateMetersBatch(UpdateMetersBatchInput)}
+     * @return input suitable for {@link SalMetersBatchRpcs#updateMetersBatch(UpdateMetersBatchInput)}
      */
     public static UpdateMetersBatchInput adaptFlatBatchUpdateMeter(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchUpdateMeters> batchMeters = new ArrayList<>();

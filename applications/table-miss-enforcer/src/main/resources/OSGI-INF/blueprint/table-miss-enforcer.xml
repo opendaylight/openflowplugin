@@ -6,11 +6,11 @@
   <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
   <reference id="deviceOwnershipService" interface="org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService"/>
 
-  <odl:rpc-service id="flowService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+  <odl:rpc-service id="flowRpcs" interface="org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs"/>
 
   <bean id="LLDPPacketPuntEnforcer" class="org.opendaylight.openflowplugin.applications.tablemissenforcer.LLDPPacketPuntEnforcer"
           init-method="start" destroy-method="close">
-    <argument ref="flowService"/>
+    <argument ref="flowRpcs"/>
     <argument ref="dataBroker"/>
     <argument ref="deviceOwnershipService"/>
   </bean>

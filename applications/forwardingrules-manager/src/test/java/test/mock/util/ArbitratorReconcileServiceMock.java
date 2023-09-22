@@ -9,7 +9,6 @@
 package test.mock.util;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundleOutputBuilder;
@@ -19,15 +18,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class ArbitratorReconcileServiceMock implements ArbitratorReconcileService {
-    @Override
-    public ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
+public class ArbitratorReconcileServiceMock {
+    private ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
             CommitActiveBundleInput input) {
         return RpcResultBuilder.success(new CommitActiveBundleOutputBuilder().setResult(null).build()).buildFuture();
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(
+    private ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(
             GetActiveBundleInput input) {
         return RpcResultBuilder.success((new GetActiveBundleOutputBuilder()
                 .setResult(null).build())).buildFuture();

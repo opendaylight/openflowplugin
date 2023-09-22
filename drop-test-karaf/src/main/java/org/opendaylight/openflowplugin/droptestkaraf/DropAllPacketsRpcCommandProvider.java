@@ -15,7 +15,7 @@ import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
 
 @Command(scope = "drop-test", name = "dropAllPacketsRpc",
-         description = "drop packet responder involving SalFlowService")
+         description = "drop packet responder involving SalFlowRpcs")
 public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {
 
     @Argument(index = 0, name = "on-off",

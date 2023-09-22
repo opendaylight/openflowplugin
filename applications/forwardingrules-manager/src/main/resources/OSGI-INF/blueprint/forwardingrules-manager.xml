@@ -2,12 +2,12 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
         odl:use-default-for-reference-types="true">
-  <bean id="frmReconciliationServiceImpl"
-        class="org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationServiceImpl">
+  <bean id="frmReconciliationRpc"
+        class="org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationRpc">
     <argument ref="forwardingRulesManagerImpl"/>
   </bean>
-  <service ref="frmReconciliationServiceImpl"
-           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
+  <service ref="frmReconciliationRpc"
+           interface="org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationRpc"/>
 
   <bean id="reconciliationJMXServiceMBean"
         class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">

@@ -19,12 +19,13 @@ import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -38,14 +39,14 @@ public class FlowWriterDirectOFRpc {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterDirectOFRpc.class);
     private final DataBroker dataBroker;
-    private final SalFlowService flowService;
+    private final SalFlowRpcs flowRpcs;
     private final ExecutorService flowPusher;
     private static final long PAUSE_BETWEEN_BATCH_MILLIS = 40;
 
-    public FlowWriterDirectOFRpc(final DataBroker dataBroker, final SalFlowService salFlowService,
+    public FlowWriterDirectOFRpc(final DataBroker dataBroker, final SalFlowRpcs salFlowRpcs,
             final ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
-        this.flowService = salFlowService;
+        this.flowRpcs = salFlowRpcs;
         this.flowPusher = flowPusher;
     }
 
@@ -133,7 +134,8 @@ public class FlowWriterDirectOFRpc {
                 AddFlowInput addFlowInput = builder.build();
 
                 LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId, addFlowInput);
-                LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
+                LoggingFutures.addErrorLogging(flowRpcs.getRpcClassToInstanceMap().getInstance(AddFlow.class)
+                    .invoke(addFlowInput), LOG, "addFlow");
 
                 if (i % batchSize == 0) {
                     try {

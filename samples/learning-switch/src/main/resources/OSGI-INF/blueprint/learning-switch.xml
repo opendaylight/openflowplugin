@@ -6,13 +6,13 @@
   <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
   <reference id="notificationService" interface="org.opendaylight.mdsal.binding.api.NotificationService"/>
 
-  <odl:rpc-service id="packetProcessingService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
+  <odl:rpc-service id="packetProcessingRpc" interface="org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc"/>
 
   <bean id="learningSwitch" class="org.opendaylight.openflowplugin.learningswitch.multi.LearningSwitchManagerMultiImpl"
       init-method="start" destroy-method="stop">
     <property name="dataBroker" ref="dataBroker"/>
     <property name="notificationService" ref="notificationService"/>
-    <property name="packetProcessingService" ref="packetProcessingService"/>
+    <property name="packetProcessingRpc" ref="packetProcessingRpc"/>
   </bean>
 
 </blueprint>

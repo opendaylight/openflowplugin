@@ -12,11 +12,11 @@ import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
@@ -38,7 +38,7 @@ public class LearningSwitchManagerSimpleImpl
 
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerSimpleImpl.class);
     private NotificationService notificationService;
-    private PacketProcessingService packetProcessingService;
+    private PacketProcessingRpc packetProcessingRpc;
     private DataBroker data;
     private Registration packetInRegistration;
     private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
@@ -54,14 +54,14 @@ public class LearningSwitchManagerSimpleImpl
     }
 
     /**
-     * Sets the PacketProcessingService.
+     * Sets the PacketProcessingRpc.
      *
-     * @param packetProcessingService the packetProcessingService to set
+     * @param packetProcessingRpc the packetProcessingRpc to set
      */
     @Override
-    public void setPacketProcessingService(
-            PacketProcessingService packetProcessingService) {
-        this.packetProcessingService = packetProcessingService;
+    public void setPacketProcessingRpc(
+            PacketProcessingRpc packetProcessingRpc) {
+        this.packetProcessingRpc = packetProcessingRpc;
     }
 
     /**
@@ -81,7 +81,7 @@ public class LearningSwitchManagerSimpleImpl
         FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
 
         LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
-                packetProcessingService, this);
+                packetProcessingRpc, this);
         packetInRegistration = notificationService.registerListener(PacketReceived.class, learningSwitchHandler);
 
         WakeupOnNode wakeupListener = new WakeupOnNode();

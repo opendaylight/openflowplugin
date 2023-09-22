@@ -25,10 +25,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
@@ -85,8 +88,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-        LoggingFutures.addErrorLogging(this.provider.getSalMeterService().removeMeter(builder.build()), LOG,
-            "removeMeter");
+        LoggingFutures.addErrorLogging(this.provider.getRpcRegistry().getRpc(RemoveMeter.class).invoke(builder.build()),
+            LOG, "removeMeter");
     }
 
     @Override
@@ -98,7 +101,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalMeterService().removeMeter(builder.build());
+        return this.provider.getRpcRegistry().getRpc(RemoveMeter.class).invoke(builder.build());
     }
 
     @Override
@@ -113,8 +116,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
         builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
 
-        LoggingFutures.addErrorLogging(this.provider.getSalMeterService().updateMeter(builder.build()), LOG,
-            "updateMeter");
+        LoggingFutures.addErrorLogging(this.provider.getRpcRegistry().getRpc(UpdateMeter.class).invoke(builder.build()),
+            LOG, "updateMeter");
     }
 
     @Override
@@ -126,7 +129,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalMeterService().addMeter(builder.build());
+        return this.provider.getRpcRegistry().getRpc(AddMeter.class).invoke(builder.build());
     }
 
     @Override

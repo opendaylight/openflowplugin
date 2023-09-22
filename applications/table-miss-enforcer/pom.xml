@@ -43,6 +43,10 @@
           <artifactId>device-ownership-service</artifactId>
           <version>${project.version}</version>
       </dependency>
+      <dependency>
+          <groupId>org.opendaylight.openflowplugin</groupId>
+          <artifactId>openflowplugin-impl</artifactId>
+      </dependency>
   </dependencies>
 
 </project>

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.doReturn;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.RemovalListener;
+import com.google.common.collect.ClassToInstanceMap;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;
 import io.netty.channel.ChannelPromise;
@@ -25,26 +26,46 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Barrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Echo;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Experimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsync;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetAsyncInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetQueueConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Hello;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOut;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsync;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -80,6 +101,7 @@ public class ConnectionAdapterImpl02Test {
     @Mock GetAsyncInput getAsyncInput;
     @Mock SetAsyncInput setAsyncInput;
     private ConnectionAdapterImpl adapter;
+    private ClassToInstanceMap<Rpc<?, ?>> rpcMap;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
     private OfHeader responseOfCall;
 
@@ -124,83 +146,84 @@ public class ConnectionAdapterImpl02Test {
         final EmbeddedChannel embChannel = new EmbeddedChannel(new EmbededChannelHandler());
         adapter = new ConnectionAdapterImpl(embChannel, InetSocketAddress.createUnresolved("localhost", 9876), true,
                 CHANNEL_OUTBOUND_QUEUE_SIZE);
+        rpcMap = adapter.getRpcClassToInstanceMap();
         cache = CacheBuilder.newBuilder().concurrencyLevel(1).expireAfterWrite(
                 RPC_RESPONSE_EXPIRATION, TimeUnit.MINUTES).removalListener(REMOVAL_LISTENER).build();
         adapter.setResponseCache(cache);
         // -- barrier
-        adapter.barrier(barrierInput);
+        rpcMap.getInstance(Barrier.class).invoke(barrierInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - barrier", barrierInput, responseOfCall);
         // -- echo
-        adapter.echo(echoInput);
+        rpcMap.getInstance(Echo.class).invoke(echoInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - echo", echoInput, responseOfCall);
         // -- echoReply
-        adapter.echoReply(echoReplyInput);
+        rpcMap.getInstance(EchoReply.class).invoke(echoReplyInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - echoReply",echoReplyInput, responseOfCall);
         // -- experimenter
-        adapter.experimenter(experimenterInput);
+        rpcMap.getInstance(Experimenter.class).invoke(experimenterInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - experimenter",experimenterInput, responseOfCall);
         // -- flowMod
-        adapter.flowMod(flowModInput);
+        rpcMap.getInstance(FlowMod.class).invoke(flowModInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - flowMod", flowModInput, responseOfCall);
         // -- getConfig
-        adapter.getConfig(getConfigInput);
+        rpcMap.getInstance(GetConfig.class).invoke(getConfigInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - getConfig", getConfigInput, responseOfCall);
         // -- getFeatures
-        adapter.getFeatures(getFeaturesInput);
+        rpcMap.getInstance(GetFeatures.class).invoke(getFeaturesInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - getFeatures",getFeaturesInput, responseOfCall);
         // -- getQueueConfig
-        adapter.getQueueConfig(getQueueConfigInput);
+        rpcMap.getInstance(GetQueueConfig.class).invoke(getQueueConfigInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - getQueueConfig",getQueueConfigInput, responseOfCall);
         // -- groupMod
-        adapter.groupMod(groupModInput);
+        rpcMap.getInstance(GroupMod.class).invoke(groupModInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - groupMod", groupModInput, responseOfCall);
         // -- hello
-        adapter.hello(helloInput);
+        rpcMap.getInstance(Hello.class).invoke(helloInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - helloInput",helloInput, responseOfCall);
         // -- meterMod
-        adapter.meterMod(meterModInput);
+        rpcMap.getInstance(MeterMod.class).invoke(meterModInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - meterMod",meterModInput, responseOfCall);
         // -- packetOut
-        adapter.packetOut(packetOutInput);
+        rpcMap.getInstance(PacketOut.class).invoke(packetOutInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - packetOut",packetOutInput, responseOfCall);
         // -- multipartRequest
-        adapter.multipartRequest(multipartRequestInput);
+        rpcMap.getInstance(MultipartRequest.class).invoke(multipartRequestInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - multipartRequest", multipartRequestInput, responseOfCall);
         // -- portMod
-        adapter.portMod(portModInput);
+        rpcMap.getInstance(PortMod.class).invoke(portModInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - portMod", portModInput, responseOfCall);
         // -- roleRequest
-        adapter.roleRequest(roleRequestInput);
+        rpcMap.getInstance(RoleRequest.class).invoke(roleRequestInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - roleRequest", roleRequestInput, responseOfCall);
         // -- setConfig
-        adapter.setConfig(setConfigInput);
+        rpcMap.getInstance(SetConfig.class).invoke(setConfigInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - setConfig",setConfigInput, responseOfCall);
         // -- tableMod
-        adapter.tableMod(tableModInput);
+        rpcMap.getInstance(TableMod.class).invoke(tableModInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - tableMod", tableModInput, responseOfCall);
         // -- getAsync
-        adapter.getAsync(getAsyncInput);
+        rpcMap.getInstance(GetAsync.class).invoke(getAsyncInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - getAsync", getAsyncInput, responseOfCall);
         // -- setAsync
-        adapter.setAsync(setAsyncInput);
+        rpcMap.getInstance(SetAsync.class).invoke(setAsyncInput);
         embChannel.runPendingTasks();
         Assert.assertEquals("Wrong - setAsync", setAsyncInput, responseOfCall);
         adapter.disconnect();

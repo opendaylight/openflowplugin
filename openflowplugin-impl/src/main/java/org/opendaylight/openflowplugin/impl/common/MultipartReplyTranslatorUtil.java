@@ -458,7 +458,7 @@ public final class MultipartReplyTranslatorUtil {
     private static MultipartReplyFlowTableStats translateTable(final MultipartReply msg) {
         final var salFlowStats = ((MultipartReplyTableCase) msg.getMultipartReplyBody()).getMultipartReplyTable()
             .nonnullTableStats().stream()
-            //TODO: Duplicate code: look at OpendaylightFlowTableStatisticsServiceImpl method transformToNotification
+            //TODO: Duplicate code: look at OpendaylightFlowTableStatisticsRpc method transformToNotification
             .map(swTableStats -> new FlowTableAndStatisticsMapBuilder()
                 .setActiveFlows(new Counter32(swTableStats.getActiveCount()))
                 .setPacketsLookedUp(new Counter64(swTableStats.getLookupCount()))

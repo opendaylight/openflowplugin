@@ -5,13 +5,13 @@
 
   <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-  <odl:rpc-service id="flowService"
-      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+  <odl:rpc-service id="flowRpcs"
+      interface="org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs"/>
 
-  <bean id="bulkFlowService" class="org.opendaylight.openflowplugin.applications.bulk.o.matic.SalBulkFlowServiceImpl">
-    <argument ref="flowService"/>
+  <bean id="bulkFlowService" class="org.opendaylight.openflowplugin.applications.bulk.o.matic.SalBulkFlowRpcs">
+    <argument ref="flowRpcs"/>
     <argument ref="dataBroker"/>
   </bean>
 
-  <odl:rpc-implementation ref="bulkFlowService"/>
+  <odl:rpc-implementation ref="bulkFlowRpcs"/>
 </blueprint>

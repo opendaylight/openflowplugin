@@ -15,6 +15,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.failure.ids.aug.FlatBatchFailureGroupIdCaseBuilder;
@@ -53,8 +54,7 @@ public final class FlatBatchGroupAdapters {
      * Adapt flat batch add group.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.groups.service.rev160315.SalGroupsBatchService#addGroupsBatch(AddGroupsBatchInput)}
+     * @return input suitable for {@link SalGroupsBatchRpcs#addGroupsBatch(AddGroupsBatchInput)}
      */
     public static AddGroupsBatchInput adaptFlatBatchAddGroup(final BatchPlanStep planStep, final NodeRef node) {
         final var batchGroups = planStep.<FlatBatchAddGroup>getTaskBag().stream()
@@ -74,8 +74,7 @@ public final class FlatBatchGroupAdapters {
      * Adapt flat batch remove group.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.groups.service.rev160315.SalGroupsBatchService#removeGroupsBatch(RemoveGroupsBatchInput)}
+     * @return input suitable for {@link SalGroupsBatchRpcs#removeGroupsBatch(RemoveGroupsBatchInput)}
      */
     public static RemoveGroupsBatchInput adaptFlatBatchRemoveGroup(final BatchPlanStep planStep, final NodeRef node) {
         final var batchGroups = planStep.<FlatBatchRemoveGroup>getTaskBag().stream()
@@ -95,8 +94,7 @@ public final class FlatBatchGroupAdapters {
      * Adapt flat batch update group.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.groups.service.rev160315.SalGroupsBatchService#updateGroupsBatch(UpdateGroupsBatchInput)}
+     * @return input suitable for {@link SalGroupsBatchRpcs#updateGroupsBatch(UpdateGroupsBatchInput)}
      */
     public static UpdateGroupsBatchInput adaptFlatBatchUpdateGroup(final BatchPlanStep planStep, final NodeRef node) {
         final List<BatchUpdateGroups> batchGroups = new ArrayList<>();

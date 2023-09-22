@@ -24,12 +24,10 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
-import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsRpcs;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -78,23 +76,21 @@ public class MdSalRegistrationUtilsTest {
                                                 mockedDeviceContext,
                                                 extensionConverterProvider,
                                                 convertorManager);
-        verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
-                any(), any(RpcService.class));
+        verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementations(any());
     }
 
     @Test
     public void registerStatCompatibilityServices() {
-        final OpendaylightFlowStatisticsService flowStatService = OpendaylightFlowStatisticsServiceImpl
+        final OpendaylightFlowStatisticsRpcs flowStatService = OpendaylightFlowStatisticsRpcs
                 .createWithOook(mockedRpcContext, mockedDeviceContext, convertorManager);
 
-        when(mockedRpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class)).thenReturn(
-                flowStatService);
+        when(mockedRpcContext.lookupRpcServices(OpendaylightFlowStatisticsRpcs.class)).thenReturn(flowStatService);
         MdSalRegistrationUtils.registerStatCompatibilityServices(mockedRpcContext,
                                                                  mockedDeviceContext,
                                                                  notificationPublishService,
                                                                  convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION))
-                .registerRpcServiceImplementation(any(), any(RpcService.class));
+                .registerRpcServiceImplementations(any());
     }
 
 }

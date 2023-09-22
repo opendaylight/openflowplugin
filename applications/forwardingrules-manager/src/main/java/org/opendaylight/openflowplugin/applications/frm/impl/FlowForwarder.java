@@ -39,18 +39,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
@@ -128,7 +132,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     // a given flow object is removed.
                     builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
                     final ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture =
-                            provider.getSalFlowService().removeFlow(builder.build());
+                            provider.getRpcRegistry().getRpc(RemoveFlow.class).invoke(builder.build());
                     LoggingFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
                     return resultFuture;
                 });
@@ -155,7 +159,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // into remove-flow input so that only a flow entry associated with
             // a given flow object is removed.
             builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-            resultFuture = provider.getSalFlowService().removeFlow(builder.build());
+            resultFuture = provider.getRpcRegistry().getRpc(RemoveFlow.class).invoke(builder.build());
         }
 
         return resultFuture;
@@ -192,7 +196,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
                                     getFlowId(identifier));
-                            return provider.getSalFlowService().updateFlow(builder.build());
+                            return provider.getRpcRegistry().getRpc(UpdateFlow.class).invoke(builder.build());
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
                             ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
@@ -207,7 +211,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
                     LOG.trace("The flow {} is not dependent on any group. Updating the flow",
                             getFlowId(identifier));
-                    return provider.getSalFlowService().updateFlow(builder.build());
+                    return provider.getRpcRegistry().getRpc(UpdateFlow.class).invoke(builder.build());
                 });
             }
         }
@@ -238,7 +242,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
                                     getFlowId(new FlowRef(identifier)));
-                            return provider.getSalFlowService().addFlow(builder.build());
+                            return provider.getRpcRegistry().getRpc(AddFlow.class).invoke(builder.build());
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
                             ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
@@ -252,7 +256,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
                     LOG.trace("The flow {} is not dependent on any group. Adding the flow",
                             getFlowId(new FlowRef(identifier)));
-                    return provider.getSalFlowService().addFlow(builder.build());
+                    return provider.getRpcRegistry().getRpc(AddFlow.class).invoke(builder.build());
                 });
             }
         }
@@ -340,7 +344,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 builder.setGroupRef(new GroupRef(nodeIdent));
                 builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
                 AddGroupInput addGroupInput = builder.build();
-                resultFuture = provider.getSalGroupService().addGroup(addGroupInput);
+                resultFuture = provider.getRpcRegistry().getRpc(AddGroup.class).invoke(addGroupInput);
             } else {
                 resultFuture = RpcResultBuilder.<AddGroupOutput>failed()
                         .withError(ErrorType.APPLICATION,
@@ -374,7 +378,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (rpcResult.isSuccessful() || rpcResult.getErrors().size() == 1
                     && rpcResult.getErrors().iterator().next().getMessage().contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                Futures.addCallback(provider.getSalFlowService().addFlow(addFlowInput),
+                Futures.addCallback(provider.getRpcRegistry().getRpc(AddFlow.class).invoke(addFlowInput),
                     new FutureCallback<RpcResult<AddFlowOutput>>() {
                         @Override
                         public void onSuccess(final RpcResult<AddFlowOutput> result) {
@@ -424,7 +428,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (rpcResult.isSuccessful() || rpcResult.getErrors().size() == 1
                     && rpcResult.getErrors().iterator().next().getMessage().contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                Futures.addCallback(provider.getSalFlowService().updateFlow(updateFlowInput),
+                Futures.addCallback(provider.getRpcRegistry().getRpc(UpdateFlow.class).invoke(updateFlowInput),
                     new FutureCallback<RpcResult<UpdateFlowOutput>>() {
                         @Override
                         public void onSuccess(final RpcResult<UpdateFlowOutput> result) {

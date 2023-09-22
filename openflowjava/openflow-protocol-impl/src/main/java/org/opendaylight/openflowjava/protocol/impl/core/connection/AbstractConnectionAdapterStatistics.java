@@ -13,6 +13,10 @@ import io.netty.channel.Channel;
 import java.net.InetSocketAddress;
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
+//import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowMod;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -39,7 +43,7 @@ abstract class AbstractConnectionAdapterStatistics extends AbstractConnectionAda
     @Override
     public ListenableFuture<RpcResult<FlowModOutput>> flowMod(final FlowModInput input) {
         statisticsCounters.incrementCounter(CounterEventTypes.DS_FLOW_MODS_ENTERED);
-        return super.flowMod(input);
+        return super.getRpcClassToInstanceMap().getInstance(FlowMod.class).invoke(input);
     }
 
     @Override

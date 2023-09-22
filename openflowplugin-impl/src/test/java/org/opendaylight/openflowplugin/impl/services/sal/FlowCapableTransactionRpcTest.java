@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2017 Pantheon Technologies s.r.o. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.opendaylight.openflowplugin.impl.services.sal;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Test;
+import org.opendaylight.openflowplugin.api.openflow.device.Xid;
+import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
+import org.opendaylight.yangtools.yang.common.Uint32;
+
+/**
+ * Test for {@link FlowCapableTransactionRpc}.
+ */
+public class FlowCapableTransactionRpcTest extends ServiceMocking {
+
+    private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
+    FlowCapableTransactionRpc flowCapableTransactionRpc;
+
+    @Override
+    protected void setup() {
+        flowCapableTransactionRpc =
+                new FlowCapableTransactionRpc(mockedRequestContextStack, mockedDeviceContext);
+    }
+
+    @Test
+    public void testBuildRequest() {
+        SendBarrierInput sendBarrierInput = buildSendBarrierInput();
+
+        final OfHeader request = flowCapableTransactionRpc.buildRequest(new Xid(DUMMY_XID_VALUE), sendBarrierInput);
+        assertEquals(DUMMY_XID_VALUE, request.getXid());
+        assertTrue(request instanceof BarrierInput);
+    }
+
+    @Test
+    public void testSendBarrier() {
+        SendBarrierInput sendBarrierInput = buildSendBarrierInput();
+        flowCapableTransactionRpc.getRpcClassToInstanceMap().getInstance(SendBarrier.class).invoke(sendBarrierInput);
+        verify(mockedRequestContextStack).createRequestContext();
+    }
+
+    private SendBarrierInput buildSendBarrierInput() {
+        return new SendBarrierInputBuilder()
+                .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier())).build();
+    }
+}

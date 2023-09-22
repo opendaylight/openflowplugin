@@ -40,6 +40,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -78,13 +79,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
@@ -137,7 +139,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     private final ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
-    private final SalBundleService salBundleService;
+    private final RpcConsumerRegistry rpcRegistry;
 
     private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
@@ -151,7 +153,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         this.serviceName = serviceName;
         this.priority = priority;
         this.resultState = resultState;
-        salBundleService = requireNonNull(manager.getSalBundleService(), "salBundleService can not be null!");
+        rpcRegistry = requireNonNull(manager.getRpcRegistry(), "salBundleRpcs can not be null!");
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
     }
 
@@ -238,7 +240,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 LOG.debug("Closing openflow bundle for device {}", dpnId);
                 /* Close previously opened bundle on the openflow switch if any */
                 ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
-                        = salBundleService.controlBundle(closeBundleInput);
+                        = rpcRegistry.getRpc(ControlBundle.class).invoke(closeBundleInput);
 
                 /* Open a new bundle on the switch */
                 ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
@@ -246,7 +248,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             if (rpcResult.isSuccessful()) {
                                 LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
                             }
-                            return salBundleService.controlBundle(openBundleInput);
+                            return rpcRegistry.getRpc(ControlBundle.class).invoke(openBundleInput);
                         }, service);
 
                     /* Push groups and flows via bundle add messages */
@@ -254,7 +256,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         = Futures.transformAsync(openBundle, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
                                 LOG.debug("Open bundle is successful for device {}", dpnId);
-                                return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
+                                return rpcRegistry.getRpc(AddBundleMessages.class).invoke(deleteAllFlowGroupsInput);
                             }
                             return Futures.immediateFuture(null);
                         }, service);
@@ -275,7 +277,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture =
                     Futures.transformAsync(addbundlesFuture, rpcResult -> {
                         LOG.debug("Adding bundle messages completed for device {}", dpnId);
-                        return salBundleService.controlBundle(commitBundleInput);
+                        return rpcRegistry.getRpc(ControlBundle.class).invoke(commitBundleInput);
                     }, service);
 
                 /* Bundles not supported for meters */

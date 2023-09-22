@@ -34,12 +34,13 @@ import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
@@ -61,7 +62,7 @@ public class LLDPDataTreeChangeListenerTest {
     private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
     @Mock
-    private SalFlowService flowService;
+    private SalFlowRpcs flowRpcs;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
@@ -71,8 +72,9 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Before
     public void setUp() {
-        doReturn(RpcResultBuilder.success().buildFuture()).when(flowService).addFlow(any());
-        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, mock(DataBroker.class),
+        doReturn(RpcResultBuilder.success().buildFuture()).when(flowRpcs).getRpcClassToInstanceMap()
+            .getInstance(AddFlow.class).invoke(any());
+        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowRpcs, mock(DataBroker.class),
                 deviceOwnershipService);
         final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
                 LogicalDatastoreType.OPERATIONAL, NODE_IID.augmentation(FlowCapableNode.class));
@@ -90,7 +92,7 @@ public class LLDPDataTreeChangeListenerTest {
     @Test
     public void testOnDataTreeChanged() {
         lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        verify(flowService).addFlow(addFlowInputCaptor.capture());
+        verify(flowRpcs).getRpcClassToInstanceMap().getInstance(AddFlow.class).invoke(addFlowInputCaptor.capture());
         AddFlowInput captured = addFlowInputCaptor.getValue();
         assertEquals(NODE_IID, captured.getNode().getValue());
     }

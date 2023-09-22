@@ -1,0 +1,215 @@
+/*
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+package org.opendaylight.openflowplugin.impl.statistics.services;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.util.concurrent.FutureCallback;
+import java.util.Collections;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicLong;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Captor;
+import org.mockito.Mockito;
+import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
+import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescription;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeatures;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupCapabilities;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupTypes;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumber;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.buckets.grouping.BucketsListBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupDescCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyGroupFeaturesCaseBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.MultipartReplyGroupBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.GroupStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group._case.multipart.reply.group.group.stats.BucketStatsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.MultipartReplyGroupDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.desc._case.multipart.reply.group.desc.GroupDescBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.group.features._case.MultipartReplyGroupFeaturesBuilder;
+import org.opendaylight.yangtools.yang.binding.Rpc;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint64;
+
+/**
+ * Test for {@link OpendaylightGroupStatisticsRpcs}.
+ */
+public class OpendaylightGroupStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
+
+    private static final org.opendaylight.yang.gen.v1.urn
+            .opendaylight.openflow.common.types.rev130731.GroupId GROUP_ID = new org.opendaylight.yang.gen.v1.urn
+                .opendaylight.openflow.common.types.rev130731.GroupId(Uint32.valueOf(123));
+    @Captor
+    private ArgumentCaptor<MultipartRequestInput> requestInput;
+
+    private OpendaylightGroupStatisticsRpcs groupStatisticsRpcs;
+    private ClassToInstanceMap<Rpc<?, ?>> rpcMap;
+
+    @Override
+    public void setUp() {
+        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
+        groupStatisticsRpcs = new OpendaylightGroupStatisticsRpcs(rqContextStack, deviceContext,
+                new AtomicLong(), notificationPublishService, convertorManager);
+
+        Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
+                .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
+        rpcMap = groupStatisticsRpcs.getRpcClassToInstanceMap();
+    }
+
+    @After
+    public void tearDown() {
+        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
+    }
+
+    @Test
+    public void testGetAllGroupStatistics() throws Exception {
+        GetAllGroupStatisticsInputBuilder input = new GetAllGroupStatisticsInputBuilder()
+                .setNode(createNodeRef("unitProt:123"));
+
+        rpcResult = buildGroupStatsResponse();
+
+        final Future<RpcResult<GetAllGroupStatisticsOutput>> resultFuture
+                = rpcMap.getInstance(GetAllGroupStatistics.class).invoke(input.build());
+
+        Assert.assertTrue(resultFuture.isDone());
+        final RpcResult<GetAllGroupStatisticsOutput> rpcResultCompatible = resultFuture.get();
+        Assert.assertTrue(rpcResultCompatible.isSuccessful());
+        Assert.assertEquals(MultipartType.OFPMPGROUP, requestInput.getValue().getType());
+    }
+
+    @Test
+    public void testGetGroupDescription() throws Exception {
+        GetGroupDescriptionInputBuilder input = new GetGroupDescriptionInputBuilder()
+                .setNode(createNodeRef("unitProt:123"));
+
+        rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
+                new MultipartReplyMessageBuilder()
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
+                        .setMultipartReplyBody(new MultipartReplyGroupDescCaseBuilder()
+                                .setMultipartReplyGroupDesc(new MultipartReplyGroupDescBuilder()
+                                        .setGroupDesc(Collections.singletonList(new GroupDescBuilder()
+                                                .setGroupId(GROUP_ID)
+                                                .setBucketsList(Collections.singletonList(new BucketsListBuilder()
+                                                        .setWatchGroup(Uint32.valueOf(51))
+                                                        .setWatchPort(new PortNumber(Uint32.valueOf(52)))
+                                                        .setWeight(Uint16.valueOf(53))
+                                                        .build()))
+                                                .setType(GroupType.OFPGTALL)
+                                                .build()))
+                                        .build())
+                                .build())
+                        .build()
+        )).build();
+
+        final Future<RpcResult<GetGroupDescriptionOutput>> resultFuture
+                = rpcMap.getInstance(GetGroupDescription.class).invoke(input.build());
+
+        Assert.assertTrue(resultFuture.isDone());
+        final RpcResult<GetGroupDescriptionOutput> rpcResult = resultFuture.get();
+        Assert.assertTrue(rpcResult.isSuccessful());
+        Assert.assertEquals(MultipartType.OFPMPGROUPDESC, requestInput.getValue().getType());
+    }
+
+    @Test
+    public void testGetGroupFeatures() throws Exception {
+        GetGroupFeaturesInputBuilder input = new GetGroupFeaturesInputBuilder()
+                .setNode(createNodeRef("unitProt:123"));
+
+        rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
+                new MultipartReplyMessageBuilder()
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
+                        .setMultipartReplyBody(new MultipartReplyGroupFeaturesCaseBuilder()
+                                .setMultipartReplyGroupFeatures(new MultipartReplyGroupFeaturesBuilder()
+                                        .setActionsBitmap(Collections.singletonList(new ActionType(true,
+                                                false, false, false, false, false, false, false, false, false, false,
+                                                false, false, false, false, false, false)))
+                                        .setCapabilities(new GroupCapabilities(true, false, false, false))
+                                        .setTypes(new GroupTypes(true, false, false, false))
+                                        .setMaxGroups(Collections.singletonList(Uint32.valueOf(5L)))
+                                        .build())
+                                .build())
+                        .build()
+        )).build();
+
+        final Future<RpcResult<GetGroupFeaturesOutput>> resultFuture
+                = rpcMap.getInstance(GetGroupFeatures.class).invoke(input.build());
+
+        Assert.assertTrue(resultFuture.isDone());
+        final RpcResult<GetGroupFeaturesOutput> rpcResult = resultFuture.get();
+        Assert.assertTrue(rpcResult.isSuccessful());
+        Assert.assertEquals(MultipartType.OFPMPGROUPFEATURES, requestInput.getValue().getType());
+    }
+
+    @Test
+    public void testGetGroupStatistics() throws Exception {
+        GetGroupStatisticsInputBuilder input = new GetGroupStatisticsInputBuilder()
+                .setNode(createNodeRef("unitProt:123"))
+                .setGroupId(new GroupId(Uint32.valueOf(21)));
+
+        rpcResult = buildGroupStatsResponse();
+
+        final Future<RpcResult<GetGroupStatisticsOutput>> resultFuture
+                = rpcMap.getInstance(GetGroupStatistics.class).invoke(input.build());
+
+        Assert.assertTrue(resultFuture.isDone());
+        final RpcResult<GetGroupStatisticsOutput> rpcResult = resultFuture.get();
+        Assert.assertTrue(rpcResult.isSuccessful());
+        Assert.assertEquals(MultipartType.OFPMPGROUP, requestInput.getValue().getType());
+    }
+
+    private static RpcResult<Object> buildGroupStatsResponse() {
+        return RpcResultBuilder.<Object>success(Collections.singletonList(
+                new MultipartReplyMessageBuilder()
+                        .setVersion(EncodeConstants.OF_VERSION_1_3)
+                        .setMultipartReplyBody(new MultipartReplyGroupCaseBuilder()
+                                .setMultipartReplyGroup(new MultipartReplyGroupBuilder()
+                                        .setGroupStats(Collections.singletonList(new GroupStatsBuilder()
+                                                .setByteCount(Uint64.valueOf(21))
+                                                .setPacketCount(Uint64.valueOf(22))
+                                                .setRefCount(Uint32.valueOf(23))
+                                                .setDurationSec(Uint32.valueOf(24))
+                                                .setDurationNsec(Uint32.valueOf(25))
+                                                .setGroupId(GROUP_ID)
+                                                .setBucketStats(Collections.singletonList(new BucketStatsBuilder()
+                                                        .setByteCount(Uint64.valueOf(26))
+                                                        .setPacketCount(Uint64.valueOf(27))
+                                                        .build()))
+                                                .build()))
+                                        .build())
+                                .build())
+                        .build()
+        )).build();
+    }
+}

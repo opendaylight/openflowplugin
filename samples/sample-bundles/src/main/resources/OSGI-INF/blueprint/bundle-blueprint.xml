@@ -5,12 +5,12 @@
 
   <reference id="dataBroker" interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-  <odl:rpc-service id="salBundleService" interface="org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService"/>
+  <odl:rpc-service id="salBundleRpcs" interface="org.opendaylight.openflowplugin.impl.services.sal.SalBundleRpcs"/>
 
   <bean id="sampleListener" class="org.opendaylight.openflowplugin.samples.sample.bundles.SampleFlowCapableNodeListener"
           init-method="init" destroy-method="close">
     <argument ref="dataBroker"/>
-    <argument ref="salBundleService"/>
+    <argument ref="salBundleRpcs"/>
   </bean>
 
 </blueprint>

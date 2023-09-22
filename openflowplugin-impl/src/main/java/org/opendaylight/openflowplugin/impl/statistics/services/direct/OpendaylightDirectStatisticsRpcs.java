@@ -1,0 +1,103 @@
+/*
+ * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html
+ */
+
+package org.opendaylight.openflowplugin.impl.statistics.services.direct;
+
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
+import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatistics;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsOutput;
+import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.yang.binding.Rpc;
+import org.opendaylight.yangtools.yang.common.ErrorType;
+import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+
+/**
+ * The Opendaylight direct statistics service.
+ * This service handles RPC requests, sends them to registered handlers and returns their replies.
+ */
+public class OpendaylightDirectStatisticsRpcs {
+    private final OpendaylightDirectStatisticsServiceProvider provider;
+
+    /**
+     * Instantiates a new Opendaylight direct statistics service.
+     *
+     * @param provider the openflow direct statistics service provider
+     */
+    public OpendaylightDirectStatisticsRpcs(final OpendaylightDirectStatisticsServiceProvider provider) {
+        this.provider = provider;
+    }
+
+    @SuppressWarnings("unchecked")
+    private ListenableFuture<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(GetGroupStatisticsInput input) {
+        return provider.lookup(AbstractGroupDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractGroupDirectStatisticsService.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private ListenableFuture<RpcResult<GetQueueStatisticsOutput>> getQueueStatistics(GetQueueStatisticsInput input) {
+        return provider.lookup(AbstractQueueDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractQueueDirectStatisticsService.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private ListenableFuture<RpcResult<GetFlowStatisticsOutput>> getFlowStatistics(GetFlowStatisticsInput input) {
+        return provider.lookup(AbstractFlowDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractFlowDirectStatisticsService.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private ListenableFuture<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(GetMeterStatisticsInput input) {
+        return provider.lookup(AbstractMeterDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractMeterDirectStatisticsService.class));
+    }
+
+    @SuppressWarnings("unchecked")
+    private ListenableFuture<RpcResult<GetNodeConnectorStatisticsOutput>>
+            getNodeConnectorStatistics(GetNodeConnectorStatisticsInput input) {
+        return provider.lookup(AbstractPortDirectStatisticsService.class)
+                .map(service -> service.handleAndReply(input))
+                .orElse(missingImplementation(AbstractPortDirectStatisticsService.class));
+    }
+
+    private static <T extends DataObject> ListenableFuture<RpcResult<T>> missingImplementation(Class service) {
+        return RpcResultBuilder.<T>failed().withError(
+                ErrorType.APPLICATION,
+                String.format("No implementation found for direct statistics service %s.", service.getCanonicalName()))
+                .buildFuture();
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(GetGroupStatistics.class, this::getGroupStatistics)
+            .put(GetQueueStatistics.class, this::getQueueStatistics)
+            .put(GetFlowStatistics.class, this::getFlowStatistics)
+            .put(GetMeterStatistics.class, this::getMeterStatistics)
+            .put(GetNodeConnectorStatistics.class, this::getNodeConnectorStatistics)
+            .build();
+    }
+}

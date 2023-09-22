@@ -6,13 +6,13 @@
         class="org.opendaylight.openflowplugin.openflow.ofswitch.config.DefaultConfigPusher"
         init-method="start"
         destroy-method="close">
-    <argument ref="nodeConfigService"/>
+    <argument ref="nodeConfigRpc"/>
     <argument ref="dataBroker"/>
     <argument ref="deviceOwnershipService"/>
   </bean>
 
-  <odl:rpc-service id="nodeConfigService"
-                   interface="org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService"/>
+  <odl:rpc-service id="nodeConfigRpc"
+                   interface="org.opendaylight.openflowplugin.impl.services.sal.NodeConfigRpc"/>
 
   <reference id="dataBroker"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>

@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
@@ -92,14 +93,14 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         builder.setOriginalTable(new OriginalTableBuilder()
             .setTableFeatures(Collections.singletonMap(originalTableFeatures.key(), originalTableFeatures))
             .build());
-        LOG.debug("Invoking SalTableService ");
+        LOG.debug("Invoking SalTableRpc ");
 
-        if (this.provider.getSalTableService() != null) {
-            LOG.debug(" Handle to SalTableServices {}", this.provider.getSalTableService());
+        if (this.provider.getRpcRegistry() != null) {
+            LOG.debug(" Handle to SalTableRpcs {}", this.provider.getRpcRegistry());
         }
 
-        LoggingFutures.addErrorLogging(this.provider.getSalTableService().updateTable(builder.build()), LOG,
-            "updateTable");
+        LoggingFutures.addErrorLogging(this.provider.getRpcRegistry().getRpc(UpdateTable.class).invoke(builder.build()),
+            LOG,"updateTable");
     }
 
     @Override

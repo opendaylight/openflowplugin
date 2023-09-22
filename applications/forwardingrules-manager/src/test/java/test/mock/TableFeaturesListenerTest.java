@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import test.mock.util.AbstractFRMTest;
-import test.mock.util.SalTableServiceMock;
+import test.mock.util.SalTableRpcMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TableFeaturesListenerTest extends AbstractFRMTest {
@@ -67,10 +67,10 @@ public class TableFeaturesListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.commit());
 
-        SalTableServiceMock salTableServiceMock =
-                (SalTableServiceMock) getForwardingRulesManager().getSalTableService();
-        await().atMost(10, SECONDS).until(() -> salTableServiceMock.getUpdateTableInput().size() == 1);
-        List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();
+        SalTableRpcMock salTableRpcMock =
+                (SalTableRpcMock) getForwardingRulesManager().getSalTableService();
+        await().atMost(10, SECONDS).until(() -> salTableRpcMock.getUpdateTableInput().size() == 1);
+        List<UpdateTableInput> updateTableInputs = salTableRpcMock.getUpdateTableInput();
         assertEquals(1, updateTableInputs.size());
         assertEquals("DOM-0", updateTableInputs.get(0).getTransactionUri().getValue());
     }

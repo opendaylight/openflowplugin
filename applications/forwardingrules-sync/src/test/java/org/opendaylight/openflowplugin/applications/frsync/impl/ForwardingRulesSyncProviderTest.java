@@ -18,9 +18,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
  * Test for {@link ForwardingRulesSyncProvider}.

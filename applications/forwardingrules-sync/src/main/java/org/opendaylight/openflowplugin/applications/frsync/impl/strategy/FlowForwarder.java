@@ -12,16 +12,19 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
@@ -44,10 +47,10 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private static final String TABLE_ID_MISMATCH = "tableId mismatch";
-    private final SalFlowService salFlowService;
+    private final SalFlowRpcs salFlowRpcs;
 
-    public FlowForwarder(final SalFlowService salFlowService) {
-        this.salFlowService = salFlowService;
+    public FlowForwarder(final SalFlowRpcs salFlowRpcs) {
+        this.salFlowRpcs = salFlowRpcs;
     }
 
     @Override
@@ -67,7 +70,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             // always needs to set strict flag into remove-flow input so that
             // only a flow entry associated with a given flow object will be removed.
             builder.setStrict(Boolean.TRUE);
-            return salFlowService.removeFlow(builder.build());
+            return salFlowRpcs.getRpcClassToInstanceMap().getInstance(RemoveFlow.class).invoke(builder.build());
         } else {
             return RpcResultBuilder.<RemoveFlowOutput>failed()
                     .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
@@ -94,7 +97,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
             builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
 
-            output = salFlowService.updateFlow(builder.build());
+            output = salFlowRpcs.getRpcClassToInstanceMap().getInstance(UpdateFlow.class).invoke(builder.build());
         } else {
             output = RpcResultBuilder.<UpdateFlowOutput>failed()
                     .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
@@ -118,7 +121,7 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
             builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
             builder.setFlowRef(new FlowRef(identifier));
             builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
-            output = salFlowService.addFlow(builder.build());
+            output = salFlowRpcs.getRpcClassToInstanceMap().getInstance(AddFlow.class).invoke(builder.build());
         } else {
             output = RpcResultBuilder.<AddFlowOutput>failed().withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)
                 .buildFuture();

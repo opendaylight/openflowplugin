@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -34,8 +35,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -56,7 +57,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
 
     private final DataTreeChangeListenerRegistrationHolder registrationPublisher;
     private final FlowCommitWrapper dataStoreAccessor;
-    private final PacketProcessingService packetProcessingService;
+    private final PacketProcessingRpc packetProcessingRpc;
 
     private volatile boolean isLearning = false;
 
@@ -71,10 +72,10 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     private final Set<String> coveredMacPaths = new HashSet<>();
 
     public LearningSwitchHandlerSimpleImpl(@NonNull FlowCommitWrapper dataStoreAccessor,
-            @NonNull PacketProcessingService packetProcessingService,
+            @NonNull PacketProcessingRpc packetProcessingRpc,
             @Nullable DataTreeChangeListenerRegistrationHolder registrationPublisher) {
         this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
-        this.packetProcessingService = Objects.requireNonNull(packetProcessingService);
+        this.packetProcessingRpc = Objects.requireNonNull(packetProcessingRpc);
         this.registrationPublisher = registrationPublisher;
     }
 
@@ -225,6 +226,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
                 .setEgress(egress)
                 .setIngress(ingress)
                 .build();
-        LoggingFutures.addErrorLogging(packetProcessingService.transmitPacket(input), LOG, "transmitPacket");
+        LoggingFutures.addErrorLogging(packetProcessingRpc.getRpcClassToInstanceMap().getInstance(TransmitPacket.class)
+            .invoke(input), LOG, "transmitPacket");
     }
 }

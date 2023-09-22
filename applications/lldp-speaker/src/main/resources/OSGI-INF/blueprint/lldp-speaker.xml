@@ -15,12 +15,12 @@
     ]]></odl:default-config>
   </odl:clustered-app-config>
 
-  <odl:action-service id="packetProcessingService"
-      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
+  <odl:action-service id="packetProcessingRpc"
+      interface="org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc"/>
 
   <bean id="lldpSpeaker" class="org.opendaylight.openflowplugin.applications.lldpspeaker.LLDPSpeaker"
           destroy-method="close">
-    <argument ref="packetProcessingService"/>
+    <argument ref="packetProcessingRpc"/>
     <argument ref="lldpSpeakerConfig"/>
     <argument ref="deviceOwnershipService"/>
   </bean>
@@ -35,9 +35,9 @@
     </argument>
   </bean>
 
-  <bean id="operationalStatusChangeService" class="org.opendaylight.openflowplugin.applications.lldpspeaker.OperationalStatusChangeService">
+  <bean id="operationalStatusChangeService" class="org.opendaylight.openflowplugin.applications.lldpspeaker.OperationalStatusChangeRpcs">
     <argument ref="lldpSpeaker"/>
   </bean>
 
-  <odl:rpc-implementation ref="operationalStatusChangeService"/>
+  <odl:rpc-implementation ref="operationalStatusChangeRpcs"/>
 </blueprint>

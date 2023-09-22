@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -29,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
@@ -121,18 +122,19 @@ public final class ReconcileUtil {
      * Flushes a chain barrier.
      *
      * @param nodeIdent flow capable node path - target device for routed rpc
-     * @param flowCapableTransactionService barrier rpc service
+     * @param flowCapableTransactionRpc barrier rpc service
      * @return async barrier result
      */
     public static AsyncFunction<RpcResult<Void>, RpcResult<Void>> chainBarrierFlush(
             final InstanceIdentifier<Node> nodeIdent,
-            final FlowCapableTransactionService flowCapableTransactionService) {
+            final FlowCapableTransactionRpc flowCapableTransactionRpc) {
         return input -> {
             final SendBarrierInput barrierInput = new SendBarrierInputBuilder()
                     .setNode(new NodeRef(nodeIdent))
                     .build();
             ListenableFuture<RpcResult<SendBarrierOutput>> result
-                    = flowCapableTransactionService.sendBarrier(barrierInput);
+                    = flowCapableTransactionRpc.getRpcClassToInstanceMap().getInstance(SendBarrier.class)
+                .invoke(barrierInput);
 
             return Futures.transformAsync(result, input1 -> {
                 if (input1.isSuccessful()) {

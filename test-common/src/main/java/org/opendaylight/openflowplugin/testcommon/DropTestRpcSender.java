@@ -12,10 +12,11 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
@@ -32,15 +33,15 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
- * device using {@link SalFlowService} strategy.
+ * device using {@link SalFlowRpcs} strategy.
  */
 public class DropTestRpcSender extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
 
-    private SalFlowService flowService;
+    private SalFlowRpcs flowRpcs;
 
-    public void setFlowService(final SalFlowService flowService) {
-        this.flowService = flowService;
+    public void setFlowRpcs(final SalFlowRpcs flowRpcs) {
+        this.flowRpcs = flowRpcs;
     }
 
     private static final ThreadLocal<AddFlowInputBuilder> BUILDER = ThreadLocal.withInitial(() -> {
@@ -82,8 +83,9 @@ public class DropTestRpcSender extends AbstractDropTest {
 
         // Add flow
         final AddFlowInput flow = fb.build();
-        LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
-        ListenableFuture<RpcResult<AddFlowOutput>> result = flowService.addFlow(flow);
+        LOG.debug("onPacketReceived - About to write flow (via SalFlowRpcs) {}", flow);
+        ListenableFuture<RpcResult<AddFlowOutput>> result = flowRpcs.getRpcClassToInstanceMap()
+            .getInstance(AddFlow.class).invoke(flow);
         Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> result) {

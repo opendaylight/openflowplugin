@@ -20,15 +20,16 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchAddFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchRemoveFlowCase;
@@ -103,7 +104,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyFlatBatchImpl.class);
 
-    private SalFlatBatchService flatBatchService;
+    private RpcConsumerRegistry rpcRegistry;
     private TableForwarder tableForwarder;
 
     @Override
@@ -151,7 +152,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
                     .build();
 
             final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
-                    flatBatchService.processFlatBatch(flatBatchInput);
+                    rpcRegistry.getRpc(ProcessFlatBatch.class).invoke(flatBatchInput);
 
             if (LOG.isDebugEnabled()) {
                 Futures.addCallback(rpcResultFuture, createCounterCallback(batchBag, batchOrder, counters),
@@ -477,8 +478,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         return order;
     }
 
-    public SyncPlanPushStrategyFlatBatchImpl setFlatBatchService(final SalFlatBatchService flatBatchService) {
-        this.flatBatchService = flatBatchService;
+    public SyncPlanPushStrategyFlatBatchImpl setRpcRegistry(final RpcConsumerRegistry rpcRegistry) {
+        this.rpcRegistry = rpcRegistry;
         return this;
     }
 

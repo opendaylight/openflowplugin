@@ -13,6 +13,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Map;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.failure.ids.aug.FlatBatchFailureFlowIdCaseBuilder;
@@ -30,9 +31,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.add.flows.batch.input.BatchAddFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.add.flows.batch.input.BatchAddFlowsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.add.flows.batch.input.BatchAddFlowsKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.remove.flows.batch.input.BatchRemoveFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.remove.flows.batch.input.BatchRemoveFlowsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.remove.flows.batch.input.BatchRemoveFlowsKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.update.flows.batch.input.BatchUpdateFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.update.flows.batch.input.BatchUpdateFlowsBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.update.flows.batch.input.BatchUpdateFlowsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -51,8 +58,7 @@ public final class FlatBatchFlowAdapters {
      * Adapt flat batch add flow.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.flows.service.rev160314.SalFlowsBatchService#addFlowsBatch(AddFlowsBatchInput)}
+     * @return input suitable for {@link SalFlowsBatchRpcs#addFlowsBatch(AddFlowsBatchInput)}
      */
     public static AddFlowsBatchInput adaptFlatBatchAddFlow(final BatchPlanStep planStep, final NodeRef node) {
         final var batchFlows = planStep.<FlatBatchAddFlow>getTaskBag().stream()
@@ -72,8 +78,7 @@ public final class FlatBatchFlowAdapters {
      * Adapt flat batch remove flow.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.flows.service.rev160314.SalFlowsBatchService#removeFlowsBatch(RemoveFlowsBatchInput)}
+     * @return input suitable for {@link SalFlowsBatchRpcs#removeFlowsBatch(RemoveFlowsBatchInput)}
      */
     public static RemoveFlowsBatchInput adaptFlatBatchRemoveFlow(final BatchPlanStep planStep, final NodeRef node) {
         final var batchFlows = planStep.<FlatBatchRemoveFlow>getTaskBag().stream()
@@ -93,8 +98,7 @@ public final class FlatBatchFlowAdapters {
      * Adapt flat batch update flow.
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
-     * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
-     * .opendaylight.flows.service.rev160314.SalFlowsBatchService#updateFlowsBatch(UpdateFlowsBatchInput)}
+     * @return input suitable for {@link SalFlowsBatchRpcs#updateFlowsBatch(UpdateFlowsBatchInput)}
      */
     public static UpdateFlowsBatchInput adaptFlatBatchUpdateFlow(final BatchPlanStep planStep, final NodeRef node) {
         final var batchFlows = planStep.<FlatBatchUpdateFlow>getTaskBag().stream()

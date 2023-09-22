@@ -7,9 +7,10 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import com.google.common.collect.ClassToInstanceMap;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 
 /**
  * This context is registered with MD-SAL as a routed RPC provider for the inventory node backed by this switch and
@@ -18,10 +19,10 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  */
 public interface RpcContext extends RequestContextStack, OFPContext {
 
-    <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
+    <S extends Rpc<?, ?>> void registerRpcServiceImplementations(ClassToInstanceMap<Rpc<?, ?>> implementations);
 
-    <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
+    <S extends Rpc<?, ?>> S lookupRpcServices(ClassToInstanceMap<Rpc<?, ?>> implementations);
 
-    <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
+    <S extends Rpc<?, ?>> void unregisterRpcServiceImplementations(ClassToInstanceMap<Rpc<?, ?>> implementations);
 
 }

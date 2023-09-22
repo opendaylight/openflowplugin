@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 
 public interface LearningSwitchManager {
 
@@ -46,10 +46,10 @@ public interface LearningSwitchManager {
      * Packet Processing service is used to send packet Out on Openflow switch.
      *
      * <p>
-     * inject {@link PacketProcessingService}
+     * inject {@link PacketProcessingRpc}
      */
-    void setPacketProcessingService(
-            PacketProcessingService packetProcessingService);
+    void setPacketProcessingRpc(
+            PacketProcessingRpc packetProcessingRpc);
 
     /**
      * Set's Notification service dependency.

@@ -17,10 +17,11 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opendaylight.openflowplugin.applications.southboundcli.ReconciliationRpc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.Reconcile;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
@@ -30,10 +31,10 @@ import org.slf4j.LoggerFactory;
 public class Reconciliation extends OsgiCommandSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
-    private ReconciliationService reconciliationService;
+    private ReconciliationRpc reconciliationRpc;
 
-    public void setReconciliationService(final ReconciliationService reconciliationService) {
-        this.reconciliationService = reconciliationService;
+    public void setReconciliationRpc(final ReconciliationRpc reconciliationRpc) {
+        this.reconciliationRpc = reconciliationRpc;
     }
 
     @Argument(name = "nodeId", description = "The NODE Id", multiValued = true)
@@ -51,7 +52,8 @@ public class Reconciliation extends OsgiCommandSupport {
         LOG.debug("Triggering reconciliation for nodes {}", nodes);
         ReconcileInput rpcInput = new ReconcileInputBuilder().setNodes(nodes)
                 .setReconcileAllNodes(reconcileAllNodes).build();
-        Future<RpcResult<ReconcileOutput>> rpcOutput = reconciliationService.reconcile(rpcInput);
+        Future<RpcResult<ReconcileOutput>> rpcOutput = reconciliationRpc.getRpcClassToInstanceMap()
+            .getInstance(Reconcile.class).invoke(rpcInput);
         try {
             RpcResult<ReconcileOutput> rpcResult = rpcOutput.get();
             if (rpcResult.isSuccessful()) {

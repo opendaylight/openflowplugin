@@ -30,7 +30,7 @@
         </command>
         <command name="openflow/reconcile">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.Reconciliation">
-                <property name="reconciliationService" ref="reconciliationService"/>
+                <property name="reconciliationRpc" ref="reconciliationRpc"/>
             </action>
         </command>
         <command name="openflow/getreconciliationcount">

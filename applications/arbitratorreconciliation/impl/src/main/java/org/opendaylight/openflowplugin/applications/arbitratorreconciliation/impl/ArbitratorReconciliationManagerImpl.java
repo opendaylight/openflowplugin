@@ -11,6 +11,8 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -46,13 +48,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
@@ -66,19 +69,20 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.CommitActiveBundleOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -89,8 +93,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileService,
-        ReconciliationNotificationListener, AutoCloseable {
+public class ArbitratorReconciliationManagerImpl implements ReconciliationNotificationListener, AutoCloseable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ArbitratorReconciliationManagerImpl.class);
     private static final int THREAD_POOL_SIZE = 4;
@@ -113,7 +116,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                     .build()).build())
             .build();
 
-    private final SalBundleService salBundleService;
+    private final RpcConsumerRegistry rpcRegistry;
     private final ReconciliationManager reconciliationManager;
     private final RpcProviderService rpcProviderService;
     private final UpgradeState upgradeState;
@@ -121,8 +124,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
     private final ListeningExecutorService executor = MoreExecutors.listeningDecorator(
             Executors.newFixedThreadPool(THREAD_POOL_SIZE));
     private final Map<Uint64, BundleDetails> bundleIdMap = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String,
-            ObjectRegistration<? extends RpcService>> rpcRegistrations = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, Registration> rpcRegistrations = new ConcurrentHashMap<>();
 
     @Inject
     public ArbitratorReconciliationManagerImpl(final ReconciliationManager reconciliationManager,
@@ -130,8 +132,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
             final UpgradeState upgradeState) {
         Preconditions.checkArgument(rpcRegistry != null, "RpcConsumerRegistry cannot be null !");
         this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager cannot be null!");
-        salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
-                "RPC SalBundleService not found.");
+        this.rpcRegistry = rpcRegistry;
         this.rpcProviderService = rpcProviderService;
         this.upgradeState = requireNonNull(upgradeState, "UpgradeState cannot be null!");
     }
@@ -152,8 +153,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
     }
 
-    @Override
-    public ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
+    private ListenableFuture<RpcResult<CommitActiveBundleOutput>> commitActiveBundle(
             final CommitActiveBundleInput input) {
         Uint64 nodeId = input.getNodeId();
         if (bundleIdMap.containsKey(nodeId)) {
@@ -165,8 +165,9 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         .setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTCOMMITREQUEST)
                         .build();
-                ListenableFuture<RpcResult<ControlBundleOutput>> rpcResult = salBundleService
-                        .controlBundle(commitBundleInput);
+                ListenableFuture<RpcResult<ControlBundleOutput>> rpcResult = rpcRegistry
+                    .getRpc(ControlBundle.class)
+                    .invoke(commitBundleInput);
                 bundleIdMap.put(nodeId, new BundleDetails(bundleId, rpcResult));
 
                 Futures.addCallback(rpcResult,
@@ -184,8 +185,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                         null, "No active bundle found for the node" + nodeId))).buildFuture();
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(final GetActiveBundleInput input) {
+    private ListenableFuture<RpcResult<GetActiveBundleOutput>> getActiveBundle(final GetActiveBundleInput input) {
         Uint64 nodeId = input.getNodeId();
         BundleDetails bundleDetails = bundleIdMap.get(nodeId);
         if (bundleDetails != null) {
@@ -205,6 +205,13 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         }
         return RpcResultBuilder.success(new GetActiveBundleOutputBuilder()
                 .setResult(null).build()).buildFuture();
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(CommitActiveBundle.class, this::commitActiveBundle)
+            .put(GetActiveBundle.class, this::getActiveBundle)
+            .build();
     }
 
     @Override
@@ -297,18 +304,17 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
                     .setMessages(createMessages(nodeRef))
                     .build();
 
-            ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle = salBundleService
-                    .controlBundle(closeBundleInput);
+            ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle = rpcRegistry.getRpc(ControlBundle.class)
+                    .invoke(closeBundleInput);
 
             ListenableFuture<RpcResult<ControlBundleOutput>> openBundleMessagesFuture = Futures
-                    .transformAsync(closeBundle, rpcResult -> salBundleService
-                            .controlBundle(openBundleInput), MoreExecutors.directExecutor());
+                    .transformAsync(closeBundle, rpcResult -> rpcRegistry.getRpc(ControlBundle.class)
+                            .invoke(openBundleInput), MoreExecutors.directExecutor());
 
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessagesFuture = Futures
                     .transformAsync(openBundleMessagesFuture, rpcResult -> {
                         if (rpcResult.isSuccessful()) {
-                            return salBundleService
-                                    .addBundleMessages(addBundleMessagesInput);
+                            return rpcRegistry.getRpc(AddBundleMessages.class).invoke(addBundleMessagesInput);
                         }
                         return FluentFutures.immediateNullFluentFuture();
                     }, MoreExecutors.directExecutor());
@@ -372,8 +378,8 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is registered : {}", path);
-        ObjectRegistration<? extends RpcService> rpcRegistration =
-                rpcProviderService.registerRpcImplementation(ArbitratorReconcileService.class, this, Set.of(path));
+        Registration rpcRegistration =
+                rpcProviderService.registerRpcImplementations(getRpcClassToInstanceMap(), Set.of(path));
         rpcRegistrations.put(node.getNodeId().getValue(), rpcRegistration);
     }
 
@@ -381,7 +387,7 @@ public class ArbitratorReconciliationManagerImpl implements ArbitratorReconcileS
         KeyedInstanceIdentifier<Node, NodeKey> path = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is unregistered : {}", path);
-        ObjectRegistration<? extends RpcService> rpcRegistration = rpcRegistrations.get(node.getNodeId().getValue());
+        Registration rpcRegistration = rpcRegistrations.get(node.getNodeId().getValue());
         if (rpcRegistration != null) {
             rpcRegistration.close();
             rpcRegistrations.remove(node.getNodeId().getValue());

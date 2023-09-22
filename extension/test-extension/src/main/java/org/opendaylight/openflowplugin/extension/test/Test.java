@@ -7,16 +7,19 @@
  */
 package org.opendaylight.openflowplugin.extension.test;
 
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -38,10 +41,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -53,17 +57,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Implementation of TestService.
+ * Implementation of TestRpc.
  *
  * @author msunal
  */
-public class Test implements TestService {
+public class Test {
     private static final Logger LOG = LoggerFactory.getLogger(Test.class);
 
-    private SalFlowService flowService;
+    private SalFlowRpcs flowRpcs;
 
-    @Override
-    public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(final TestFlowInput input) {
+    private ListenableFuture<RpcResult<TestFlowOutput>> testFlow(final TestFlowInput input) {
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 .builder(Nodes.class) // File under nodes
@@ -123,13 +126,20 @@ public class Test implements TestService {
         return Futures.immediateFuture(RpcResultBuilder.<TestFlowOutput>status(true).build());
     }
 
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(TestFlow.class, this::testFlow)
+            .build();
+    }
+
     private void pushFlowViaRpc(final AddFlowInput addFlowInput) {
-        if (flowService != null) {
-            LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
+        if (flowRpcs != null) {
+            LoggingFutures.addErrorLogging(flowRpcs.getRpcClassToInstanceMap().getInstance(AddFlow.class)
+                .invoke(addFlowInput), LOG, "addFlow");
         }
     }
 
-    public void setFlowService(final SalFlowService flowService) {
-        this.flowService = flowService;
+    public void setFlowRpcs(final SalFlowRpcs flowRpcs) {
+        this.flowRpcs = flowRpcs;
     }
 }
