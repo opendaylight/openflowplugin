@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ce1c5a8_ea67e592",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 8894
+      },
+      "writtenOn": "2023-09-25T10:10:02Z",
+      "side": 1,
+      "message": "store Rpc implementations instead of registry.\nthen you\u0027ll just invoke on existing objects, not seeking for implementations in registry each time.\n\n```\nfinal ControlBundle controlBundleRpc;\nfinal AddBundleMessage addBundleMessageRpc;\n...\n\npublic ArbitratorReconciliationManagerImpl(...){\n    ...\n    this.controlBundleRpc \u003d requireNonNull(rpcRegistry.getRpc(ControlBundle.class), \"ControlBundle RPC connot be found in registry\");\n    this.addBundleMessageRpc \u003d ...\n}\n```",
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "407048d4_f2956ff6",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 8894
+      },
+      "writtenOn": "2023-09-25T10:10:02Z",
+      "side": 1,
+      "message": "this seems not required to be public",
+      "range": {
+        "startLine": 210,
+        "startChar": 4,
+        "endLine": 210,
+        "endChar": 10
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2a6c22e_23774fc9",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 8894
+      },
+      "writtenOn": "2023-09-25T10:10:02Z",
+      "side": 1,
+      "message": "simplify this using map.remove()\n```\nfinal var registration \u003d rpcRegistrations.remove(node.getNodeId().getValue());\nif(registration !\u003d null){ \n   registration.close()\n}\n```",
+      "range": {
+        "startLine": 390,
+        "startChar": 0,
+        "endLine": 394,
+        "endChar": 9
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00846c27_b39e4eb2",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 8894
+      },
+      "writtenOn": "2023-09-25T10:10:02Z",
+      "side": 1,
+      "message": "returning registry is just an extra step,\nyou can return Rpc implementation directly\n\u003cT extends Rpc\u003c?,?\u003e\u003e getRpc(Class\u003cT\u003e rpcClass);",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 41
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba068ed1_ff86a123",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/strategy/FlowForwarderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 8894
+      },
+      "writtenOn": "2023-09-25T10:10:02Z",
+      "side": 1,
+      "message": "its not how mocks are working\nyou can stab a method of a mock, not of a mock return result\nif return result is also a mock, it should be stabbed separately:\n```\n@Mock\nAddFlow addFlowRpc; // define rpc implementation as a mock\n\n// in method\nwhen(salFlowRpcs.getRpcClassToInstanceMap())\n    .doReturn(ImmutableClassToInstanceMap.of(AddFlow.class, addFlow));\nwhen(addFlowRpc.invoke(any())).thenReturn(...)\n// do capture on verify\nverify(addFlowRpc, times(1)).invoke(addFlowInputCpt.capture());\n```\nsimilar below",
+      "range": {
+        "startLine": 107,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 44
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    }
+  ]
+}
