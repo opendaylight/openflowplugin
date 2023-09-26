@@ -7,6 +7,7 @@
  */
 package org.opendaylight.serviceutils.srm.shell;
 
+import java.util.concurrent.ExecutionException;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -37,7 +38,7 @@ public class RecoverCommand implements Action {
 
     @Override
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    public Object execute() {
+    public Object execute() throws InterruptedException, ExecutionException {
         if (type == null || name == null) {
             return null;
         }
@@ -59,7 +60,8 @@ public class RecoverCommand implements Action {
             if (id != null) {
                 inputBuilder.setEntityId(id);
             }
-            var output = control.recover(inputBuilder.build());
+            var output = control.recover(inputBuilder.build())
+                .get();
 
             LOG.trace("RPC Result: {}", output);
             var response = output.getResponse();

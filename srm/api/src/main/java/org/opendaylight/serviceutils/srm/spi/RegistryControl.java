@@ -7,6 +7,7 @@
  */
 package org.opendaylight.serviceutils.srm.spi;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.RecoverOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180626.ReinstallInput;
@@ -17,7 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.rpc.rev180
  */
 public interface RegistryControl {
 
-    RecoverOutput recover(RecoverInput input);
+    ListenableFuture<RecoverOutput> recover(RecoverInput input);
 
-    ReinstallOutput reinstall(ReinstallInput input);
+    ListenableFuture<ReinstallOutput> reinstall(ReinstallInput input);
 }

@@ -7,6 +7,7 @@
  */
 package org.opendaylight.serviceutils.srm.shell;
 
+import java.util.concurrent.ExecutionException;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
@@ -36,7 +37,7 @@ public class ReinstallCommand implements Action {
 
     @Override
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    public Object execute() {
+    public Object execute() throws InterruptedException, ExecutionException {
         var entityName = SrmCliUtils.getEntityName(ENTITY_TYPE, name);
         if (entityName == null) {
             System.out.println(SrmCliUtils.getNameHelp(ENTITY_TYPE));
@@ -47,7 +48,8 @@ public class ReinstallCommand implements Action {
             var output = control.reinstall(new ReinstallInputBuilder()
                 .setEntityType(ENTITY_TYPE)
                 .setEntityName(entityName)
-                .build());
+                .build())
+                .get();
 
             LOG.trace("RPC Result: {}", output);
             if (Boolean.TRUE.equals(output.getSuccessful())) {
