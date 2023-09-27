@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.applications.frm.impl.DevicesGroupRegistry;
@@ -19,11 +20,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 
 /**
  * It represent a central point for whole module. Implementation Flow Provider
@@ -96,18 +96,17 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
     SalTableService getSalTableService();
 
     /**
+     * Method returns Rpc which can be invoked.
+     *
+     */
+    <T extends Rpc<?,?>> @NonNull T getRpc(Class<T> rpcClass);
+
+    /**
      * Return Devices Group Registry which can be used to track the groups present in a device.
      *
      * @return devicesGroupRegistry
      */
     DevicesGroupRegistry getDevicesGroupRegistry();
-
-    /**
-     * Bundle RPC service.
-     *
-     * @return salBundleService
-     */
-    SalBundleService getSalBundleService();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil.
@@ -212,5 +211,4 @@ public interface ForwardingRulesManager extends ConfigurationListener, AutoClose
      * Method exposes the ArbitratorReconciliationManager service used for performing Arbitrator Based Reconciliation.
      * @return ArbitratorReconciliationManager
      */
-    ArbitratorReconcileService getArbitratorReconciliationManager();
 }

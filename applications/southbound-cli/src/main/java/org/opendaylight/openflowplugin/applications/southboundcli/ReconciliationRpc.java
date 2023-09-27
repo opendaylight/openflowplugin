@@ -32,6 +32,7 @@ import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
+import org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationRpcs;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
@@ -41,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
@@ -49,7 +49,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
@@ -63,11 +62,11 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
+public class ReconciliationRpc implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationRpc.class);
 
     private final DataBroker broker;
-    private final FrmReconciliationService frmReconciliationService;
+    private final FrmReconciliationRpcs frmReconciliationService;
     private final AlarmAgent alarmAgent;
     private final NodeListener nodeListener;
     private final int threadPoolSize = 10;
@@ -75,9 +74,9 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
     private ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
 
-    public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
-                                     final AlarmAgent alarmAgent, final NodeListener nodeListener,
-                                     final FlowGroupCacheManager flowGroupCacheManager) {
+    public ReconciliationRpc(final DataBroker broker,
+        final FrmReconciliationRpcs frmReconciliationService, final AlarmAgent alarmAgent,
+        final NodeListener nodeListener, final FlowGroupCacheManager flowGroupCacheManager) {
         this.broker = broker;
         this.frmReconciliationService = frmReconciliationService;
         this.alarmAgent = alarmAgent;
@@ -93,7 +92,6 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
         }
     }
 
-    @Override
     public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(final ReconcileInput input) {
         boolean reconcileAllNodes = input.getReconcileAllNodes();
         Set<Uint64> inputNodes = input.getNodes();

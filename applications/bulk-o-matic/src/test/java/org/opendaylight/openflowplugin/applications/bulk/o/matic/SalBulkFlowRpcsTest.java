@@ -74,10 +74,10 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link SalBulkFlowServiceImpl}.
+ * Test for {@link SalBulkFlowRpcs}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SalBulkFlowServiceImplTest {
+public class SalBulkFlowRpcsTest {
 
     @Mock
     private DataBroker mockDataBroker;
@@ -94,7 +94,7 @@ public class SalBulkFlowServiceImplTest {
     @Captor
     private ArgumentCaptor<Flow> flowArgumentCaptor;
 
-    private SalBulkFlowServiceImpl salBulkFlowService;
+    private SalBulkFlowRpcs salBulkFlowService;
 
     @Before
     public void setUp() {
@@ -103,7 +103,7 @@ public class SalBulkFlowServiceImplTest {
 
         lenient().doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNode))).when(readOnlyTransaction)
             .read(any(LogicalDatastoreType.class), any());
-        salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
+        salBulkFlowService = new SalBulkFlowRpcs(mockSalFlowService, mockDataBroker);
     }
 
     @Test

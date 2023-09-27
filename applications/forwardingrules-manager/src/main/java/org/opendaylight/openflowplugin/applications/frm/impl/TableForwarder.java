@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.util.concurrent.Futures;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -18,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
@@ -31,10 +33,13 @@ import org.slf4j.LoggerFactory;
 public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
+    private final UpdateTable updateTableRpc;
 
     public TableForwarder(final ForwardingRulesManager manager, final DataBroker db,
                           final ListenerRegistrationHelper registrationHelper) {
         super(manager, db, registrationHelper);
+        this.updateTableRpc = Objects.requireNonNull(provider.getRpc(UpdateTable.class),
+            "updateTableRpc can not be null!");
     }
 
     @Override
@@ -92,14 +97,9 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         builder.setOriginalTable(new OriginalTableBuilder()
             .setTableFeatures(Collections.singletonMap(originalTableFeatures.key(), originalTableFeatures))
             .build());
-        LOG.debug("Invoking SalTableService ");
+        LOG.debug("Invoking UpdateTableRpc ");
 
-        if (this.provider.getSalTableService() != null) {
-            LOG.debug(" Handle to SalTableServices {}", this.provider.getSalTableService());
-        }
-
-        LoggingFutures.addErrorLogging(this.provider.getSalTableService().updateTable(builder.build()), LOG,
-            "updateTable");
+        LoggingFutures.addErrorLogging(this.updateTableRpc.invoke(builder.build()), LOG,"updateTable");
     }
 
     @Override

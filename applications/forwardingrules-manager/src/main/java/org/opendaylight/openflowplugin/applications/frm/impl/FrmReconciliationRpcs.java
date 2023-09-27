@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutputBuilder;
@@ -32,14 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class FrmReconciliationServiceImpl implements FrmReconciliationService {
+public class FrmReconciliationRpcs {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FrmReconciliationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FrmReconciliationRpcs.class);
 
     private final ForwardingRulesManagerImpl forwardingRulesManagerImpl;
 
     @Inject
-    public FrmReconciliationServiceImpl(ForwardingRulesManagerImpl forwardingRulesManagerImpl) {
+    public FrmReconciliationRpcs(ForwardingRulesManagerImpl forwardingRulesManagerImpl) {
         this.forwardingRulesManagerImpl = forwardingRulesManagerImpl;
     }
 
@@ -49,7 +48,6 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
         return nodeDpn;
     }
 
-    @Override
     public ListenableFuture<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
         LOG.debug("Triggering reconciliation for node: {}", input.getNodeId());
         Node nodeDpn = buildNode(input.getNodeId().longValue());
