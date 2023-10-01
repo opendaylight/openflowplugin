@@ -7,11 +7,16 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -159,43 +164,49 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginTestCommandProvider implements CommandProvider {
-
+@Singleton
+@Component(service = CommandProvider.class, immediate = true)
+public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestCommandProvider.class);
 
-    private final DataBroker dataBroker;
-    private final BundleContext ctx;
     private static final String ORIGINAL_FLOW_NAME = "Foo";
     private static final String UPDATED_FLOW_NAME = "Bar";
     private static final String IPV4_PREFIX = "10.0.0.1/24";
     private static final String DEST_MAC_ADDRESS = "ff:ff:ff:ff:ff:ff";
     private static final String SRC_MAC_ADDRESS = "00:00:00:00:23:ae";
 
-    private final NotificationService notificationService;
+    private final DataBroker dataBroker;
+    private final Registration reg;
 
-    public OpenflowpluginTestCommandProvider(final DataBroker dataBroker, final NotificationService notificationService,
-            final BundleContext ctx) {
-        this.dataBroker = dataBroker;
-        this.notificationService = notificationService;
-        this.ctx = ctx;
+    @Inject
+    @Activate
+    public OpenflowpluginTestCommandProvider(@Reference final DataBroker dataBroker,
+            @Reference final NotificationService notificationService) {
+        this.dataBroker = requireNonNull(dataBroker);
+        // For switch events
+        reg = notificationService.registerCompositeListener(FlowEventListenerLoggingImpl.newListener());
+        createTestFlow(createTestNode(null), null, null);
     }
 
-    public void init() {
-        // For switch events
-        notificationService.registerCompositeListener(FlowEventListenerLoggingImpl.newListener());
-
-        ctx.registerService(CommandProvider.class.getName(), this, null);
-        createTestFlow(createTestNode(null), null, null);
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        reg.close();
     }
 
     private static NodeBuilder createTestNode(final String nodeId) {

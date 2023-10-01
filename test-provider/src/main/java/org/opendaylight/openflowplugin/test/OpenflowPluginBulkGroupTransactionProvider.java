@@ -7,9 +7,13 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -92,26 +96,27 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
+@Singleton
+@Component(service = CommandProvider.class, immediate = true)
+public final class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
     private static final String ORIGINAL_FLOW_NAME = "Foo";
     private static final String ORIGINAL_GROUP_NAME = "Foo";
 
     private final DataBroker dataBroker;
-    private final BundleContext ctx;
+
     private Node testNode12;
 
-    public OpenflowPluginBulkGroupTransactionProvider(final DataBroker dataBroker, final BundleContext ctx) {
-        this.dataBroker = dataBroker;
-        this.ctx = ctx;
-    }
-
-    public void init() {
-        ctx.registerService(CommandProvider.class.getName(), this, null);
+    @Inject
+    @Activate
+    public OpenflowPluginBulkGroupTransactionProvider(@Reference final DataBroker dataBroker) {
+        this.dataBroker = requireNonNull(dataBroker);
         createTestFlow(createTestNode(null), null, null);
     }
 

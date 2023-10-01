@@ -10,30 +10,44 @@ package org.opendaylight.openflowplugin.test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener;
-import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener.Component;
+//import org.opendaylight.mdsal.binding.api.NotificationService.CompositeListener.Component;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdated;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRemoved;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdated;
+import org.opendaylight.yangtools.concepts.Registration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginTestNodeConnectorNotification {
-
+@Singleton
+@Component(service = { })
+public final class OpenflowpluginTestNodeConnectorNotification implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestNodeConnectorNotification.class);
 
     private final PortEventListener portEventListener = new PortEventListener();
-    private final NotificationService notificationService;
+    private final Registration reg;
 
-    public OpenflowpluginTestNodeConnectorNotification(final NotificationService notificationService) {
-        this.notificationService = notificationService;
+    @Inject
+    @Activate
+    public OpenflowpluginTestNodeConnectorNotification(@Reference final NotificationService notificationService) {
+        // For switch events
+        reg = notificationService.registerCompositeListener(portEventListener.toListener());
     }
 
-    public void init() {
-        // For switch events
-        notificationService.registerCompositeListener(portEventListener.toListener());
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        reg.close();
     }
 
     private static final class PortEventListener {
@@ -44,22 +58,22 @@ public class OpenflowpluginTestNodeConnectorNotification {
 
         CompositeListener toListener() {
             return new CompositeListener(Set.of(
-                new Component<>(NodeConnectorRemoved.class, notification -> {
+                new CompositeListener.Component<>(NodeConnectorRemoved.class, notification -> {
                     LOG.debug("NodeConnectorRemoved Notification");
                     LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
                     nodeConnectorRemoved.add(notification);
                 }),
-                new Component<>(NodeConnectorUpdated.class, notification -> {
+                new CompositeListener.Component<>(NodeConnectorUpdated.class, notification -> {
                     LOG.debug("NodeConnectorUpdated Notification");
                     LOG.debug("NodeConnectorRef {}", notification.getNodeConnectorRef());
                     nodeConnectorUpdated.add(notification);
                 }),
-                new Component<>(NodeRemoved.class, notification -> {
+                new CompositeListener.Component<>(NodeRemoved.class, notification -> {
                     LOG.debug("NodeRemoved Notification");
                     LOG.debug("NodeRef {}", notification.getNodeRef());
                     nodeRemoved.add(notification);
                 }),
-                new Component<>(NodeUpdated.class, notification -> {
+                new CompositeListener.Component<>(NodeUpdated.class, notification -> {
                     LOG.debug("NodeUpdated Notification");
                     LOG.debug("NodeRef {}", notification.getNodeRef());
                     nodeUpdated.add(notification);

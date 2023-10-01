@@ -7,8 +7,12 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
@@ -36,26 +40,26 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
-import org.osgi.framework.BundleContext;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
+@Singleton
+@Component(service = CommandProvider.class, immediate = true)
+public final class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private static final String ORIGINAL_METER_NAME = "Foo";
     private static final String UPDATED_METER_NAME = "Bar";
 
     private final DataBroker dataBroker;
-    private final BundleContext ctx;
     private Meter testMeter;
     private Meter testMeter1;
     private Meter testMeter2;
     private Node testNode;
 
-    public OpenflowpluginMeterTestCommandProvider(final DataBroker dataBroker, final BundleContext ctx) {
-        this.dataBroker = dataBroker;
-        this.ctx = ctx;
-    }
-
-    public void init() {
-        ctx.registerService(CommandProvider.class.getName(), this, null);
+    @Inject
+    @Activate
+    public OpenflowpluginMeterTestCommandProvider(@Reference final DataBroker dataBroker) {
+        this.dataBroker = requireNonNull(dataBroker);
         createTestNode();
         createTestMeter();
     }
