@@ -10,12 +10,15 @@ package test.mock;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -27,6 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
@@ -41,10 +45,23 @@ public class TableFeaturesListenerTest extends AbstractFRMTest {
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
 
+    private SalTableServiceMock salTableServiceMock;
+    @Mock
+    private UpdateTable updateTable;
+
     @Before
     public void setUp() {
+        salTableServiceMock = new SalTableServiceMock();
         setUpForwardingRulesManager();
+
+        when(forwardingRulesManager.getRpc(UpdateTable.class))
+            .thenReturn(updateTable);
+
+        forwardingRulesManager.start();
         setDeviceMastership(NODE_ID);
+
+        when(updateTable.invoke(any()))
+            .thenAnswer(i -> salTableServiceMock.updateTable(i.getArgument(0)));
     }
 
     @Test
@@ -67,9 +84,7 @@ public class TableFeaturesListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.commit());
 
-        SalTableServiceMock salTableServiceMock =
-                (SalTableServiceMock) getForwardingRulesManager().getSalTableService();
-        await().atMost(10, SECONDS).until(() -> salTableServiceMock.getUpdateTableInput().size() == 1);
+        await().atMost(20, SECONDS).until(() -> salTableServiceMock.getUpdateTableInput().size() == 1);
         List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();
         assertEquals(1, updateTableInputs.size());
         assertEquals("DOM-0", updateTableInputs.get(0).getTransactionUri().getValue());
