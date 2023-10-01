@@ -23,39 +23,30 @@ import org.osgi.service.component.annotations.Reference;
 @Singleton
 @Component(service = { })
 public class OpenflowpluginTestActivator implements AutoCloseable {
-    private final OpenflowpluginTestServiceProvider provider;
-    private final OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
-    private final OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
-    private final OpenflowpluginTableFeaturesTestServiceProvider tableProvider =
-            new OpenflowpluginTableFeaturesTestServiceProvider();
-
+    private final OpenflowpluginTestRpcProvider provider;
+    private final OpenflowpluginMeterTestRpcsProvider meterProvider = new OpenflowpluginMeterTestRpcsProvider();
+    private final OpenflowpluginTableFeaturesTestRpcProvider tableProvider =
+            new OpenflowpluginTableFeaturesTestRpcProvider();
     private final OpenflowpluginTestCommandProvider cmdProvider;
-
     private final OpenflowpluginGroupTestCommandProvider cmdGroupProvider;
-
     private final OpenflowpluginMeterTestCommandProvider cmdMeterProvider;
-
     private final OpenflowpluginTableFeaturesTestCommandProvider cmdTableProvider;
-
     private final OpenflowpluginStatsTestCommandProvider cmdStatsProvider;
-
     private final OpenflowpluginTestNodeConnectorNotification cmdNodeConnectorNotification;
-
     private final OpenflowpluginTestTopologyNotification cmdTopologyNotification;
-
     private final OpenflowPluginBulkTransactionProvider bulkCmdProvider;
-
     private final OpenflowPluginBulkGroupTransactionProvider groupCmdProvider;
 
     public static final String NODE_ID = "foo:node:1";
 
     @Activate
     @Inject
-    public OpenflowpluginTestActivator(@Reference DataBroker dataBroker,
-            @Reference RpcProviderService rpcRegistry,
-            @Reference NotificationService notificationService,
-            @Reference NotificationPublishService notificationPublishService, BundleContext ctx) {
-        provider = new OpenflowpluginTestServiceProvider(dataBroker, notificationPublishService);
+    public OpenflowpluginTestActivator(@Reference final DataBroker dataBroker,
+            @Reference final RpcProviderService rpcRegistry,
+            @Reference final NotificationService notificationService,
+            @Reference final NotificationPublishService notificationPublishService,
+            final BundleContext ctx) {
+        provider = new OpenflowpluginTestRpcProvider(dataBroker, notificationPublishService);
         cmdProvider = new OpenflowpluginTestCommandProvider(dataBroker, notificationService, ctx);
         cmdGroupProvider = new OpenflowpluginGroupTestCommandProvider(dataBroker, ctx);
         cmdMeterProvider = new OpenflowpluginMeterTestCommandProvider(dataBroker, ctx);
@@ -68,7 +59,6 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
 
         provider.register(rpcRegistry);
 
-        groupProvider.register(rpcRegistry);
         meterProvider.register(rpcRegistry);
         tableProvider.register(rpcRegistry);
 

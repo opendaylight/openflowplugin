@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -20,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -28,8 +28,8 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginTableFeaturesTestServiceProvider implements AutoCloseable, UpdateTable {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTableFeaturesTestServiceProvider.class);
+public class OpenflowpluginTableFeaturesTestRpcProvider implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTableFeaturesTestRpcProvider.class);
 
     private Registration tableRegistration = null;
     private NotificationPublishService notificationService;
@@ -67,24 +67,23 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements AutoClose
     }
 
     public void start() {
-        LOG.info("SalTableServiceProvider Started.");
+        LOG.info("SalTableRpcProvider Started.");
     }
 
     @Override
     public void close() {
-        LOG.info("SalTableServiceProvider stopped.");
+        LOG.info("SalTableRpcProvider stopped.");
         tableRegistration.close();
     }
 
-    @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> invoke(final UpdateTableInput input) {
+    private ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
         LOG.info("updateTable - {}", input);
         return RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture();
     }
 
-    public ObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider> register(
-            final RpcProviderService rpcRegistry) {
-        setTableRegistration(rpcRegistry.registerRpcImplementation(this, ImmutableSet.of(
+    public Registration register(final RpcProviderService rpcRegistry) {
+        setTableRegistration(rpcRegistry.registerRpcImplementations(ImmutableClassToInstanceMap.of(
+            UpdateTable.class, this::updateTable), ImmutableSet.of(
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
