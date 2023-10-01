@@ -23,11 +23,11 @@ import org.osgi.service.component.annotations.Reference;
 @Singleton
 @Component(service = { })
 public class OpenflowpluginTestActivator implements AutoCloseable {
-    private final OpenflowpluginTestServiceProvider provider;
-    private final OpenflowpluginGroupTestServiceProvider groupProvider = new OpenflowpluginGroupTestServiceProvider();
-    private final OpenflowpluginMeterTestServiceProvider meterProvider = new OpenflowpluginMeterTestServiceProvider();
-    private final OpenflowpluginTableFeaturesTestServiceProvider tableProvider =
-            new OpenflowpluginTableFeaturesTestServiceProvider();
+    private final OpenflowpluginTestRpcProvider provider;
+    private final OpenflowpluginGroupTestRpcsProvider groupProvider = new OpenflowpluginGroupTestRpcsProvider();
+    private final OpenflowpluginMeterTestRpcsProvider meterProvider = new OpenflowpluginMeterTestRpcsProvider();
+    private final OpenflowpluginTableFeaturesTestRpcProvider tableProvider =
+            new OpenflowpluginTableFeaturesTestRpcProvider();
 
     private final OpenflowpluginTestCommandProvider cmdProvider;
 
@@ -55,7 +55,7 @@ public class OpenflowpluginTestActivator implements AutoCloseable {
             @Reference RpcProviderService rpcRegistry,
             @Reference NotificationService notificationService,
             @Reference NotificationPublishService notificationPublishService, BundleContext ctx) {
-        provider = new OpenflowpluginTestServiceProvider(dataBroker, notificationPublishService);
+        provider = new OpenflowpluginTestRpcProvider(dataBroker, notificationPublishService);
         cmdProvider = new OpenflowpluginTestCommandProvider(dataBroker, notificationService, ctx);
         cmdGroupProvider = new OpenflowpluginGroupTestCommandProvider(dataBroker, ctx);
         cmdMeterProvider = new OpenflowpluginMeterTestCommandProvider(dataBroker, ctx);
