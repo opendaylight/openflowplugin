@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -22,6 +24,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
+import java.util.stream.Collectors;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.MBeanRegistrationException;
 import javax.management.MBeanServer;
@@ -30,29 +36,40 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.BulkFlowBaseContentGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultiple;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultipleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddMultipleOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowRpcAddTestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.FlowTestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.ReadFlowTestOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.Register;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RegisterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RegisterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RegisterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.SalBulkFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
@@ -63,45 +80,76 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Simple implementation providing bulk flows operations.
  */
-public class SalBulkFlowServiceImpl implements SalBulkFlowService {
+@Singleton
+@Component(service = { })
+public final class SalBulkFlowRpcs implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowRpcs.class);
 
-    private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowServiceImpl.class);
-
-    private final SalFlowService flowService;
-    private final DataBroker dataBroker;
     private final FlowCounter flowCounterBeanImpl = new FlowCounter();
     private final ExecutorService fjService = new ForkJoinPool();
+    private final DataBroker dataBroker;
+    private final AddFlow addFlow;
+    private final RemoveFlow removeFlow;
+    private final Registration reg;
 
-    public SalBulkFlowServiceImpl(final SalFlowService flowService, final DataBroker dataBroker) {
-        this.flowService = requireNonNull(flowService);
+    @Inject
+    @Activate
+    public SalBulkFlowRpcs(@Reference final DataBroker dataBroker, @Reference final RpcConsumerRegistry rpcService,
+            @Reference final RpcProviderService rpcProviderService) {
         this.dataBroker = requireNonNull(dataBroker);
-
+        addFlow = rpcService.getRpc(AddFlow.class);
+        removeFlow = rpcService.getRpc(RemoveFlow.class);
+        reg = rpcProviderService.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(Register.class, this::register)
+            .put(AddFlowsRpc.class, this::addFlowsRpc)
+            .put(RemoveFlowsRpc.class, this::removeFlowsRpc)
+            .put(AddFlowsDs.class, this::addFlowsDs)
+            .put(RemoveFlowsDs.class, this::removeFlowsDs)
+            .put(FlowTest.class, this::flowTest)
+            .put(ReadFlowTest.class, this::readFlowTest)
+            .put(FlowRpcAddTest.class, this::flowRpcAddTest)
+            .put(FlowRpcAddMultiple.class, this::flowRpcAddMultiple)
+            .put(TableTest.class, this::tableTest)
+            .build());
         LoggingFutures.addErrorLogging(register(new RegisterInputBuilder().build()), LOG, "register");
     }
 
+    @PreDestroy
+    @Deactivate
     @Override
-    public ListenableFuture<RpcResult<AddFlowsDsOutput>> addFlowsDs(final AddFlowsDsInput input) {
+    public void close() {
+        reg.close();
+    }
+
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddFlowsDsOutput>> addFlowsDs(final AddFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         boolean createParentsNextTime = requireNonNullElse(input.getAlwaysCreateParents(), Boolean.FALSE);
         boolean createParents = true;
-        for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
+        for (BulkFlowDsItem bulkFlow : input.nonnullBulkFlowDsItem()) {
             FlowBuilder flowBuilder = new FlowBuilder(bulkFlow);
             flowBuilder.setTableId(bulkFlow.getTableId());
             flowBuilder.setId(new FlowId(bulkFlow.getFlowId()));
@@ -132,10 +180,10 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                 .child(Flow.class, new FlowKey(new FlowId(bulkFlow.getFlowId())));
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveFlowsDsOutput>> removeFlowsDs(final RemoveFlowsDsInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveFlowsDsOutput>> removeFlowsDs(final RemoveFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-        for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
+        for (BulkFlowDsItem bulkFlow : input.nonnullBulkFlowDsItem()) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow));
         }
         return Futures.transform(handleResultFuture(Futures.allAsList(writeTransaction.commit())), voidRpcResult -> {
@@ -167,8 +215,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return rpcResult;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddFlowsRpcOutput>> addFlowsRpc(final AddFlowsRpcInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddFlowsRpcOutput>> addFlowsRpc(final AddFlowsRpcInput input) {
         List<ListenableFuture<RpcResult<AddFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
@@ -177,7 +225,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
             final NodeRef nodeRef = bulkFlow.getNode();
             flowInputBuilder.setNode(nodeRef);
             flowInputBuilder.setTableId(bulkFlow.getTableId());
-            bulkResults.add(flowService.addFlow(flowInputBuilder.build()));
+            bulkResults.add(addFlow.invoke(flowInputBuilder.build()));
         }
         return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
@@ -188,8 +236,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         },MoreExecutors.directExecutor());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ReadFlowTestOutput>> readFlowTest(final ReadFlowTestInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<ReadFlowTestOutput>> readFlowTest(final ReadFlowTestInput input) {
         FlowReader flowReader = FlowReader.getNewInstance(dataBroker, input.getDpnCount().intValue(),
                 input.getFlowsPerDpn().intValue(), input.getVerbose(), input.getIsConfigDs(),
                 input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
@@ -199,9 +247,9 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<FlowRpcAddTestOutput>> flowRpcAddTest(final FlowRpcAddTestInput input) {
-        FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
+    @VisibleForTesting
+    ListenableFuture<RpcResult<FlowRpcAddTestOutput>> flowRpcAddTest(final FlowRpcAddTestInput input) {
+        FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, fjService, addFlow);
         flowAddRpcTestImpl.rpcFlowAdd(input.getDpnId(), input.getFlowCount().intValue(),
                 input.getRpcBatchSize().intValue());
 
@@ -209,8 +257,7 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RegisterOutput>> register(final RegisterInput input) {
+    private ListenableFuture<RpcResult<RegisterOutput>> register(final RegisterInput input) {
         RpcResultBuilder<RegisterOutput> rpcResultBuilder = RpcResultBuilder.success();
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -226,29 +273,27 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveFlowsRpcOutput>> removeFlowsRpc(final RemoveFlowsRpcInput input) {
-        List<ListenableFuture<RpcResult<RemoveFlowOutput>>> bulkResults = new ArrayList<>();
-
-        for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
-            RemoveFlowInputBuilder flowInputBuilder = new RemoveFlowInputBuilder(
-                    (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow);
-            final NodeRef nodeRef = bulkFlow.getNode();
-            flowInputBuilder.setNode(nodeRef);
-            flowInputBuilder.setTableId(bulkFlow.getTableId());
-            bulkResults.add(flowService.removeFlow(flowInputBuilder.build()));
-        }
-        return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
-            if (voidRpcResult.isSuccessful()) {
-                return RpcResultBuilder.<RemoveFlowsRpcOutput>success().build();
-            } else {
-                return RpcResultBuilder.<RemoveFlowsRpcOutput>failed().build();
-            }
-        }, MoreExecutors.directExecutor());
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveFlowsRpcOutput>> removeFlowsRpc(final RemoveFlowsRpcInput input) {
+        return Futures.transform(handleResultFuture(
+            Futures.allAsList(input.nonnullBulkFlowItem().stream()
+                .map(bulkFlow -> removeFlow.invoke(new RemoveFlowInputBuilder(
+                    (org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow) bulkFlow)
+                    .setNode(bulkFlow.getNode())
+                    .setTableId(bulkFlow.getTableId())
+                    .build()))
+                .collect(Collectors.toList()))),
+            voidRpcResult -> {
+                if (voidRpcResult.isSuccessful()) {
+                    return RpcResultBuilder.<RemoveFlowsRpcOutput>success().build();
+                } else {
+                    return RpcResultBuilder.<RemoveFlowsRpcOutput>failed().build();
+                }
+            }, MoreExecutors.directExecutor());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<FlowTestOutput>> flowTest(final FlowTestInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<FlowTestOutput>> flowTest(final FlowTestInput input) {
         if (input.getTxChain()) {
             FlowWriterTxChain flowTester = new FlowWriterTxChain(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
@@ -296,9 +341,9 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<TableTestOutput>> tableTest(final TableTestInput input) {
-        final TableWriter writer = new TableWriter(dataBroker, fjService);
+    @VisibleForTesting
+    ListenableFuture<RpcResult<TableTestOutput>> tableTest(final TableTestInput input) {
+        final var writer = new TableWriter(dataBroker, fjService);
         flowCounterBeanImpl.setWriter(writer);
         switch (input.getOperation()) {
             case Add:
@@ -317,12 +362,10 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<FlowRpcAddMultipleOutput>> flowRpcAddMultiple(
-            final FlowRpcAddMultipleInput input) {
-        FlowWriterDirectOFRpc flowTesterRPC = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
-        flowTesterRPC.rpcFlowAddAll(input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
-        RpcResultBuilder<FlowRpcAddMultipleOutput> rpcResultBuilder = RpcResultBuilder.success();
-        return Futures.immediateFuture(rpcResultBuilder.build());
+    @VisibleForTesting
+    ListenableFuture<RpcResult<FlowRpcAddMultipleOutput>> flowRpcAddMultiple(final FlowRpcAddMultipleInput input) {
+        new FlowWriterDirectOFRpc(dataBroker, fjService, addFlow)
+            .rpcFlowAddAll(input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
+        return RpcResultBuilder.<FlowRpcAddMultipleOutput>success().buildFuture();
     }
 }
