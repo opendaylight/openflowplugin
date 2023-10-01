@@ -8,7 +8,7 @@
   <odl:rpc-service id="flowService"
       interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
 
-  <bean id="bulkFlowService" class="org.opendaylight.openflowplugin.applications.bulk.o.matic.SalBulkFlowServiceImpl">
+  <bean id="bulkFlowService" class="org.opendaylight.openflowplugin.applications.bulk.o.matic.SalBulkFlowRpcs">
     <argument ref="flowService"/>
     <argument ref="dataBroker"/>
   </bean>

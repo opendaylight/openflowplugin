@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -52,7 +53,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsDsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.RemoveFlowsRpcOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.SalBulkFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.TableTestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.ds.list.grouping.BulkFlowDsItem;
@@ -80,24 +80,24 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple implementation providing bulk flows operations.
  */
-public class SalBulkFlowServiceImpl implements SalBulkFlowService {
+public class SalBulkFlowRpcs {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SalBulkFlowRpcs.class);
 
     private final SalFlowService flowService;
     private final DataBroker dataBroker;
     private final FlowCounter flowCounterBeanImpl = new FlowCounter();
     private final ExecutorService fjService = new ForkJoinPool();
 
-    public SalBulkFlowServiceImpl(final SalFlowService flowService, final DataBroker dataBroker) {
+    public SalBulkFlowRpcs(final SalFlowService flowService, final DataBroker dataBroker) {
         this.flowService = requireNonNull(flowService);
         this.dataBroker = requireNonNull(dataBroker);
 
         LoggingFutures.addErrorLogging(register(new RegisterInputBuilder().build()), LOG, "register");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddFlowsDsOutput>> addFlowsDs(final AddFlowsDsInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddFlowsDsOutput>> addFlowsDs(final AddFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         boolean createParentsNextTime = requireNonNullElse(input.getAlwaysCreateParents(), Boolean.FALSE);
         boolean createParents = true;
@@ -132,8 +132,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
                 .child(Flow.class, new FlowKey(new FlowId(bulkFlow.getFlowId())));
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveFlowsDsOutput>> removeFlowsDs(final RemoveFlowsDsInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveFlowsDsOutput>> removeFlowsDs(final RemoveFlowsDsInput input) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         for (BulkFlowDsItem bulkFlow : input.getBulkFlowDsItem()) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, getFlowInstanceIdentifier(bulkFlow));
@@ -167,8 +167,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return rpcResult;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddFlowsRpcOutput>> addFlowsRpc(final AddFlowsRpcInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddFlowsRpcOutput>> addFlowsRpc(final AddFlowsRpcInput input) {
         List<ListenableFuture<RpcResult<AddFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
@@ -188,8 +188,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         },MoreExecutors.directExecutor());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ReadFlowTestOutput>> readFlowTest(final ReadFlowTestInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<ReadFlowTestOutput>> readFlowTest(final ReadFlowTestInput input) {
         FlowReader flowReader = FlowReader.getNewInstance(dataBroker, input.getDpnCount().intValue(),
                 input.getFlowsPerDpn().intValue(), input.getVerbose(), input.getIsConfigDs(),
                 input.getStartTableId().shortValue(), input.getEndTableId().shortValue());
@@ -199,8 +199,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<FlowRpcAddTestOutput>> flowRpcAddTest(final FlowRpcAddTestInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<FlowRpcAddTestOutput>> flowRpcAddTest(final FlowRpcAddTestInput input) {
         FlowWriterDirectOFRpc flowAddRpcTestImpl = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
         flowAddRpcTestImpl.rpcFlowAdd(input.getDpnId(), input.getFlowCount().intValue(),
                 input.getRpcBatchSize().intValue());
@@ -209,8 +209,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RegisterOutput>> register(final RegisterInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RegisterOutput>> register(final RegisterInput input) {
         RpcResultBuilder<RegisterOutput> rpcResultBuilder = RpcResultBuilder.success();
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
@@ -226,8 +226,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveFlowsRpcOutput>> removeFlowsRpc(final RemoveFlowsRpcInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveFlowsRpcOutput>> removeFlowsRpc(final RemoveFlowsRpcInput input) {
         List<ListenableFuture<RpcResult<RemoveFlowOutput>>> bulkResults = new ArrayList<>();
 
         for (BulkFlowBaseContentGrouping bulkFlow : input.getBulkFlowItem()) {
@@ -247,8 +247,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         }, MoreExecutors.directExecutor());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<FlowTestOutput>> flowTest(final FlowTestInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<FlowTestOutput>> flowTest(final FlowTestInput input) {
         if (input.getTxChain()) {
             FlowWriterTxChain flowTester = new FlowWriterTxChain(dataBroker, fjService);
             flowCounterBeanImpl.setWriter(flowTester);
@@ -296,8 +296,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<TableTestOutput>> tableTest(final TableTestInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<TableTestOutput>> tableTest(final TableTestInput input) {
         final TableWriter writer = new TableWriter(dataBroker, fjService);
         flowCounterBeanImpl.setWriter(writer);
         switch (input.getOperation()) {
@@ -317,8 +317,8 @@ public class SalBulkFlowServiceImpl implements SalBulkFlowService {
         return Futures.immediateFuture(rpcResultBuilder.build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<FlowRpcAddMultipleOutput>> flowRpcAddMultiple(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<FlowRpcAddMultipleOutput>> flowRpcAddMultiple(
             final FlowRpcAddMultipleInput input) {
         FlowWriterDirectOFRpc flowTesterRPC = new FlowWriterDirectOFRpc(dataBroker, flowService, fjService);
         flowTesterRPC.rpcFlowAddAll(input.getFlowCount().intValue(), input.getRpcBatchSize().intValue());
