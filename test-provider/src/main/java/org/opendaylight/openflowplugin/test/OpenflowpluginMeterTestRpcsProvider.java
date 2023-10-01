@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -16,25 +17,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, SalMeterService {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestServiceProvider.class);
+public class OpenflowpluginMeterTestRpcsProvider implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestRpcsProvider.class);
 
     private DataBroker dataService = null;
-    private ObjectRegistration<SalMeterService> meterRegistration = null;
+    private Registration meterRegistration = null;
     private NotificationPublishService notificationService = null;
 
     /**
@@ -58,14 +62,14 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, Sa
      *
      * @return {@link #meterRegistration}
      */
-    public ObjectRegistration<SalMeterService> getMeterRegistration() {
+    public Registration getMeterRegistration() {
         return meterRegistration;
     }
 
     /**
      * Sets the {@link #meterRegistration}.
      */
-    public void setMeterRegistration(final ObjectRegistration<SalMeterService> meterRegistration) {
+    public void setMeterRegistration(final Registration meterRegistration) {
         this.meterRegistration = meterRegistration;
     }
 
@@ -86,7 +90,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, Sa
     }
 
     public void start() {
-        LOG.info("SalMeterServiceProvider Started.");
+        LOG.info("SalMeterRpcsProvider Started.");
     }
 
     /*
@@ -96,57 +100,31 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, Sa
      */
     @Override
     public void close() {
-        LOG.info("SalMeterServiceProvide stopped.");
+        LOG.info("SalMeterRpcsProvide stopped.");
         meterRegistration.close();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918
-     * .SalMeterService
-     * #addMeter(org.opendaylight.yang.gen.v1.urn.opendaylight.meter
-     * .service.rev130918.AddMeterInput)
-     */
-    @Override
-    public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
+    private ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         LOG.info("addMeter - {}", input);
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918
-     * .SalMeterService
-     * #removeMeter(org.opendaylight.yang.gen.v1.urn.opendaylight
-     * .meter.service.rev130918.RemoveMeterInput)
-     */
-    @Override
-    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
+    private ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         LOG.info("removeMeter - {}", input);
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918
-     * .SalMeterService
-     * #updateMeter(org.opendaylight.yang.gen.v1.urn.opendaylight
-     * .meter.service.rev130918.UpdateMeterInput)
-     */
-    @Override
-    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
+    private ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         LOG.info("updateMeter - {}", input);
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginMeterTestServiceProvider> register(final RpcProviderService rpcRegistry) {
-        setMeterRegistration(rpcRegistry.registerRpcImplementation(SalMeterService.class, this, ImmutableSet.of(
+    public Registration register(final RpcProviderService rpcRegistry) {
+        setMeterRegistration(rpcRegistry.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(RemoveMeter.class, this::removeMeter)
+            .put(AddMeter.class, this::addMeter)
+            .put(UpdateMeter.class, this::updateMeter)
+            .build(), ImmutableSet.of(
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 

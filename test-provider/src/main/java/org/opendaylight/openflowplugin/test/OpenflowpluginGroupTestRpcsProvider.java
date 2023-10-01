@@ -7,15 +7,18 @@
  */
 package org.opendaylight.openflowplugin.test;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -23,16 +26,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, SalGroupService {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginGroupTestServiceProvider.class);
+public class OpenflowpluginGroupTestRpcsProvider implements AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginGroupTestRpcsProvider.class);
 
-    private ObjectRegistration<SalGroupService> groupRegistration = null;
+    private Registration groupRegistration = null;
     private NotificationPublishService notificationService = null;
 
     /**
@@ -40,14 +44,14 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
      *
      * @return {@link #groupRegistration}
      */
-    public ObjectRegistration<SalGroupService> getGroupRegistration() {
+    public Registration getGroupRegistration() {
         return groupRegistration;
     }
 
     /**
      * Set {@link #groupRegistration}.
      */
-    public void setGroupRegistration(final ObjectRegistration<SalGroupService> groupRegistration) {
+    public void setGroupRegistration(final Registration groupRegistration) {
         this.groupRegistration = groupRegistration;
     }
 
@@ -68,7 +72,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
     }
 
     public void start() {
-        LOG.info("SalGroupServiceProvider Started.");
+        LOG.info("SalGroupRpcsProvider Started.");
     }
 
     /*
@@ -78,57 +82,31 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
      */
     @Override
     public void close() {
-        LOG.info("SalGroupServiceProvide stopped.");
+        LOG.info("SalGroupRpcsProvide stopped.");
         groupRegistration.close();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918
-     * .SalGroupService
-     * #addGroup(org.opendaylight.yang.gen.v1.urn.opendaylight.group
-     * .service.rev130918.AddGroupInput)
-     */
-    @Override
-    public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
+    private ListenableFuture<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         LOG.info("addGroup - {}", input);
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918
-     * .SalGroupService
-     * #removeGroup(org.opendaylight.yang.gen.v1.urn.opendaylight
-     * .group.service.rev130918.RemoveGroupInput)
-     */
-    @Override
-    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
+    private ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         LOG.info("removeGroup - {}", input);
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918
-     * .SalGroupService
-     * #updateGroup(org.opendaylight.yang.gen.v1.urn.opendaylight
-     * .group.service.rev130918.UpdateGroupInput)
-     */
-    @Override
-    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
+    private ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         LOG.info("updateGroup - {}", input);
         return null;
     }
 
-    public ObjectRegistration<OpenflowpluginGroupTestServiceProvider> register(final RpcProviderService rpcRegistry) {
-        setGroupRegistration(rpcRegistry.registerRpcImplementation(SalGroupService.class, this, ImmutableSet.of(
+    public Registration register(final RpcProviderService rpcRegistry) {
+        setGroupRegistration(rpcRegistry.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(AddGroup.class, this::addGroup)
+            .put(RemoveGroup.class, this::removeGroup)
+            .put(UpdateGroup.class, this::updateGroup)
+            .build(), ImmutableSet.of(
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 
