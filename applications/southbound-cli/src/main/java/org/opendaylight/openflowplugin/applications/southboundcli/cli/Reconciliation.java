@@ -17,10 +17,10 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.opendaylight.openflowplugin.applications.southboundcli.ReconciliationRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
 public class Reconciliation extends OsgiCommandSupport {
 
     private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
-    private ReconciliationService reconciliationService;
+    private ReconciliationRpc reconciliationService;
 
-    public void setReconciliationService(final ReconciliationService reconciliationService) {
+    public void setReconciliationService(final ReconciliationRpc reconciliationService) {
         this.reconciliationService = reconciliationService;
     }
 
