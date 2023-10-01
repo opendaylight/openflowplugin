@@ -33,8 +33,7 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -66,7 +65,7 @@ public class OpenFlowPluginProviderImplTest {
     EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
 
     @Mock
-    ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    Registration controlServiceRegistration;
 
     @Mock
     SwitchConnectionProvider switchConnectionProvider;
@@ -92,8 +91,7 @@ public class OpenFlowPluginProviderImplTest {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
-        when(rpcProviderRegistry.registerRpcImplementation(eq(StatisticsManagerControlService.class), any()))
-                .thenReturn(controlServiceRegistration);
+        when(rpcProviderRegistry.registerRpcImplementations(any())).thenReturn(controlServiceRegistration);
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateFuture(true));
         when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));
         when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()),
