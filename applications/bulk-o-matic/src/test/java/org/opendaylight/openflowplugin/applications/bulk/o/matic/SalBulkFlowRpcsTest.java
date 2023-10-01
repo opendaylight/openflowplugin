@@ -14,6 +14,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsRpcInput;
@@ -60,29 +62,31 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.bulk.flow.list.grouping.BulkFlowItemBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link SalBulkFlowServiceImpl}.
+ * Test for {@link SalBulkFlowRpcs}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SalBulkFlowServiceImplTest {
+public class SalBulkFlowRpcsTest {
 
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private SalFlowService mockSalFlowService;
+    private SalFlowRpcs mockSalFlowService;
     @Mock
     private WriteTransaction writeTransaction;
     @Mock
@@ -91,10 +95,14 @@ public class SalBulkFlowServiceImplTest {
     private Nodes mockNodes;
     @Mock
     private Node mockNode;
+    @Mock
+    private AddFlow addFlow;
+    @Mock
+    private RemoveFlow removeFlow;
     @Captor
     private ArgumentCaptor<Flow> flowArgumentCaptor;
 
-    private SalBulkFlowServiceImpl salBulkFlowService;
+    private SalBulkFlowRpcs salBulkFlowService;
 
     @Before
     public void setUp() {
@@ -103,7 +111,7 @@ public class SalBulkFlowServiceImplTest {
 
         lenient().doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNode))).when(readOnlyTransaction)
             .read(any(LogicalDatastoreType.class), any());
-        salBulkFlowService = new SalBulkFlowServiceImpl(mockSalFlowService, mockDataBroker);
+        salBulkFlowService = new SalBulkFlowRpcs(mockSalFlowService, mockDataBroker);
     }
 
     @Test
@@ -147,11 +155,15 @@ public class SalBulkFlowServiceImplTest {
 
     @Test
     public void testAddRemoveFlowsRpc() {
-        Mockito.when(mockSalFlowService.addFlow(ArgumentMatchers.any()))
+        Mockito.when(mockSalFlowService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+                .put(AddFlow.class, addFlow)
+                .put(RemoveFlow.class, removeFlow)
+                .build());
+        Mockito.when(addFlow.invoke(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture());
-
-        Mockito.when(mockSalFlowService.removeFlow(ArgumentMatchers.any()))
-                .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
+        Mockito.when(removeFlow.invoke(ArgumentMatchers.any()))
+            .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
 
         final BulkFlowItemBuilder bulkFlowItemBuilder = new BulkFlowItemBuilder();
         final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
@@ -167,7 +179,7 @@ public class SalBulkFlowServiceImplTest {
         final AddFlowsRpcInput addFlowsRpcInput = addFlowsRpcInputBuilder.build();
         salBulkFlowService.addFlowsRpc(addFlowsRpcInput);
 
-        verify(mockSalFlowService).addFlow(ArgumentMatchers.any());
+        verify(addFlow).invoke(ArgumentMatchers.any());
 
         final RemoveFlowsRpcInputBuilder removeFlowsRpcInputBuilder = new RemoveFlowsRpcInputBuilder();
         removeFlowsRpcInputBuilder.setBulkFlowItem(bulkFlowItems);
@@ -175,7 +187,7 @@ public class SalBulkFlowServiceImplTest {
         final RemoveFlowsRpcInput removeFlowsRpcInput = removeFlowsRpcInputBuilder.build();
         salBulkFlowService.removeFlowsRpc(removeFlowsRpcInput);
 
-        verify(mockSalFlowService).removeFlow(ArgumentMatchers.any());
+        verify(removeFlow).invoke(ArgumentMatchers.any());
     }
 
     @Test
