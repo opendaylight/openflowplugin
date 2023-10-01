@@ -10,12 +10,17 @@ package test.mock;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -30,8 +35,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -43,11 +51,36 @@ import test.mock.util.SalMeterServiceMock;
 public class MeterListenerTest extends AbstractFRMTest {
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
+    @Mock
+    private AddMeter addMeter;
+    @Mock
+    private UpdateMeter updateMeter;
+    @Mock
+    private RemoveMeter removeMeter;
+
+    private SalMeterServiceMock salMeterService;
 
     @Before
     public void setUp() {
         setUpForwardingRulesManager();
+
+        when(forwardingRulesManager.getRpc(RemoveMeter.class))
+            .thenReturn(removeMeter);
+
+        forwardingRulesManager.start();
         setDeviceMastership(NODE_ID);
+
+        salMeterService = new SalMeterServiceMock();
+        when(forwardingRulesManager.getRpc(AddMeter.class))
+            .thenReturn(addMeter);
+        when(addMeter.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salMeterService.addMeter(i.getArgument(0)));
+        when(removeMeter.invoke(any()))
+            .thenAnswer(i -> salMeterService.removeMeter(i.getArgument(0)));
+        when(forwardingRulesManager.getRpc(UpdateMeter.class))
+            .thenReturn(updateMeter);
+        Mockito.when(updateMeter.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salMeterService.updateMeter(i.getArgument(0)));
     }
 
     @Test
@@ -62,7 +95,6 @@ public class MeterListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
-        SalMeterServiceMock salMeterService = (SalMeterServiceMock) getForwardingRulesManager().getSalMeterService();
         await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 1);
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
@@ -94,7 +126,6 @@ public class MeterListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
-        SalMeterServiceMock salMeterService = (SalMeterServiceMock) getForwardingRulesManager().getSalMeterService();
         await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 1);
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());
@@ -123,7 +154,6 @@ public class MeterListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
         assertCommit(writeTx.commit());
-        SalMeterServiceMock salMeterService = (SalMeterServiceMock) getForwardingRulesManager().getSalMeterService();
         await().atMost(10, SECONDS).until(() -> salMeterService.getAddMeterCalls().size() == 1);
         List<AddMeterInput> addMeterCalls = salMeterService.getAddMeterCalls();
         assertEquals(1, addMeterCalls.size());

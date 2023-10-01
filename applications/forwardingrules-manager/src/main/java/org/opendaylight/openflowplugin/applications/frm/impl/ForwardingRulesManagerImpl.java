@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -44,18 +43,13 @@ import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,15 +70,11 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
 
     private final AtomicLong txNum = new AtomicLong();
     private final DataBroker dataService;
-    private final SalFlowService salFlowService;
-    private final SalGroupService salGroupService;
-    private final SalMeterService salMeterService;
-    private final SalTableService salTableService;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
-    private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
     private final MastershipChangeServiceManager mastershipChangeServiceManager;
     private final RpcProviderService rpcProviderService;
+    private RpcConsumerRegistry rpcRegistry;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
@@ -98,7 +88,6 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
     private final ReconciliationManager reconciliationManager;
     private DevicesGroupRegistry devicesGroupRegistry;
     private NodeConfigurator nodeConfigurator;
-    private final ArbitratorReconcileService arbitratorReconciliationManager;
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
     private int reconciliationRetryCount;
@@ -134,26 +123,11 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         this.rpcProviderService = rpcProviderService;
         this.mastershipChangeServiceManager = mastershipChangeServiceManager;
         this.flowGroupCacheManager = flowGroupCacheManager;
-
-        Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
-
-        salFlowService = requireNonNull(rpcRegistry.getRpcService(SalFlowService.class),
-                "RPC SalFlowService not found.");
-        salGroupService = requireNonNull(rpcRegistry.getRpcService(SalGroupService.class),
-                "RPC SalGroupService not found.");
-        salMeterService = requireNonNull(rpcRegistry.getRpcService(SalMeterService.class),
-                "RPC SalMeterService not found.");
-        salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
-                "RPC SalTableService not found.");
-        salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
-                "RPC SalBundlService not found.");
+        this.rpcRegistry = requireNonNull(rpcRegistry, "RpcProviderRegistry can not be null !");
         this.openflowServiceRecoveryHandler = requireNonNull(openflowServiceRecoveryHandler,
                 "Openflow service recovery handler cannot be null");
         this.serviceRecoveryRegistry = requireNonNull(serviceRecoveryRegistry,
                 "Service recovery registry cannot be null");
-        arbitratorReconciliationManager =
-                requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
-                        "ArbitratorReconciliationManager can not be null!");
     }
 
     @Override
@@ -171,7 +145,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         }
         deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, nodeListener,
                 dataService, mastershipChangeServiceManager, rpcProviderService,
-                new FrmReconciliationServiceImpl(this));
+                new FrmReconciliationRpcs(this));
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         bundleFlowListener = new BundleFlowForwarder(this);
@@ -253,33 +227,13 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
     }
 
     @Override
-    public SalFlowService getSalFlowService() {
-        return salFlowService;
-    }
-
-    @Override
-    public SalGroupService getSalGroupService() {
-        return salGroupService;
-    }
-
-    @Override
-    public SalMeterService getSalMeterService() {
-        return salMeterService;
-    }
-
-    @Override
-    public SalTableService getSalTableService() {
-        return salTableService;
-    }
-
-    @Override
     public DevicesGroupRegistry getDevicesGroupRegistry() {
         return devicesGroupRegistry;
     }
 
     @Override
-    public SalBundleService getSalBundleService() {
-        return salBundleService;
+    public <T extends Rpc<?,?>> @NonNull T getRpc(Class<T> rpcClass) {
+        return rpcRegistry.getRpc(rpcClass);
     }
 
     @Override
@@ -310,11 +264,6 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
     @Override
     public BundleMessagesCommiter<Group> getBundleGroupListener() {
         return bundleGroupListener;
-    }
-
-    @Override
-    public ArbitratorReconcileService getArbitratorReconciliationManager() {
-        return arbitratorReconciliationManager;
     }
 
     @Override

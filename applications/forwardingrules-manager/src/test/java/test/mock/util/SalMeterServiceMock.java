@@ -16,31 +16,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class SalMeterServiceMock implements SalMeterService {
+public class SalMeterServiceMock {
     private final List<AddMeterInput> addMeterCalls = new ArrayList<>();
     private final List<RemoveMeterInput> removeMeterCalls = new ArrayList<>();
     private final List<UpdateMeterInput> updateMeterCalls = new ArrayList<>();
 
-    @Override
     public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(AddMeterInput input) {
         addMeterCalls.add(input);
         return RpcResultBuilder.success(new AddMeterOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(RemoveMeterInput input) {
         removeMeterCalls.add(input);
         return RpcResultBuilder.success(new RemoveMeterOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(UpdateMeterInput input) {
         updateMeterCalls.add(input);
         return RpcResultBuilder.success(new UpdateMeterOutputBuilder().build()).buildFuture();
