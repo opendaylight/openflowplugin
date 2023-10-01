@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -37,7 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfigBuilder;
@@ -59,13 +61,15 @@ public class LLDPSpeakerTest {
     private TransmitPacketInput packetInput;
 
     @Mock
-    private PacketProcessingService packetProcessingService;
+    private PacketProcessingRpc packetProcessingService;
     @Mock
     private ScheduledExecutorService scheduledExecutorService;
     @Mock
     private ScheduledFuture scheduledSpeakerTask;
     @Mock
     private DeviceOwnershipService deviceOwnershipService;
+    @Mock
+    private TransmitPacket transmitPacket;
 
     private LLDPSpeaker lldpSpeaker;
 
@@ -83,7 +87,9 @@ public class LLDPSpeakerTest {
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
         lldpSpeaker.setOperationalStatus(OperStatus.RUN);
 
-        doReturn(RpcResultBuilder.success().buildFuture()).when(packetProcessingService).transmitPacket(any());
+        when(packetProcessingService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(TransmitPacket.class, transmitPacket));
+        doReturn(RpcResultBuilder.success().buildFuture()).when(transmitPacket).invoke(any());
     }
 
     /**
@@ -101,8 +107,8 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -122,8 +128,8 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -143,8 +149,8 @@ public class LLDPSpeakerTest {
 
         // Verify that LLDP frame sent only once (by nodeConnectorAdded),
         // e.g. no flood after removal
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -160,8 +166,8 @@ public class LLDPSpeakerTest {
         }
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -176,7 +182,6 @@ public class LLDPSpeakerTest {
         lldpSpeaker.nodeConnectorAdded(ID, fcnc);
 
         // Verify that nothing happened for local port
-        verify(packetProcessingService, never()).transmitPacket(
-                any(TransmitPacketInput.class));
+        verify(transmitPacket, never()).invoke(any(TransmitPacketInput.class));
     }
 }
