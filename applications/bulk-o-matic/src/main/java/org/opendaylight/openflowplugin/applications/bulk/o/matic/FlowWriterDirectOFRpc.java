@@ -7,13 +7,15 @@
  */
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -21,10 +23,10 @@ import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -35,28 +37,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FlowWriterDirectOFRpc {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterDirectOFRpc.class);
-    private final DataBroker dataBroker;
-    private final SalFlowService flowService;
-    private final ExecutorService flowPusher;
     private static final long PAUSE_BETWEEN_BATCH_MILLIS = 40;
 
-    public FlowWriterDirectOFRpc(final DataBroker dataBroker, final SalFlowService salFlowService,
-            final ExecutorService flowPusher) {
-        this.dataBroker = dataBroker;
-        this.flowService = salFlowService;
-        this.flowPusher = flowPusher;
+    private final DataBroker dataBroker;
+    private final Executor flowPusher;
+    private final AddFlow addFlow;
+
+    public FlowWriterDirectOFRpc(final DataBroker dataBroker, final Executor flowPusher, final AddFlow addFlow) {
+        this.dataBroker = requireNonNull(dataBroker);
+        this.flowPusher = requireNonNull(flowPusher);
+        this.addFlow = requireNonNull(addFlow);
     }
 
-    public void rpcFlowAdd(String dpId, int flowsPerDpn, int batchSize) {
+    public void rpcFlowAdd(final String dpId, final int flowsPerDpn, final int batchSize) {
         if (!getAllNodes().isEmpty() && getAllNodes().contains(dpId)) {
             FlowRPCHandlerTask addFlowRpcTask = new FlowRPCHandlerTask(dpId, flowsPerDpn, batchSize);
             flowPusher.execute(addFlowRpcTask);
         }
     }
 
-    public void rpcFlowAddAll(int flowsPerDpn, int batchSize) {
+    public void rpcFlowAddAll(final int flowsPerDpn, final int batchSize) {
         Set<String> nodeIdSet = getAllNodes();
         if (nodeIdSet.isEmpty()) {
             LOG.warn("No nodes seen on OPERATIONAL DS. Aborting !!!!");
@@ -133,7 +134,7 @@ public class FlowWriterDirectOFRpc {
                 AddFlowInput addFlowInput = builder.build();
 
                 LOG.debug("RPC invocation for adding flow-id {} with input {}", flowId, addFlowInput);
-                LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
+                LoggingFutures.addErrorLogging(addFlow.invoke(addFlowInput), LOG, "addFlow");
 
                 if (i % batchSize == 0) {
                     try {
