@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -30,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfig;
@@ -50,7 +51,7 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     private static final long LLDP_FLOOD_PERIOD = 5;
     private static final ThreadFactory THREAD_FACTORY = new ThreadFactoryBuilder()
             .setNameFormat("lldp-speaker-%d").setDaemon(true).build();
-    private final PacketProcessingService packetProcessingService;
+    private final PacketProcessingRpc packetProcessingService;
     private final ScheduledExecutorService scheduledExecutorService;
     private final DeviceOwnershipService deviceOwnershipService;
     private final Map<InstanceIdentifier<NodeConnector>, TransmitPacketInput> nodeConnectorMap =
@@ -60,13 +61,13 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
     private ScheduledFuture<?> scheduledSpeakerTask;
     private volatile OperStatus operationalStatus = OperStatus.RUN;
 
-    public LLDPSpeaker(final PacketProcessingService packetProcessingService, final LldpSpeakerConfig lldpSpeakerConfig,
+    public LLDPSpeaker(final PacketProcessingRpc packetProcessingService, final LldpSpeakerConfig lldpSpeakerConfig,
                        final DeviceOwnershipService deviceOwnershipService) {
         this(packetProcessingService, Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY), lldpSpeakerConfig,
                 deviceOwnershipService);
     }
 
-    public LLDPSpeaker(final PacketProcessingService packetProcessingService,
+    public LLDPSpeaker(final PacketProcessingRpc packetProcessingService,
                        final ScheduledExecutorService scheduledExecutorService,
                        final LldpSpeakerConfig lldpSpeakerConfig,
                        final DeviceOwnershipService deviceOwnershipStatusService) {
@@ -131,8 +132,8 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
                 if (deviceOwnershipService.isEntityOwned(nodeId.getValue())) {
                     LOG.debug("Node is owned by this controller, sending LLDP packet through port {}",
                             nodeConnectorId.getValue());
-                    addErrorLogging(packetProcessingService.transmitPacket(nodeConnectorMap.get(ncIID)), LOG,
-                            "transmitPacket() failed");
+                    addErrorLogging(packetProcessingService.getRpcClassToInstanceMap().getInstance(TransmitPacket.class)
+                            .invoke(nodeConnectorMap.get(ncIID)), LOG, "transmitPacket() failed");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip sending LLDP packet on port {}",
                             nodeId.getValue(), nodeConnectorId.getValue());
@@ -188,7 +189,8 @@ public class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable, AutoC
         LOG.debug("Port {} added to LLDPSpeaker.nodeConnectorMap", nodeConnectorId.getValue());
 
         // Transmit packet for first time immediately
-        addErrorLogging(packetProcessingService.transmitPacket(packet), LOG, "transmitPacket");
+        addErrorLogging(packetProcessingService.getRpcClassToInstanceMap().getInstance(TransmitPacket.class)
+            .invoke(packet), LOG, "transmitPacket");
     }
 
     @Override
