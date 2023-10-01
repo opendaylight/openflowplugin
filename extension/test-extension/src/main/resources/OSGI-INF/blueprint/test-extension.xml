@@ -3,7 +3,7 @@
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
 
   <odl:rpc-service id="salFlowService"
-      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+      interface="org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs"/>
 
   <bean id="test" class="org.opendaylight.openflowplugin.extension.test.Test">
     <property name="flowService" ref="salFlowService"/>
