@@ -10,18 +10,25 @@ package test.mock;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
@@ -34,7 +41,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundle;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import test.mock.util.AbstractFRMTest;
 import test.mock.util.SalGroupServiceMock;
@@ -44,10 +54,41 @@ public class GroupListenerTest extends AbstractFRMTest {
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
 
+    private SalGroupServiceMock salGroupService;
+    @Mock
+    private UpdateGroup updateGroup;
+    @Mock
+    private RemoveGroup removeGroup;
+    @Mock
+    private AddGroup addGroup;
+    @Mock
+    private GetActiveBundle getActiveBundle;
+
     @Before
     public void setUp() {
+        salGroupService = new SalGroupServiceMock();
         setUpForwardingRulesManager();
+
+        when(forwardingRulesManager.getRpc(AddGroup.class))
+            .thenReturn(addGroup);
+        when(forwardingRulesManager.getRpc(UpdateGroup.class))
+            .thenReturn(updateGroup);
+        when(forwardingRulesManager.getRpc(RemoveGroup.class))
+            .thenReturn(removeGroup);
+        when(forwardingRulesManager.getRpc(GetActiveBundle.class))
+            .thenReturn(getActiveBundle);
+
+        forwardingRulesManager.start();
         setDeviceMastership(NODE_ID);
+
+        when(addGroup.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salGroupService.addGroup(i.getArgument(0)));
+        when(updateGroup.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salGroupService.updateGroup(i.getArgument(0)));
+        when(removeGroup.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salGroupService.removeGroup(i.getArgument(0)));
+        when(getActiveBundle.invoke(any()))
+            .thenReturn(RpcResultBuilder.success(new GetActiveBundleOutputBuilder().build()).buildFuture());
     }
 
     @Test
@@ -62,8 +103,6 @@ public class GroupListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        final SalGroupServiceMock salGroupService =
-                (SalGroupServiceMock) getForwardingRulesManager().getSalGroupService();
         await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 1);
         List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
         assertEquals(1, addGroupCalls.size());
@@ -94,8 +133,6 @@ public class GroupListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        final SalGroupServiceMock salGroupService =
-                (SalGroupServiceMock) getForwardingRulesManager().getSalGroupService();
         await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 1);
         List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
         assertEquals(1, addGroupCalls.size());
@@ -123,7 +160,6 @@ public class GroupListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        SalGroupServiceMock salGroupService = (SalGroupServiceMock) getForwardingRulesManager().getSalGroupService();
         await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 1);
         List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
         assertEquals(1, addGroupCalls.size());

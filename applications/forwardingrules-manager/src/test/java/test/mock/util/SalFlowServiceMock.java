@@ -16,31 +16,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddF
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class SalFlowServiceMock implements SalFlowService {
+public class SalFlowServiceMock {
     private final List<AddFlowInput> addFlowCalls = new ArrayList<>();
     private final List<RemoveFlowInput> removeFlowCalls = new ArrayList<>();
     private final List<UpdateFlowInput> updateFlowCalls = new ArrayList<>();
 
-    @Override
     public ListenableFuture<RpcResult<AddFlowOutput>> addFlow(AddFlowInput input) {
         addFlowCalls.add(input);
         return RpcResultBuilder.success(new AddFlowOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<RemoveFlowOutput>> removeFlow(RemoveFlowInput input) {
         removeFlowCalls.add(input);
         return RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<UpdateFlowOutput>> updateFlow(UpdateFlowInput input) {
         updateFlowCalls.add(input);
         return RpcResultBuilder.success(new UpdateFlowOutputBuilder().build()).buildFuture();
