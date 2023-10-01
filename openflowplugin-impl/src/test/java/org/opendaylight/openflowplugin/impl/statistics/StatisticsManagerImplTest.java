@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,12 +49,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkMode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkMode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -90,7 +90,7 @@ public class StatisticsManagerImplTest {
     @Mock
     private MultiMsgCollector multiMagCollector;
     @Mock
-    private ObjectRegistration<StatisticsManagerControlService> serviceControlRegistration;
+    private Registration serviceControlRegistration;
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
@@ -108,8 +108,7 @@ public class StatisticsManagerImplTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
 
-        when(rpcProviderRegistry.registerRpcImplementation(
-                eq(StatisticsManagerControlService.class),
+        when(rpcProviderRegistry.registerRpcImplementations(
                 ArgumentMatchers.any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
@@ -135,7 +134,8 @@ public class StatisticsManagerImplTest {
 
     @Test
     public void testGetStatisticsWorkMode() throws Exception {
-        final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getStatisticsWorkMode(null);
+        final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getRpcClassToInstanceMap()
+            .getInstance(GetStatisticsWorkMode.class).invoke(null);
         Assert.assertTrue(workMode.isDone());
         Assert.assertTrue(workMode.get().isSuccessful());
         assertNotNull(workMode.get().getResult());
@@ -157,7 +157,8 @@ public class StatisticsManagerImplTest {
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
         final ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode = statisticsManager
-                .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
+            .getRpcClassToInstanceMap().getInstance(ChangeStatisticsWorkMode.class)
+            .invoke(changeStatisticsWorkModeInputBld.build());
 
         checkWorkModeChangeOutcome(workMode);
         verify(statisticContext).disableGathering();
@@ -185,7 +186,8 @@ public class StatisticsManagerImplTest {
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
         ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode = statisticsManager
-            .changeStatisticsWorkMode(changeStatisticsWorkModeInputBld.build());
+            .getRpcClassToInstanceMap().getInstance(ChangeStatisticsWorkMode.class)
+            .invoke(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
         verify(statisticContext).disableGathering();
@@ -207,15 +209,15 @@ public class StatisticsManagerImplTest {
                         .setMode(StatisticsWorkMode.FULLYDISABLED);
 
         ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode;
-        workMode = statisticsManager.changeStatisticsWorkMode(
-                changeStatisticsWorkModeInputBld.build());
+        workMode = statisticsManager.getRpcClassToInstanceMap().getInstance(ChangeStatisticsWorkMode.class)
+            .invoke(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
         verify(statisticContext).disableGathering();
 
         changeStatisticsWorkModeInputBld.setMode(StatisticsWorkMode.COLLECTALL);
-        workMode = statisticsManager.changeStatisticsWorkMode(
-                changeStatisticsWorkModeInputBld.build());
+        workMode = statisticsManager.getRpcClassToInstanceMap().getInstance(ChangeStatisticsWorkMode.class)
+            .invoke(changeStatisticsWorkModeInputBld.build());
         checkWorkModeChangeOutcome(workMode);
 
         verify(statisticContext).enableGathering();
