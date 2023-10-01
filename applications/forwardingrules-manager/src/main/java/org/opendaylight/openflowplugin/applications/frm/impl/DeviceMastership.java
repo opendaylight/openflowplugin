@@ -11,7 +11,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
 import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
@@ -20,8 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
@@ -39,7 +37,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final InstanceIdentifier<FlowCapableNode> fcnIID;
     private final KeyedInstanceIdentifier<Node, NodeKey> path;
 
-    private ObjectRegistration<@NonNull FrmReconciliationService> reg;
+    private Registration reg;
 
     public DeviceMastership(final NodeId nodeId) {
         this.nodeId = nodeId;
@@ -84,10 +82,10 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     }
 
     public void registerReconciliationRpc(final RpcProviderService rpcProviderService,
-            final FrmReconciliationService reconcliationService) {
+            final FrmReconciliationRpcs reconcliationService) {
         if (reg == null) {
             LOG.debug("The path is registered : {}", path);
-            reg = rpcProviderService.registerRpcImplementation(FrmReconciliationService.class, reconcliationService,
+            reg = rpcProviderService.registerRpcImplementations(reconcliationService.getRpcClassToInstanceMap(),
                 ImmutableSet.of(path));
         } else {
             LOG.debug("The path is already registered : {}", path);
