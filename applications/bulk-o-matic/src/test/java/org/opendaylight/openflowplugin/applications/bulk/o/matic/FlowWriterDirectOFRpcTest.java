@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +26,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -48,19 +50,23 @@ public class FlowWriterDirectOFRpcTest {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private SalFlowService mockSalFlowService;
+    private SalFlowRpcs mockSalFlowService;
     @Mock
     private ExecutorService mockFlowPusher;
     @Mock
     private ReadTransaction readOnlyTransaction;
     @Mock
     private Nodes mockNodes;
+    @Mock
+    private AddFlow addFlow;
 
     private FlowWriterDirectOFRpc flowWriterDirectOFRpc;
 
     @Before
     public void setUp() {
-        doReturn(RpcResultBuilder.success().buildFuture()).when(mockSalFlowService).addFlow(any());
+        when(mockSalFlowService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(AddFlow.class, addFlow));
+        doReturn(RpcResultBuilder.success().buildFuture()).when(addFlow).invoke(any());
 
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         NodeBuilder nodeBuilder = new NodeBuilder()
@@ -86,12 +92,12 @@ public class FlowWriterDirectOFRpcTest {
     @Test
     public void testRpcFlowAdd() {
         flowWriterDirectOFRpc.rpcFlowAdd("1", FLOWS_PER_DPN, 10);
-        Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.any());
+        Mockito.verify(addFlow, Mockito.times(FLOWS_PER_DPN)).invoke(Mockito.any());
     }
 
     @Test
     public void testRpcFlowAddAll() {
         flowWriterDirectOFRpc.rpcFlowAddAll(FLOWS_PER_DPN, 10);
-        Mockito.verify(mockSalFlowService, Mockito.times(FLOWS_PER_DPN)).addFlow(Mockito.any());
+        Mockito.verify(addFlow, Mockito.times(FLOWS_PER_DPN)).invoke(Mockito.any());
     }
 }
