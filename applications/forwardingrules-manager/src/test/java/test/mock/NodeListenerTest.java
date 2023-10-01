@@ -33,6 +33,7 @@ public class NodeListenerTest extends AbstractFRMTest {
     @Before
     public void setUp() {
         setUpForwardingRulesManager();
+        forwardingRulesManager.start();
     }
 
     @Test

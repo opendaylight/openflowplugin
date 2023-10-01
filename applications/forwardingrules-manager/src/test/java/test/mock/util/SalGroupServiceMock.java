@@ -16,31 +16,27 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class SalGroupServiceMock implements SalGroupService {
+public class SalGroupServiceMock {
     private final List<AddGroupInput> addGroupCalls = new ArrayList<>();
     private final List<RemoveGroupInput> removeGroupCalls = new ArrayList<>();
     private final List<UpdateGroupInput> updateGroupCalls = new ArrayList<>();
 
-    @Override
     public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(AddGroupInput input) {
         addGroupCalls.add(input);
         return RpcResultBuilder.success(new AddGroupOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(RemoveGroupInput input) {
         removeGroupCalls.add(input);
         return RpcResultBuilder.success(new RemoveGroupOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(UpdateGroupInput input) {
         updateGroupCalls.add(input);
         return RpcResultBuilder.success(new UpdateGroupOutputBuilder().build()).buildFuture();

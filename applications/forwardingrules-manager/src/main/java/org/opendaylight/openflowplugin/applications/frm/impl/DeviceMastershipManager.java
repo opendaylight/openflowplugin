@@ -34,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -54,7 +53,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
     private final Object lockObj = new Object();
     private final RpcProviderService rpcProviderService;
-    private final FrmReconciliationService reconcliationService;
+    private final FrmReconciliationRpcs reconcliationService;
 
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
@@ -66,7 +65,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
                                    final DataBroker dataBroker,
                                    final MastershipChangeServiceManager mastershipChangeServiceManager,
                                    final RpcProviderService rpcProviderService,
-                                   final FrmReconciliationService reconciliationService) {
+                                   final FrmReconciliationRpcs reconciliationService) {
         this.clusterSingletonService = clusterSingletonService;
         this.reconcliationAgent = reconcliationAgent;
         this.rpcProviderService = rpcProviderService;
