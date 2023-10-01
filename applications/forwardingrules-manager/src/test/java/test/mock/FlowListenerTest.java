@@ -10,12 +10,16 @@ package test.mock;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -31,8 +35,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -42,7 +49,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundle;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import test.mock.util.AbstractFRMTest;
@@ -53,11 +63,41 @@ public class FlowListenerTest extends AbstractFRMTest {
     private static final NodeId NODE_ID = new NodeId("testnode:1");
     private static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
     TableKey tableKey = new TableKey(Uint8.TWO);
+    SalFlowServiceMock salFlowService = new SalFlowServiceMock();
+
+    @Mock
+    private AddFlow addFlow;
+    @Mock
+    private UpdateFlow updateFlow;
+    @Mock
+    private RemoveFlow removeFlow;
+    @Mock
+    private GetActiveBundle getActiveBundle;
 
     @Before
     public void setUp() {
         setUpForwardingRulesManager();
+
+        when(forwardingRulesManager.getRpc(AddFlow.class))
+            .thenReturn(addFlow);
+        when(forwardingRulesManager.getRpc(UpdateFlow.class))
+            .thenReturn(updateFlow);
+        when(forwardingRulesManager.getRpc(RemoveFlow.class))
+            .thenReturn(removeFlow);
+        when(forwardingRulesManager.getRpc(GetActiveBundle.class))
+            .thenReturn(getActiveBundle);
+
+        forwardingRulesManager.start();
         setDeviceMastership(NODE_ID);
+
+        when(addFlow.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salFlowService.addFlow(i.getArgument(0)));
+        when(updateFlow.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salFlowService.updateFlow(i.getArgument(0)));
+        when(removeFlow.invoke(ArgumentMatchers.any()))
+            .thenAnswer(i -> salFlowService.removeFlow(i.getArgument(0)));
+        when(getActiveBundle.invoke(any()))
+            .thenReturn(RpcResultBuilder.success(new GetActiveBundleOutputBuilder().build()).buildFuture());
     }
 
     @Test
@@ -76,7 +116,6 @@ public class FlowListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        SalFlowServiceMock salFlowService = (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());
@@ -114,7 +153,6 @@ public class FlowListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
 
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
@@ -155,7 +193,6 @@ public class FlowListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        final SalFlowServiceMock salFlowService = (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());
@@ -194,8 +231,6 @@ public class FlowListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         writeTx.put(LogicalDatastoreType.CONFIGURATION, flowII, flow);
         assertCommit(writeTx.commit());
-        final SalFlowServiceMock salFlowService =
-                (SalFlowServiceMock) getForwardingRulesManager().getSalFlowService();
         await().atMost(10, SECONDS).until(() -> salFlowService.getAddFlowCalls().size() == 1);
         List<AddFlowInput> addFlowCalls = salFlowService.getAddFlowCalls();
         assertEquals(1, addFlowCalls.size());

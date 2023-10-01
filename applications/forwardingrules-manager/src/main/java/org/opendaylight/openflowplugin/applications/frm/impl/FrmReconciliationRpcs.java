@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -20,11 +22,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -32,14 +35,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class FrmReconciliationServiceImpl implements FrmReconciliationService {
+public class FrmReconciliationRpcs {
 
-    private static final Logger LOG = LoggerFactory.getLogger(FrmReconciliationServiceImpl.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FrmReconciliationRpcs.class);
 
     private final ForwardingRulesManagerImpl forwardingRulesManagerImpl;
 
     @Inject
-    public FrmReconciliationServiceImpl(ForwardingRulesManagerImpl forwardingRulesManagerImpl) {
+    public FrmReconciliationRpcs(ForwardingRulesManagerImpl forwardingRulesManagerImpl) {
         this.forwardingRulesManagerImpl = forwardingRulesManagerImpl;
     }
 
@@ -49,8 +52,7 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
         return nodeDpn;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
+    private ListenableFuture<RpcResult<ReconcileNodeOutput>> reconcileNode(ReconcileNodeInput input) {
         LOG.debug("Triggering reconciliation for node: {}", input.getNodeId());
         Node nodeDpn = buildNode(input.getNodeId().longValue());
         InstanceIdentifier<FlowCapableNode> connectedNode = InstanceIdentifier.builder(Nodes.class)
@@ -62,6 +64,12 @@ public class FrmReconciliationServiceImpl implements FrmReconciliationService {
                 MoreExecutors.directExecutor());
         LOG.debug("Completing reconciliation for node: {}", input.getNodeId());
         return rpcResult;
+    }
+
+    public ClassToInstanceMap<Rpc<?, ?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(ReconcileNode.class, this::reconcileNode)
+            .build();
     }
 
     private static class ResultCallBack implements FutureCallback<Boolean> {
