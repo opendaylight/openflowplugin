@@ -16,22 +16,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class SalBundleServiceMock implements SalBundleService {
+public class SalBundleServiceMock {
 
     private final List<ControlBundleInput> controlBundleInput = new ArrayList<>();
     private final List<AddBundleMessagesInput>  addBundleMessagesInput = new ArrayList<>();
 
-    @Override
     public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(ControlBundleInput input) {
         getControlBundleInput().add(input);
         return RpcResultBuilder.success(new ControlBundleOutputBuilder().build()).buildFuture();
     }
 
-    @Override
     public ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(AddBundleMessagesInput input) {
         getAddBundleMessagesInput().add(input);
         return RpcResultBuilder.success(new AddBundleMessagesOutputBuilder().build()).buildFuture();
