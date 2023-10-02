@@ -21,24 +21,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class NodeConfigServiceImplTest extends ServiceMocking {
+public class NodeConfigRpcTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(150);
     private static final SwitchConfigFlag DUMMY_FLAG = SwitchConfigFlag.FRAGNORMAL;
     private static final String DUMMY_FLAG_STR = "FRAGNORMAL";
     private static final Uint16 DUMMY_MISS_SEARCH_LENGTH = Uint16.valueOf(3000);
-    NodeConfigServiceImpl nodeConfigService;
+    NodeConfigRpc nodeConfigService;
 
     @Test
     public void testSetConfig() {
-        nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        nodeConfigService = new NodeConfigRpc(mockedRequestContextStack, mockedDeviceContext);
         nodeConfigService.setConfig(dummyConfigInput());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testBuildRequest() {
-        nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        nodeConfigService = new NodeConfigRpc(mockedRequestContextStack, mockedDeviceContext);
         final OfHeader request = nodeConfigService.buildRequest(new Xid(DUMMY_XID_VALUE), dummyConfigInput());
 
         assertTrue(request instanceof org.opendaylight.yang.gen.v1.urn
