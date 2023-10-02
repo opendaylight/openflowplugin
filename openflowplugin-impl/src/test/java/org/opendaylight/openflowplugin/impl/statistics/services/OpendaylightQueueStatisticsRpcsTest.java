@@ -42,18 +42,18 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
- * Test for {@link OpendaylightQueueStatisticsServiceImpl}.
+ * Test for {@link OpendaylightQueueStatisticsRpcs}.
  */
-public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightQueueStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightQueueStatisticsServiceImpl queueStatisticsService;
+    private OpendaylightQueueStatisticsRpcs queueStatisticsRpcs;
 
     @Override
     public void setUp() {
-        queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(rqContextStack, deviceContext,
+        queueStatisticsRpcs = new OpendaylightQueueStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
     }
 
@@ -73,7 +73,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
         rpcResult = buildQueueStatsReply();
 
         final Future<RpcResult<GetAllQueuesStatisticsFromAllPortsOutput>> resultFuture
-                = queueStatisticsService.getAllQueuesStatisticsFromAllPorts(input.build());
+                = queueStatisticsRpcs.getAllQueuesStatisticsFromAllPorts(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetAllQueuesStatisticsFromAllPortsOutput> rpcResult = resultFuture.get();
@@ -114,7 +114,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
         rpcResult = buildQueueStatsReply();
 
         final Future<RpcResult<GetAllQueuesStatisticsFromGivenPortOutput>> resultFuture
-                = queueStatisticsService.getAllQueuesStatisticsFromGivenPort(input.build());
+                = queueStatisticsRpcs.getAllQueuesStatisticsFromGivenPort(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetAllQueuesStatisticsFromGivenPortOutput> rpcResult = resultFuture.get();
@@ -135,7 +135,7 @@ public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleSt
         rpcResult = buildQueueStatsReply();
 
         final Future<RpcResult<GetQueueStatisticsFromGivenPortOutput>> resultFuture
-                = queueStatisticsService.getQueueStatisticsFromGivenPort(input.build());
+                = queueStatisticsRpcs.getQueueStatisticsFromGivenPort(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetQueueStatisticsFromGivenPortOutput> rpcResult = resultFuture.get();
