@@ -39,19 +39,19 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowTableStatisticsServiceImpl}.
+ * Test for {@link OpendaylightFlowTableStatisticsRpc}.
  */
-public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightFlowTableStatisticsRpcTest extends AbstractSingleStatsServiceTest {
     private static final Uint8 TABLE_ID = Uint8.valueOf(123);
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightFlowTableStatisticsServiceImpl flowTableStatisticsService;
+    private OpendaylightFlowTableStatisticsRpc flowTableStatisticsRpc;
 
     @Override
     public void setUp() {
-        flowTableStatisticsService = new OpendaylightFlowTableStatisticsServiceImpl(rqContextStack, deviceContext,
+        flowTableStatisticsRpc = new OpendaylightFlowTableStatisticsRpc(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
     }
 
@@ -84,7 +84,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         )).build();
 
         final Future<RpcResult<GetFlowTablesStatisticsOutput>> resultFuture
-                = flowTableStatisticsService.getFlowTablesStatistics(input.build());
+                = flowTableStatisticsRpc.getFlowTablesStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetFlowTablesStatisticsOutput> rpcResult = resultFuture.get();
@@ -99,7 +99,7 @@ public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSing
         Xid xid = new Xid(Uint32.valueOf(42L));
         GetFlowTablesStatisticsInputBuilder input = new GetFlowTablesStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
-        final OfHeader request = flowTableStatisticsService.buildRequest(xid, input.build());
+        final OfHeader request = flowTableStatisticsRpc.buildRequest(xid, input.build());
         Assert.assertTrue(request instanceof MultipartRequestInput);
         final MultipartRequestInput mpRequest = (MultipartRequestInput) request;
         Assert.assertEquals(MultipartType.OFPMPTABLE, mpRequest.getType());
