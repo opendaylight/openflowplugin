@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class SalMeterServiceImplTest extends ServiceMocking {
+public class SalMeterRpcsTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_METER_ID = Uint32.valueOf(15);
     private static final Uint32 DUMMY_METTER_ID = Uint32.valueOf(2000);
@@ -38,12 +38,12 @@ public class SalMeterServiceImplTest extends ServiceMocking {
     @Mock
     DeviceMeterRegistry mockedDeviceMeterRegistry;
 
-    SalMeterServiceImpl salMeterService;
+    SalMeterRpcs salMeterService;
 
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salMeterService = new SalMeterServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        salMeterService = new SalMeterRpcs(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test

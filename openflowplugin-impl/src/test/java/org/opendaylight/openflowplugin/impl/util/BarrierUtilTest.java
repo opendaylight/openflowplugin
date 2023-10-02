@@ -9,6 +9,7 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
@@ -17,12 +18,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -45,21 +46,27 @@ public class BarrierUtilTest {
             .child(Node.class, NODE_KEY));
 
     @Mock
-    private FlowCapableTransactionService transactionService;
+    private FlowCapableTransactionRpc transactionRpc;
+    @Mock
+    private SendBarrier sendBarrierRpc;
     @Mock
     private Function<Pair<RpcResult<String>, RpcResult<SendBarrierOutput>>, RpcResult<String>> compositeTransform;
     @Captor
     private ArgumentCaptor<Pair<RpcResult<String>, RpcResult<SendBarrierOutput>>> pairCpt;
+    @Captor
+    private ArgumentCaptor<SendBarrierInput> sendBarrierInputCpt;
 
     @Before
     public void setUp() {
-        Mockito.when(transactionService.sendBarrier(ArgumentMatchers.any()))
-                .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
+        Mockito.when(transactionRpc.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(SendBarrier.class, sendBarrierRpc));
+        Mockito.when(sendBarrierRpc.invoke(Mockito.any()))
+            .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After
     public void tearDown() {
-        Mockito.verifyNoMoreInteractions(transactionService, compositeTransform);
+        Mockito.verifyNoMoreInteractions(sendBarrierRpc, compositeTransform);
     }
 
     @Test
@@ -67,9 +74,9 @@ public class BarrierUtilTest {
         final String data = "ut-data1";
         final ListenableFuture<RpcResult<String>> input = RpcResultBuilder.success(data).buildFuture();
         final ListenableFuture<RpcResult<String>> chainResult =
-                BarrierUtil.chainBarrier(input, NODE_REF, transactionService, compositeTransform);
+                BarrierUtil.chainBarrier(input, NODE_REF, transactionRpc, compositeTransform);
 
-        Mockito.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        Mockito.verify(sendBarrierRpc, Mockito.times(1)).invoke(sendBarrierInputCpt.capture());
         Mockito.verify(compositeTransform).apply(pairCpt.capture());
 
         final Pair<RpcResult<String>, RpcResult<SendBarrierOutput>> value = pairCpt.getValue();

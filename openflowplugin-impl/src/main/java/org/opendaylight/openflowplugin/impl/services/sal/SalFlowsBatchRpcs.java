@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -17,27 +20,30 @@ import java.util.List;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.BatchFlowInputGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.BatchFlowInputUpdateGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
@@ -45,27 +51,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation of {@link SalFlowsBatchService} - delegates work to {@link SalFlowService}.
+ * Default implementation delegates work to {@link SalFlowRpcs}.
  */
-public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalFlowsBatchServiceImpl.class);
+public class SalFlowsBatchRpcs {
+    private static final Logger LOG = LoggerFactory.getLogger(SalFlowsBatchRpcs.class);
 
-    private final SalFlowService salFlowService;
-    private final FlowCapableTransactionService transactionService;
+    private final SalFlowRpcs salFlowRpcs;
+    private final FlowCapableTransactionRpc transactionRpc;
 
-    public SalFlowsBatchServiceImpl(final SalFlowService salFlowService,
-                                    final FlowCapableTransactionService transactionService) {
-        this.salFlowService = requireNonNull(salFlowService, "delegate flow service must not be null");
-        this.transactionService = requireNonNull(transactionService, "delegate transaction service must not be null");
+    public SalFlowsBatchRpcs(final SalFlowRpcs salFlowRpcs,
+                                    final FlowCapableTransactionRpc transactionRpc) {
+        this.salFlowRpcs = requireNonNull(salFlowRpcs, "delegate flow rpcs must not be null");
+        this.transactionRpc = requireNonNull(transactionRpc, "delegate transaction service must not be null");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBatch(final RemoveFlowsBatchInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBatch(final RemoveFlowsBatchInput input) {
         LOG.trace("Removing flows @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveFlows().size());
@@ -75,7 +82,8 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(salFlowService.removeFlow(removeFlowInput));
+            resultsLot.add(salFlowRpcs.getRpcClassToInstanceMap().getInstance(RemoveFlow.class)
+                .invoke(removeFlowInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
@@ -88,14 +96,14 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         if (input.getBarrierAfter()) {
             removeFlowsBulkFuture = BarrierUtil.chainBarrier(removeFlowsBulkFuture, input.getNode(),
-                    transactionService, FlowUtil.FLOW_REMOVE_COMPOSING_TRANSFORM);
+                transactionRpc, FlowUtil.FLOW_REMOVE_COMPOSING_TRANSFORM);
         }
 
         return removeFlowsBulkFuture;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBatch(final AddFlowsBatchInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBatch(final AddFlowsBatchInput input) {
         LOG.trace("Adding flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddFlows().size());
         final ArrayList<ListenableFuture<RpcResult<AddFlowOutput>>> resultsLot = new ArrayList<>();
         for (BatchFlowInputGrouping batchFlow : input.nonnullBatchAddFlows().values()) {
@@ -103,7 +111,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(salFlowService.addFlow(addFlowInput));
+            resultsLot.add(salFlowRpcs.getRpcClassToInstanceMap().getInstance(AddFlow.class).invoke(addFlowInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
@@ -116,7 +124,7 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         if (input.getBarrierAfter()) {
             addFlowsBulkFuture = BarrierUtil.chainBarrier(addFlowsBulkFuture, input.getNode(),
-                    transactionService, FlowUtil.FLOW_ADD_COMPOSING_TRANSFORM);
+                transactionRpc, FlowUtil.FLOW_ADD_COMPOSING_TRANSFORM);
         }
 
         return addFlowsBulkFuture;
@@ -132,8 +140,8 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                 batchFlow.getOriginalBatchedFlow().getTableId(), batchFlow.getFlowId());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBatch(final UpdateFlowsBatchInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBatch(final UpdateFlowsBatchInput input) {
         LOG.trace("Updating flows @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchUpdateFlows().size());
@@ -145,7 +153,8 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
                     .setFlowRef(createFlowRef(input.getNode(), batchFlow))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(salFlowService.updateFlow(updateFlowInput));
+            resultsLot.add(salFlowRpcs.getRpcClassToInstanceMap().getInstance(UpdateFlow.class)
+                .invoke(updateFlowInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
@@ -158,9 +167,17 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
         if (input.getBarrierAfter()) {
             updateFlowsBulkFuture = BarrierUtil.chainBarrier(updateFlowsBulkFuture, input.getNode(),
-                    transactionService, FlowUtil.FLOW_UPDATE_COMPOSING_TRANSFORM);
+                transactionRpc, FlowUtil.FLOW_UPDATE_COMPOSING_TRANSFORM);
         }
 
         return updateFlowsBulkFuture;
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(RemoveFlowsBatch.class, this::removeFlowsBatch)
+            .put(AddFlowsBatch.class, this::addFlowsBatch)
+            .put(UpdateFlowsBatch.class, this::updateFlowsBatch)
+            .build();
     }
 }
