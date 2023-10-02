@@ -42,7 +42,8 @@ public class MdSalRegistrationUtilsTest {
      */
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 6;
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATIONS = 10;
-    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 5;
+    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 4;
+    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATIONS = 1;
 
     @Mock
     private RpcContext mockedRpcContext;
@@ -98,6 +99,8 @@ public class MdSalRegistrationUtilsTest {
                                                                  convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION))
                 .registerRpcServiceImplementation(any(), any(RpcService.class));
+        verify(mockedRpcContext, times(NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATIONS))
+            .registerRpcServiceImplementations(any(), any());
     }
 
 }
