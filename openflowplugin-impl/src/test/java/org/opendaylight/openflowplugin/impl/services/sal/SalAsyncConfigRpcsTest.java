@@ -30,16 +30,16 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
- * Test for {@link SalAsyncConfigServiceImpl}.
+ * Test for {@link SalAsyncConfigRpcs}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SalAsyncConfigServiceImplTest extends ServiceMocking {
+public class SalAsyncConfigRpcsTest extends ServiceMocking {
 
-    private SalAsyncConfigServiceImpl salAsyncConfigService;
+    private SalAsyncConfigRpcs salAsyncConfigService;
 
     @Override
     public void setup() {
-        salAsyncConfigService = new SalAsyncConfigServiceImpl(
+        salAsyncConfigService = new SalAsyncConfigRpcs(
                 mockedRequestContextStack, mockedDeviceContext);
     }
 
