@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.Futures;
@@ -66,6 +67,7 @@ import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDevice
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
+import org.opendaylight.openflowplugin.impl.services.sal.SalRoleRpc;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.ExperimenterMessageFromDev;
@@ -103,7 +105,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRole;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.util.concurrent.NotificationManager;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -172,7 +174,9 @@ public class DeviceContextImplTest {
     @Mock
     private AbstractDeviceInitializer abstractDeviceInitializer;
     @Mock
-    private SalRoleService salRoleService;
+    private SalRoleRpc salRoleService;
+    @Mock
+    private SetRole setRole;
     @Mock
     private ContextChainHolder contextChainHolder;
     @Mock
@@ -248,7 +252,9 @@ public class DeviceContextImplTest {
 
         Mockito.lenient().when(deviceInitializerProvider.lookup(OFConstants.OFP_VERSION_1_3))
                 .thenReturn(deviceInitializer);
-        Mockito.lenient().when(salRoleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
+        Mockito.lenient().when(salRoleService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(SetRole.class, setRole));
+        Mockito.lenient().when(setRole.invoke(any())).thenReturn(Futures.immediateFuture(null));
 
         deviceContext = new DeviceContextImpl(
                 connectionContext,
