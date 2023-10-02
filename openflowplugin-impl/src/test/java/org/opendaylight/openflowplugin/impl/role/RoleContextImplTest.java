@@ -29,12 +29,12 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
+import org.opendaylight.openflowplugin.impl.services.sal.SalRoleRpc;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -44,7 +44,7 @@ public class RoleContextImplTest {
     // Timeout  after what we will give up on propagating role
     private static final long SET_ROLE_TIMEOUT = 10000;
     @Mock
-    private SalRoleService roleService;
+    private SalRoleRpc salRoleRpc;
     @Mock
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     @Mock
@@ -62,12 +62,12 @@ public class RoleContextImplTest {
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(DeviceStateUtil
                 .createNodeInstanceIdentifier(new NodeId("openflow:1")));
         when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
-        when(roleService.setRole(any())).thenReturn(Futures.immediateFuture(null));
+        when(salRoleRpc.invoke(any())).thenReturn(Futures.immediateFuture(null));
 
         roleContext = new RoleContextImpl(deviceInfo, new HashedWheelTimer(), 20000, config,
                 Executors.newSingleThreadExecutor());
         roleContext.registerMastershipWatcher(contextChainMastershipWatcher);
-        roleContext.setRoleService(roleService);
+        roleContext.setRoleRpc(salRoleRpc);
     }
 
     @After
@@ -78,7 +78,7 @@ public class RoleContextImplTest {
     @Test
     public void instantiateServiceInstance() {
         roleContext.instantiateServiceInstance();
-        verify(roleService).setRole(new SetRoleInputBuilder()
+        verify(salRoleRpc).invoke(new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMEMASTER)
                 .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                 .build());
@@ -91,10 +91,9 @@ public class RoleContextImplTest {
     public void terminateServiceInstance() throws Exception {
         when(setRoleFuture.isCancelled()).thenReturn(false);
         when(setRoleFuture.isDone()).thenReturn(false);
-        when(roleService.setRole(any())).thenReturn(setRoleFuture);
+        when(salRoleRpc.invoke(any())).thenReturn(setRoleFuture);
         roleContext.instantiateServiceInstance();
         roleContext.closeServiceInstance().get();
         verify(setRoleFuture).cancel(true);
     }
-
 }
