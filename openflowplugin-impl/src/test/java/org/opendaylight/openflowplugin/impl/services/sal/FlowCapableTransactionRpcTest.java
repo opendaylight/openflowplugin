@@ -22,17 +22,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link FlowCapableTransactionServiceImpl}.
+ * Test for {@link FlowCapableTransactionRpc}.
  */
-public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
+public class FlowCapableTransactionRpcTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
-    FlowCapableTransactionServiceImpl flowCapableTransactionService;
+    FlowCapableTransactionRpc flowCapableTransactionService;
 
     @Override
     protected void setup() {
-        flowCapableTransactionService =
-                new FlowCapableTransactionServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        flowCapableTransactionService = new FlowCapableTransactionRpc(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test

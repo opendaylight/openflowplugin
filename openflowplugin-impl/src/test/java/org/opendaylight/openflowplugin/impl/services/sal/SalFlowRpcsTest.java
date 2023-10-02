@@ -71,7 +71,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class SalFlowServiceImplTest extends TestCase {
+public class SalFlowRpcsTest extends TestCase {
 
     private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(444);
     private static final String DUMMY_NODE_ID = "dummyNodeID";
@@ -132,13 +132,13 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
     }
 
-    private SalFlowServiceImpl mockSalFlowService(final Uint8 version) {
+    private SalFlowRpcs mockSalFlowService(final Uint8 version) {
         when(mockedFeatures.getVersion()).thenReturn(version);
         when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new SalFlowRpcs(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test
@@ -217,7 +217,7 @@ public class SalFlowServiceImplTest extends TestCase {
                 .setTableId(Uint8.ONE)
                 .setNode(noderef)
                 .build();
-        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
+        SalFlowRpcs salFlowService = mockSalFlowService(version);
 
         verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
     }
@@ -241,7 +241,7 @@ public class SalFlowServiceImplTest extends TestCase {
                 .setNode(noderef)
                 .build();
 
-        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
+        SalFlowRpcs salFlowService = mockSalFlowService(version);
         verifyOutput(salFlowService.removeFlow(mockedRemoveFlowInput));
     }
 
@@ -295,7 +295,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
         when(mockedUpdateFlowInput1.getOriginalFlow()).thenReturn(mockedOriginalFlow1);
 
-        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
+        SalFlowRpcs salFlowService = mockSalFlowService(version);
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
         verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput1));
     }
