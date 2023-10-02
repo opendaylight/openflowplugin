@@ -34,7 +34,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMeterRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalPortRpc;
-import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalTableRpc;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsRpc;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsRpcs;
@@ -51,7 +51,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.ser
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 
 public final class MdSalRegistrationUtils {
 
@@ -91,6 +90,8 @@ public final class MdSalRegistrationUtils {
         final PacketProcessingRpc packetProcessingRpc =
                 new PacketProcessingRpc(rpcContext, deviceContext, convertorExecutor);
         final SalPortRpc salPortService = new SalPortRpc(rpcContext, deviceContext, convertorExecutor);
+        final SalTableRpc salTableRpc =
+                new SalTableRpc(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider);
 
 
         // register routed service instances
@@ -102,8 +103,7 @@ public final class MdSalRegistrationUtils {
             salAsyncConfigService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(salMeterService, salMeterService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(salGroupService, salGroupService.getRpcClassToInstanceMap());
-        rpcContext.registerRpcServiceImplementation(SalTableService.class,
-                new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
+        rpcContext.registerRpcServiceImplementations(salTableRpc, salTableRpc.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(salPortService, salPortService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(packetProcessingRpc,
             packetProcessingRpc.getRpcClassToInstanceMap());
