@@ -9,33 +9,43 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.EchoService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEcho;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoOutput;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public final class SalEchoServiceImpl implements SalEchoService {
+public final class SalEchoRpc {
     private final EchoService echoService;
 
-    public SalEchoServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalEchoRpc(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         echoService = new EchoService(requestContextStack, deviceContext);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
         final EchoInputBuilder echoInputBld = new EchoInputBuilder()
                 .setData(sendEchoInput.getData());
         return transform(echoService.handleServiceCall(echoInputBld));
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(SendEcho.class, this::sendEcho)
+            .build();
     }
 
     private static ListenableFuture<RpcResult<SendEchoOutput>>
