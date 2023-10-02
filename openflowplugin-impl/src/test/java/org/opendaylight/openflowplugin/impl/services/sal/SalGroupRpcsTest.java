@@ -38,7 +38,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class SalGroupServiceImplTest extends ServiceMocking {
+public class SalGroupRpcsTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_GROUP_ID = Uint32.valueOf(15);
     private static final
@@ -49,12 +49,12 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     @Mock
     DeviceGroupRegistry mockedDeviceGroupRegistry;
 
-    SalGroupServiceImpl salGroupService;
+    SalGroupRpcs salGroupService;
 
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        salGroupService = new SalGroupRpcs(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test

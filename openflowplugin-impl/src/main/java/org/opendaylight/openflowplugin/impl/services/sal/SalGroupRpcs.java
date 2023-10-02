@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -18,21 +21,24 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupS
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalGroupServiceImpl implements SalGroupService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalGroupServiceImpl.class);
+public class SalGroupRpcs {
+    private static final Logger LOG = LoggerFactory.getLogger(SalGroupRpcs.class);
     private final MultiLayerGroupService<AddGroupInput, AddGroupOutput> addGroup;
     private final MultiLayerGroupService<Group, UpdateGroupOutput> updateGroup;
     private final MultiLayerGroupService<RemoveGroupInput, RemoveGroupOutput> removeGroup;
@@ -42,9 +48,8 @@ public class SalGroupServiceImpl implements SalGroupService {
 
     private final DeviceContext deviceContext;
 
-    public SalGroupServiceImpl(final RequestContextStack requestContextStack,
-                               final DeviceContext deviceContext,
-                               final ConvertorExecutor convertorExecutor) {
+    public SalGroupRpcs(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+            final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
         addGroup = new MultiLayerGroupService<>(requestContextStack,
                                                 deviceContext,
@@ -66,8 +71,8 @@ public class SalGroupServiceImpl implements SalGroupService {
         removeGroupMessage = new SingleLayerGroupService<>(requestContextStack, deviceContext, RemoveGroupOutput.class);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture =
             addGroupMessage.canUseSingleLayerSerialization()
             ? addGroupMessage.handleServiceCall(input)
@@ -98,8 +103,8 @@ public class SalGroupServiceImpl implements SalGroupService {
     }
 
 
-    @Override
-    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
         final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture =
             updateGroupMessage.canUseSingleLayerSerialization()
             ? updateGroupMessage.handleServiceCall(input.getUpdatedGroup())
@@ -132,8 +137,8 @@ public class SalGroupServiceImpl implements SalGroupService {
         return resultFuture;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
         final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
             removeGroupMessage.canUseSingleLayerSerialization()
             ? removeGroupMessage.handleServiceCall(input)
@@ -164,4 +169,11 @@ public class SalGroupServiceImpl implements SalGroupService {
         return resultFuture;
     }
 
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(AddGroup.class, this::addGroup)
+            .put(UpdateGroup.class, this::updateGroup)
+            .put(RemoveGroup.class, this::removeGroup)
+            .build();
+    }
 }

@@ -7,6 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -17,20 +20,23 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterS
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMeterService;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalMeterServiceImpl implements SalMeterService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalMeterServiceImpl.class);
+public class SalMeterRpcs {
+    private static final Logger LOG = LoggerFactory.getLogger(SalMeterRpcs.class);
     private final MultiLayerMeterService<AddMeterInput, AddMeterOutput> addMeter;
     private final MultiLayerMeterService<Meter, UpdateMeterOutput> updateMeter;
     private final MultiLayerMeterService<RemoveMeterInput, RemoveMeterOutput> removeMeter;
@@ -40,7 +46,7 @@ public class SalMeterServiceImpl implements SalMeterService {
 
     private final DeviceContext deviceContext;
 
-    public SalMeterServiceImpl(final RequestContextStack requestContextStack,
+    public SalMeterRpcs(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
                                final ConvertorExecutor convertorExecutor) {
         this.deviceContext = deviceContext;
@@ -64,8 +70,8 @@ public class SalMeterServiceImpl implements SalMeterService {
         removeMeterMessage = new SingleLayerMeterService<>(requestContextStack, deviceContext, RemoveMeterOutput.class);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
         final ListenableFuture<RpcResult<AddMeterOutput>> resultFuture =
                 addMeterMessage.canUseSingleLayerSerialization()
                         ? addMeterMessage.handleServiceCall(input)
@@ -94,8 +100,8 @@ public class SalMeterServiceImpl implements SalMeterService {
         return resultFuture;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
         final ListenableFuture<RpcResult<UpdateMeterOutput>> resultFuture =
                 updateMeterMessage.canUseSingleLayerSerialization()
                         ? updateMeterMessage.handleServiceCall(input.getUpdatedMeter())
@@ -125,8 +131,8 @@ public class SalMeterServiceImpl implements SalMeterService {
         return resultFuture;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
         final ListenableFuture<RpcResult<RemoveMeterOutput>> resultFuture =
                 removeMeterMessage.canUseSingleLayerSerialization()
                         ? removeMeterMessage.handleServiceCall(input)
@@ -152,5 +158,13 @@ public class SalMeterServiceImpl implements SalMeterService {
             }
         }, MoreExecutors.directExecutor());
         return resultFuture;
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(RemoveMeter.class, this::removeMeter)
+            .put(AddMeter.class, this::addMeter)
+            .put(UpdateMeter.class, this::updateMeter)
+            .build();
     }
 }
