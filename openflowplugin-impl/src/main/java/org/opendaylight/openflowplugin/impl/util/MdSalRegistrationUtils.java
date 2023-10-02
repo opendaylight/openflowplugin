@@ -42,11 +42,10 @@ import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMete
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightPortStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightQueueStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.OpendaylightFlowStatisticsServiceDelegateImpl;
-import org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.direct.OpendaylightDirectStatisticsRpcs;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer.MultiLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
@@ -117,12 +116,14 @@ public final class MdSalRegistrationUtils {
                 OpendaylightFlowStatisticsServiceImpl.createWithOook(rpcContext, deviceContext, convertorExecutor));
 
         // register direct statistics gathering services
-        rpcContext.registerRpcServiceImplementation(OpendaylightDirectStatisticsService.class,
-            new OpendaylightDirectStatisticsServiceImpl(deviceContext.canUseSingleLayerSerialization()
+        final OpendaylightDirectStatisticsRpcs opendaylightDirectStatisticsRpcs =
+            new OpendaylightDirectStatisticsRpcs(deviceContext.canUseSingleLayerSerialization()
                 ? SingleLayerDirectStatisticsProviderInitializer
-                    .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider)
+                .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider)
                 : MultiLayerDirectStatisticsProviderInitializer
-                    .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider)));
+                .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
+        rpcContext.registerRpcServiceImplementations(opendaylightDirectStatisticsRpcs,
+            opendaylightDirectStatisticsRpcs.getRpcClassToInstanceMap());
 
         // register flat batch services
         final SalFlatBatchRpc salFlatBatchRpc = new SalFlatBatchRpc(
