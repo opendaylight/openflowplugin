@@ -14,17 +14,16 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerTableMultipartService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerTableMultipartService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class SalTableServiceImpl implements SalTableService {
+public final class SalTableRpc {
 
     private final SingleLayerTableMultipartService singleLayerService;
     private final MultiLayerTableMultipartService multiLayerService;
 
-    public SalTableServiceImpl(final RequestContextStack requestContextStack,
+    public SalTableRpc(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
                                final ConvertorExecutor convertorExecutor,
                                final MultipartWriterProvider multipartWriterProvider) {
@@ -37,7 +36,6 @@ public final class SalTableServiceImpl implements SalTableService {
                                                                 multipartWriterProvider);
     }
 
-    @Override
     public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
             ? singleLayerService.handleAndReply(input)
