@@ -21,18 +21,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.p
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortModInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePortOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class SalPortServiceImpl
-        extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> implements SalPortService {
+public final class SalPortRpc extends AbstractSimpleService<UpdatePortInput, UpdatePortOutput> {
     private final ConvertorExecutor convertorExecutor;
     private final VersionConvertorData data;
     private final SingleLayerPortService<UpdatePortOutput> portMessage;
 
-    public SalPortServiceImpl(final RequestContextStack requestContextStack,
+    public SalPortRpc(final RequestContextStack requestContextStack,
                               final DeviceContext deviceContext,
                               final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, UpdatePortOutput.class);
@@ -41,7 +39,6 @@ public final class SalPortServiceImpl
         portMessage = new SingleLayerPortService<>(requestContextStack, deviceContext, UpdatePortOutput.class);
     }
 
-    @Override
     public ListenableFuture<RpcResult<UpdatePortOutput>> updatePort(final UpdatePortInput input) {
         return portMessage.canUseSingleLayerSerialization()
             ? portMessage.handleServiceCall(getPortFromInput(input))

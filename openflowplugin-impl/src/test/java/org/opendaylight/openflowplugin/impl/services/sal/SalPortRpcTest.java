@@ -31,17 +31,17 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SalPortServiceImplTest extends ServiceMocking {
+public class SalPortRpcTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_XID = Uint32.valueOf(55L);
     private static final Uint32 DUMMY_PORT_NUMBER = Uint32.valueOf(66L);
     private static final String DUMMY_MAC_ADDRESS = "AA:BB:CC:DD:EE:FF";
-    SalPortServiceImpl salPortService;
+    SalPortRpc salPortService;
 
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salPortService = new SalPortServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        salPortService = new SalPortRpc(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test
