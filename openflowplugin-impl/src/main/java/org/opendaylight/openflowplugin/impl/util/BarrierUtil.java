@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
@@ -35,13 +35,13 @@ public final class BarrierUtil {
      * @param <T>                type of input future
      * @param input              future to chain barrier to
      * @param nodeRef            target device
-     * @param transactionService barrier service
+     * @param transactionRpc     barrier service
      * @param compositeTransform composite transform
      * @return future holding both results (input and of the barrier)
      */
     public static <T> ListenableFuture<RpcResult<T>> chainBarrier(
             final ListenableFuture<RpcResult<T>> input, final NodeRef nodeRef,
-            final FlowCapableTransactionService transactionService,
+            final FlowCapableTransactionRpc transactionRpc,
             final Function<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>, RpcResult<T>> compositeTransform) {
         final MutablePair<RpcResult<T>, RpcResult<SendBarrierOutput>> resultPair = new MutablePair<>();
 
@@ -50,7 +50,7 @@ public final class BarrierUtil {
             interInput -> {
                 resultPair.setLeft(interInput);
                 final SendBarrierInput barrierInput = createSendBarrierInput(nodeRef);
-                return transactionService.sendBarrier(barrierInput);
+                return transactionRpc.sendBarrier(barrierInput);
             }, MoreExecutors.directExecutor());
         // store barrier result and return initiated pair
         final ListenableFuture<Pair<RpcResult<T>, RpcResult<SendBarrierOutput>>> compositeResult = Futures.transform(
@@ -67,7 +67,7 @@ public final class BarrierUtil {
      * Creates barrier input.
      *
      * @param nodeRef rpc routing context
-     * @return input for {@link FlowCapableTransactionService#sendBarrier(SendBarrierInput)}
+     * @return input for {@link FlowCapableTransactionRpc#sendBarrier(SendBarrierInput)}
      */
     public static SendBarrierInput createSendBarrierInput(final NodeRef nodeRef) {
         return new SendBarrierInputBuilder()

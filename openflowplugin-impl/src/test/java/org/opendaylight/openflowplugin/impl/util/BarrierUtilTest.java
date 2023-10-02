@@ -22,7 +22,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -45,7 +45,7 @@ public class BarrierUtilTest {
             .child(Node.class, NODE_KEY));
 
     @Mock
-    private FlowCapableTransactionService transactionService;
+    private FlowCapableTransactionRpc transactionRpc;
     @Mock
     private Function<Pair<RpcResult<String>, RpcResult<SendBarrierOutput>>, RpcResult<String>> compositeTransform;
     @Captor
@@ -53,13 +53,13 @@ public class BarrierUtilTest {
 
     @Before
     public void setUp() {
-        Mockito.when(transactionService.sendBarrier(ArgumentMatchers.any()))
+        Mockito.when(transactionRpc.sendBarrier(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After
     public void tearDown() {
-        Mockito.verifyNoMoreInteractions(transactionService, compositeTransform);
+        Mockito.verifyNoMoreInteractions(transactionRpc, compositeTransform);
     }
 
     @Test
@@ -67,9 +67,9 @@ public class BarrierUtilTest {
         final String data = "ut-data1";
         final ListenableFuture<RpcResult<String>> input = RpcResultBuilder.success(data).buildFuture();
         final ListenableFuture<RpcResult<String>> chainResult =
-                BarrierUtil.chainBarrier(input, NODE_REF, transactionService, compositeTransform);
+                BarrierUtil.chainBarrier(input, NODE_REF, transactionRpc, compositeTransform);
 
-        Mockito.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        Mockito.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
         Mockito.verify(compositeTransform).apply(pairCpt.capture());
 
         final Pair<RpcResult<String>, RpcResult<SendBarrierOutput>> value = pairCpt.getValue();

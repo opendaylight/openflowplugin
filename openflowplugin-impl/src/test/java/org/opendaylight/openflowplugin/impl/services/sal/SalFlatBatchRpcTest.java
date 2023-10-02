@@ -68,13 +68,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.OriginalBatchedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.UpdatedBatchedGroupBuilder;
@@ -86,7 +84,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
@@ -99,10 +96,10 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl}.
+ * Test for {@link SalFlatBatchRpc}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SalFlatBatchServiceImplTest {
+public class SalFlatBatchRpcTest {
 
     private static final NodeId NODE_ID = new NodeId("ut-node-id");
     private static final InstanceIdentifier<Node> NODE_II = InstanceIdentifier.create(Nodes.class)
@@ -110,49 +107,47 @@ public class SalFlatBatchServiceImplTest {
     private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Mock
-    private SalFlowsBatchService salFlowsBatchService;
+    private SalFlowsBatchRpcs salFlowsBatchRpcs;
     @Mock
-    private SalGroupsBatchService salGroupsBatchService;
+    private SalGroupsBatchRpcs salGroupsBatchRpcs;
     @Mock
-    private SalMetersBatchService salMetersBatchService;
+    private SalMetersBatchRpcs salMetersBatchRpcs;
     @Captor
     private ArgumentCaptor<AddFlowsBatchInput> addFlowsBatchInputCpt;
 
-    private SalFlatBatchServiceImpl salFlatBatchService;
+    private SalFlatBatchRpc salFlatBatchService;
 
     @Before
     public void setUp() {
-        salFlatBatchService =
-                new SalFlatBatchServiceImpl(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
-
+        salFlatBatchService = new SalFlatBatchRpc(salFlowsBatchRpcs, salGroupsBatchRpcs, salMetersBatchRpcs);
     }
 
     @After
     public void tearDown() {
-        Mockito.verifyNoMoreInteractions(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
+        Mockito.verifyNoMoreInteractions(salFlowsBatchRpcs, salGroupsBatchRpcs, salMetersBatchRpcs);
     }
 
     @Test
     public void testProcessFlatBatch_allSuccessFinished() throws Exception {
-        Mockito.when(salFlowsBatchService.addFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.addFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salFlowsBatchService.removeFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.removeFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveFlowsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salFlowsBatchService.updateFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.updateFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateFlowsBatchOutputBuilder().build()).buildFuture());
 
-        Mockito.when(salGroupsBatchService.addGroupsBatch(ArgumentMatchers.any()))
+        Mockito.when(salGroupsBatchRpcs.addGroupsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddGroupsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salGroupsBatchService.removeGroupsBatch(ArgumentMatchers.any()))
+        Mockito.when(salGroupsBatchRpcs.removeGroupsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveGroupsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salGroupsBatchService.updateGroupsBatch(ArgumentMatchers.any()))
+        Mockito.when(salGroupsBatchRpcs.updateGroupsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateGroupsBatchOutputBuilder().build()).buildFuture());
 
-        Mockito.when(salMetersBatchService.addMetersBatch(ArgumentMatchers.any()))
+        Mockito.when(salMetersBatchRpcs.addMetersBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddMetersBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salMetersBatchService.removeMetersBatch(ArgumentMatchers.any()))
+        Mockito.when(salMetersBatchRpcs.removeMetersBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveMetersBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salMetersBatchService.updateMetersBatch(ArgumentMatchers.any()))
+        Mockito.when(salMetersBatchRpcs.updateMetersBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateMetersBatchOutputBuilder().build()).buildFuture());
 
 
@@ -182,18 +177,18 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertTrue(rpcResult.getErrors().isEmpty());
         Assert.assertTrue(rpcResult.getResult().nonnullBatchFailure().isEmpty());
 
-        final InOrder inOrder = Mockito.inOrder(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
-        inOrder.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salFlowsBatchService).removeFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salFlowsBatchService).updateFlowsBatch(ArgumentMatchers.any());
+        final InOrder inOrder = Mockito.inOrder(salFlowsBatchRpcs, salGroupsBatchRpcs, salMetersBatchRpcs);
+        inOrder.verify(salFlowsBatchRpcs).addFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salFlowsBatchRpcs).removeFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salFlowsBatchRpcs).updateFlowsBatch(ArgumentMatchers.any());
 
-        inOrder.verify(salGroupsBatchService).addGroupsBatch(ArgumentMatchers.any());
-        inOrder.verify(salGroupsBatchService).removeGroupsBatch(ArgumentMatchers.any());
-        inOrder.verify(salGroupsBatchService).updateGroupsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).addGroupsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).removeGroupsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).updateGroupsBatch(ArgumentMatchers.any());
 
-        inOrder.verify(salMetersBatchService).addMetersBatch(ArgumentMatchers.any());
-        inOrder.verify(salMetersBatchService).removeMetersBatch(ArgumentMatchers.any());
-        inOrder.verify(salMetersBatchService).updateMetersBatch(ArgumentMatchers.any());
+        inOrder.verify(salMetersBatchRpcs).addMetersBatch(ArgumentMatchers.any());
+        inOrder.verify(salMetersBatchRpcs).removeMetersBatch(ArgumentMatchers.any());
+        inOrder.verify(salMetersBatchRpcs).updateMetersBatch(ArgumentMatchers.any());
     }
 
     @Test
@@ -229,11 +224,11 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertEquals(3, rpcResult.getResult().nonnullBatchFailure().values().iterator().next()
                 .getBatchOrder().intValue());
 
-        final InOrder inOrder = Mockito.inOrder(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
-        inOrder.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salFlowsBatchService).removeFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salFlowsBatchService).updateFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salGroupsBatchService).addGroupsBatch(ArgumentMatchers.any());
+        final InOrder inOrder = Mockito.inOrder(salFlowsBatchRpcs, salGroupsBatchRpcs, salMetersBatchRpcs);
+        inOrder.verify(salFlowsBatchRpcs).addFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salFlowsBatchRpcs).removeFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salFlowsBatchRpcs).updateFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).addGroupsBatch(ArgumentMatchers.any());
     }
 
     @Test
@@ -269,24 +264,24 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertEquals(3, rpcResult.getResult().nonnullBatchFailure().values().iterator().next()
                 .getBatchOrder().intValue());
 
-        final InOrder inOrder = Mockito.inOrder(salFlowsBatchService, salGroupsBatchService, salMetersBatchService);
-        inOrder.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salFlowsBatchService).removeFlowsBatch(ArgumentMatchers.any());
-        inOrder.verify(salFlowsBatchService).updateFlowsBatch(ArgumentMatchers.any());
+        final InOrder inOrder = Mockito.inOrder(salFlowsBatchRpcs, salGroupsBatchRpcs, salMetersBatchRpcs);
+        inOrder.verify(salFlowsBatchRpcs).addFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salFlowsBatchRpcs).removeFlowsBatch(ArgumentMatchers.any());
+        inOrder.verify(salFlowsBatchRpcs).updateFlowsBatch(ArgumentMatchers.any());
 
-        inOrder.verify(salGroupsBatchService).addGroupsBatch(ArgumentMatchers.any());
-        inOrder.verify(salGroupsBatchService).removeGroupsBatch(ArgumentMatchers.any());
-        inOrder.verify(salGroupsBatchService).updateGroupsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).addGroupsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).removeGroupsBatch(ArgumentMatchers.any());
+        inOrder.verify(salGroupsBatchRpcs).updateGroupsBatch(ArgumentMatchers.any());
 
-        inOrder.verify(salMetersBatchService).addMetersBatch(ArgumentMatchers.any());
-        inOrder.verify(salMetersBatchService).removeMetersBatch(ArgumentMatchers.any());
-        inOrder.verify(salMetersBatchService).updateMetersBatch(ArgumentMatchers.any());
+        inOrder.verify(salMetersBatchRpcs).addMetersBatch(ArgumentMatchers.any());
+        inOrder.verify(salMetersBatchRpcs).removeMetersBatch(ArgumentMatchers.any());
+        inOrder.verify(salMetersBatchRpcs).updateMetersBatch(ArgumentMatchers.any());
     }
 
     private void prepareFirstFailingMockService() {
-        Mockito.when(salFlowsBatchService.addFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.addFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddFlowsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salFlowsBatchService.removeFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.removeFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.<RemoveFlowsBatchOutput>failed()
                         .withResult(new RemoveFlowsBatchOutputBuilder()
                                 .setBatchFailedFlowsOutput(BindingMap.ordered(
@@ -297,21 +292,21 @@ public class SalFlatBatchServiceImplTest {
                                 .build())
                         .withError(ErrorType.APPLICATION, "ut-firstFlowAddError")
                         .buildFuture());
-        Mockito.when(salFlowsBatchService.updateFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.updateFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateFlowsBatchOutputBuilder().build()).buildFuture());
 
-        Mockito.when(salGroupsBatchService.addGroupsBatch(ArgumentMatchers.any()))
+        Mockito.when(salGroupsBatchRpcs.addGroupsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddGroupsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salGroupsBatchService.removeGroupsBatch(ArgumentMatchers.any()))
+        Mockito.when(salGroupsBatchRpcs.removeGroupsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveGroupsBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salGroupsBatchService.updateGroupsBatch(ArgumentMatchers.any()))
+        Mockito.when(salGroupsBatchRpcs.updateGroupsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateGroupsBatchOutputBuilder().build()).buildFuture());
 
-        Mockito.when(salMetersBatchService.addMetersBatch(ArgumentMatchers.any()))
+        Mockito.when(salMetersBatchRpcs.addMetersBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new AddMetersBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salMetersBatchService.removeMetersBatch(ArgumentMatchers.any()))
+        Mockito.when(salMetersBatchRpcs.removeMetersBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveMetersBatchOutputBuilder().build()).buildFuture());
-        Mockito.when(salMetersBatchService.updateMetersBatch(ArgumentMatchers.any()))
+        Mockito.when(salMetersBatchRpcs.updateMetersBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateMetersBatchOutputBuilder().build()).buildFuture());
     }
 
@@ -527,7 +522,7 @@ public class SalFlatBatchServiceImplTest {
 
         Assert.assertEquals(1, batchChain.size());
 
-        Mockito.when(salFlowsBatchService.addFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.addFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder
                         .success(new AddFlowsBatchOutputBuilder().build())
                         .buildFuture());
@@ -540,7 +535,7 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertEquals(0, rpcResult.getErrors().size());
         Assert.assertEquals(0, rpcResult.getResult().nonnullBatchFailure().size());
 
-        Mockito.verify(salFlowsBatchService).addFlowsBatch(ArgumentMatchers.any());
+        Mockito.verify(salFlowsBatchRpcs).addFlowsBatch(ArgumentMatchers.any());
     }
 
     @Test
@@ -562,7 +557,7 @@ public class SalFlatBatchServiceImplTest {
 
         Assert.assertEquals(2, batchChain.size());
 
-        Mockito.when(salFlowsBatchService.addFlowsBatch(ArgumentMatchers.any()))
+        Mockito.when(salFlowsBatchRpcs.addFlowsBatch(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder
                         .<AddFlowsBatchOutput>failed()
                         .withResult(new AddFlowsBatchOutputBuilder()
@@ -587,7 +582,7 @@ public class SalFlatBatchServiceImplTest {
         Assert.assertEquals(2, rpcResult.getErrors().size());
         Assert.assertEquals(4, rpcResult.getResult().getBatchFailure().size());
 
-        Mockito.verify(salFlowsBatchService, Mockito.times(2)).addFlowsBatch(addFlowsBatchInputCpt.capture());
+        Mockito.verify(salFlowsBatchRpcs, Mockito.times(2)).addFlowsBatch(addFlowsBatchInputCpt.capture());
         Assert.assertEquals(2, addFlowsBatchInputCpt.getValue().getBatchAddFlows().size());
     }
 }
