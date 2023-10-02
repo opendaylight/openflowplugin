@@ -33,7 +33,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalGroupRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMeterRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchRpcs;
-import org.opendaylight.openflowplugin.impl.services.sal.SalPortServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalPortRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsServiceImpl;
@@ -54,7 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -97,6 +96,7 @@ public final class MdSalRegistrationUtils {
         final NodeConfigRpc nodeConfigService = new NodeConfigRpc(rpcContext, deviceContext);
         final PacketProcessingRpc packetProcessingRpc =
                 new PacketProcessingRpc(rpcContext, deviceContext, convertorExecutor);
+        final SalPortRpc salPortService = new SalPortRpc(rpcContext, deviceContext, convertorExecutor);
 
 
         // register routed service instances
@@ -110,8 +110,7 @@ public final class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementations(salGroupService, salGroupService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementation(SalTableService.class,
                 new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
-        rpcContext.registerRpcServiceImplementation(SalPortService.class,
-                new SalPortServiceImpl(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementations(salPortService, salPortService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(packetProcessingRpc,
             packetProcessingRpc.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(nodeConfigService, nodeConfigService.getRpcClassToInstanceMap());
