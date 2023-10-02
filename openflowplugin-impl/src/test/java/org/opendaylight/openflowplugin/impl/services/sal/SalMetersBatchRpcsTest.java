@@ -26,7 +26,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -39,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutputBuilder;
@@ -70,10 +68,10 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl}.
+ * Test for {@link SalMetersBatchRpcs}.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class SalMetersBatchServiceImplTest {
+public class SalMetersBatchRpcsTest {
 
     public static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     public static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
@@ -81,9 +79,9 @@ public class SalMetersBatchServiceImplTest {
             new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
 
     @Mock
-    private SalMeterService salMeterService;
+    private SalMeterRpcs salMeterRpcs;
     @Mock
-    private FlowCapableTransactionService transactionService;
+    private FlowCapableTransactionRpc transactionRpc;
     @Captor
     private ArgumentCaptor<RemoveMeterInput> removeMeterInputCpt;
     @Captor
@@ -91,24 +89,24 @@ public class SalMetersBatchServiceImplTest {
     @Captor
     private ArgumentCaptor<AddMeterInput> addMeterInputCpt;
 
-    private SalMetersBatchServiceImpl salMetersBatchService;
+    private SalMetersBatchRpcs salMetersBatchService;
 
     @Before
     public void setUp() {
-        salMetersBatchService = new SalMetersBatchServiceImpl(salMeterService, transactionService);
+        salMetersBatchService = new SalMetersBatchRpcs(salMeterRpcs, transactionRpc);
 
-        Mockito.when(transactionService.sendBarrier(any()))
+        Mockito.when(transactionRpc.sendBarrier(any()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
     }
 
     @After
     public void tearDown() {
-        Mockito.verifyNoMoreInteractions(salMeterService, transactionService);
+        Mockito.verifyNoMoreInteractions(salMeterRpcs, transactionRpc);
     }
 
     @Test
     public void testUpdateMetersBatch_success() throws Exception {
-        Mockito.when(salMeterService.updateMeter(Mockito.any()))
+        Mockito.when(salMeterRpcs.updateMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.success(new UpdateMeterOutputBuilder().build()).buildFuture());
 
         final UpdateMetersBatchInput input = new UpdateMetersBatchInputBuilder()
@@ -124,8 +122,8 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertTrue(resultFuture.get().isSuccessful());
 
-        final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
-        inOrder.verify(salMeterService, Mockito.times(2)).updateMeter(updateMeterInputCpt.capture());
+        final InOrder inOrder = Mockito.inOrder(salMeterRpcs, transactionRpc);
+        inOrder.verify(salMeterRpcs, Mockito.times(2)).updateMeter(updateMeterInputCpt.capture());
         final List<UpdateMeterInput> allValues = updateMeterInputCpt.getAllValues();
         Assert.assertEquals(2, allValues.size());
         Assert.assertEquals(42, allValues.get(0).getOriginalMeter().getMeterId().getValue().longValue());
@@ -133,12 +131,12 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalMeter().getMeterId().getValue().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedMeter().getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        inOrder.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testUpdateMetersBatch_failure() throws Exception {
-        Mockito.when(salMeterService.updateMeter(Mockito.any()))
+        Mockito.when(salMeterRpcs.updateMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<UpdateMeterOutput>failed()
                         .withError(ErrorType.APPLICATION, "ur-groupUpdateError")
                         .buildFuture());
@@ -163,8 +161,8 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
-        final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
-        inOrder.verify(salMeterService, Mockito.times(2)).updateMeter(updateMeterInputCpt.capture());
+        final InOrder inOrder = Mockito.inOrder(salMeterRpcs, transactionRpc);
+        inOrder.verify(salMeterRpcs, Mockito.times(2)).updateMeter(updateMeterInputCpt.capture());
         final List<UpdateMeterInput> allValues = updateMeterInputCpt.getAllValues();
         Assert.assertEquals(2, allValues.size());
         Assert.assertEquals(42, allValues.get(0).getOriginalMeter().getMeterId().getValue().longValue());
@@ -172,13 +170,13 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(44, allValues.get(1).getOriginalMeter().getMeterId().getValue().longValue());
         Assert.assertEquals(45, allValues.get(1).getUpdatedMeter().getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        inOrder.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
     }
 
 
     @Test
     public void testAddMetersBatch_success() throws Exception {
-        Mockito.when(salMeterService.addMeter(Mockito.any()))
+        Mockito.when(salMeterRpcs.addMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.success(new AddMeterOutputBuilder().build()).buildFuture());
 
         final AddMetersBatchInput input = new AddMetersBatchInputBuilder()
@@ -194,19 +192,19 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertTrue(resultFuture.get().isSuccessful());
 
-        final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
-        inOrder.verify(salMeterService, Mockito.times(2)).addMeter(addMeterInputCpt.capture());
+        final InOrder inOrder = Mockito.inOrder(salMeterRpcs, transactionRpc);
+        inOrder.verify(salMeterRpcs, Mockito.times(2)).addMeter(addMeterInputCpt.capture());
         final List<AddMeterInput> allValues = addMeterInputCpt.getAllValues();
         Assert.assertEquals(2, allValues.size());
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        inOrder.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testAddMetersBatch_failure() throws Exception {
-        Mockito.when(salMeterService.addMeter(Mockito.any()))
+        Mockito.when(salMeterRpcs.addMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<AddMeterOutput>failed()
                         .withError(ErrorType.APPLICATION, "ut-groupAddError")
                         .buildFuture());
@@ -231,19 +229,19 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
 
-        final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
-        inOrder.verify(salMeterService, Mockito.times(2)).addMeter(addMeterInputCpt.capture());
+        final InOrder inOrder = Mockito.inOrder(salMeterRpcs, transactionRpc);
+        inOrder.verify(salMeterRpcs, Mockito.times(2)).addMeter(addMeterInputCpt.capture());
         final List<AddMeterInput> allValues = addMeterInputCpt.getAllValues();
         Assert.assertEquals(2, allValues.size());
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        inOrder.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testRemoveMetersBatch_success() throws Exception {
-        Mockito.when(salMeterService.removeMeter(Mockito.any()))
+        Mockito.when(salMeterRpcs.removeMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.success(new RemoveMeterOutputBuilder().build()).buildFuture());
 
         final RemoveMetersBatchInput input = new RemoveMetersBatchInputBuilder()
@@ -259,20 +257,20 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertTrue(resultFuture.isDone());
         Assert.assertTrue(resultFuture.get().isSuccessful());
 
-        final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
+        final InOrder inOrder = Mockito.inOrder(salMeterRpcs, transactionRpc);
 
-        inOrder.verify(salMeterService, Mockito.times(2)).removeMeter(removeMeterInputCpt.capture());
+        inOrder.verify(salMeterRpcs, Mockito.times(2)).removeMeter(removeMeterInputCpt.capture());
         final List<RemoveMeterInput> allValues = removeMeterInputCpt.getAllValues();
         Assert.assertEquals(2, allValues.size());
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        inOrder.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
     }
 
     @Test
     public void testRemoveMetersBatch_failure() throws Exception {
-        Mockito.when(salMeterService.removeMeter(Mockito.any()))
+        Mockito.when(salMeterRpcs.removeMeter(Mockito.any()))
                 .thenReturn(RpcResultBuilder.<RemoveMeterOutput>failed()
                         .withError(ErrorType.APPLICATION, "ut-groupRemoveError")
                         .buildFuture());
@@ -296,15 +294,15 @@ public class SalMetersBatchServiceImplTest {
         Assert.assertEquals(43L, iterator.next().getMeterId().getValue().longValue());
         Assert.assertEquals(2, resultFuture.get().getErrors().size());
 
-        final InOrder inOrder = Mockito.inOrder(salMeterService, transactionService);
+        final InOrder inOrder = Mockito.inOrder(salMeterRpcs, transactionRpc);
 
-        inOrder.verify(salMeterService, Mockito.times(2)).removeMeter(removeMeterInputCpt.capture());
+        inOrder.verify(salMeterRpcs, Mockito.times(2)).removeMeter(removeMeterInputCpt.capture());
         final List<RemoveMeterInput> allValues = removeMeterInputCpt.getAllValues();
         Assert.assertEquals(2, allValues.size());
         Assert.assertEquals(42L, allValues.get(0).getMeterId().getValue().longValue());
         Assert.assertEquals(43L, allValues.get(1).getMeterId().getValue().longValue());
 
-        inOrder.verify(transactionService).sendBarrier(ArgumentMatchers.any());
+        inOrder.verify(transactionRpc).sendBarrier(ArgumentMatchers.any());
     }
 
     private static BatchAddMeters createEmptyBatchAddMeter(final long groupIdValue) {

@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -18,7 +21,6 @@ import java.util.stream.Collectors;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.MeterUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
@@ -35,12 +37,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.BatchMeterInputUpdateGrouping;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.add.meters.batch.input.BatchAddMeters;
@@ -48,6 +53,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMeters;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,20 +61,19 @@ import org.slf4j.LoggerFactory;
 /**
  * Default implementation of {@link SalMetersBatchService} - delegates work to {@link SalMeterService}.
  */
-public class SalMetersBatchServiceImpl implements SalMetersBatchService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalMetersBatchServiceImpl.class);
+public class SalMetersBatchRpcs {
+    private static final Logger LOG = LoggerFactory.getLogger(SalMetersBatchRpcs.class);
 
-    private final SalMeterService salMeterService;
-    private final FlowCapableTransactionService transactionService;
+    private final SalMeterRpcs salMeterRpcs;
+    private final FlowCapableTransactionRpc transactionRpc;
 
-    public SalMetersBatchServiceImpl(final SalMeterService salMeterService,
-                                     final FlowCapableTransactionService transactionService) {
-        this.salMeterService = requireNonNull(salMeterService);
-        this.transactionService = requireNonNull(transactionService);
+    public SalMetersBatchRpcs(final SalMeterRpcs salMeterRpcs, final FlowCapableTransactionRpc transactionRpc) {
+        this.salMeterRpcs = requireNonNull(salMeterRpcs);
+        this.transactionRpc = requireNonNull(transactionRpc);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<UpdateMetersBatchOutput>> updateMetersBatch(final UpdateMetersBatchInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<UpdateMetersBatchOutput>> updateMetersBatch(final UpdateMetersBatchInput input) {
         final List<BatchUpdateMeters> batchUpdateMeters = input.getBatchUpdateMeters();
         LOG.trace("Updating meters @ {} : {}", PathUtil.extractNodeId(input.getNode()), batchUpdateMeters.size());
 
@@ -80,7 +85,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                     .setMeterRef(createMeterRef(input.getNode(), batchMeter))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(salMeterService.updateMeter(updateMeterInput));
+            resultsLot.add(salMeterRpcs.updateMeter(updateMeterInput));
         }
 
         final Iterable<Meter> meters = batchUpdateMeters.stream()
@@ -97,14 +102,14 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         if (input.getBarrierAfter()) {
             updateMetersBulkFuture = BarrierUtil.chainBarrier(updateMetersBulkFuture, input.getNode(),
-                    transactionService, MeterUtil.METER_UPDATE_COMPOSING_TRANSFORM);
+                transactionRpc, MeterUtil.METER_UPDATE_COMPOSING_TRANSFORM);
         }
 
         return updateMetersBulkFuture;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBatch(final AddMetersBatchInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddMetersBatchOutput>> addMetersBatch(final AddMetersBatchInput input) {
         LOG.trace("Adding meters @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddMeters().size());
         final ArrayList<ListenableFuture<RpcResult<AddMeterOutput>>> resultsLot = new ArrayList<>();
         for (BatchAddMeters addMeter : input.nonnullBatchAddMeters().values()) {
@@ -112,7 +117,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                     .setMeterRef(createMeterRef(input.getNode(), addMeter))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(salMeterService.addMeter(addMeterInput));
+            resultsLot.add(salMeterRpcs.addMeter(addMeterInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
@@ -125,14 +130,14 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         if (input.getBarrierAfter()) {
             addMetersBulkFuture = BarrierUtil.chainBarrier(addMetersBulkFuture, input.getNode(),
-                    transactionService, MeterUtil.METER_ADD_COMPOSING_TRANSFORM);
+                transactionRpc, MeterUtil.METER_ADD_COMPOSING_TRANSFORM);
         }
 
         return addMetersBulkFuture;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<RemoveMetersBatchOutput>> removeMetersBatch(final RemoveMetersBatchInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<RemoveMetersBatchOutput>> removeMetersBatch(final RemoveMetersBatchInput input) {
         LOG.trace("Removing meters @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()),
                   input.getBatchRemoveMeters().size());
@@ -142,7 +147,7 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
                     .setMeterRef(createMeterRef(input.getNode(), addMeter))
                     .setNode(input.getNode())
                     .build();
-            resultsLot.add(salMeterService.removeMeter(removeMeterInput));
+            resultsLot.add(salMeterRpcs.removeMeter(removeMeterInput));
         }
 
         final ListenableFuture<RpcResult<List<BatchFailedMetersOutput>>> commonResult =
@@ -155,11 +160,20 @@ public class SalMetersBatchServiceImpl implements SalMetersBatchService {
 
         if (input.getBarrierAfter()) {
             removeMetersBulkFuture = BarrierUtil.chainBarrier(removeMetersBulkFuture, input.getNode(),
-                    transactionService, MeterUtil.METER_REMOVE_COMPOSING_TRANSFORM);
+                transactionRpc, MeterUtil.METER_REMOVE_COMPOSING_TRANSFORM);
         }
 
         return removeMetersBulkFuture;
     }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(RemoveMetersBatch.class, this::removeMetersBatch)
+            .put(AddMetersBatch.class, this::addMetersBatch)
+            .put(UpdateMetersBatch.class, this::updateMetersBatch)
+            .build();
+    }
+
 
     private static MeterRef createMeterRef(final NodeRef nodeRef, final Meter batchMeter) {
         return MeterUtil.buildMeterPath((InstanceIdentifier<Node>) nodeRef.getValue(), batchMeter.getMeterId());
