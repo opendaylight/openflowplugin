@@ -42,13 +42,13 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
-public class SalTableServiceImplTest extends ServiceMocking {
+public class SalTableRpcTest extends ServiceMocking {
 
     @Mock
     RpcProviderService mockedRpcProviderRegistry;
 
     private SettableFuture<Object> handleResultFuture;
-    private SalTableServiceImpl salTableService;
+    private SalTableRpc salTableRpc;
 
     @Override
     public void setup() {
@@ -61,7 +61,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
         }).when(mockedOutboundQueue).commitEntry(any(Uint32.class), any(), any());
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
+        salTableRpc = new SalTableRpc(mockedRequestContextStack, mockedDeviceContext,
                 convertorManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
     }
 
@@ -74,7 +74,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
             return null;
         }).when(multiMessageCollector).endCollecting(any());
 
-        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
+        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableRpc.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
         verify(mockedRequestContextStack).createRequestContext();
     }
@@ -89,7 +89,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
             return null;
         }).when(multiMessageCollector).endCollecting(any());
 
-        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
+        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableRpc.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
         verify(mockedRequestContextStack).createRequestContext();
     }
@@ -117,7 +117,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
             return null;
         }).when(multiMessageCollector).endCollecting(any());
 
-        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableService.updateTable(prepareUpdateTable());
+        final Future<RpcResult<UpdateTableOutput>> rpcResultFuture = salTableRpc.updateTable(prepareUpdateTable());
         Assert.assertNotNull(rpcResultFuture);
         verify(mockedRequestContextStack).createRequestContext();
     }
