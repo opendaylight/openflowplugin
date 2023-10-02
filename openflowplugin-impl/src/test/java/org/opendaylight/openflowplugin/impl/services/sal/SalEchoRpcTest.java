@@ -27,14 +27,14 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class SalEchoServiceImplTest extends ServiceMocking {
+public class SalEchoRpcTest extends ServiceMocking {
 
     private static final byte[] DUMMY_DATA = "DUMMY DATA".getBytes();
-    SalEchoServiceImpl salEchoService;
+    SalEchoRpc salEchoService;
 
     @Override
     protected void setup() {
-        salEchoService = new SalEchoServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        salEchoService = new SalEchoRpc(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test
