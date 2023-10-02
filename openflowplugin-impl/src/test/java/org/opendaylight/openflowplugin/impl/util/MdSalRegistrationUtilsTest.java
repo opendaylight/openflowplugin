@@ -40,7 +40,8 @@ public class MdSalRegistrationUtilsTest {
      * Number of currently registrated services (can be changed)
      * (RpcContext, DeviceContext)}.
      */
-    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 16;
+    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 11;
+    private static final int NUMBER_OF_RPC_SERVICE_REGISTRATIONS = 5;
     private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 5;
 
     @Mock
@@ -80,6 +81,8 @@ public class MdSalRegistrationUtilsTest {
                                                 convertorManager);
         verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATION)).registerRpcServiceImplementation(
                 any(), any(RpcService.class));
+        verify(mockedRpcContext, times(NUMBER_OF_RPC_SERVICE_REGISTRATIONS)).registerRpcServiceImplementations(
+            any(), any());
     }
 
     @Test
