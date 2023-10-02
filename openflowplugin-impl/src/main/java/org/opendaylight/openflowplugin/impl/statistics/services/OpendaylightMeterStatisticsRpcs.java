@@ -7,31 +7,38 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeterStatisticsService {
+public class OpendaylightMeterStatisticsRpcs {
     private final AllMeterConfigStatsService allMeterConfig;
     private final AllMeterStatsService allMeterStats;
     private final MeterFeaturesService meterFeatures;
     private final MeterStatsService meterStats;
     private final NotificationPublishService notificationPublishService;
 
-    public OpendaylightMeterStatisticsServiceImpl(final RequestContextStack requestContextStack,
+    public OpendaylightMeterStatisticsRpcs(final RequestContextStack requestContextStack,
                                                   final DeviceContext deviceContext,
                                                   final AtomicLong compatibilityXidSeed,
                                                   final NotificationPublishService notificationPublishService,
@@ -50,26 +57,35 @@ public class OpendaylightMeterStatisticsServiceImpl implements OpendaylightMeter
         meterStats = new MeterStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<GetAllMeterConfigStatisticsOutput>> getAllMeterConfigStatistics(
             final GetAllMeterConfigStatisticsInput input) {
         return allMeterConfig.handleAndNotify(input, notificationPublishService);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<GetAllMeterStatisticsOutput>> getAllMeterStatistics(
                                                                       final GetAllMeterStatisticsInput input) {
         return allMeterStats.handleAndNotify(input, notificationPublishService);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<GetMeterFeaturesOutput>> getMeterFeatures(final GetMeterFeaturesInput input) {
         return meterFeatures.handleAndNotify(input, notificationPublishService);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<GetMeterStatisticsOutput>> getMeterStatistics(
             final GetMeterStatisticsInput input) {
         return meterStats.handleAndNotify(input, notificationPublishService);
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(GetAllMeterConfigStatistics.class, this::getAllMeterConfigStatistics)
+            .put(GetAllMeterStatistics.class, this::getAllMeterStatistics)
+            .put(GetMeterFeatures.class, this::getMeterFeatures)
+            .put(GetMeterStatistics.class, this::getMeterStatistics)
+            .build();
     }
 }

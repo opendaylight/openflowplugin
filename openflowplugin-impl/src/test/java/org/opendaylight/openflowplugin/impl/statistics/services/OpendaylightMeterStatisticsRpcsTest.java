@@ -58,9 +58,9 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightMeterStatisticsServiceImpl}.
+ * Test for {@link OpendaylightMeterStatisticsRpcs}.
  */
-public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightMeterStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     private static final org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflow.common.types.rev130731.MeterId METER_ID = new org.opendaylight.yang.gen.v1.urn
@@ -68,12 +68,12 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightMeterStatisticsServiceImpl meterStatisticsService;
+    private OpendaylightMeterStatisticsRpcs meterStatisticsRpcs;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(rqContextStack, deviceContext,
+        meterStatisticsRpcs = new OpendaylightMeterStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService, convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
@@ -114,7 +114,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
         )).build();
 
         final Future<RpcResult<GetAllMeterConfigStatisticsOutput>> resultFuture
-                = meterStatisticsService.getAllMeterConfigStatistics(input.build());
+                = meterStatisticsRpcs.getAllMeterConfigStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetAllMeterConfigStatisticsOutput> rpcResult = resultFuture.get();
@@ -130,7 +130,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
         rpcResult = buildMeterStatisticsReply();
 
         final Future<RpcResult<GetAllMeterStatisticsOutput>> resultFuture
-                = meterStatisticsService.getAllMeterStatistics(input.build());
+                = meterStatisticsRpcs.getAllMeterStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetAllMeterStatisticsOutput> rpcResult = resultFuture.get();
@@ -159,7 +159,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
         )).build();
 
         final Future<RpcResult<GetMeterFeaturesOutput>> resultFuture
-                = meterStatisticsService.getMeterFeatures(input.build());
+                = meterStatisticsRpcs.getMeterFeatures(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetMeterFeaturesOutput> rpcResult = resultFuture.get();
@@ -176,7 +176,7 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
         rpcResult = buildMeterStatisticsReply();
 
         final Future<RpcResult<GetMeterStatisticsOutput>> resultFuture
-                = meterStatisticsService.getMeterStatistics(input.build());
+                = meterStatisticsRpcs.getMeterStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetMeterStatisticsOutput> rpcResult = resultFuture.get();

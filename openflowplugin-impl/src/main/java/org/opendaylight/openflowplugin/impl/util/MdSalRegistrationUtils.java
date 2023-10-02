@@ -39,7 +39,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsRpc;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsRpcs;
-import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMeterStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMeterStatisticsRpcs;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightPortStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightQueueStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.compatibility.OpendaylightFlowStatisticsServiceDelegateImpl;
@@ -54,7 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
@@ -189,14 +188,16 @@ public final class MdSalRegistrationUtils {
         final OpendaylightGroupStatisticsRpcs opendaylightGroupStatisticsRpcs =
                 new OpendaylightGroupStatisticsRpcs(rpcContext, deviceContext, compatibilityXidSeed,
                     notificationPublishService, convertorExecutor);
+        final OpendaylightMeterStatisticsRpcs opendaylightMeterStatisticsRpcs =
+            new OpendaylightMeterStatisticsRpcs(rpcContext, deviceContext,
+                compatibilityXidSeed, notificationPublishService, convertorExecutor);
         rpcContext.registerRpcServiceImplementations(opendaylightFlowTableStatisticsRpc,
             ImmutableClassToInstanceMap.of(GetFlowTablesStatistics.class,
                 opendaylightFlowTableStatisticsRpc::getFlowTablesStatistics));
         rpcContext.registerRpcServiceImplementations(opendaylightGroupStatisticsRpcs,
             opendaylightGroupStatisticsRpcs.getRpcClassToInstanceMap());
-        rpcContext.registerRpcServiceImplementation(OpendaylightMeterStatisticsService.class,
-                new OpendaylightMeterStatisticsServiceImpl(rpcContext, deviceContext,
-                        compatibilityXidSeed, notificationPublishService, convertorExecutor));
+        rpcContext.registerRpcServiceImplementations(opendaylightMeterStatisticsRpcs,
+            opendaylightMeterStatisticsRpcs.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementation(OpendaylightQueueStatisticsService.class,
                 new OpendaylightQueueStatisticsServiceImpl(rpcContext, deviceContext,
                         compatibilityXidSeed, notificationPublishService));
