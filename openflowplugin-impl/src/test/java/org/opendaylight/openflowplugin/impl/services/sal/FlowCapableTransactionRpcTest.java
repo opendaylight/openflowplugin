@@ -22,24 +22,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link FlowCapableTransactionServiceImpl}.
+ * Test for {@link FlowCapableTransactionRpc}.
  */
-public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
+public class FlowCapableTransactionRpcTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
-    FlowCapableTransactionServiceImpl flowCapableTransactionService;
+    FlowCapableTransactionRpc flowCapableTransactionRpc;
 
     @Override
     protected void setup() {
-        flowCapableTransactionService =
-                new FlowCapableTransactionServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        flowCapableTransactionRpc =
+                new FlowCapableTransactionRpc(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test
     public void testBuildRequest() {
         SendBarrierInput sendBarrierInput = buildSendBarrierInput();
 
-        final OfHeader request = flowCapableTransactionService.buildRequest(new Xid(DUMMY_XID_VALUE), sendBarrierInput);
+        final OfHeader request = flowCapableTransactionRpc.buildRequest(new Xid(DUMMY_XID_VALUE), sendBarrierInput);
         assertEquals(DUMMY_XID_VALUE, request.getXid());
         assertTrue(request instanceof BarrierInput);
     }
@@ -47,7 +47,7 @@ public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
     @Test
     public void testSendBarrier() {
         SendBarrierInput sendBarrierInput = buildSendBarrierInput();
-        flowCapableTransactionService.sendBarrier(sendBarrierInput);
+        flowCapableTransactionRpc.sendBarrier(sendBarrierInput);
         verify(mockedRequestContextStack).createRequestContext();
     }
 

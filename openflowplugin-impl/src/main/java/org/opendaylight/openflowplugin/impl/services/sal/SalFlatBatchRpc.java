@@ -10,6 +10,8 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -22,56 +24,60 @@ import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchGroupAdapter
 import org.opendaylight.openflowplugin.impl.services.batch.FlatBatchMeterAdapters;
 import org.opendaylight.openflowplugin.impl.util.FlatBatchUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutput;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Default implementation of {@link SalFlowsBatchService} - delegates work to {@link SalFlowService}.
+ * Default implementation delegates work to {@link SalFlowRpcs}.
  */
-public class SalFlatBatchServiceImpl implements SalFlatBatchService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalFlatBatchServiceImpl.class);
+public class SalFlatBatchRpc {
+    private static final Logger LOG = LoggerFactory.getLogger(SalFlatBatchRpc.class);
 
-    private final SalFlowsBatchService salFlowService;
-    private final SalGroupsBatchService salGroupService;
-    private final SalMetersBatchService salMeterService;
+    private final SalFlowsBatchRpcs salFlowBatchRpcs;
+    private final SalGroupsBatchRpcs salGroupBatchRpcs;
+    private final SalMetersBatchRpcs salMeterBatchRpcs;
 
-    public SalFlatBatchServiceImpl(final SalFlowsBatchService salFlowBatchService,
-                                   final SalGroupsBatchService salGroupsBatchService,
-                                   final SalMetersBatchService salMetersBatchService) {
-        salFlowService = requireNonNull(salFlowBatchService, "delegate flow service must not be null");
-        salGroupService = requireNonNull(salGroupsBatchService, "delegate group service must not be null");
-        salMeterService = requireNonNull(salMetersBatchService, "delegate meter service must not be null");
+    public SalFlatBatchRpc(final SalFlowsBatchRpcs salFlowBatchRpcs, final SalGroupsBatchRpcs salGroupsBatchRpcs,
+            final SalMetersBatchRpcs salMetersBatchRpcs) {
+        this.salFlowBatchRpcs = requireNonNull(salFlowBatchRpcs, "delegate flow rpcs must not be null");
+        this.salGroupBatchRpcs = requireNonNull(salGroupsBatchRpcs, "delegate groups rpcs must not be null");
+        this.salMeterBatchRpcs = requireNonNull(salMetersBatchRpcs, "delegate meter rpcs must not be null");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ProcessFlatBatchOutput>> processFlatBatch(final ProcessFlatBatchInput input) {
+    private ListenableFuture<RpcResult<ProcessFlatBatchOutput>> processFlatBatch(final ProcessFlatBatchInput input) {
         LOG.trace("processing flat batch @ {} : {}",
                   PathUtil.extractNodeId(input.getNode()).getValue(),
                   input.getBatch().size());
@@ -84,6 +90,12 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
                 prepareBatchChain(batchPlan, input.getNode(), input.getExitOnFirstError());
         // execute plan with barriers and collect outputs chain correspondingly, collect results
         return executeBatchPlan(batchChainElements);
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(ProcessFlatBatch.class, this::processFlatBatch)
+            .build();
     }
 
     @VisibleForTesting
@@ -133,70 +145,78 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
     }
 
     private ListenableFuture<RpcResult<ProcessFlatBatchOutput>> getChainOutput(final NodeRef node,
-                                                                               final BatchPlanStep planStep,
-                                                                               final int currentOffset) {
+            final BatchPlanStep planStep, final int currentOffset) {
         return switch (planStep.getStepType()) {
             case FLOW_ADD -> {
                 final AddFlowsBatchInput addFlowsBatchInput =
                     FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, node);
                 final ListenableFuture<RpcResult<AddFlowsBatchOutput>> resultAddFlowFuture =
-                    salFlowService.addFlowsBatch(addFlowsBatchInput);
+                    salFlowBatchRpcs.getRpcClassToInstanceMap().getInstance(AddFlowsBatch.class)
+                        .invoke(addFlowsBatchInput);
                 yield FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultAddFlowFuture, currentOffset);
             }
             case FLOW_REMOVE -> {
                 final RemoveFlowsBatchInput removeFlowsBatchInput =
                     FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, node);
                 final ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> resultRemoveFlowFuture =
-                    salFlowService.removeFlowsBatch(removeFlowsBatchInput);
+                    salFlowBatchRpcs.getRpcClassToInstanceMap().getInstance(RemoveFlowsBatch.class)
+                        .invoke(removeFlowsBatchInput);
                 yield FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultRemoveFlowFuture, currentOffset);
             }
             case FLOW_UPDATE -> {
                 final UpdateFlowsBatchInput updateFlowsBatchInput =
                     FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, node);
                 final ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> resultUpdateFlowFuture =
-                    salFlowService.updateFlowsBatch(updateFlowsBatchInput);
+                    salFlowBatchRpcs.getRpcClassToInstanceMap().getInstance(UpdateFlowsBatch.class)
+                        .invoke(updateFlowsBatchInput);
                 yield FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultUpdateFlowFuture, currentOffset);
             }
             case GROUP_ADD -> {
                 final AddGroupsBatchInput addGroupsBatchInput =
                     FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, node);
                 final ListenableFuture<RpcResult<AddGroupsBatchOutput>> resultAddGroupFuture =
-                    salGroupService.addGroupsBatch(addGroupsBatchInput);
+                    salGroupBatchRpcs.getRpcClassToInstanceMap().getInstance(AddGroupsBatch.class)
+                        .invoke(addGroupsBatchInput);
                 yield FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultAddGroupFuture, currentOffset);
             }
             case GROUP_REMOVE -> {
                 final RemoveGroupsBatchInput removeGroupsBatchInput =
                     FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, node);
                 final ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> resultRemoveGroupFuture =
-                    salGroupService.removeGroupsBatch(removeGroupsBatchInput);
+                    salGroupBatchRpcs.getRpcClassToInstanceMap().getInstance(RemoveGroupsBatch.class)
+                        .invoke(removeGroupsBatchInput);
                 yield FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultRemoveGroupFuture, currentOffset);
             }
             case GROUP_UPDATE -> {
                 final UpdateGroupsBatchInput updateGroupsBatchInput =
                     FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, node);
                 final ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> resultUpdateGroupFuture =
-                    salGroupService.updateGroupsBatch(updateGroupsBatchInput);
+                    salGroupBatchRpcs.getRpcClassToInstanceMap().getInstance(UpdateGroupsBatch.class)
+                        .invoke(updateGroupsBatchInput);
                 yield FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultUpdateGroupFuture, currentOffset);
             }
             case METER_ADD -> {
                 final AddMetersBatchInput addMetersBatchInput =
                     FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, node);
                 final ListenableFuture<RpcResult<AddMetersBatchOutput>> resultAddMeterFuture =
-                    salMeterService.addMetersBatch(addMetersBatchInput);
+                    salMeterBatchRpcs.getRpcClassToInstanceMap().getInstance(AddMetersBatch.class)
+                        .invoke(addMetersBatchInput);
                 yield FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultAddMeterFuture, currentOffset);
             }
             case METER_REMOVE -> {
                 final RemoveMetersBatchInput removeMetersBatchInput =
                     FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, node);
                 final ListenableFuture<RpcResult<RemoveMetersBatchOutput>> resultRemoveMeterFuture =
-                    salMeterService.removeMetersBatch(removeMetersBatchInput);
+                    salMeterBatchRpcs.getRpcClassToInstanceMap().getInstance(RemoveMetersBatch.class)
+                        .invoke(removeMetersBatchInput);
                 yield FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultRemoveMeterFuture, currentOffset);
             }
             case METER_UPDATE -> {
                 final UpdateMetersBatchInput updateMetersBatchInput =
                     FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, node);
                 final ListenableFuture<RpcResult<UpdateMetersBatchOutput>> resultUpdateMeterFuture =
-                    salMeterService.updateMetersBatch(updateMetersBatchInput);
+                    salMeterBatchRpcs.getRpcClassToInstanceMap().getInstance(UpdateMetersBatch.class)
+                        .invoke(updateMetersBatchInput);
                 yield FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultUpdateMeterFuture, currentOffset);
             }
             default -> {

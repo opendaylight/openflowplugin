@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Del
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigServiceImpl;
@@ -26,13 +26,13 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalBundleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalFlowServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalGroupServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalMeterServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchRpc;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchRpcs;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupRpcs;
+import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchRpcs;
+import org.opendaylight.openflowplugin.impl.services.sal.SalMeterRpcs;
+import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalPortServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
@@ -51,14 +51,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
@@ -96,25 +91,26 @@ public final class MdSalRegistrationUtils {
             .createDefaultProvider(deviceContext);
 
         // create service instances
-        final SalFlowServiceImpl salFlowService = new SalFlowServiceImpl(rpcContext, deviceContext,
+        final SalFlowRpcs salFlowService = new SalFlowRpcs(rpcContext, deviceContext,
                 convertorExecutor);
-        final FlowCapableTransactionServiceImpl flowCapableTransactionService =
-                new FlowCapableTransactionServiceImpl(rpcContext, deviceContext);
+        final FlowCapableTransactionRpc flowCapableTransactionService =
+                new FlowCapableTransactionRpc(rpcContext, deviceContext);
         final SalAsyncConfigServiceImpl salAsyncConfigService =
                 new SalAsyncConfigServiceImpl(rpcContext, deviceContext);
-        final SalGroupServiceImpl salGroupService =
-                new SalGroupServiceImpl(rpcContext, deviceContext, convertorExecutor);
-        final SalMeterServiceImpl salMeterService =
-                new SalMeterServiceImpl(rpcContext, deviceContext, convertorExecutor);
+        final SalGroupRpcs salGroupService =
+                new SalGroupRpcs(rpcContext, deviceContext, convertorExecutor);
+        final SalMeterRpcs salMeterService =
+                new SalMeterRpcs(rpcContext, deviceContext, convertorExecutor);
 
         // register routed service instances
         rpcContext.registerRpcServiceImplementation(SalEchoService.class,
                 new SalEchoServiceImpl(rpcContext, deviceContext));
-        rpcContext.registerRpcServiceImplementation(SalFlowService.class, salFlowService);
-        rpcContext.registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
+        rpcContext.registerRpcServiceImplementations(salFlowService, salFlowService.getRpcClassToInstanceMap());
+        rpcContext.registerRpcServiceImplementations(flowCapableTransactionService,
+            flowCapableTransactionService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementation(SalAsyncConfigService.class, salAsyncConfigService);
-        rpcContext.registerRpcServiceImplementation(SalMeterService.class, salMeterService);
-        rpcContext.registerRpcServiceImplementation(SalGroupService.class, salGroupService);
+        rpcContext.registerRpcServiceImplementations(salMeterService, salMeterService.getRpcClassToInstanceMap());
+        rpcContext.registerRpcServiceImplementations(salGroupService, salGroupService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementation(SalTableService.class,
                 new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
         rpcContext.registerRpcServiceImplementation(SalPortService.class,
@@ -135,11 +131,11 @@ public final class MdSalRegistrationUtils {
                     .createProvider(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider)));
 
         // register flat batch services
-        rpcContext.registerRpcServiceImplementation(SalFlatBatchService.class, new SalFlatBatchServiceImpl(
-                new SalFlowsBatchServiceImpl(salFlowService, flowCapableTransactionService),
-                new SalGroupsBatchServiceImpl(salGroupService, flowCapableTransactionService),
-                new SalMetersBatchServiceImpl(salMeterService, flowCapableTransactionService)
-        ));
+        final SalFlatBatchRpc salFlatBatchRpc = new SalFlatBatchRpc(
+            new SalFlowsBatchRpcs(salFlowService, flowCapableTransactionService),
+            new SalGroupsBatchRpcs(salGroupService, flowCapableTransactionService),
+            new SalMetersBatchRpcs(salMeterService, flowCapableTransactionService));
+        rpcContext.registerRpcServiceImplementations(salFlatBatchRpc, salFlatBatchRpc.getRpcClassToInstanceMap());
 
         // register experimenter services
         rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class,
