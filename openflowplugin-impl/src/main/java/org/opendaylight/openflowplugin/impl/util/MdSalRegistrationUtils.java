@@ -23,7 +23,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalBundleServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalEchoServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalEchoRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchRpc;
@@ -47,7 +47,6 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilaye
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
@@ -100,10 +99,10 @@ public final class MdSalRegistrationUtils {
                 new SalGroupRpcs(rpcContext, deviceContext, convertorExecutor);
         final SalMeterRpcs salMeterService =
                 new SalMeterRpcs(rpcContext, deviceContext, convertorExecutor);
+        final SalEchoRpc salEchoService = new SalEchoRpc(rpcContext, deviceContext);
 
         // register routed service instances
-        rpcContext.registerRpcServiceImplementation(SalEchoService.class,
-                new SalEchoServiceImpl(rpcContext, deviceContext));
+        rpcContext.registerRpcServiceImplementations(salEchoService, salEchoService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(salFlowService, salFlowService.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(flowCapableTransactionService,
             flowCapableTransactionService.getRpcClassToInstanceMap());
