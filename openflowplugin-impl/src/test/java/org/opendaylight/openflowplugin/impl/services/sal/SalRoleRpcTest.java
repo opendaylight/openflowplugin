@@ -40,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
@@ -52,7 +51,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SalRoleServiceImplTest {
+public class SalRoleRpcTest {
 
     @Mock
     private RequestContextStack mockRequestContextStack;
@@ -127,14 +126,14 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockRequestContext.getFuture()).thenReturn(futureOutput);
 
 
-        SalRoleService salRoleService = new SalRoleServiceImpl(mockRequestContextStack, mockDeviceContext);
+        SalRoleRpc salRoleRpc = new SalRoleRpc(mockRequestContextStack, mockDeviceContext);
 
         SetRoleInput setRoleInput = new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMESLAVE)
                 .setNode(nodeRef)
                 .build();
 
-        Future<RpcResult<SetRoleOutput>> future = salRoleService.setRole(setRoleInput);
+        Future<RpcResult<SetRoleOutput>> future = salRoleRpc.invoke(setRoleInput);
 
         RpcResult<SetRoleOutput> roleOutputRpcResult = future.get(5, TimeUnit.SECONDS);
         assertNotNull("RpcResult from future cannot be null.", roleOutputRpcResult);
@@ -157,14 +156,14 @@ public class SalRoleServiceImplTest {
 
         Mockito.when(mockRequestContext.getFuture()).thenReturn(futureOutput);
 
-        SalRoleService salRoleService = new SalRoleServiceImpl(mockRequestContextStack, mockDeviceContext);
+        SalRoleRpc salRoleRpc = new SalRoleRpc(mockRequestContextStack, mockDeviceContext);
 
         SetRoleInput setRoleInput = new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMESLAVE)
                 .setNode(nodeRef)
                 .build();
 
-        Future<RpcResult<SetRoleOutput>> future = salRoleService.setRole(setRoleInput);
+        Future<RpcResult<SetRoleOutput>> future = salRoleRpc.invoke(setRoleInput);
 
         RpcResult<SetRoleOutput> roleOutputRpcResult = future.get(5, TimeUnit.SECONDS);
         assertNotNull("RpcResult from future cannot be null.", roleOutputRpcResult);
@@ -175,7 +174,7 @@ public class SalRoleServiceImplTest {
         assertEquals(Uint64.valueOf(TEST_XID), setRoleOutput.getTransactionId().getValue());
 
         // make another role change with the same role - slave
-        Future<RpcResult<SetRoleOutput>> future2 = salRoleService.setRole(setRoleInput);
+        Future<RpcResult<SetRoleOutput>> future2 = salRoleRpc.invoke(setRoleInput);
         RpcResult<SetRoleOutput> roleOutputRpcResult2 = future2.get(5, TimeUnit.SECONDS);
         assertNotNull("RpcResult from future cannot be null.", roleOutputRpcResult2);
         assertTrue("RpcResult from future for duplicate role is not successful.", roleOutputRpcResult2.isSuccessful());
