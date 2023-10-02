@@ -58,9 +58,9 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightMeterStatisticsServiceImpl}.
+ * Test for {@link OpendaylightMeterStatisticsRpcs}.
  */
-public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightMeterStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     private static final org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflow.common.types.rev130731.MeterId METER_ID = new org.opendaylight.yang.gen.v1.urn
@@ -68,12 +68,12 @@ public class OpendaylightMeterStatisticsServiceImplTest extends AbstractSingleSt
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightMeterStatisticsServiceImpl meterStatisticsService;
+    private OpendaylightMeterStatisticsRpcs meterStatisticsService;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        meterStatisticsService = new OpendaylightMeterStatisticsServiceImpl(rqContextStack, deviceContext,
+        meterStatisticsService = new OpendaylightMeterStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService, convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
