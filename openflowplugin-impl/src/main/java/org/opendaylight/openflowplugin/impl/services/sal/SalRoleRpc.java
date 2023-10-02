@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -21,24 +24,24 @@ import org.opendaylight.openflowplugin.impl.services.RoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput, SetRoleOutput>
-                                      implements SalRoleService  {
-    private static final Logger LOG = LoggerFactory.getLogger(SalRoleServiceImpl.class);
+public final class SalRoleRpc extends AbstractSimpleService<SetRoleInput, SetRoleOutput> {
+    private static final Logger LOG = LoggerFactory.getLogger(SalRoleRpc.class);
     private static final Uint64 MAX_GENERATION_ID = Uint64.valueOf("ffffffffffffffff", 16);
 
     private final DeviceContext deviceContext;
     private final RoleService roleService;
 
-    public SalRoleServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalRoleRpc(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         super(requestContextStack, deviceContext, SetRoleOutput.class);
         this.deviceContext = requireNonNull(deviceContext);
         roleService =  new RoleService(requestContextStack, deviceContext, RoleRequestOutput.class);
@@ -49,8 +52,8 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
         return null;
     }
 
-    @Override
-    public ListenableFuture<RpcResult<SetRoleOutput>> setRole(final SetRoleInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<SetRoleOutput>> setRole(final SetRoleInput input) {
         LOG.info("SetRole called with input:{}", input);
 
         // Check current connection state
@@ -73,6 +76,12 @@ public final class SalRoleServiceImpl extends AbstractSimpleService<SetRoleInput
 
         LOG.info("Requesting state change to {}", input.getControllerRole());
         return tryToChangeRole(input.getControllerRole());
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(SetRole.class, this::setRole)
+            .build();
     }
 
     private ListenableFuture<RpcResult<SetRoleOutput>> tryToChangeRole(final OfpRole role) {
