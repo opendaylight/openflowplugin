@@ -42,13 +42,13 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
-public class SalTableServiceImplTest extends ServiceMocking {
+public class SalTableRpcTest extends ServiceMocking {
 
     @Mock
     RpcProviderService mockedRpcProviderRegistry;
 
     private SettableFuture<Object> handleResultFuture;
-    private SalTableServiceImpl salTableService;
+    private SalTableRpc salTableService;
 
     @Override
     public void setup() {
@@ -61,7 +61,7 @@ public class SalTableServiceImplTest extends ServiceMocking {
         }).when(mockedOutboundQueue).commitEntry(any(Uint32.class), any(), any());
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salTableService = new SalTableServiceImpl(mockedRequestContextStack, mockedDeviceContext,
+        salTableService = new SalTableRpc(mockedRequestContextStack, mockedDeviceContext,
                 convertorManager, MultipartWriterProviderFactory.createDefaultProvider(mockedDeviceContext));
     }
 
