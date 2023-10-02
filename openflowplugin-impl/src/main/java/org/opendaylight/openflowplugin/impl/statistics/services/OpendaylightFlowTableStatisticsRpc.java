@@ -23,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatisticsOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.flow.table.and.statistics.map.FlowTableAndStatisticsMapKey;
@@ -42,15 +41,14 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Empty;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class OpendaylightFlowTableStatisticsServiceImpl extends
+public final class OpendaylightFlowTableStatisticsRpc extends
         AbstractCompatibleStatService<GetFlowTablesStatisticsInput,
         GetFlowTablesStatisticsOutput,
-        FlowTableStatisticsUpdate> implements
-        OpendaylightFlowTableStatisticsService {
+        FlowTableStatisticsUpdate> {
 
     private final NotificationPublishService notificationPublishService;
 
-    public OpendaylightFlowTableStatisticsServiceImpl(final RequestContextStack requestContextStack,
+    public OpendaylightFlowTableStatisticsRpc(final RequestContextStack requestContextStack,
                                                       final DeviceContext deviceContext,
                                                       final AtomicLong compatibilityXidSeed,
                                                       final NotificationPublishService notificationPublishService) {
@@ -58,7 +56,6 @@ public final class OpendaylightFlowTableStatisticsServiceImpl extends
         this.notificationPublishService = notificationPublishService;
     }
 
-    @Override
     public ListenableFuture<RpcResult<GetFlowTablesStatisticsOutput>> getFlowTablesStatistics(
             final GetFlowTablesStatisticsInput input) {
         return handleAndNotify(input, notificationPublishService);
