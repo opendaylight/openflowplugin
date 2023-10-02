@@ -42,18 +42,18 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
- * Test for {@link OpendaylightQueueStatisticsServiceImpl}.
+ * Test for {@link OpendaylightQueueStatisticsRpcs}.
  */
-public class OpendaylightQueueStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightQueueStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightQueueStatisticsServiceImpl queueStatisticsService;
+    private OpendaylightQueueStatisticsRpcs queueStatisticsService;
 
     @Override
     public void setUp() {
-        queueStatisticsService = new OpendaylightQueueStatisticsServiceImpl(rqContextStack, deviceContext,
+        queueStatisticsService = new OpendaylightQueueStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
     }
 
