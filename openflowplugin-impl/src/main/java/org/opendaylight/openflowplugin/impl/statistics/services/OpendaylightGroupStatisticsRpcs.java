@@ -7,31 +7,38 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescription;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroupStatisticsService {
+public class OpendaylightGroupStatisticsRpcs {
     private final AllGroupsStatsService allGroups;
     private final GroupDescriptionService groupDesc;
     private final GroupFeaturesService groupFeat;
     private final GroupStatsService groupStats;
     private final NotificationPublishService notificationPublishService;
 
-    public OpendaylightGroupStatisticsServiceImpl(final RequestContextStack requestContextStack,
+    public OpendaylightGroupStatisticsRpcs(final RequestContextStack requestContextStack,
                                                   final DeviceContext deviceContext,
                                                   final AtomicLong compatibilityXidSeed,
                                                   final NotificationPublishService notificationPublishService,
@@ -47,26 +54,35 @@ public class OpendaylightGroupStatisticsServiceImpl implements OpendaylightGroup
         groupStats = new GroupStatsService(requestContextStack, deviceContext, compatibilityXidSeed, convertorExecutor);
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<GetAllGroupStatisticsOutput>> getAllGroupStatistics(
             final GetAllGroupStatisticsInput input) {
         return allGroups.handleAndNotify(input, notificationPublishService);
     }
 
-    @Override
+    @VisibleForTesting
     public ListenableFuture<RpcResult<GetGroupDescriptionOutput>> getGroupDescription(
             final GetGroupDescriptionInput input) {
         return groupDesc.handleAndNotify(input, notificationPublishService);
     }
 
-    @Override
+    @VisibleForTesting
     public ListenableFuture<RpcResult<GetGroupFeaturesOutput>> getGroupFeatures(final GetGroupFeaturesInput input) {
         return groupFeat.handleAndNotify(input, notificationPublishService);
     }
 
-    @Override
+    @VisibleForTesting
     public ListenableFuture<RpcResult<GetGroupStatisticsOutput>> getGroupStatistics(
             final GetGroupStatisticsInput input) {
         return groupStats.handleAndNotify(input, notificationPublishService);
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(GetAllGroupStatistics.class, this::getAllGroupStatistics)
+            .put(GetGroupDescription.class, this::getGroupDescription)
+            .put(GetGroupFeatures.class, this::getGroupFeatures)
+            .put(GetGroupStatistics.class, this::getGroupStatistics)
+            .build();
     }
 }
