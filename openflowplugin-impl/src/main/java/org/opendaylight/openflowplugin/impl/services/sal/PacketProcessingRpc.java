@@ -18,24 +18,21 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.PacketOutC
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.XidConvertorData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class PacketProcessingServiceImpl extends AbstractSimpleService<TransmitPacketInput, TransmitPacketOutput>
-                                               implements PacketProcessingService {
+public final class PacketProcessingRpc extends AbstractSimpleService<TransmitPacketInput, TransmitPacketOutput> {
 
     private final ConvertorExecutor convertorExecutor;
 
-    public PacketProcessingServiceImpl(final RequestContextStack requestContextStack,
+    public PacketProcessingRpc(final RequestContextStack requestContextStack,
                                        final DeviceContext deviceContext,
                                        final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, TransmitPacketOutput.class);
         this.convertorExecutor = convertorExecutor;
     }
 
-    @Override
     public ListenableFuture<RpcResult<TransmitPacketOutput>> transmitPacket(final TransmitPacketInput input) {
         return handleServiceCall(input);
     }

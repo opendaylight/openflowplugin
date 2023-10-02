@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigRpc;
-import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalBundleServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalEchoRpc;
@@ -59,7 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
@@ -101,6 +101,8 @@ public final class MdSalRegistrationUtils {
         final SalMeterRpcs salMeterRpcs = new SalMeterRpcs(rpcContext, deviceContext, convertorExecutor);
         final SalEchoRpc salEchoRpc = new SalEchoRpc(rpcContext, deviceContext);
         final NodeConfigRpc nodeConfigRpc = new NodeConfigRpc(rpcContext, deviceContext);
+        final PacketProcessingRpc packetProcessingRpc =
+                new PacketProcessingRpc(rpcContext, deviceContext, convertorExecutor);
 
         // register routed service instances
         rpcContext.registerRpcServiceImplementations(salEchoRpc,
@@ -115,8 +117,8 @@ public final class MdSalRegistrationUtils {
                 new SalTableServiceImpl(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider));
         rpcContext.registerRpcServiceImplementation(SalPortService.class,
                 new SalPortServiceImpl(rpcContext, deviceContext, convertorExecutor));
-        rpcContext.registerRpcServiceImplementation(PacketProcessingService.class,
-                new PacketProcessingServiceImpl(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementations(packetProcessingRpc,
+            ImmutableClassToInstanceMap.of(TransmitPacket.class, packetProcessingRpc::transmitPacket));
         rpcContext.registerRpcServiceImplementations(nodeConfigRpc,
             ImmutableClassToInstanceMap.of(SetConfig.class, nodeConfigRpc::setConfig));
         rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class,
