@@ -40,18 +40,18 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
- * Test for {@link OpendaylightPortStatisticsServiceImpl}.
+ * Test for {@link OpendaylightPortStatisticsRpcs}.
  */
-public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightPortStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightPortStatisticsServiceImpl portStatisticsService;
+    private OpendaylightPortStatisticsRpcs portStatisticsService;
 
     @Override
     public void setUp() {
-        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext,
+        portStatisticsService = new OpendaylightPortStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
