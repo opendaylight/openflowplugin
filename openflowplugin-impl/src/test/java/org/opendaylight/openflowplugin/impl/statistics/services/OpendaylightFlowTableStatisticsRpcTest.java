@@ -39,19 +39,19 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowTableStatisticsServiceImpl}.
+ * Test for {@link OpendaylightFlowTableStatisticsRpc}.
  */
-public class OpendaylightFlowTableStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightFlowTableStatisticsRpcTest extends AbstractSingleStatsServiceTest {
     private static final Uint8 TABLE_ID = Uint8.valueOf(123);
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightFlowTableStatisticsServiceImpl flowTableStatisticsService;
+    private OpendaylightFlowTableStatisticsRpc flowTableStatisticsService;
 
     @Override
     public void setUp() {
-        flowTableStatisticsService = new OpendaylightFlowTableStatisticsServiceImpl(rqContextStack, deviceContext,
+        flowTableStatisticsService = new OpendaylightFlowTableStatisticsRpc(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
     }
 
