@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
-import org.opendaylight.openflowplugin.impl.services.sal.SalRoleServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalRoleRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 
 public class RoleManagerImpl implements RoleManager {
@@ -45,7 +45,7 @@ public class RoleManagerImpl implements RoleManager {
                 deviceContext.getDeviceInfo(),
                 timer, CHECK_ROLE_MASTER_TIMEOUT, config, executorService);
 
-        roleContext.setRoleService(new SalRoleServiceImpl(roleContext, deviceContext));
+        roleContext.setRoleServiceMap(new SalRoleRpc(roleContext, deviceContext).getRpcClassToInstanceMap());
         contexts.put(deviceInfo, roleContext);
         return roleContext;
     }
