@@ -42,8 +42,8 @@ public class MdSalRegistrationUtilsTest {
      */
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATION = 5;
     private static final int NUMBER_OF_RPC_SERVICE_REGISTRATIONS = 11;
-    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 4;
-    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATIONS = 1;
+    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATION = 3;
+    private static final int NUMBER_OF_STAT_COMPAT_RPC_SERVICE_REGISTRATIONS = 2;
 
     @Mock
     private RpcContext mockedRpcContext;

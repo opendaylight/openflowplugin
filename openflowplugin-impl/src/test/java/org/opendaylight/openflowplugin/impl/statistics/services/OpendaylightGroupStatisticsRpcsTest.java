@@ -58,9 +58,9 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
- * Test for {@link OpendaylightGroupStatisticsServiceImpl}.
+ * Test for {@link OpendaylightGroupStatisticsRpcs}.
  */
-public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightGroupStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     private static final org.opendaylight.yang.gen.v1.urn
             .opendaylight.openflow.common.types.rev130731.GroupId GROUP_ID = new org.opendaylight.yang.gen.v1.urn
@@ -68,12 +68,12 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightGroupStatisticsServiceImpl groupStatisticsService;
+    private OpendaylightGroupStatisticsRpcs groupStatisticsService;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
+        groupStatisticsService = new OpendaylightGroupStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService, convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
