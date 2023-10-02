@@ -10,16 +10,16 @@ package org.opendaylight.openflowplugin.api.openflow.role;
 
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRole;
 
 /**
  * Handles propagation of SLAVE and MASTER roles on connected devices.
  */
 public interface RoleContext extends OFPContext, RequestContextStack {
     /**
-     * Sets role service.
+     * Sets role service rpc implementation.
      *
-     * @param salRoleService the sal role service
+     * @param setRole the set role rpc
      */
-    void setRoleService(SalRoleService salRoleService);
+    void setRoleRpc(SetRole setRole);
 }

@@ -32,7 +32,7 @@ import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRole;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
@@ -55,7 +55,7 @@ public class RoleContextImpl implements RoleContext {
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
-    private SalRoleService roleService = null;
+    private SetRole setRoleRpc = null;
 
     RoleContextImpl(@NonNull final DeviceInfo deviceInfo,
                     @NonNull final HashedWheelTimer timer,
@@ -77,9 +77,8 @@ public class RoleContextImpl implements RoleContext {
         return deviceInfo;
     }
 
-    @Override
-    public void setRoleService(final SalRoleService salRoleService) {
-        roleService = salRoleService;
+    public void setRoleRpc(final SetRole setRole) {
+        setRoleRpc = setRole;
     }
 
     @Override
@@ -160,7 +159,7 @@ public class RoleContextImpl implements RoleContext {
                     .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                     .build();
 
-            final ListenableFuture<RpcResult<SetRoleOutput>> setRoleOutputFuture = roleService.setRole(setRoleInput);
+            final ListenableFuture<RpcResult<SetRoleOutput>> setRoleOutputFuture = setRoleRpc.invoke(setRoleInput);
 
             final TimerTask timerTask = timeout -> {
                 if (!setRoleOutputFuture.isDone()) {
