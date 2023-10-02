@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.EchoService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEchoOutputBuilder;
@@ -24,14 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public final class SalEchoServiceImpl implements SalEchoService {
+public final class SalEchoRpc {
     private final EchoService echoService;
 
-    public SalEchoServiceImpl(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
+    public SalEchoRpc(final RequestContextStack requestContextStack, final DeviceContext deviceContext) {
         echoService = new EchoService(requestContextStack, deviceContext);
     }
 
-    @Override
     public ListenableFuture<RpcResult<SendEchoOutput>> sendEcho(final SendEchoInput sendEchoInput) {
         final EchoInputBuilder echoInputBld = new EchoInputBuilder()
                 .setData(sendEchoInput.getData());
