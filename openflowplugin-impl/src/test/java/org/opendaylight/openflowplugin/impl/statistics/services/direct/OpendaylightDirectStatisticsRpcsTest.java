@@ -28,12 +28,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatisticsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OpendaylightDirectStatisticsServiceImplTest {
+public class OpendaylightDirectStatisticsRpcsTest {
     @Mock
     AbstractFlowDirectStatisticsService flowDirectStatisticsService;
     @Mock
@@ -56,8 +55,8 @@ public class OpendaylightDirectStatisticsServiceImplTest {
     @Mock
     GetNodeConnectorStatisticsInput getNodeConnectorStatisticsInput;
 
-    private OpendaylightDirectStatisticsService service;
-    private OpendaylightDirectStatisticsService emptyService;
+    private OpendaylightDirectStatisticsRpcs service;
+    private OpendaylightDirectStatisticsRpcs emptyService;
 
     @Before
     public void setUp() {
@@ -68,8 +67,8 @@ public class OpendaylightDirectStatisticsServiceImplTest {
         provider.register(AbstractPortDirectStatisticsService.class, nodeConnectorDirectStatisticsService);
         provider.register(AbstractQueueDirectStatisticsService.class, queueDirectStatisticsService);
 
-        service = new OpendaylightDirectStatisticsServiceImpl(provider);
-        emptyService = new OpendaylightDirectStatisticsServiceImpl(new OpendaylightDirectStatisticsServiceProvider());
+        service = new OpendaylightDirectStatisticsRpcs(provider);
+        emptyService = new OpendaylightDirectStatisticsRpcs(new OpendaylightDirectStatisticsServiceProvider());
     }
 
     @Test
