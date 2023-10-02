@@ -40,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.RoleRequestOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SalRoleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
@@ -52,7 +51,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SalRoleServiceImplTest {
+public class SalRoleRpcTest {
 
     @Mock
     private RequestContextStack mockRequestContextStack;
@@ -127,7 +126,7 @@ public class SalRoleServiceImplTest {
         Mockito.when(mockRequestContext.getFuture()).thenReturn(futureOutput);
 
 
-        SalRoleService salRoleService = new SalRoleServiceImpl(mockRequestContextStack, mockDeviceContext);
+        SalRoleRpc salRoleService = new SalRoleRpc(mockRequestContextStack, mockDeviceContext);
 
         SetRoleInput setRoleInput = new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMESLAVE)
@@ -157,7 +156,7 @@ public class SalRoleServiceImplTest {
 
         Mockito.when(mockRequestContext.getFuture()).thenReturn(futureOutput);
 
-        SalRoleService salRoleService = new SalRoleServiceImpl(mockRequestContextStack, mockDeviceContext);
+        SalRoleRpc salRoleService = new SalRoleRpc(mockRequestContextStack, mockDeviceContext);
 
         SetRoleInput setRoleInput = new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMESLAVE)
