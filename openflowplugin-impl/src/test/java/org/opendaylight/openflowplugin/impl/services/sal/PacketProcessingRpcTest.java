@@ -36,21 +36,21 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link PacketProcessingServiceImpl}.
+ * Test for {@link PacketProcessingRpc}.
  */
-public class PacketProcessingServiceImplTest extends ServiceMocking {
+public class PacketProcessingRpcTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
     public static final String ULTIMATE_PAYLOAD = "What do you get when you multiply six by nine?";
 
-    private PacketProcessingServiceImpl packetProcessingService;
+    private PacketProcessingRpc packetProcessingService;
     private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> pathToNodeconnector;
 
     @Override
     protected void setup() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         packetProcessingService =
-                new PacketProcessingServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+                new PacketProcessingRpc(mockedRequestContextStack, mockedDeviceContext, convertorManager);
         pathToNodeconnector = KeyedInstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("ofp-ut:123")))
                 .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("ofp-ut:123:1")));
