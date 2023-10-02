@@ -40,18 +40,18 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
- * Test for {@link OpendaylightPortStatisticsServiceImpl}.
+ * Test for {@link OpendaylightPortStatisticsRpcs}.
  */
-public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
+public class OpendaylightPortStatisticsRpcsTest extends AbstractSingleStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightPortStatisticsServiceImpl portStatisticsService;
+    private OpendaylightPortStatisticsRpcs portStatisticsRpcs;
 
     @Override
     public void setUp() {
-        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext,
+        portStatisticsRpcs = new OpendaylightPortStatisticsRpcs(rqContextStack, deviceContext,
                 new AtomicLong(), notificationPublishService);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
@@ -71,7 +71,7 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
         rpcResult = buildPortStatisticsReply();
 
         final Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> resultFuture
-                = portStatisticsService.getAllNodeConnectorsStatistics(input.build());
+                = portStatisticsRpcs.getAllNodeConnectorsStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetAllNodeConnectorsStatisticsOutput> rpcResult = resultFuture.get();
@@ -117,7 +117,7 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
         rpcResult = buildPortStatisticsReply();
 
         final Future<RpcResult<GetNodeConnectorStatisticsOutput>> resultFuture
-                = portStatisticsService.getNodeConnectorStatistics(input.build());
+                = portStatisticsRpcs.getNodeConnectorStatistics(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetNodeConnectorStatisticsOutput> rpcResult = resultFuture.get();
