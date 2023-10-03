@@ -17,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import java.util.Collections;
 import java.util.Map;
 import org.junit.After;
@@ -34,12 +35,13 @@ import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
@@ -61,17 +63,21 @@ public class LLDPDataTreeChangeListenerTest {
     private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
     @Mock
-    private SalFlowService flowService;
+    private SalFlowRpcs flowService;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
     private DeviceOwnershipService deviceOwnershipService;
+    @Mock
+    private AddFlow addFlow;
     @Captor
     private ArgumentCaptor<AddFlowInput> addFlowInputCaptor;
 
     @Before
     public void setUp() {
-        doReturn(RpcResultBuilder.success().buildFuture()).when(flowService).addFlow(any());
+        when(flowService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(AddFlow.class, addFlow));
+        doReturn(RpcResultBuilder.success().buildFuture()).when(addFlow).invoke(any());
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, mock(DataBroker.class),
                 deviceOwnershipService);
         final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
@@ -90,7 +96,7 @@ public class LLDPDataTreeChangeListenerTest {
     @Test
     public void testOnDataTreeChanged() {
         lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        verify(flowService).addFlow(addFlowInputCaptor.capture());
+        verify(addFlow).invoke(addFlowInputCaptor.capture());
         AddFlowInput captured = addFlowInputCaptor.getValue();
         assertEquals(NODE_IID, captured.getNode().getValue());
     }
