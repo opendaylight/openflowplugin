@@ -19,15 +19,18 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutputBuilder;
@@ -69,7 +72,13 @@ public class GroupForwarderTest {
     private final InstanceIdentifier<Group> groupPath = flowCapableNodePath.child(Group.class, groupKey);
 
     @Mock
-    private SalGroupService salGroupService;
+    private RpcConsumerRegistry rpcConsumerRegistry;
+    @Mock
+    private AddGroup addGroup;
+    @Mock
+    private UpdateGroup updateGroup;
+    @Mock
+    private RemoveGroup removeGroup;
     @Captor
     private ArgumentCaptor<AddGroupInput> addGroupInputCpt;
     @Captor
@@ -83,13 +92,20 @@ public class GroupForwarderTest {
 
     @Before
     public void setUp() {
-        groupForwarder = new GroupForwarder(salGroupService);
+        Mockito.when(rpcConsumerRegistry.getRpc(RemoveGroup.class))
+            .thenReturn(removeGroup);
+        Mockito.when(rpcConsumerRegistry.getRpc(UpdateGroup.class))
+            .thenReturn(updateGroup);
+        Mockito.when(rpcConsumerRegistry.getRpc(AddGroup.class))
+            .thenReturn(addGroup);
+
+        groupForwarder = new GroupForwarder(rpcConsumerRegistry);
         txId = new TransactionId(Uint64.ONE);
     }
 
     @Test
     public void testRemove() throws Exception {
-        Mockito.when(salGroupService.removeGroup(removeGroupInputCpt.capture())).thenReturn(
+        Mockito.when(removeGroup.invoke(removeGroupInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new RemoveGroupOutputBuilder()
                                 .setTransactionId(txId)
@@ -100,7 +116,7 @@ public class GroupForwarderTest {
         final Future<RpcResult<RemoveGroupOutput>> addResult =
                 groupForwarder.remove(groupPath, group, flowCapableNodePath);
 
-        Mockito.verify(salGroupService).removeGroup(ArgumentMatchers.any());
+        Mockito.verify(removeGroup).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(addResult.isDone());
         final RpcResult<RemoveGroupOutput> result = addResult.get(2, TimeUnit.SECONDS);
@@ -117,7 +133,7 @@ public class GroupForwarderTest {
 
     @Test
     public void testUpdate() throws Exception {
-        Mockito.when(salGroupService.updateGroup(updateGroupInputCpt.capture())).thenReturn(
+        Mockito.when(updateGroup.invoke(updateGroupInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new UpdateGroupOutputBuilder()
                                 .setTransactionId(txId)
@@ -133,7 +149,7 @@ public class GroupForwarderTest {
         final Future<RpcResult<UpdateGroupOutput>> addResult =
                 groupForwarder.update(groupPath, groupOriginal, groupUpdate, flowCapableNodePath);
 
-        Mockito.verify(salGroupService).updateGroup(ArgumentMatchers.any());
+        Mockito.verify(updateGroup).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(addResult.isDone());
         final RpcResult<UpdateGroupOutput> result = addResult.get(2, TimeUnit.SECONDS);
@@ -153,7 +169,7 @@ public class GroupForwarderTest {
 
     @Test
     public void testAdd() throws Exception {
-        Mockito.when(salGroupService.addGroup(addGroupInputCpt.capture())).thenReturn(
+        Mockito.when(addGroup.invoke(addGroupInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new AddGroupOutputBuilder()
                                 .setTransactionId(txId)
@@ -163,7 +179,7 @@ public class GroupForwarderTest {
 
         final Future<RpcResult<AddGroupOutput>> addResult = groupForwarder.add(groupPath, group, flowCapableNodePath);
 
-        Mockito.verify(salGroupService).addGroup(ArgumentMatchers.any());
+        Mockito.verify(addGroup).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(addResult.isDone());
         final RpcResult<AddGroupOutput> result = addResult.get(2, TimeUnit.SECONDS);
