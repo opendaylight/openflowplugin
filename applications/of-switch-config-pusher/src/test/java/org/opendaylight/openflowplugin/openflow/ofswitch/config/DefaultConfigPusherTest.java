@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import java.util.Collections;
 import org.junit.After;
 import org.junit.Assert;
@@ -30,12 +31,13 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -50,7 +52,9 @@ public class DefaultConfigPusherTest {
     private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
     @Mock
-    private NodeConfigService nodeConfigService;
+    private NodeConfigRpc nodeConfigService;
+    @Mock
+    private SetConfig setConfig;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
@@ -60,7 +64,9 @@ public class DefaultConfigPusherTest {
 
     @Before
     public void setUp() {
-        doReturn(RpcResultBuilder.success().buildFuture()).when(nodeConfigService).setConfig(any());
+        when(nodeConfigService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(SetConfig.class, setConfig));
+        doReturn(RpcResultBuilder.success().buildFuture()).when(setConfig).invoke(any());
         defaultConfigPusher = new DefaultConfigPusher(nodeConfigService, Mockito.mock(DataBroker.class),
                 deviceOwnershipService);
         final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
@@ -74,7 +80,7 @@ public class DefaultConfigPusherTest {
     @Test
     public void testOnDataTreeChanged() {
         defaultConfigPusher.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        Mockito.verify(nodeConfigService).setConfig(setConfigInputCaptor.capture());
+        Mockito.verify(setConfig).invoke(setConfigInputCaptor.capture());
         final SetConfigInput captured = setConfigInputCaptor.getValue();
         Assert.assertEquals(SwitchConfigFlag.FRAGNORMAL.toString(), captured.getFlag());
         Assert.assertEquals(OFConstants.OFPCML_NO_BUFFER, captured.getMissSearchLength());
