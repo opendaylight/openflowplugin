@@ -33,12 +33,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl}.
+ * Test for {@link SalExperimenterMessageRpc}.
  */
-public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
+public class SalExperimenterMessageRpcTest extends ServiceMocking {
 
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
-    private SalExperimenterMessageServiceImpl salExperimenterMessageService;
+    private SalExperimenterMessageRpc salExperimenterMessageService;
     @Mock
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
@@ -46,7 +46,7 @@ public class SalExperimenterMessageServiceImplTest extends ServiceMocking {
 
     @Override
     protected void setup() {
-        salExperimenterMessageService = new SalExperimenterMessageServiceImpl(mockedRequestContextStack,
+        salExperimenterMessageService = new SalExperimenterMessageRpc(mockedRequestContextStack,
                                                                               mockedDeviceContext,
                                                                               extensionConverterProvider);
         Mockito.when(extensionConverterProvider.getMessageConverter(ArgumentMatchers.<TypeVersionKey>any()))
