@@ -19,6 +19,7 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
@@ -28,8 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -56,12 +57,12 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
     private static final String LLDP_PUNT_WHOLE_PACKET_FLOW = "LLDP_PUNT_WHOLE_PACKET_FLOW";
     private static final String DEFAULT_FLOW_ID = "42";
 
-    private final SalFlowService flowService;
+    private final SalFlowRpcs flowService;
     private final DataBroker dataBroker;
     private final DeviceOwnershipService deviceOwnershipService;
     private Registration listenerRegistration;
 
-    public LLDPPacketPuntEnforcer(final SalFlowService flowService, final DataBroker dataBroker,
+    public LLDPPacketPuntEnforcer(final SalFlowRpcs flowService, final DataBroker dataBroker,
             final DeviceOwnershipService deviceOwnershipService) {
         this.flowService = flowService;
         this.dataBroker = dataBroker;
@@ -92,7 +93,8 @@ public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeC
                     AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
                     addFlowInput.setNode(new NodeRef(modification.getRootPath()
                             .getRootIdentifier().firstIdentifierOf(Node.class)));
-                    LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput.build()), LOG, "addFlow");
+                    LoggingFutures.addErrorLogging(flowService.getRpcClassToInstanceMap()
+                        .getInstance(AddFlow.class).invoke(addFlowInput.build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);
                 }
