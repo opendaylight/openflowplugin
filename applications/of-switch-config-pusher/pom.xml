@@ -52,5 +52,9 @@
             <artifactId>jakarta.annotation-api</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-impl</artifactId>
+        </dependency>
     </dependencies>
 </project>
