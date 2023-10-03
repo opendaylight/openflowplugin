@@ -18,14 +18,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.ser
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
 
-public class SalExperimenterMpMessageServiceImplTest extends ServiceMocking {
-    private SalExperimenterMpMessageServiceImpl salExperimenterMpMessageService;
+public class SalExperimenterMpMessageRpcTest extends ServiceMocking {
+    private SalExperimenterMpMessageRpc salExperimenterMpMessageService;
 
     @Override
     protected void setup() {
         this.<List<MultipartReply>>mockSuccessfulFuture();
 
-        salExperimenterMpMessageService = new SalExperimenterMpMessageServiceImpl(
+        salExperimenterMpMessageService = new SalExperimenterMpMessageRpc(
                 mockedRequestContextStack,
                 mockedDeviceContext,
                 mockedExtensionConverterProvider);
