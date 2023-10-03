@@ -26,7 +26,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalBundleRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalEchoRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageRpc;
-import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchRpcs;
@@ -49,7 +49,7 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelay
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEcho;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequest;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatistics;
@@ -142,10 +142,12 @@ public final class MdSalRegistrationUtils {
         // register experimenter services
         final SalExperimenterMessageRpc salExperimenterMessageRpc =
                 new SalExperimenterMessageRpc(rpcContext, deviceContext, extensionConverterProvider);
+        final SalExperimenterMpMessageRpc salExperimenterMpMessageRpc =
+                new SalExperimenterMpMessageRpc(rpcContext, deviceContext, extensionConverterProvider);
         rpcContext.registerRpcServiceImplementations(salExperimenterMessageRpc,
             ImmutableClassToInstanceMap.of(SendExperimenter.class, salExperimenterMessageRpc::sendExperimenter));
-        rpcContext.registerRpcServiceImplementation(SalExperimenterMpMessageService.class,
-                new SalExperimenterMpMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
+        rpcContext.registerRpcServiceImplementations(salExperimenterMpMessageRpc, ImmutableClassToInstanceMap.of(
+            SendExperimenterMpRequest.class, salExperimenterMpMessageRpc::sendExperimenterMpRequest));
 
         //register onf extension bundles
         final SalBundleRpcs salBundleRpcs = new SalBundleRpcs(new SalExperimenterMessageRpc(rpcContext, deviceContext,
