@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil.extractDatapathId;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -22,23 +25,23 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.openflowplugin.extension.api.exception.ConverterNotFoundException;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.experimenter.core.ExperimenterDataOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<SendExperimenterInput,
-        SendExperimenterOutput> implements SalExperimenterMessageService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalExperimenterMessageServiceImpl.class);
+public class SalExperimenterMessageRpc extends AbstractSimpleService<SendExperimenterInput, SendExperimenterOutput> {
+    private static final Logger LOG = LoggerFactory.getLogger(SalExperimenterMessageRpc.class);
     private final ExtensionConverterProvider extensionConverterProvider;
 
-    public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack,
+    public SalExperimenterMessageRpc(final RequestContextStack requestContextStack,
                                              final DeviceContext deviceContext,
                                              final ExtensionConverterProvider extensionConverterProvider) {
         super(requestContextStack, deviceContext, SendExperimenterOutput.class);
@@ -77,8 +80,14 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
         return experimenterInputBld.build();
     }
 
-    @Override
-    public ListenableFuture<RpcResult<SendExperimenterOutput>> sendExperimenter(SendExperimenterInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<SendExperimenterOutput>> sendExperimenter(SendExperimenterInput input) {
         return handleServiceCall(input);
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(SendExperimenter.class, this::sendExperimenter)
+            .build();
     }
 }
