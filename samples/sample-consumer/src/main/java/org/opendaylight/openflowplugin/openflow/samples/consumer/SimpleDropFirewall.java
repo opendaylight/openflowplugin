@@ -10,18 +10,20 @@ package org.opendaylight.openflowplugin.openflow.samples.consumer;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 
 public class SimpleDropFirewall {
 
-    private final SalFlowService flowService;
+    private final SalFlowRpcs flowService;
 
-    public SimpleDropFirewall(final SalFlowService flowService) {
+    public SimpleDropFirewall(final SalFlowRpcs flowService) {
         this.flowService = flowService;
     }
 
     public boolean addFlow(final AddFlowInput flow) throws InterruptedException, ExecutionException, TimeoutException {
-        return flowService.addFlow(flow).get(5, TimeUnit.SECONDS).isSuccessful();
+        return flowService.getRpcClassToInstanceMap().getInstance(AddFlow.class).invoke(flow)
+            .get(5, TimeUnit.SECONDS).isSuccessful();
     }
 }
