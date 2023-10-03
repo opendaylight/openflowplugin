@@ -22,6 +22,7 @@ import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
@@ -32,7 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
@@ -60,7 +60,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     private FlowForwarder flowForwarder;
     private MeterForwarder meterForwarder;
     private GroupForwarder groupForwarder;
-    private FlowCapableTransactionService transactionService;
+    private TableForwarder tableForwarder;
+    private FlowCapableTransactionRpc transactionService = null;
 
     @Override
     public ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,
@@ -475,7 +476,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     public SyncPlanPushStrategyIncrementalImpl setTransactionService(
-            final FlowCapableTransactionService transactionService) {
+            final FlowCapableTransactionRpc transactionService) {
         this.transactionService = transactionService;
         return this;
     }
