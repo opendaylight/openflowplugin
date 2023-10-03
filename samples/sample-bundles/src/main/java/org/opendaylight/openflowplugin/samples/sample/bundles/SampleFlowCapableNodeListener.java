@@ -21,6 +21,7 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationTyp
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.impl.services.sal.SalBundleRpcs;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PopVlanActionCaseBuilder;
@@ -55,13 +56,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherTyp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
@@ -96,10 +98,10 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
     private final DataBroker dataBroker;
-    private final SalBundleService bundleService;
+    private final SalBundleRpcs bundleService;
     private ListenerRegistration<?> listenerReg;
 
-    public SampleFlowCapableNodeListener(final DataBroker dataBroker, final SalBundleService bundleService) {
+    public SampleFlowCapableNodeListener(final DataBroker dataBroker, final SalBundleRpcs bundleService) {
         this.dataBroker = dataBroker;
         this.bundleService = bundleService;
     }
@@ -156,13 +158,15 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
                         .setMessages(messages)
                         .build();
 
-                makeCompletableFuture(bundleService.controlBundle(openBundleInput))
+                makeCompletableFuture(bundleService.getRpcClassToInstanceMap().getInstance(ControlBundle.class)
+                    .invoke(openBundleInput))
                     .thenComposeAsync(voidRpcResult -> {
                         LOG.debug("Open successful: {}, msg: {}", voidRpcResult.isSuccessful(),
                                 voidRpcResult.getErrors());
 
                         final CompletableFuture<RpcResult<AddBundleMessagesOutput>> addFuture =
-                                makeCompletableFuture(bundleService.addBundleMessages(addBundleMessagesInput));
+                                makeCompletableFuture(bundleService.getRpcClassToInstanceMap()
+                                    .getInstance(AddBundleMessages.class).invoke(addBundleMessagesInput));
 
                         return addFuture;
                     }).thenComposeAsync(voidRpcResult -> {
@@ -170,7 +174,8 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
                                 voidRpcResult.getErrors());
 
                         final CompletableFuture<RpcResult<ControlBundleOutput>> controlCommitFuture =
-                                makeCompletableFuture(bundleService.controlBundle(commitBundleInput));
+                                makeCompletableFuture(bundleService.getRpcClassToInstanceMap()
+                                    .getInstance(ControlBundle.class).invoke(commitBundleInput));
 
                         return controlCommitFuture;
                     }).thenAccept(voidRpcResult -> LOG.debug("Commit successful: {}, msg: {}",
