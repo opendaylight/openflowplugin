@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -29,12 +30,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
@@ -65,7 +67,9 @@ public class ReconcileUtilTest {
     private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 
     @Mock
-    private FlowCapableTransactionService flowCapableService;
+    private FlowCapableTransactionRpc flowCapableService;
+    @Mock
+    private SendBarrier sendBarrier;
     @Captor
     private ArgumentCaptor<SendBarrierInput> barrierInputCaptor;
 
@@ -75,14 +79,16 @@ public class ReconcileUtilTest {
         final ListenableFuture<RpcResult<Void>> vehicle =
                 Futures.transformAsync(testRabbit, ReconcileUtil.chainBarrierFlush(NODE_IDENT, flowCapableService),
                         MoreExecutors.directExecutor());
-        Mockito.when(flowCapableService.sendBarrier(barrierInputCaptor.capture()))
+        Mockito.when(flowCapableService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(SendBarrier.class, sendBarrier));
+        Mockito.when(sendBarrier.invoke(barrierInputCaptor.capture()))
                 .thenReturn(RpcResultBuilder.<SendBarrierOutput>success().buildFuture());
 
-        Mockito.verify(flowCapableService, Mockito.never()).sendBarrier(ArgumentMatchers.any());
+        Mockito.verify(sendBarrier, Mockito.never()).invoke(ArgumentMatchers.any());
         Assert.assertFalse(vehicle.isDone());
 
         testRabbit.set(RpcResultBuilder.<Void>success().build());
-        Mockito.verify(flowCapableService).sendBarrier(ArgumentMatchers.any());
+        Mockito.verify(sendBarrier).invoke(ArgumentMatchers.any());
         Assert.assertTrue(vehicle.isDone());
         Assert.assertTrue(vehicle.get().isSuccessful());
     }
