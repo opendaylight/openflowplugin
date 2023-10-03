@@ -9,6 +9,9 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -16,19 +19,21 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleAddMessageSalBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSalBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.add.message.sal.SalAddMessageDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.bundle.control.sal.SalControlDataBuilder;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorTag;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
@@ -40,25 +45,25 @@ import org.slf4j.LoggerFactory;
 /**
  * Simple bundle extension service.
  */
-public class SalBundleServiceImpl implements SalBundleService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalBundleServiceImpl.class);
+public class SalBundleRpcs {
+    private static final Logger LOG = LoggerFactory.getLogger(SalBundleRpcs.class);
 
-    private final SalExperimenterMessageService experimenterMessageService;
+    private final SalExperimenterMessageRpc experimenterMessageRpc;
 
-    public SalBundleServiceImpl(final SalExperimenterMessageService experimenterMessageService) {
-        this.experimenterMessageService = requireNonNull(experimenterMessageService,
-            "SalExperimenterMessageService can not be null!");
+    public SalBundleRpcs(final SalExperimenterMessageRpc experimenterMessageRpc) {
+        this.experimenterMessageRpc = requireNonNull(experimenterMessageRpc,
+            "SalExperimenterMessageRpc can not be null!");
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(final ControlBundleInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<ControlBundleOutput>> controlBundle(final ControlBundleInput input) {
         LOG.debug("Control message for device {} and bundle type {}", input.getNode(), input.getType());
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         experimenterInputBuilder.setNode(input.getNode());
         experimenterInputBuilder.setExperimenterMessageOfChoice(
                 new BundleControlSalBuilder().setSalControlData(new SalControlDataBuilder(input).build()).build());
-        return Futures.transform(experimenterMessageService.sendExperimenter(
-                experimenterInputBuilder.build()), sendExperimenterOutputRpcResult -> {
+        return Futures.transform(experimenterMessageRpc.getRpcClassToInstanceMap().getInstance(SendExperimenter.class)
+            .invoke(experimenterInputBuilder.build()), sendExperimenterOutputRpcResult -> {
                 if (sendExperimenterOutputRpcResult.isSuccessful()) {
                     return RpcResultBuilder.<ControlBundleOutput>success().build();
                 } else {
@@ -67,8 +72,8 @@ public class SalBundleServiceImpl implements SalBundleService {
             }, MoreExecutors.directExecutor());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(final AddBundleMessagesInput input) {
+    @VisibleForTesting
+    ListenableFuture<RpcResult<AddBundleMessagesOutput>> addBundleMessages(final AddBundleMessagesInput input) {
         final List<ListenableFuture<RpcResult<SendExperimenterOutput>>> partialResults = new ArrayList<>();
         final SendExperimenterInputBuilder experimenterInputBuilder = new SendExperimenterInputBuilder();
         final BundleAddMessageSalBuilder bundleAddMessageBuilder = new BundleAddMessageSalBuilder();
@@ -82,9 +87,17 @@ public class SalBundleServiceImpl implements SalBundleService {
             dataBuilder.setBundleInnerMessage(message.getBundleInnerMessage());
             experimenterInputBuilder.setExperimenterMessageOfChoice(
                     bundleAddMessageBuilder.setSalAddMessageData(dataBuilder.build()).build());
-            partialResults.add(experimenterMessageService.sendExperimenter(experimenterInputBuilder.build()));
+            partialResults.add(experimenterMessageRpc.getRpcClassToInstanceMap().getInstance(SendExperimenter.class)
+                .invoke(experimenterInputBuilder.build()));
         }
         return processResults(partialResults);
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(ControlBundle.class, this::controlBundle)
+            .put(AddBundleMessages.class, this::addBundleMessages)
+            .build();
     }
 
     private static ListenableFuture<RpcResult<AddBundleMessagesOutput>> processResults(
