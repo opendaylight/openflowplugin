@@ -43,5 +43,9 @@
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-impl</artifactId>
+        </dependency>
     </dependencies>
 </project>
