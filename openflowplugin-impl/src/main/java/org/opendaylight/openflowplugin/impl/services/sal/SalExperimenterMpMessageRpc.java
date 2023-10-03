@@ -14,16 +14,15 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerExperimenterMultipartService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerExperimenterMultipartService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequestOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class SalExperimenterMpMessageServiceImpl implements SalExperimenterMpMessageService {
+public class SalExperimenterMpMessageRpc {
     private final MultiLayerExperimenterMultipartService multiLayerService;
     private final SingleLayerExperimenterMultipartService singleLayerService;
 
-    public SalExperimenterMpMessageServiceImpl(final RequestContextStack requestContextStack,
+    public SalExperimenterMpMessageRpc(final RequestContextStack requestContextStack,
                                                final DeviceContext deviceContext,
                                                final ExtensionConverterProvider extensionConverterProvider) {
         this.singleLayerService = new SingleLayerExperimenterMultipartService(requestContextStack, deviceContext,
@@ -32,7 +31,6 @@ public class SalExperimenterMpMessageServiceImpl implements SalExperimenterMpMes
             extensionConverterProvider);
     }
 
-    @Override
     public ListenableFuture<RpcResult<SendExperimenterMpRequestOutput>>
         sendExperimenterMpRequest(SendExperimenterMpRequestInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
