@@ -30,11 +30,11 @@ import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.Devic
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.SyncPlanPushStrategyFlatBatchImpl;
 import org.opendaylight.openflowplugin.applications.frsync.impl.strategy.TableForwarder;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -50,8 +50,8 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
 
     private final DataBroker dataService;
     private final ClusterSingletonServiceProvider clusterSingletonService;
-    private final SalTableService salTableService;
-    private final SalFlatBatchService flatBatchService;
+    private final UpdateTable updateTable;
+    private final ProcessFlatBatch processFlatBatch;
 
     /** Wildcard path to flow-capable-node augmentation of inventory node. */
     private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
@@ -75,9 +75,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
         this.dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonService = requireNonNull(clusterSingletonService,
                 "ClusterSingletonServiceProvider can not be null!");
-        this.salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
-                "RPC SalTableService not found.");
-        this.flatBatchService = requireNonNull(rpcRegistry.getRpcService(SalFlatBatchService.class),
+        this.updateTable = requireNonNull(rpcRegistry.getRpc(UpdateTable.class),
+                "RPC UpdateTable not found.");
+        this.processFlatBatch = requireNonNull(rpcRegistry.getRpc(ProcessFlatBatch.class),
                 "RPC SalFlatBatchService not found.");
 
         nodeConfigDataTreePath = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
@@ -93,10 +93,10 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     }
 
     public void init() {
-        final TableForwarder tableForwarder = new TableForwarder(salTableService);
+        final TableForwarder tableForwarder = new TableForwarder(updateTable);
 
         final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl()
-                .setFlatBatchService(flatBatchService)
+                .setFlatBatchService(processFlatBatch)
                 .setTableForwarder(tableForwarder);
 
         final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
