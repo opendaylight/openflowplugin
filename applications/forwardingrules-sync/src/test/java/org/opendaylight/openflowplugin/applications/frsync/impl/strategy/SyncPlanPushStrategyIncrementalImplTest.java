@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.applications.frsync.impl.DSInputFactory;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -39,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutputBuilder;
@@ -85,7 +87,9 @@ public class SyncPlanPushStrategyIncrementalImplTest {
     @Mock
     private TableForwarder tableCommitter;
     @Mock
-    private FlowCapableTransactionService flowCapableTxService;
+    private FlowCapableTransactionRpc flowCapableTxService;
+    @Mock
+    private SendBarrier sendBarrier;
 
     @Captor
     private ArgumentCaptor<Group> groupCaptor;
@@ -178,7 +182,9 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 
     @Before
     public void setUp() {
-        Mockito.when(flowCapableTxService.sendBarrier(ArgumentMatchers.any()))
+        Mockito.when(flowCapableTxService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(SendBarrier.class, sendBarrier));
+        Mockito.when(sendBarrier.invoke(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success((SendBarrierOutput) null).buildFuture());
 
         Mockito.doAnswer(createSalServiceFutureAnswer()).when(groupCommitter).add(
@@ -286,10 +292,10 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals("f3", flowCaptorAllValues.get(0).getId().getValue());
         Assert.assertEquals("f4", flowCaptorAllValues.get(1).getId().getValue());
 
-        final InOrder inOrderFlow = Mockito.inOrder(flowCapableTxService, flowCommitter);
+        final InOrder inOrderFlow = Mockito.inOrder(sendBarrier, flowCommitter);
         inOrderFlow.verify(flowCommitter, Mockito.times(2)).remove(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderFlow.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderFlow.verify(sendBarrier).invoke(ArgumentMatchers.any());
         inOrderFlow.verifyNoMoreInteractions();
     }
 
@@ -480,19 +486,19 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals(4L, groupCaptorAllValues.get(2).getGroupId().getValue().longValue());
         Assert.assertEquals(5L, groupCaptorAllValues.get(3).getGroupId().getValue().longValue());
 
-        final InOrder inOrderGroups = Mockito.inOrder(flowCapableTxService, groupCommitter);
+        final InOrder inOrderGroups = Mockito.inOrder(sendBarrier, groupCommitter);
         // add 2
         inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroups.verify(sendBarrier).invoke(ArgumentMatchers.any());
         // add 3, 4
         inOrderGroups.verify(groupCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroups.verify(sendBarrier).invoke(ArgumentMatchers.any());
         // add 5
         inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroups.verify(sendBarrier).invoke(ArgumentMatchers.any());
 
         inOrderGroups.verifyNoMoreInteractions();
     }
@@ -539,23 +545,23 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals(1L, groupUpdateCaptorAllValues.get(0).getGroupId().getValue().longValue());
         Assert.assertEquals(1L, groupUpdateCaptorAllValues.get(1).getGroupId().getValue().longValue());
 
-        final InOrder inOrderGroups = Mockito.inOrder(flowCapableTxService, groupCommitter);
+        final InOrder inOrderGroups = Mockito.inOrder(sendBarrier, groupCommitter);
 
         // add 2, update 1
         inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
         inOrderGroups.verify(groupCommitter).update(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroups.verify(sendBarrier).invoke(ArgumentMatchers.any());
 
         // add 3, 4
         inOrderGroups.verify(groupCommitter, Mockito.times(2)).add(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroups.verify(sendBarrier).invoke(ArgumentMatchers.any());
         // add 5
         inOrderGroups.verify(groupCommitter).add(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroups.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroups.verify(sendBarrier).invoke(ArgumentMatchers.any());
 
         inOrderGroups.verifyNoMoreInteractions();
     }
@@ -592,19 +598,19 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         Assert.assertEquals(4L, groupCaptorAllValues.get(2).getGroupId().getValue().longValue());
         Assert.assertEquals(2L, groupCaptorAllValues.get(3).getGroupId().getValue().longValue());
 
-        final InOrder inOrderGroup = Mockito.inOrder(flowCapableTxService, groupCommitter);
+        final InOrder inOrderGroup = Mockito.inOrder(sendBarrier, groupCommitter);
         // remove 5
         inOrderGroup.verify(groupCommitter).remove(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroup.verify(sendBarrier).invoke(ArgumentMatchers.any());
         // remove 3, 4
         inOrderGroup.verify(groupCommitter, Mockito.times(2)).remove(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroup.verify(sendBarrier).invoke(ArgumentMatchers.any());
         // remove 2
         inOrderGroup.verify(groupCommitter).remove(ArgumentMatchers.any(),
                 ArgumentMatchers.any(), ArgumentMatchers.eq(NODE_IDENT));
-        inOrderGroup.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        inOrderGroup.verify(sendBarrier).invoke(ArgumentMatchers.any());
 
         inOrderGroup.verifyNoMoreInteractions();
     }
@@ -635,6 +641,6 @@ public class SyncPlanPushStrategyIncrementalImplTest {
 //        Assert.assertEquals("test table features", groupCaptorAllValues.get(0).getName());
 //        Assert.assertEquals(1, groupCaptorAllValues.get(0).getTableId().intValue());
 
-        Mockito.verify(flowCapableTxService).sendBarrier(ArgumentMatchers.any());
+        Mockito.verify(sendBarrier).invoke(ArgumentMatchers.any());
     }
 }
