@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
@@ -19,6 +20,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DropActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -28,13 +30,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutputBuilder;
@@ -86,7 +90,13 @@ public class FlowForwarderTest {
     private FlowForwarder flowForwarder;
 
     @Mock
-    private SalFlowService salFlowService;
+    private SalFlowRpcs salFlowService;
+    @Mock
+    private AddFlow addFlow;
+    @Mock
+    private RemoveFlow removeFlowRpc;
+    @Mock
+    private UpdateFlow updateFlow;
     @Captor
     private ArgumentCaptor<AddFlowInput> addFlowInputCpt;
     @Captor
@@ -102,7 +112,9 @@ public class FlowForwarderTest {
 
     @Test
     public void addTest() throws Exception {
-        Mockito.when(salFlowService.addFlow(addFlowInputCpt.capture())).thenReturn(
+        Mockito.when(salFlowService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(AddFlow.class, addFlow));
+        Mockito.when(addFlow.invoke(addFlowInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new AddFlowOutputBuilder()
                                 .setTransactionId(new TransactionId(Uint64.ONE))
@@ -110,7 +122,7 @@ public class FlowForwarderTest {
 
         final Future<RpcResult<AddFlowOutput>> addResult = flowForwarder.add(flowPath, flow, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).addFlow(ArgumentMatchers.any());
+        Mockito.verify(addFlow).invoke(ArgumentMatchers.any());
         final AddFlowInput flowInput = addFlowInputCpt.getValue();
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());
@@ -128,7 +140,9 @@ public class FlowForwarderTest {
 
     @Test
     public void updateTest() throws Exception {
-        Mockito.when(salFlowService.updateFlow(updateFlowInputCpt.capture())).thenReturn(
+        Mockito.when(salFlowService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(UpdateFlow.class, updateFlow));
+        Mockito.when(updateFlow.invoke(updateFlowInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new UpdateFlowOutputBuilder()
                                 .setTransactionId(new TransactionId(Uint64.ONE))
@@ -157,7 +171,7 @@ public class FlowForwarderTest {
         final Future<RpcResult<UpdateFlowOutput>> updateResult = flowForwarder.update(flowPath, flow,
                 flowUpdated, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).updateFlow(ArgumentMatchers.any());
+        Mockito.verify(updateFlow).invoke(ArgumentMatchers.any());
         final UpdateFlowInput updateFlowInput = updateFlowInputCpt.getValue();
         final OriginalFlow flowOrigInput = updateFlowInput.getOriginalFlow();
         final UpdatedFlow flowInput = updateFlowInput.getUpdatedFlow();
@@ -184,7 +198,9 @@ public class FlowForwarderTest {
 
     @Test
     public void removeTest() throws Exception {
-        Mockito.when(salFlowService.removeFlow(removeFlowInputCpt.capture())).thenReturn(
+        Mockito.when(salFlowService.getRpcClassToInstanceMap())
+            .thenReturn(ImmutableClassToInstanceMap.of(RemoveFlow.class, removeFlowRpc));
+        Mockito.when(removeFlowRpc.invoke(removeFlowInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new RemoveFlowOutputBuilder()
                                 .setTransactionId(new TransactionId(Uint64.ONE))
@@ -194,7 +210,7 @@ public class FlowForwarderTest {
         final Future<RpcResult<RemoveFlowOutput>> removeResult = flowForwarder.remove(flowPath,
                 removeFlow, flowCapableNodePath);
 
-        Mockito.verify(salFlowService).removeFlow(ArgumentMatchers.any());
+        Mockito.verify(removeFlowRpc).invoke(ArgumentMatchers.any());
         final RemoveFlowInput flowInput = removeFlowInputCpt.getValue();
         Assert.assertEquals(2, flowInput.getTableId().shortValue());
         Assert.assertEquals(emptyMatch, flowInput.getMatch());
