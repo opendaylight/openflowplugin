@@ -19,6 +19,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -28,13 +29,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutputBuilder;
@@ -67,7 +70,13 @@ public class MeterForwarderTest {
     private final InstanceIdentifier<Meter> meterPath = flowCapableNodePath.child(Meter.class, meterKey);
 
     @Mock
-    private SalMeterService salMeterService;
+    private RpcConsumerRegistry rpcRegistry;
+    @Mock
+    private AddMeter addMeter;
+    @Mock
+    private UpdateMeter updateMeter;
+    @Mock
+    private RemoveMeter removeMeterRpc;
     @Captor
     private ArgumentCaptor<AddMeterInput> addMeterInputCpt;
     @Captor
@@ -81,13 +90,20 @@ public class MeterForwarderTest {
 
     @Before
     public void setUp() {
-        meterForwarder = new MeterForwarder(salMeterService);
+        Mockito.when(rpcRegistry.getRpc(RemoveMeter.class))
+            .thenReturn(removeMeterRpc);
+        Mockito.when(rpcRegistry.getRpc(UpdateMeter.class))
+            .thenReturn(updateMeter);
+        Mockito.when(rpcRegistry.getRpc(AddMeter.class))
+            .thenReturn(addMeter);
+
+        meterForwarder = new MeterForwarder(rpcRegistry);
         txId = new TransactionId(Uint64.ONE);
     }
 
     @Test
     public void testRemove() throws Exception {
-        Mockito.when(salMeterService.removeMeter(removeMeterInputCpt.capture())).thenReturn(
+        Mockito.when(removeMeterRpc.invoke(removeMeterInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(new RemoveMeterOutputBuilder()
                         .setTransactionId(txId)
                         .build()).buildFuture()
@@ -97,7 +113,7 @@ public class MeterForwarderTest {
 
         final Future<RpcResult<RemoveMeterOutput>> removeResult =
                 meterForwarder.remove(meterPath, removeMeter, flowCapableNodePath);
-        Mockito.verify(salMeterService).removeMeter(ArgumentMatchers.any());
+        Mockito.verify(removeMeterRpc).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(removeResult.isDone());
         final RpcResult<RemoveMeterOutput> meterResult = removeResult.get(2, TimeUnit.SECONDS);
@@ -113,7 +129,7 @@ public class MeterForwarderTest {
 
     @Test
     public void testUpdate() throws Exception {
-        Mockito.when(salMeterService.updateMeter(updateMeterInputCpt.capture())).thenReturn(
+        Mockito.when(updateMeter.invoke(updateMeterInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(new UpdateMeterOutputBuilder()
                         .setTransactionId(txId)
                         .build()).buildFuture()
@@ -127,7 +143,7 @@ public class MeterForwarderTest {
         final Future<RpcResult<UpdateMeterOutput>> updateResult =
                 meterForwarder.update(meterPath, meterOriginal, meterUpdate,
                 flowCapableNodePath);
-        Mockito.verify(salMeterService).updateMeter(ArgumentMatchers.any());
+        Mockito.verify(updateMeter).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(updateResult.isDone());
         final RpcResult<UpdateMeterOutput> meterResult = updateResult.get(2, TimeUnit.SECONDS);
@@ -145,14 +161,14 @@ public class MeterForwarderTest {
 
     @Test
     public void testAdd() throws Exception {
-        Mockito.when(salMeterService.addMeter(addMeterInputCpt.capture())).thenReturn(
+        Mockito.when(addMeter.invoke(addMeterInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(new AddMeterOutputBuilder()
                         .setTransactionId(txId)
                         .build()).buildFuture()
         );
 
         final Future<RpcResult<AddMeterOutput>> addResult = meterForwarder.add(meterPath, meter, flowCapableNodePath);
-        Mockito.verify(salMeterService).addMeter(ArgumentMatchers.any());
+        Mockito.verify(addMeter).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(addResult.isDone());
         final RpcResult<AddMeterOutput> meterResult = addResult.get(2, TimeUnit.SECONDS);

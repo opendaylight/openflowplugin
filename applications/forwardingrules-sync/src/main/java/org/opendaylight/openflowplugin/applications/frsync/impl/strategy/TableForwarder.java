@@ -14,7 +14,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
@@ -33,10 +33,10 @@ import org.slf4j.LoggerFactory;
 public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatures, UpdateTableOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
-    private final SalTableService salTableService;
+    private final UpdateTable updateTable;
 
-    public TableForwarder(final SalTableService salTableService) {
-        this.salTableService = salTableService;
+    public TableForwarder(final UpdateTable updateTable) {
+        this.updateTable = updateTable;
     }
 
     @Override
@@ -48,7 +48,7 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
                 new TableKey(identifier.firstKeyOf(TableFeatures.class).getTableId()));
 
         LOG.debug("Invoking SalTableService {}", nodeIdent);
-        return salTableService.updateTable(new UpdateTableInputBuilder()
+        return updateTable.invoke(new UpdateTableInputBuilder()
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setTableRef(new TableRef(iiToTable))
             .setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(BindingMap.of(update)).build())
