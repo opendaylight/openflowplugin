@@ -12,7 +12,7 @@
   </bean>
 
   <odl:rpc-service id="nodeConfigService"
-                   interface="org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService"/>
+                   interface="org.opendaylight.openflowplugin.impl.services.sal.NodeConfigRpc"/>
 
   <reference id="dataBroker"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
