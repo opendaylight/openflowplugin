@@ -33,8 +33,7 @@ import org.slf4j.LoggerFactory;
  * corresponding MACs)</li>
  * </ul>
  */
-public class LearningSwitchManagerSimpleImpl
-        implements DataTreeChangeListenerRegistrationHolder, LearningSwitchManager {
+public final class LearningSwitchManagerSimpleImpl implements DataTreeChangeListenerRegistrationHolder, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerSimpleImpl.class);
 
     private NotificationService notificationService = null;
@@ -42,6 +41,22 @@ public class LearningSwitchManagerSimpleImpl
     private DataBroker data = null;
     private Registration packetInRegistration = null;
     private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration = null;
+
+    public LearningSwitchManagerSimpleImpl() {
+        LOG.debug("start() -->");
+        FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
+
+        final var learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
+                packetProcessingService, this);
+        packetInRegistration = notificationService.registerListener(PacketReceived.class, learningSwitchHandler);
+
+        dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(DataTreeIdentifier.create(
+            LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class)
+                .child(Node.class)
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class)), new WakeupOnNode(learningSwitchHandler));
+        LOG.debug("start() <--");
+    }
 
     /**
      * Sets the NotificationService.
@@ -59,8 +74,7 @@ public class LearningSwitchManagerSimpleImpl
      * @param packetProcessingService the packetProcessingService to set
      */
     @Override
-    public void setPacketProcessingService(
-            final PacketProcessingService packetProcessingService) {
+    public void setPacketProcessingService(final PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
     }
 
@@ -72,42 +86,12 @@ public class LearningSwitchManagerSimpleImpl
         data = broker;
     }
 
-    /**
-     * Starts learning switch.
-     */
     @Override
-    public void start() {
-        LOG.debug("start() -->");
-        FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
-
-        LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
-                packetProcessingService, this);
-        packetInRegistration = notificationService.registerListener(PacketReceived.class, learningSwitchHandler);
-
-        WakeupOnNode wakeupListener = new WakeupOnNode();
-        wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
-        final InstanceIdentifier<Table> instanceIdentifier = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class)
-                .augmentation(FlowCapableNode.class)
-                .child(Table.class);
-        final DataTreeIdentifier<Table> dataTreeIdentifier =
-                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
-        dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(dataTreeIdentifier, wakeupListener);
-        LOG.debug("start() <--");
-    }
-
-    /**
-     * Stops the learning switch.
-     */
-    @Override
-    public void stop() {
+    public void close() {
         LOG.debug("stop() -->");
         //TODO: remove flow (created in #start())
-
         packetInRegistration.close();
-
         dataTreeChangeListenerRegistration.close();
-
         LOG.debug("stop() <--");
     }
 

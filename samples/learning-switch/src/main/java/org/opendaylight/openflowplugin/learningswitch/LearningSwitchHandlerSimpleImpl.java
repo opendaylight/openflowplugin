@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
+import static java.util.Objects.requireNonNull;
+
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import org.eclipse.jdt.annotation.NonNull;
@@ -34,9 +35,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -49,14 +49,13 @@ import org.slf4j.LoggerFactory;
  * Simple Learning Switch implementation which does mac learning for one switch.
  */
 public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, Listener<PacketReceived> {
-
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchHandlerSimpleImpl.class);
     private static final byte[] ETH_TYPE_IPV4 = new byte[] { 0x08, 0x00 };
     private static final Uint16 DIRECT_FLOW_PRIORITY = Uint16.valueOf(512);
 
     private final DataTreeChangeListenerRegistrationHolder registrationPublisher;
     private final FlowCommitWrapper dataStoreAccessor;
-    private final PacketProcessingService packetProcessingService;
+    private final TransmitPacket transmitPacket;
 
     private volatile boolean isLearning = false;
 
@@ -70,16 +69,16 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     private Map<MacAddress, NodeConnectorRef> mac2portMapping;
     private final Set<String> coveredMacPaths = new HashSet<>();
 
-    public LearningSwitchHandlerSimpleImpl(@NonNull FlowCommitWrapper dataStoreAccessor,
-            @NonNull PacketProcessingService packetProcessingService,
-            @Nullable DataTreeChangeListenerRegistrationHolder registrationPublisher) {
-        this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
-        this.packetProcessingService = Objects.requireNonNull(packetProcessingService);
+    public LearningSwitchHandlerSimpleImpl(final @NonNull FlowCommitWrapper dataStoreAccessor,
+            final @NonNull TransmitPacket transmitPacket,
+            final @Nullable DataTreeChangeListenerRegistrationHolder registrationPublisher) {
+        this.dataStoreAccessor = requireNonNull(dataStoreAccessor);
+        this.transmitPacket = requireNonNull(transmitPacket);
         this.registrationPublisher = registrationPublisher;
     }
 
     @Override
-    public synchronized void onSwitchAppeared(InstanceIdentifier<Table> appearedTablePath) {
+    public synchronized void onSwitchAppeared(final InstanceIdentifier<Table> appearedTablePath) {
         if (isLearning) {
             LOG.debug("already learning a node, skipping {}", nodeId.getValue());
             return;
@@ -116,7 +115,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     }
 
     @Override
-    public void onNotification(PacketReceived notification) {
+    public void onNotification(final PacketReceived notification) {
         if (!isLearning) {
             // ignoring packets - this should not happen
             return;
@@ -177,7 +176,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
 
     }
 
-    private void addBridgeFlow(MacAddress srcMac, MacAddress dstMac, NodeConnectorRef destNodeConnector) {
+    private void addBridgeFlow(final MacAddress srcMac, final MacAddress dstMac, final NodeConnectorRef destNodeConnector) {
         synchronized (coveredMacPaths) {
             String macPath = srcMac.toString() + dstMac.toString();
             if (!coveredMacPaths.contains(macPath)) {
@@ -202,7 +201,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         }
     }
 
-    private void flood(byte[] payload, NodeConnectorRef ingress) {
+    private void flood(final byte[] payload, final NodeConnectorRef ingress) {
         NodeConnectorKey nodeConnectorKey = new NodeConnectorKey(nodeConnectorId("0xfffffffb"));
         InstanceIdentifier<?> nodeConnectorPath = InstanceIdentifierUtils.createNodeConnectorPath(
                 nodePath, nodeConnectorKey);
@@ -211,20 +210,18 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         sendPacketOut(payload, ingress, egressConnectorRef);
     }
 
-    private NodeConnectorId nodeConnectorId(String connectorId) {
+    private NodeConnectorId nodeConnectorId(final String connectorId) {
         NodeKey nodeKey = nodePath.firstKeyOf(Node.class);
         StringBuilder stringId = new StringBuilder(nodeKey.getId().getValue()).append(":").append(connectorId);
         return new NodeConnectorId(stringId.toString());
     }
 
-    private void sendPacketOut(byte[] payload, NodeConnectorRef ingress, NodeConnectorRef egress) {
-        InstanceIdentifier<Node> egressNodePath = InstanceIdentifierUtils.getNodePath(egress.getValue());
-        TransmitPacketInput input = new TransmitPacketInputBuilder()
-                .setPayload(payload)
-                .setNode(new NodeRef(egressNodePath))
-                .setEgress(egress)
-                .setIngress(ingress)
-                .build();
-        LoggingFutures.addErrorLogging(packetProcessingService.transmitPacket(input), LOG, "transmitPacket");
+    private void sendPacketOut(final byte[] payload, final NodeConnectorRef ingress, final NodeConnectorRef egress) {
+        LoggingFutures.addErrorLogging(transmitPacket.invoke(new TransmitPacketInputBuilder()
+            .setPayload(payload)
+            .setNode(new NodeRef(InstanceIdentifierUtils.getNodePath(egress.getValue())))
+            .setEgress(egress)
+            .setIngress(ingress)
+            .build()), LOG, "transmitPacket");
     }
 }
