@@ -23,11 +23,12 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
+import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigRpc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
 import org.opendaylight.yangtools.concepts.Registration;
@@ -39,16 +40,16 @@ import org.slf4j.LoggerFactory;
 public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultConfigPusher.class);
 
-    private final NodeConfigService nodeConfigService;
+    private final NodeConfigRpc nodeConfigRpc;
     private final DataBroker dataBroker;
     private final DeviceOwnershipService deviceOwnershipService;
 
     private Registration listenerRegistration;
 
     @Inject
-    public DefaultConfigPusher(final NodeConfigService nodeConfigService, final DataBroker dataBroker,
+    public DefaultConfigPusher(final NodeConfigRpc nodeConfigRpc, final DataBroker dataBroker,
             final DeviceOwnershipService deviceOwnershipService) {
-        this.nodeConfigService = nodeConfigService;
+        this.nodeConfigRpc = nodeConfigRpc;
         this.dataBroker = dataBroker;
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
     }
@@ -82,8 +83,8 @@ public class DefaultConfigPusher implements AutoCloseable, ClusteredDataTreeChan
                     setConfigInputBuilder.setMissSearchLength(OFConstants.OFPCML_NO_BUFFER);
                     setConfigInputBuilder.setNode(new NodeRef(modification.getRootPath()
                             .getRootIdentifier().firstIdentifierOf(Node.class)));
-                    LoggingFutures.addErrorLogging(nodeConfigService.setConfig(setConfigInputBuilder.build()),
-                            LOG, "addFlow");
+                    LoggingFutures.addErrorLogging(nodeConfigRpc.getRpcClassToInstanceMap().getInstance(SetConfig.class)
+                            .invoke(setConfigInputBuilder.build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip setting config", nodeId);
                 }
