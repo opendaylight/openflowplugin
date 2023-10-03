@@ -18,7 +18,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
@@ -29,7 +28,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
@@ -53,22 +51,22 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SalBundleServiceImplTest {
+public class SalBundleRpcsTest {
 
     private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("openflow:1"))));
     private static final BundleId BUNDLE_ID = new BundleId(Uint32.ONE);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, false);
 
-    private SalBundleService service;
+    private SalBundleRpcs salBundleRpcs;
     @Mock
-    private SalExperimenterMessageService experimenterMessageService;
+    private SalExperimenterMessageRpc experimenterMessageRpc;
     @Mock
     private List<BundleProperty> properties;
 
     @Before
     public void setUp() {
-        service = new SalBundleServiceImpl(experimenterMessageService);
+        salBundleRpcs = new SalBundleRpcs(experimenterMessageRpc);
     }
 
     @Test
@@ -85,9 +83,9 @@ public class SalBundleServiceImplTest {
         experimenterBuilder.setExperimenterMessageOfChoice(new BundleControlSalBuilder()
                 .setSalControlData(new SalControlDataBuilder(input).build())
                 .build());
-        Mockito.when(experimenterMessageService.sendExperimenter(any())).thenReturn(SettableFuture.create());
-        service.controlBundle(input);
-        Mockito.verify(experimenterMessageService).sendExperimenter(experimenterBuilder.build());
+        Mockito.when(experimenterMessageRpc.sendExperimenter(any())).thenReturn(SettableFuture.create());
+        salBundleRpcs.controlBundle(input);
+        Mockito.verify(experimenterMessageRpc).sendExperimenter(experimenterBuilder.build());
     }
 
     @Test
@@ -107,10 +105,10 @@ public class SalBundleServiceImplTest {
         final BundleAddMessageSalBuilder addMessageBuilder = new BundleAddMessageSalBuilder();
         final SendExperimenterInputBuilder experimenterBuilder = new SendExperimenterInputBuilder()
                 .setNode(NODE_REF);
-        Mockito.when(experimenterMessageService.sendExperimenter(any())).thenReturn(SettableFuture.create());
-        service.addBundleMessages(input);
+        Mockito.when(experimenterMessageRpc.sendExperimenter(any())).thenReturn(SettableFuture.create());
+        salBundleRpcs.addBundleMessages(input);
         for (Message msg : innerMessages) {
-            Mockito.verify(experimenterMessageService)
+            Mockito.verify(experimenterMessageRpc)
                     .sendExperimenter(experimenterBuilder
                                   .setExperimenterMessageOfChoice(addMessageBuilder
                                               .setSalAddMessageData(

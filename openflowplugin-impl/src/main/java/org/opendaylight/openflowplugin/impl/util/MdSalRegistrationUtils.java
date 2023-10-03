@@ -23,9 +23,9 @@ import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionR
 import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigRpcs;
-import org.opendaylight.openflowplugin.impl.services.sal.SalBundleServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalBundleRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalEchoRpc;
-import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
@@ -48,14 +48,13 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilaye
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEcho;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatistics;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
@@ -141,15 +140,17 @@ public final class MdSalRegistrationUtils {
             ImmutableClassToInstanceMap.of(ProcessFlatBatch.class, flatBatchService::processFlatBatch));
 
         // register experimenter services
-        rpcContext.registerRpcServiceImplementation(SalExperimenterMessageService.class,
-                new SalExperimenterMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
+        final SalExperimenterMessageRpc salExperimenterMessageRpc =
+                new SalExperimenterMessageRpc(rpcContext, deviceContext, extensionConverterProvider);
+        rpcContext.registerRpcServiceImplementations(salExperimenterMessageRpc,
+            ImmutableClassToInstanceMap.of(SendExperimenter.class, salExperimenterMessageRpc::sendExperimenter));
         rpcContext.registerRpcServiceImplementation(SalExperimenterMpMessageService.class,
                 new SalExperimenterMpMessageServiceImpl(rpcContext, deviceContext, extensionConverterProvider));
 
         //register onf extension bundles
-        rpcContext.registerRpcServiceImplementation(SalBundleService.class,
-                new SalBundleServiceImpl(new SalExperimenterMessageServiceImpl(
-                        rpcContext, deviceContext, extensionConverterProvider)));
+        final SalBundleRpcs salBundleRpcs = new SalBundleRpcs(new SalExperimenterMessageRpc(rpcContext, deviceContext,
+            extensionConverterProvider));
+        rpcContext.registerRpcServiceImplementations(salBundleRpcs, salBundleRpcs.getRpcClassToInstanceMap());
     }
 
     /**

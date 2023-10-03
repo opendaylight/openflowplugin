@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.extension.api.exception.ConversionExcepti
 import org.opendaylight.openflowplugin.extension.api.exception.ConverterNotFoundException;
 import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.openflowplugin.impl.services.util.ServiceException;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInputBuilder;
@@ -33,12 +32,11 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<SendExperimenterInput,
-        SendExperimenterOutput> implements SalExperimenterMessageService {
-    private static final Logger LOG = LoggerFactory.getLogger(SalExperimenterMessageServiceImpl.class);
+public class SalExperimenterMessageRpc extends AbstractSimpleService<SendExperimenterInput, SendExperimenterOutput> {
+    private static final Logger LOG = LoggerFactory.getLogger(SalExperimenterMessageRpc.class);
     private final ExtensionConverterProvider extensionConverterProvider;
 
-    public SalExperimenterMessageServiceImpl(final RequestContextStack requestContextStack,
+    public SalExperimenterMessageRpc(final RequestContextStack requestContextStack,
                                              final DeviceContext deviceContext,
                                              final ExtensionConverterProvider extensionConverterProvider) {
         super(requestContextStack, deviceContext, SendExperimenterOutput.class);
@@ -77,7 +75,6 @@ public class SalExperimenterMessageServiceImpl extends AbstractSimpleService<Sen
         return experimenterInputBld.build();
     }
 
-    @Override
     public ListenableFuture<RpcResult<SendExperimenterOutput>> sendExperimenter(SendExperimenterInput input) {
         return handleServiceCall(input);
     }
