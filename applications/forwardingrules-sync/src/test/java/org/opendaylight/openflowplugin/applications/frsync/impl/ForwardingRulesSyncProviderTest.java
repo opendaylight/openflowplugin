@@ -18,9 +18,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
-import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 
 /**
  * Test for {@link ForwardingRulesSyncProvider}.
@@ -38,16 +38,16 @@ public class ForwardingRulesSyncProviderTest {
 
     @Before
     public void setUp() {
-        Mockito.when(rpcRegistry.getRpcService(ArgumentMatchers.<Class<? extends RpcService>>any()))
+        Mockito.when(rpcRegistry.getRpc(ArgumentMatchers.<Class<? extends Rpc>>any()))
                 .thenAnswer(invocation -> {
-                    Class<? extends RpcService> serviceType =
-                            (Class<? extends RpcService>) invocation.getArguments()[0];
+                    Class<? extends Rpc> serviceType =
+                            (Class<? extends Rpc>) invocation.getArguments()[0];
                     return Mockito.mock(serviceType);
                 });
 
         provider = new ForwardingRulesSyncProvider(dataBroker, rpcRegistry, clusterSingletonService);
-        Mockito.verify(rpcRegistry).getRpcService(SalTableService.class);
-        Mockito.verify(rpcRegistry).getRpcService(SalFlatBatchService.class);
+        Mockito.verify(rpcRegistry).getRpc(UpdateTable.class);
+        Mockito.verify(rpcRegistry).getRpc(ProcessFlatBatch.class);
     }
 
     @Test
