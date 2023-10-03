@@ -9,16 +9,19 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
@@ -36,10 +39,14 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
         UpdateMeterOutput> {
 
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
-    private final SalMeterService salMeterService;
+    private final RemoveMeter removeMeter;
+    private final AddMeter addMeter;
+    private final UpdateMeter updateMeter;
 
-    public MeterForwarder(SalMeterService salMeterService) {
-        this.salMeterService = salMeterService;
+    public MeterForwarder(final RpcConsumerRegistry rpcConsumerRegistry) {
+        this.addMeter = rpcConsumerRegistry.getRpc(AddMeter.class);
+        this.removeMeter = rpcConsumerRegistry.getRpc(RemoveMeter.class);
+        this.updateMeter = rpcConsumerRegistry.getRpc(UpdateMeter.class);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
-        return salMeterService.removeMeter(builder.build());
+        return removeMeter.invoke(builder.build());
     }
 
     @Override
@@ -70,7 +77,7 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
         builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
         builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
 
-        return salMeterService.updateMeter(builder.build());
+        return updateMeter.invoke(builder.build());
     }
 
     @Override
@@ -83,7 +90,7 @@ public class MeterForwarder implements ForwardingRulesCommitter<Meter, AddMeterO
 
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
-        return salMeterService.addMeter(builder.build());
+        return addMeter.invoke(builder.build());
     }
 
 }
