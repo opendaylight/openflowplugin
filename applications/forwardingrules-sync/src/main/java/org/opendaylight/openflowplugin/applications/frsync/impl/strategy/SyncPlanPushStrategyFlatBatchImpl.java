@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.PeekingIterator;
@@ -25,10 +27,9 @@ import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchAddFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchRemoveFlowCase;
@@ -102,7 +103,11 @@ import org.slf4j.LoggerFactory;
 public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyFlatBatchImpl.class);
 
-    private SalFlatBatchService flatBatchService = null;
+    private final ProcessFlatBatch processFlatBatch;
+
+    public SyncPlanPushStrategyFlatBatchImpl(final ProcessFlatBatch processFlatBatch) {
+        this.processFlatBatch = requireNonNull(processFlatBatch);
+    }
 
     @Override
     public ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,
@@ -128,7 +133,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         //resultVehicle = updateTableFeatures(nodeIdent, configTree);
 
         resultVehicle = Futures.transformAsync(resultVehicle, input -> {
-            final List<Batch> batchBag = new ArrayList<>();
+            final var batchBag = new ArrayList<Batch>();
             int batchOrder = 0;
 
             batchOrder = assembleAddOrUpdateGroups(batchBag, batchOrder, diffInput.getGroupsToAddOrUpdate());
@@ -141,24 +146,20 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
 
             LOG.trace("Index of last batch step: {}", batchOrder);
 
-            final ProcessFlatBatchInput flatBatchInput = new ProcessFlatBatchInputBuilder()
-                    .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent())))
-                    // TODO: propagate from input
-                    .setExitOnFirstError(false)
-                    .setBatch(BindingMap.ordered(batchBag))
-                    .build();
-
-            final ListenableFuture<RpcResult<ProcessFlatBatchOutput>> rpcResultFuture =
-                    flatBatchService.processFlatBatch(flatBatchInput);
+            final var rpcResultFuture = processFlatBatch.invoke(new ProcessFlatBatchInputBuilder()
+                .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent())))
+                // TODO: propagate from input
+                .setExitOnFirstError(false)
+                .setBatch(BindingMap.ordered(batchBag))
+                .build());
 
             if (LOG.isDebugEnabled()) {
                 Futures.addCallback(rpcResultFuture, createCounterCallback(batchBag, batchOrder, counters),
                     MoreExecutors.directExecutor());
             }
 
-            return Futures.transform(rpcResultFuture,
-                    ReconcileUtil.createRpcResultToVoidFunction("flat-batch"),
-                    MoreExecutors.directExecutor());
+            return Futures.transform(rpcResultFuture, ReconcileUtil.createRpcResultToVoidFunction("flat-batch"),
+                MoreExecutors.directExecutor());
         }, MoreExecutors.directExecutor());
         return resultVehicle;
     }
@@ -170,9 +171,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             public void onSuccess(final RpcResult<ProcessFlatBatchOutput> result) {
                 if (!result.isSuccessful() && result.getResult() != null
                         && !result.getResult().nonnullBatchFailure().isEmpty()) {
-                    Map<Range<Uint16>, Batch> batchMap = mapBatchesToRanges(inputBatchBag, failureIndexLimit);
-                    decrementBatchFailuresCounters(result.getResult().nonnullBatchFailure().values(), batchMap,
-                            counters);
+                    decrementBatchFailuresCounters(result.getResult().nonnullBatchFailure().values(),
+                        mapBatchesToRanges(inputBatchBag, failureIndexLimit), counters);
                 }
             }
 
@@ -184,14 +184,12 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
     }
 
     private static void decrementBatchFailuresCounters(final Collection<BatchFailure> batchFailures,
-                                                final Map<Range<Uint16>, Batch> batchMap,
-                                                final SyncCrudCounters counters) {
-        for (BatchFailure batchFailure : batchFailures) {
-            for (Map.Entry<Range<Uint16>, Batch> rangeBatchEntry : batchMap.entrySet()) {
+            final Map<Range<Uint16>, Batch> batchMap, final SyncCrudCounters counters) {
+        for (var batchFailure : batchFailures) {
+            for (var rangeBatchEntry : batchMap.entrySet()) {
                 if (rangeBatchEntry.getKey().contains(batchFailure.getBatchOrder())) {
                     // get type and decrease
-                    final BatchChoice batchChoice = rangeBatchEntry.getValue().getBatchChoice();
-                    decrementCounters(batchChoice, counters);
+                    decrementCounters(rangeBatchEntry.getValue().getBatchChoice(), counters);
                     break;
                 }
             }
@@ -473,15 +471,5 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             }
         }
         return order;
-    }
-
-    public SyncPlanPushStrategyFlatBatchImpl setFlatBatchService(final SalFlatBatchService flatBatchService) {
-        this.flatBatchService = flatBatchService;
-        return this;
-    }
-
-    @Deprecated(since = "0.17.2", forRemoval = true)
-    public SyncPlanPushStrategyFlatBatchImpl setTableForwarder(final TableForwarder tableForwarder) {
-        return this;
     }
 }

@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -32,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
@@ -57,15 +59,22 @@ import org.slf4j.LoggerFactory;
 public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyIncrementalImpl.class);
 
-    private FlowForwarder flowForwarder;
-    private MeterForwarder meterForwarder;
-    private GroupForwarder groupForwarder;
-    private FlowCapableTransactionService transactionService;
+    private final FlowForwarder flowForwarder;
+    private final MeterForwarder meterForwarder;
+    private final GroupForwarder groupForwarder;
+    private final SendBarrier sendBarrier;
+
+    public SyncPlanPushStrategyIncrementalImpl(final FlowForwarder flowForwarder, final MeterForwarder meterForwarder,
+            final GroupForwarder groupForwarder, final SendBarrier sendBarrier) {
+        this.flowForwarder = requireNonNull(flowForwarder);
+        this.meterForwarder = requireNonNull(meterForwarder);
+        this.groupForwarder = requireNonNull(groupForwarder);
+        this.sendBarrier = requireNonNull(sendBarrier);
+    }
 
     @Override
     public ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,
-                                                                 final SynchronizationDiffInput diffInput,
-                                                                 final SyncCrudCounters counters) {
+            final SynchronizationDiffInput diffInput, final SyncCrudCounters counters) {
         final InstanceIdentifier<FlowCapableNode> nodeIdent = diffInput.getNodeIdent();
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
 
@@ -109,9 +118,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
 
     ListenableFuture<RpcResult<Void>> addMissingFlows(final NodeId nodeId,
-                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                      final Map<TableKey, ItemSyncBox<Flow>> flowsInTablesSyncBox,
-                                                      final SyncCrudCounters counters) {
+            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            final Map<TableKey, ItemSyncBox<Flow>> flowsInTablesSyncBox, final SyncCrudCounters counters) {
         if (flowsInTablesSyncBox.isEmpty()) {
             LOG.trace("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
             return RpcResultBuilder.<Void>success().buildFuture();
@@ -197,7 +205,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
+                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), sendBarrier),
                 MoreExecutors.directExecutor());
 
     }
@@ -284,7 +292,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
+                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), sendBarrier),
                 MoreExecutors.directExecutor());
     }
 
@@ -314,7 +322,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 MoreExecutors.directExecutor());
 
         return Futures.transformAsync(singleVoidResult,
-                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), transactionService),
+                ReconcileUtil.chainBarrierFlush(PathUtil.digNodePath(nodeIdent), sendBarrier),
                 MoreExecutors.directExecutor());
     }
 
@@ -355,7 +363,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
 
         return Futures.transformAsync(summaryResult, ReconcileUtil.chainBarrierFlush(
-                PathUtil.digNodePath(nodeIdent), transactionService), MoreExecutors.directExecutor());
+                PathUtil.digNodePath(nodeIdent), sendBarrier), MoreExecutors.directExecutor());
     }
 
     ListenableFuture<RpcResult<Void>> addMissingMeters(final NodeId nodeId,
@@ -451,32 +459,5 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         }
 
         return chainedResult;
-    }
-
-
-    public SyncPlanPushStrategyIncrementalImpl setFlowForwarder(final FlowForwarder flowForwarder) {
-        this.flowForwarder = flowForwarder;
-        return this;
-    }
-
-    @Deprecated(since = "0.17.2", forRemoval = true)
-    public SyncPlanPushStrategyIncrementalImpl setTableForwarder(final TableForwarder tableForwarder) {
-        return this;
-    }
-
-    public SyncPlanPushStrategyIncrementalImpl setMeterForwarder(final MeterForwarder meterForwarder) {
-        this.meterForwarder = meterForwarder;
-        return this;
-    }
-
-    public SyncPlanPushStrategyIncrementalImpl setGroupForwarder(final GroupForwarder groupForwarder) {
-        this.groupForwarder = groupForwarder;
-        return this;
-    }
-
-    public SyncPlanPushStrategyIncrementalImpl setTransactionService(
-            final FlowCapableTransactionService transactionService) {
-        this.transactionService = transactionService;
-        return this;
     }
 }

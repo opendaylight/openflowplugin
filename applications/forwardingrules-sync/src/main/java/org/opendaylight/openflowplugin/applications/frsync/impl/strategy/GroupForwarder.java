@@ -5,17 +5,19 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
@@ -32,59 +34,50 @@ import org.slf4j.LoggerFactory;
 /**
  * Implements {@link ForwardingRulesCommitter} methods for processing add, update and remove of {@link Group}.
  */
-public class GroupForwarder implements ForwardingRulesCommitter<Group, AddGroupOutput, RemoveGroupOutput,
-        UpdateGroupOutput> {
-
+public class GroupForwarder
+        implements ForwardingRulesCommitter<Group, AddGroupOutput, RemoveGroupOutput, UpdateGroupOutput> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
-    private final SalGroupService salGroupService;
 
-    public GroupForwarder(SalGroupService salGroupService) {
-        this.salGroupService = salGroupService;
+    private final AddGroup addGroupRpc;
+    private final UpdateGroup updateGroupRpc;
+    private final RemoveGroup removeGroupRpc;
+
+    public GroupForwarder(final RpcConsumerRegistry rpcConsumerRegistry) {
+        addGroupRpc = rpcConsumerRegistry.getRpc(AddGroup.class);
+        updateGroupRpc = rpcConsumerRegistry.getRpc(UpdateGroup.class);
+        removeGroupRpc = rpcConsumerRegistry.getRpc(RemoveGroup.class);
     }
 
     @Override
     public ListenableFuture<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier,
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}",
-                identifier, nodeIdent);
-
-        final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(removeDataObj);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setGroupRef(new GroupRef(identifier));
-        // fix group removal - no buckets allowed
-        builder.setBuckets(null);
-        return salGroupService.removeGroup(builder.build());
+        LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}", identifier, nodeIdent);
+        return removeGroupRpc.invoke(new RemoveGroupInputBuilder(removeDataObj)
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
+            // fix group removal - no buckets allowed
+            .setBuckets(null).build());
     }
 
     @Override
     public ListenableFuture<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
-                                                       final Group original, final Group update,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}",
-                identifier, nodeIdent, update);
-
-        final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setGroupRef(new GroupRef(identifier));
-        builder.setUpdatedGroup(new UpdatedGroupBuilder(update).build());
-        builder.setOriginalGroup(new OriginalGroupBuilder(original).build());
-
-        return salGroupService.updateGroup(builder.build());
+            final Group original, final Group update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}", identifier, nodeIdent, update);
+        return updateGroupRpc.invoke(new UpdateGroupInputBuilder()
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
+            .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
+            .setOriginalGroup(new OriginalGroupBuilder(original).build())
+            .build());
     }
 
     @Override
     public ListenableFuture<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier,
             final Group addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}",
-                identifier, nodeIdent, addDataObj);
-
-        final AddGroupInputBuilder builder = new AddGroupInputBuilder(addDataObj);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setGroupRef(new GroupRef(identifier));
-        return salGroupService.addGroup(builder.build());
+        LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}", identifier, nodeIdent, addDataObj);
+        return addGroupRpc.invoke(new AddGroupInputBuilder(addDataObj)
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
+            .build());
     }
-
 }

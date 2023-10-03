@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesUpdateCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -14,7 +16,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.OriginalTableBuilder;
@@ -31,24 +33,24 @@ import org.slf4j.LoggerFactory;
  * Implements {@link ForwardingRulesUpdateCommitter} methods for processing update of {@link TableFeatures}.
  */
 public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatures, UpdateTableOutput> {
-
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
-    private final SalTableService salTableService;
 
-    public TableForwarder(final SalTableService salTableService) {
-        this.salTableService = salTableService;
+    private final UpdateTable updateTable;
+
+    public TableForwarder(final UpdateTable updateTable) {
+        this.updateTable = requireNonNull(updateTable);
     }
 
     @Override
     public ListenableFuture<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
-                                                       final TableFeatures original, final TableFeatures update,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final TableFeatures original, final TableFeatures update,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Forwarding Table Update request [Tbl id, node Id {} {}", identifier, nodeIdent);
         final InstanceIdentifier<Table> iiToTable = nodeIdent.child(Table.class,
                 new TableKey(identifier.firstKeyOf(TableFeatures.class).getTableId()));
 
         LOG.debug("Invoking SalTableService {}", nodeIdent);
-        return salTableService.updateTable(new UpdateTableInputBuilder()
+        return updateTable.invoke(new UpdateTableInputBuilder()
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setTableRef(new TableRef(iiToTable))
             .setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(BindingMap.of(update)).build())

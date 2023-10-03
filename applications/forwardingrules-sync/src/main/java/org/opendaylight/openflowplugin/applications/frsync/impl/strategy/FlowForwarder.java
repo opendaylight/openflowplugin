@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import static java.util.Objects.requireNonNull;
@@ -16,12 +15,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.FlowTableRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
@@ -41,89 +42,80 @@ import org.slf4j.LoggerFactory;
  */
 public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutput, RemoveFlowOutput,
         UpdateFlowOutput> {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private static final String TABLE_ID_MISMATCH = "tableId mismatch";
-    private final SalFlowService salFlowService;
 
-    public FlowForwarder(final SalFlowService salFlowService) {
-        this.salFlowService = salFlowService;
+    private final AddFlow addFlow;
+    private final RemoveFlow removeFlow;
+    private final UpdateFlow updateFlow;
+
+    public FlowForwarder(final AddFlow addFlow, final RemoveFlow removeFlow, final UpdateFlow updateFlow) {
+        this.addFlow = requireNonNull(addFlow);
+        this.removeFlow = requireNonNull(removeFlow);
+        this.updateFlow = requireNonNull(updateFlow);
     }
 
     @Override
     public ListenableFuture<RpcResult<RemoveFlowOutput>> remove(final InstanceIdentifier<Flow> identifier,
-                                                      final Flow removeDataObj,
-                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Forwarding Flow REMOVE request Tbl id, node Id {} {}",
-                identifier, nodeIdent);
+            final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.trace("Forwarding Flow REMOVE request Tbl id, node Id {} {}", identifier, nodeIdent);
 
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
+        final var tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
-            final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
-
-            // always needs to set strict flag into remove-flow input so that
-            // only a flow entry associated with a given flow object will be removed.
-            builder.setStrict(Boolean.TRUE);
-            return salFlowService.removeFlow(builder.build());
+            return removeFlow.invoke(new RemoveFlowInputBuilder(removeDataObj)
+                .setFlowRef(new FlowRef(identifier))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)))
+                // always needs to set strict flag into remove-flow input so that
+                // only a flow entry associated with a given flow object will be removed.
+                .setStrict(Boolean.TRUE)
+                .build());
         } else {
             return RpcResultBuilder.<RemoveFlowOutput>failed()
-                    .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
+                .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)
+                .buildFuture();
         }
     }
 
     @Override
     public ListenableFuture<RpcResult<UpdateFlowOutput>> update(final InstanceIdentifier<Flow> identifier,
-                                                      final Flow original, final Flow update,
-                                                      final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Forwarding Flow UPDATE request [Tbl id, node Id {} {} {}",
-                identifier, nodeIdent, update);
+            final Flow original, final Flow update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.trace("Forwarding Flow UPDATE request [Tbl id, node Id {} {} {}", identifier, nodeIdent, update);
 
-        final ListenableFuture<RpcResult<UpdateFlowOutput>> output;
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
+        final var tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
-            final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
+            return updateFlow.invoke(new UpdateFlowInputBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setFlowRef(new FlowRef(identifier))
 
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowRef(new FlowRef(identifier));
-
-            // always needs to set strict flag into update-flow input so that
-            // only a flow entry associated with a given flow object is updated.
-            builder.setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build());
-            builder.setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build());
-
-            output = salFlowService.updateFlow(builder.build());
+                // always needs to set strict flag into update-flow input so that
+                // only a flow entry associated with a given flow object is updated.
+                .setUpdatedFlow(new UpdatedFlowBuilder(update).setStrict(Boolean.TRUE).build())
+                .setOriginalFlow(new OriginalFlowBuilder(original).setStrict(Boolean.TRUE).build())
+                .build());
         } else {
-            output = RpcResultBuilder.<UpdateFlowOutput>failed()
-                    .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH).buildFuture();
+            return RpcResultBuilder.<UpdateFlowOutput>failed()
+                .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)
+                .buildFuture();
         }
-
-        return output;
     }
 
     @Override
     public ListenableFuture<RpcResult<AddFlowOutput>> add(final InstanceIdentifier<Flow> identifier,
-                                                final Flow addDataObj,
-                                                final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LOG.trace("Forwarding the Flow ADD request [Tbl id, node Id {} {} {}",
-                identifier, nodeIdent, addDataObj);
+            final Flow addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        LOG.trace("Forwarding the Flow ADD request [Tbl id, node Id {} {} {}", identifier, nodeIdent, addDataObj);
 
-        final ListenableFuture<RpcResult<AddFlowOutput>> output;
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
+        final var tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
-            final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
-
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
-            output = salFlowService.addFlow(builder.build());
+            return addFlow.invoke(new AddFlowInputBuilder(addDataObj)
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setFlowRef(new FlowRef(identifier))
+                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey))).build());
         } else {
-            output = RpcResultBuilder.<AddFlowOutput>failed().withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)
+            return RpcResultBuilder.<AddFlowOutput>failed()
+                .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)
                 .buildFuture();
         }
-        return output;
     }
 
     private static boolean tableIdValidationPrecondition(final TableKey tableKey, final Flow flow) {
