@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,12 +18,12 @@ import org.slf4j.LoggerFactory;
 public class DropTestRpcProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcProvider.class);
 
-    private SalFlowService flowService;
+    private SalFlowRpcs flowService;
     private NotificationService notificationService;
     private final DropTestRpcSender commiter = new DropTestRpcSender();
     private boolean active = false;
 
-    public void setFlowService(final SalFlowService flowService) {
+    public void setFlowService(final SalFlowRpcs flowService) {
         this.flowService = flowService;
     }
 

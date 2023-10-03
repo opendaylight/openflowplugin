@@ -7,7 +7,7 @@
   <reference id="notificationService" interface="org.opendaylight.mdsal.binding.api.NotificationService"/>
 
   <odl:rpc-service id="flowService"
-      interface="org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService"/>
+      interface="org.opendaylight.openflowplugin.impl.services.sal.SalFlowRpcs"/>
 
   <bean id="dropTestProvider" class="org.opendaylight.openflowplugin.droptestkaraf.DropTestProviderImpl">
     <argument ref="dataBroker"/>
