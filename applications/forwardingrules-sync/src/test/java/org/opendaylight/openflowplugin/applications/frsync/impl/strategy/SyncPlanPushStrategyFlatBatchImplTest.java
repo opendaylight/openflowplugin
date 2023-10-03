@@ -26,9 +26,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchAddFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchAddFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.flat.batch.flow.crud._case.aug.FlatBatchRemoveFlowCase;
@@ -75,7 +75,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
             .child(Node.class, new NodeKey(NODE_ID))
             .augmentation(FlowCapableNode.class);
     @Mock
-    private SalFlatBatchService flatBatchService;
+    private ProcessFlatBatch processFlatBatch;
     @Mock
     private TableForwarder tableForwarder;
     @Captor
@@ -111,9 +111,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
     @Before
     public void setUp() {
-        syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl();
-        syncPlanPushStrategy.setFlatBatchService(flatBatchService);
-        syncPlanPushStrategy.setTableForwarder(tableForwarder);
+        syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl(processFlatBatch);
 
         batchBag = new ArrayList<>();
     }
@@ -124,14 +122,14 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
                 groupsToAddOrUpdate, metersToAddOrUpdate, flowsToAddOrUpdate,
                 flowsToRemove, metersToRemove, groupsToRemove);
 
-        Mockito.when(flatBatchService.processFlatBatch(ArgumentMatchers.any()))
+        Mockito.when(processFlatBatch.invoke(ArgumentMatchers.any()))
                 .thenReturn(RpcResultBuilder.success(new ProcessFlatBatchOutputBuilder().build()).buildFuture());
 
         final SyncCrudCounters counters = new SyncCrudCounters();
         final ListenableFuture<RpcResult<Void>> rpcResult = syncPlanPushStrategy.executeSyncStrategy(
                 RpcResultBuilder.<Void>success().buildFuture(), diffInput, counters);
 
-        Mockito.verify(flatBatchService).processFlatBatch(processFlatBatchInputCpt.capture());
+        Mockito.verify(processFlatBatch).invoke(processFlatBatchInputCpt.capture());
 
         final ProcessFlatBatchInput processFlatBatchInput = processFlatBatchInputCpt.getValue();
         Assert.assertFalse(processFlatBatchInput.getExitOnFirstError());

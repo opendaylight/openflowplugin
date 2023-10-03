@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
@@ -46,7 +46,6 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TableForwarderTest {
-
     private final NodeKey s1Key = new NodeKey(new NodeId("S1"));
     private final Uint8 tableId = Uint8.valueOf(42);
     private final TableKey tableKey = new TableKey(tableId);
@@ -68,22 +67,20 @@ public class TableForwarderTest {
     @Captor
     private ArgumentCaptor<UpdateTableInput> updateTableInputCpt;
     @Mock
-    private SalTableService salTableService;
+    private UpdateTable updateTable;
 
     private TransactionId txId;
-
     private TableForwarder tableForwarder;
-
 
     @Before
     public void setUp() {
-        tableForwarder = new TableForwarder(salTableService);
+        tableForwarder = new TableForwarder(updateTable);
         txId = new TransactionId(Uint64.ONE);
     }
 
     @Test
     public void testUpdate() throws Exception {
-        Mockito.when(salTableService.updateTable(updateTableInputCpt.capture())).thenReturn(
+        Mockito.when(updateTable.invoke(updateTableInputCpt.capture())).thenReturn(
                 RpcResultBuilder.success(
                         new UpdateTableOutputBuilder()
                                 .setTransactionId(txId)
@@ -97,7 +94,7 @@ public class TableForwarderTest {
         final Future<RpcResult<UpdateTableOutput>> updateResult = tableForwarder.update(
                 tableFeaturesPath, tableFeatures, tableFeaturesUpdate, flowCapableNodePath);
 
-        Mockito.verify(salTableService).updateTable(ArgumentMatchers.any());
+        Mockito.verify(updateTable).invoke(ArgumentMatchers.any());
 
         Assert.assertTrue(updateResult.isDone());
         final RpcResult<UpdateTableOutput> updateTableResult = updateResult.get(2, TimeUnit.SECONDS);
