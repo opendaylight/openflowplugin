@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Collection;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
@@ -19,7 +21,11 @@ import org.slf4j.LoggerFactory;
 public class WakeupOnNode implements DataTreeChangeListener<Table> {
     private static final Logger LOG = LoggerFactory.getLogger(WakeupOnNode.class);
 
-    private LearningSwitchHandler learningSwitchHandler = null;
+    private final LearningSwitchHandler learningSwitchHandler;
+
+    public WakeupOnNode(final LearningSwitchHandler learningSwitchHandler) {
+        this.learningSwitchHandler = requireNonNull(learningSwitchHandler);
+    }
 
     @Override
     public void onDataTreeChanged(final Collection<DataTreeModification<Table>> modifications) {
@@ -37,14 +43,5 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
                 }
             }
         }
-    }
-
-    /**
-     * Sets the LearningSwitchHandler.
-     *
-     * @param learningSwitchHandler the learningSwitchHandler to set
-     */
-    public void setLearningSwitchHandler(final LearningSwitchHandler learningSwitchHandler) {
-        this.learningSwitchHandler = learningSwitchHandler;
     }
 }

@@ -11,27 +11,20 @@
     <artifactId>learning-switch</artifactId>
     <packaging>bundle</packaging>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-            </plugin>
-        </plugins>
-    </build>
     <dependencies>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-flow-base</artifactId>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-flow-service</artifactId>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-inventory</artifactId>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>infrautils-util</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
@@ -46,8 +39,20 @@
             <artifactId>openflowplugin-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.infrautils</groupId>
-            <artifactId>infrautils-util</artifactId>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
     </dependencies>
 </project>

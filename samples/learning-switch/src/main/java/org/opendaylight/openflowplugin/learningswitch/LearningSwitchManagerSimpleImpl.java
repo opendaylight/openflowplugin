@@ -11,13 +11,14 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.NotificationService;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -33,81 +34,35 @@ import org.slf4j.LoggerFactory;
  * corresponding MACs)</li>
  * </ul>
  */
-public class LearningSwitchManagerSimpleImpl
-        implements DataTreeChangeListenerRegistrationHolder, LearningSwitchManager {
+public final class LearningSwitchManagerSimpleImpl implements DataTreeChangeListenerRegistrationHolder, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerSimpleImpl.class);
 
-    private NotificationService notificationService = null;
-    private PacketProcessingService packetProcessingService;
-    private DataBroker data = null;
-    private Registration packetInRegistration = null;
-    private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration = null;
+    private final ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
+    private final Registration packetInRegistration;
 
-    /**
-     * Sets the NotificationService.
-     *
-     * @param notificationService the notificationService to set
-     */
-    @Override
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
-    /**
-     * Sets the PacketProcessingService.
-     *
-     * @param packetProcessingService the packetProcessingService to set
-     */
-    @Override
-    public void setPacketProcessingService(
-            final PacketProcessingService packetProcessingService) {
-        this.packetProcessingService = packetProcessingService;
-    }
-
-    /**
-     * Sets the DataBroker.
-     */
-    @Override
-    public void setDataBroker(final DataBroker broker) {
-        data = broker;
-    }
-
-    /**
-     * Starts learning switch.
-     */
-    @Override
-    public void start() {
+    public LearningSwitchManagerSimpleImpl(final DataBroker dataBroker, final NotificationService notificationService,
+            final RpcConsumerRegistry rpcService) {
         LOG.debug("start() -->");
-        FlowCommitWrapper dataStoreAccessor = new FlowCommitWrapperImpl(data);
+        final var dataStoreAccessor = new FlowCommitWrapperImpl(dataBroker);
 
-        LearningSwitchHandlerSimpleImpl learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
-                packetProcessingService, this);
+        final var learningSwitchHandler = new LearningSwitchHandlerSimpleImpl(dataStoreAccessor,
+            rpcService.getRpc(TransmitPacket.class), this);
         packetInRegistration = notificationService.registerListener(PacketReceived.class, learningSwitchHandler);
 
-        WakeupOnNode wakeupListener = new WakeupOnNode();
-        wakeupListener.setLearningSwitchHandler(learningSwitchHandler);
-        final InstanceIdentifier<Table> instanceIdentifier = InstanceIdentifier.create(Nodes.class)
+        dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(DataTreeIdentifier.create(
+            LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class)
                 .child(Node.class)
                 .augmentation(FlowCapableNode.class)
-                .child(Table.class);
-        final DataTreeIdentifier<Table> dataTreeIdentifier =
-                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, instanceIdentifier);
-        dataTreeChangeListenerRegistration = data.registerDataTreeChangeListener(dataTreeIdentifier, wakeupListener);
+                .child(Table.class)), new WakeupOnNode(learningSwitchHandler));
         LOG.debug("start() <--");
     }
 
-    /**
-     * Stops the learning switch.
-     */
     @Override
-    public void stop() {
+    public void close() {
         LOG.debug("stop() -->");
         //TODO: remove flow (created in #start())
-
         packetInRegistration.close();
-
         dataTreeChangeListenerRegistration.close();
-
         LOG.debug("stop() <--");
     }
 
