@@ -61,8 +61,6 @@ public class LLDPLinkAgerTest {
     private EntityOwnershipService eos;
     @Mock
     private DataBroker dataBroker;
-    @Mock
-    private LinkRemoved linkRemoved;
 
 
     @Before

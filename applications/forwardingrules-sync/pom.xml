@@ -65,6 +65,10 @@
             <version>${sonar-jacoco-listeners.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-impl</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
