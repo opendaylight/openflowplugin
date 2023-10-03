@@ -51,8 +51,6 @@ public class LLDPLinkAgerTest {
      */
     private static final int SLEEP = 100;
 
-    private LLDPLinkAger lldpLinkAger;
-
     @Mock
     private LinkDiscovered link;
     @Mock
@@ -61,9 +59,8 @@ public class LLDPLinkAgerTest {
     private EntityOwnershipService eos;
     @Mock
     private DataBroker dataBroker;
-    @Mock
-    private LinkRemoved linkRemoved;
 
+    private LLDPLinkAger lldpLinkAger;
 
     @Before
     public void setUp() {

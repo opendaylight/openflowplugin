@@ -11,7 +11,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,10 +28,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -125,23 +122,16 @@ public final class ReconcileUtil {
      * @return async barrier result
      */
     public static AsyncFunction<RpcResult<Void>, RpcResult<Void>> chainBarrierFlush(
-            final InstanceIdentifier<Node> nodeIdent,
-            final FlowCapableTransactionService flowCapableTransactionService) {
-        return input -> {
-            final SendBarrierInput barrierInput = new SendBarrierInputBuilder()
-                    .setNode(new NodeRef(nodeIdent))
-                    .build();
-            ListenableFuture<RpcResult<SendBarrierOutput>> result
-                    = flowCapableTransactionService.sendBarrier(barrierInput);
-
-            return Futures.transformAsync(result, input1 -> {
-                if (input1.isSuccessful()) {
-                    return Futures.immediateFuture(RpcResultBuilder.<Void>success().build());
-                } else {
-                    return Futures.immediateFailedFuture(null);
-                }
-            }, MoreExecutors.directExecutor());
-        };
+            final InstanceIdentifier<Node> nodeIdent, final SendBarrier sendBarrier) {
+        return input -> Futures.transformAsync(sendBarrier.invoke(new SendBarrierInputBuilder()
+            .setNode(new NodeRef(nodeIdent))
+            .build()), result -> {
+            if (result.isSuccessful()) {
+                return Futures.immediateFuture(RpcResultBuilder.<Void>success().build());
+            } else {
+                return Futures.immediateFailedFuture(null);
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     /**
@@ -271,11 +261,9 @@ public final class ReconcileUtil {
             final Meter existingMeter = meterOperationalMap.get(meter.getMeterId());
             if (existingMeter == null) {
                 syncBox.getItemsToPush().add(meter);
-            } else {
-                // compare content and eventually update
-                if (gatherUpdates && !meter.equals(existingMeter)) {
-                    syncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingMeter, meter));
-                }
+            } else // compare content and eventually update
+            if (gatherUpdates && !meter.equals(existingMeter)) {
+                syncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingMeter, meter));
             }
         }
         return syncBox;
@@ -299,11 +287,9 @@ public final class ReconcileUtil {
 
             if (existingFlow == null) {
                 flowsSyncBox.getItemsToPush().add(flow);
-            } else {
-                // check instructions and eventually update
-                if (gatherUpdates && !Objects.equals(flow.getInstructions(), existingFlow.getInstructions())) {
-                    flowsSyncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingFlow, flow));
-                }
+            } else // check instructions and eventually update
+            if (gatherUpdates && !Objects.equals(flow.getInstructions(), existingFlow.getInstructions())) {
+                flowsSyncBox.getItemsToUpdate().add(new ItemSyncBox.ItemUpdateTuple<>(existingFlow, flow));
             }
         }
         return flowsSyncBox;
@@ -347,15 +333,15 @@ public final class ReconcileUtil {
         return tableFlowSyncBoxes;
     }
 
-    public static Collection<Group> safeGroups(FlowCapableNode node) {
+    public static Collection<Group> safeGroups(final FlowCapableNode node) {
         return node == null ? Collections.emptyList() : node.nonnullGroup().values();
     }
 
-    public static Collection<Table> safeTables(FlowCapableNode node) {
+    public static Collection<Table> safeTables(final FlowCapableNode node) {
         return node == null ? Collections.emptyList() : node.nonnullTable().values();
     }
 
-    public static Collection<Meter> safeMeters(FlowCapableNode node) {
+    public static Collection<Meter> safeMeters(final FlowCapableNode node) {
         return node == null ? Collections.emptyList() : node.nonnullMeter().values();
     }
 }
