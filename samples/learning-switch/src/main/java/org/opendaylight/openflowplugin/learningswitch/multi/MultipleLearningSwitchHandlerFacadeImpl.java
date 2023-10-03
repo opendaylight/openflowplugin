@@ -9,13 +9,13 @@ package org.opendaylight.openflowplugin.learningswitch.multi;
 
 import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingRpc;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapper;
 import org.opendaylight.openflowplugin.learningswitch.InstanceIdentifierUtils;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandler;
 import org.opendaylight.openflowplugin.learningswitch.LearningSwitchHandlerSimpleImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,11 +24,11 @@ public class MultipleLearningSwitchHandlerFacadeImpl implements LearningSwitchHa
 
     private static final Logger LOG = LoggerFactory.getLogger(MultipleLearningSwitchHandlerFacadeImpl.class);
     private final FlowCommitWrapper dataStoreAccessor;
-    private final PacketProcessingService packetProcessingService;
+    private final PacketProcessingRpc packetProcessingService;
     private final PacketInDispatcherImpl packetInDispatcher;
 
     public MultipleLearningSwitchHandlerFacadeImpl(@NonNull FlowCommitWrapper dataStoreAccessor,
-            @NonNull PacketProcessingService packetProcessingService,
+            @NonNull PacketProcessingRpc packetProcessingService,
             @NonNull PacketInDispatcherImpl packetInDispatcher) {
         this.dataStoreAccessor = Objects.requireNonNull(dataStoreAccessor);
         this.packetProcessingService = Objects.requireNonNull(packetProcessingService);
