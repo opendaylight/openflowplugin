@@ -27,20 +27,20 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods (failing).
+ * Test for {@link OpendaylightFlowStatisticsRpcs} - only delegated methods (failing).
  */
-public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsServiceTest {
+public class OpendaylightFlowStatisticsRpcs1Test extends AbstractStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
+    private OpendaylightFlowStatisticsRpcs flowStatisticsRpcs;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService =
-                OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+        flowStatisticsRpcs =
+                OpendaylightFlowStatisticsRpcs.createWithOook(rqContextStack, deviceContext, convertorManager);
 
         AbstractRequestContext<Object> rqContext = new AbstractRequestContext<>(Uint32.valueOf(42)) {
             @Override
@@ -58,7 +58,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId(Uint8.ONE));
 
-        flowStatisticsService.getAggregateFlowStatisticsFromFlowTableForAllFlows(input.build());
+        flowStatisticsRpcs.getAggregateFlowStatisticsFromFlowTableForAllFlows(input.build());
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -67,7 +67,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId(Uint8.ONE));
 
-        flowStatisticsService.getAllFlowStatisticsFromFlowTable(input.build());
+        flowStatisticsRpcs.getAllFlowStatisticsFromFlowTable(input.build());
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -76,7 +76,7 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 new GetAllFlowsStatisticsFromAllFlowTablesInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
 
-        flowStatisticsService.getAllFlowsStatisticsFromAllFlowTables(input.build());
+        flowStatisticsRpcs.getAllFlowsStatisticsFromAllFlowTables(input.build());
     }
 
     @Test(expected = IllegalAccessError.class)
@@ -86,6 +86,6 @@ public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsSer
                 .setPriority(Uint16.valueOf(5));
 
         final Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
-                = flowStatisticsService.getFlowStatisticsFromFlowTable(input.build());
+                = flowStatisticsRpcs.getFlowStatisticsFromFlowTable(input.build());
     }
 }
