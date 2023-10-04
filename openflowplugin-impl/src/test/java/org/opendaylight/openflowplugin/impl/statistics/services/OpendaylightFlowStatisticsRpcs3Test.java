@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.impl.statistics.services;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.opendaylight.openflowplugin.impl.OpendaylightFlowStatistics;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
@@ -21,26 +22,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableId;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods.
+ * Test for {@link OpendaylightFlowStatisticsRpcs} - only delegated methods.
  */
-public class OpendaylightFlowStatisticsServiceImpl3Test extends AbstractStatsServiceTest {
+public class OpendaylightFlowStatisticsRpcs3Test extends AbstractStatsServiceTest {
 
     @Mock
-    private OpendaylightFlowStatisticsService flowStatisticsDelegate;
+    private OpendaylightFlowStatistics flowStatisticsDelegate;
 
-    private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
+    private OpendaylightFlowStatisticsRpcs flowStatisticsService;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService =
-                OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+                OpendaylightFlowStatisticsRpcs.createWithOook(rqContextStack, deviceContext, convertorManager);
         flowStatisticsService.setDelegate(flowStatisticsDelegate);
     }
 
