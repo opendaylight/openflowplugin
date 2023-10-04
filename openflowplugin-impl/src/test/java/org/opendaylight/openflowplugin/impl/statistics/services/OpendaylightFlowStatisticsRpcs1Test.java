@@ -27,20 +27,20 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only delegated methods (failing).
+ * Test for {@link OpendaylightFlowStatisticsRpcs} - only delegated methods (failing).
  */
-public class OpendaylightFlowStatisticsServiceImpl1Test extends AbstractStatsServiceTest {
+public class OpendaylightFlowStatisticsRpcs1Test extends AbstractStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
+    private OpendaylightFlowStatisticsRpcs flowStatisticsService;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         flowStatisticsService =
-                OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack, deviceContext, convertorManager);
+                OpendaylightFlowStatisticsRpcs.createWithOook(rqContextStack, deviceContext, convertorManager);
 
         AbstractRequestContext<Object> rqContext = new AbstractRequestContext<>(Uint32.valueOf(42)) {
             @Override
