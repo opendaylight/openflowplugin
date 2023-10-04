@@ -16,6 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
+import org.opendaylight.openflowplugin.impl.OpendaylightFlowStatistics;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionRpc;
@@ -35,7 +36,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.SalMeterRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchRpcs;
 import org.opendaylight.openflowplugin.impl.services.sal.SalPortRpc;
 import org.opendaylight.openflowplugin.impl.services.sal.SalTableRpc;
-import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
+import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsRpcs;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsRpc;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsRpcs;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightMeterStatisticsRpcs;
@@ -46,7 +47,6 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.Opendayli
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer.MultiLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpRole;
 
 public final class MdSalRegistrationUtils {
@@ -89,7 +89,8 @@ public final class MdSalRegistrationUtils {
         final SalPortRpc salPortService = new SalPortRpc(rpcContext, deviceContext, convertorExecutor);
         final SalTableRpc salTableRpc =
                 new SalTableRpc(rpcContext, deviceContext, convertorExecutor, multipartWriterProvider);
-
+        final OpendaylightFlowStatisticsRpcs opendaylightFlowStatisticsRpcs = OpendaylightFlowStatisticsRpcs
+                .createWithOook(rpcContext, deviceContext, convertorExecutor);
 
         // register routed service instances
         rpcContext.registerRpcServiceImplementations(salEchoService, salEchoService.getRpcClassToInstanceMap());
@@ -105,8 +106,8 @@ public final class MdSalRegistrationUtils {
         rpcContext.registerRpcServiceImplementations(packetProcessingRpc,
             packetProcessingRpc.getRpcClassToInstanceMap());
         rpcContext.registerRpcServiceImplementations(nodeConfigService, nodeConfigService.getRpcClassToInstanceMap());
-        rpcContext.registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class,
-                OpendaylightFlowStatisticsServiceImpl.createWithOook(rpcContext, deviceContext, convertorExecutor));
+        rpcContext.registerRpcServiceImplementations(opendaylightFlowStatisticsRpcs,
+            opendaylightFlowStatisticsRpcs.getRpcClassToInstanceMap());
 
         // register direct statistics gathering services
         final OpendaylightDirectStatisticsRpcs opendaylightDirectStatisticsRpcs =
@@ -161,14 +162,14 @@ public final class MdSalRegistrationUtils {
 
         AtomicLong compatibilityXidSeed = new AtomicLong();
         // pickup low statistics service
-        final OpendaylightFlowStatisticsService flowStatisticsService = requireNonNull(
-                rpcContext.lookupRpcService(OpendaylightFlowStatisticsService.class));
+        final OpendaylightFlowStatistics flowStatisticsService = requireNonNull(
+                rpcContext.lookupRpcServices(OpendaylightFlowStatistics.class));
 
         // attach delegate to flow statistics service (to cover all but aggregated stats with match filter input)
         final OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsDelegate =
                 new OpendaylightFlowStatisticsServiceDelegateImpl(rpcContext, deviceContext, notificationPublishService,
                         new AtomicLong(), convertorExecutor);
-        ((Delegator<OpendaylightFlowStatisticsService>) flowStatisticsService).setDelegate(flowStatisticsDelegate);
+        ((Delegator<OpendaylightFlowStatistics>) flowStatisticsService).setDelegate(flowStatisticsDelegate);
 
         final OpendaylightFlowTableStatisticsRpc opendaylightFlowTableStatisticsRpc =
             new OpendaylightFlowTableStatisticsRpc(rpcContext, deviceContext, compatibilityXidSeed,

@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.openflowplugin.impl.OpendaylightFlowStatistics;
 import org.opendaylight.openflowplugin.impl.statistics.services.AggregateFlowsInTableService;
 import org.opendaylight.openflowplugin.impl.statistics.services.AllFlowsInAllTablesService;
 import org.opendaylight.openflowplugin.impl.statistics.services.AllFlowsInTableService;
@@ -27,12 +28,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpendaylightFlowStatisticsServiceDelegateImpl implements OpendaylightFlowStatisticsService {
+public class OpendaylightFlowStatisticsServiceDelegateImpl implements OpendaylightFlowStatistics {
 
     private static final Logger LOG = LoggerFactory.getLogger(OpendaylightFlowStatisticsServiceDelegateImpl.class);
 
