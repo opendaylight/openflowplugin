@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
@@ -35,7 +36,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
@@ -50,7 +53,11 @@ class RpcContextImpl implements RpcContext {
 
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, ObjectRegistration<? extends RpcService>> rpcRegistrations =
-            new ConcurrentHashMap<>();
+        new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, Registration> rpcRegistrationsMap =
+        new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, Object> rpcInstancesMap =
+        new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
@@ -60,12 +67,12 @@ class RpcContextImpl implements RpcContext {
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     RpcContextImpl(@NonNull final RpcProviderService rpcProviderRegistry,
-                   final int maxRequests,
-                   @NonNull final DeviceContext deviceContext,
-                   @NonNull final ExtensionConverterProvider extensionConverterProvider,
-                   @NonNull final ConvertorExecutor convertorExecutor,
-                   @NonNull final NotificationPublishService notificationPublishService,
-                   final boolean statisticsRpcEnabled) {
+        final int maxRequests,
+        @NonNull final DeviceContext deviceContext,
+        @NonNull final ExtensionConverterProvider extensionConverterProvider,
+        @NonNull final ConvertorExecutor convertorExecutor,
+        @NonNull final NotificationPublishService notificationPublishService,
+        final boolean statisticsRpcEnabled) {
         this.deviceContext = deviceContext;
         this.deviceInfo = deviceContext.getDeviceInfo();
         this.nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
@@ -80,15 +87,15 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
-                                                                        final S serviceInstance) {
+        final S serviceInstance) {
         if (!rpcRegistrations.containsKey(serviceClass)) {
             final ObjectRegistration<S> routedRpcReg = rpcProviderRegistry.registerRpcImplementation(serviceClass,
                 serviceInstance, ImmutableSet.of(nodeInstanceIdentifier));
             rpcRegistrations.put(serviceClass, routedRpcReg);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Registration of service {} for device {}.",
-                        serviceClass.getSimpleName(),
-                        nodeInstanceIdentifier.getKey().getId().getValue());
+                    serviceClass.getSimpleName(),
+                    nodeInstanceIdentifier.getKey().getId().getValue());
             }
         }
     }
@@ -107,14 +114,14 @@ class RpcContextImpl implements RpcContext {
 
     private void unregisterRPCs() {
         for (final Iterator<Entry<Class<?>, ObjectRegistration<? extends RpcService>>> iterator = Iterators
-                .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
+            .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
             final ObjectRegistration<? extends RpcService> rpcRegistration = iterator.next().getValue();
             rpcRegistration.close();
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Closing RPC Registration of service {} for device {}.",
-                        rpcRegistration.getInstance().getClass().getSimpleName(),
-                        nodeInstanceIdentifier.getKey().getId().getValue());
+                    rpcRegistration.getInstance().getClass().getSimpleName(),
+                    nodeInstanceIdentifier.getKey().getId().getValue());
             }
         }
     }
@@ -126,13 +133,13 @@ class RpcContextImpl implements RpcContext {
             return null;
         } else {
             LOG.trace("Acquired semaphore for {}, available permits:{} ",
-                    nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
+                nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
         }
 
         final Uint32 xid = deviceInfo.reserveXidForDeviceMessage();
         if (xid == null) {
             LOG.warn("Xid cannot be reserved for new RequestContext, node:{}",
-                    nodeInstanceIdentifier.getKey().getId().getValue());
+                nodeInstanceIdentifier.getKey().getId().getValue());
             tracker.release();
             return null;
         }
@@ -150,13 +157,39 @@ class RpcContextImpl implements RpcContext {
     @Override
     public <S extends RpcService> void unregisterRpcServiceImplementation(final Class<S> serviceClass) {
         LOG.trace("Try to unregister serviceClass {} for Node {}",
-                serviceClass, nodeInstanceIdentifier.getKey().getId());
+            serviceClass, nodeInstanceIdentifier.getKey().getId());
         final ObjectRegistration<? extends RpcService> rpcRegistration = rpcRegistrations.remove(serviceClass);
         if (rpcRegistration != null) {
             rpcRegistration.close();
             LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(),
-                    nodeInstanceIdentifier.getKey().getId().getValue());
+                nodeInstanceIdentifier.getKey().getId().getValue());
         }
+    }
+
+    @Override
+    public void registerRpcServiceImplementations(final Object rpcsInstance,
+        final ClassToInstanceMap<Rpc<?, ?>> rpcMap) {
+        if (!rpcRegistrationsMap.containsKey(rpcsInstance.getClass())) {
+            final var routedRpcReg = rpcProviderRegistry.registerRpcImplementations(rpcMap,
+                ImmutableSet.of(nodeInstanceIdentifier));
+            rpcRegistrationsMap.put(rpcsInstance.getClass(), routedRpcReg);
+            rpcInstancesMap.put(rpcsInstance.getClass(), rpcsInstance);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Registration of service {} for device {}.",
+                    rpcsInstance.getClass().getName(),
+                    nodeInstanceIdentifier.getKey().getId().getValue());
+            }
+        }
+    }
+
+    @Override
+    public <S> S lookupRpcServices(Class<S> serviceClass) {
+        for (Class r: serviceClass.getClasses()) {
+            if (rpcInstancesMap.containsKey(r)) {
+                return serviceClass.cast(r);
+            }
+        }
+        return null;
     }
 
     @VisibleForTesting
@@ -188,10 +221,10 @@ class RpcContextImpl implements RpcContext {
 
         if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
             MdSalRegistrationUtils.registerStatCompatibilityServices(
-                    this,
-                    deviceContext,
-                    notificationPublishService,
-                    convertorExecutor);
+                this,
+                deviceContext,
+                notificationPublishService,
+                convertorExecutor);
         }
 
         contextChainMastershipWatcher.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
