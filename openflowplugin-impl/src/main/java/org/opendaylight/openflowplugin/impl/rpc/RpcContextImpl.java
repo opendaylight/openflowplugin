@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
@@ -35,7 +36,9 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
@@ -51,6 +54,8 @@ class RpcContextImpl implements RpcContext {
     // TODO: add private Sal salBroker
     private final ConcurrentMap<Class<?>, ObjectRegistration<? extends RpcService>> rpcRegistrations =
             new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, Registration> rpcRegistrationsMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, Object> rpcInstancesMap = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
@@ -158,6 +163,32 @@ class RpcContextImpl implements RpcContext {
             LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(),
                     nodeInstanceIdentifier.getKey().getId().getValue());
         }
+    }
+
+    @Override
+    public void registerRpcServiceImplementations(final Object rpcsInstance,
+        final ClassToInstanceMap<Rpc<?, ?>> rpcMap) {
+        if (!rpcRegistrationsMap.containsKey(rpcsInstance.getClass())) {
+            final var routedRpcReg = rpcProviderRegistry.registerRpcImplementations(rpcMap,
+                ImmutableSet.of(nodeInstanceIdentifier));
+            rpcRegistrationsMap.put(rpcsInstance.getClass(), routedRpcReg);
+            rpcInstancesMap.put(rpcsInstance.getClass(), rpcsInstance);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Registration of service {} for device {}.",
+                    rpcsInstance.getClass().getName(),
+                    nodeInstanceIdentifier.getKey().getId().getValue());
+            }
+        }
+    }
+
+    @Override
+    public <S> S lookupRpcServices(Class<S> serviceClass) {
+        for (Class r: serviceClass.getClasses()) {
+            if (rpcInstancesMap.containsKey(r)) {
+                return serviceClass.cast(r);
+            }
+        }
+        return null;
     }
 
     @VisibleForTesting
