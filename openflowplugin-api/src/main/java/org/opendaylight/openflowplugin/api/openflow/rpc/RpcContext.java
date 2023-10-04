@@ -7,8 +7,10 @@
  */
 package org.opendaylight.openflowplugin.api.openflow.rpc;
 
+import com.google.common.collect.ClassToInstanceMap;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
@@ -24,4 +26,7 @@ public interface RpcContext extends RequestContextStack, OFPContext {
 
     <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
 
+    void registerRpcServiceImplementations(Object rpcsInstance, ClassToInstanceMap<Rpc<?, ?>> rpcsMap);
+
+    <S> S lookupRpcServices(Class<S> serviceClass);
 }
