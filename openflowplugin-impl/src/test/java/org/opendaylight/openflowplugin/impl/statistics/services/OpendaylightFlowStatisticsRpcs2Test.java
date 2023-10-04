@@ -43,9 +43,9 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only not delegated method.
+ * Test for {@link OpendaylightFlowStatisticsRpcs} - only not delegated method.
  */
-public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsServiceTest {
+public class OpendaylightFlowStatisticsRpcs2Test extends AbstractStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
@@ -54,13 +54,13 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
     private AbstractRequestContext<List<MultipartReply>> rqContextMp;
 
-    private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
+    private OpendaylightFlowStatisticsRpcs flowStatisticsRpcs;
 
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack,
+        flowStatisticsRpcs = OpendaylightFlowStatisticsRpcs.createWithOook(rqContextStack,
                                                                                      deviceContext,
                                                                                      convertorManager);
 
@@ -100,7 +100,7 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
                         .setTableId(Uint8.ONE);
 
         final Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput>> resultFuture
-                = flowStatisticsService.getAggregateFlowStatisticsFromFlowTableForGivenMatch(input.build());
+                = flowStatisticsRpcs.getAggregateFlowStatisticsFromFlowTableForGivenMatch(input.build());
 
         Assert.assertTrue(resultFuture.isDone());
         final RpcResult<GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput> rpcResult = resultFuture.get();
