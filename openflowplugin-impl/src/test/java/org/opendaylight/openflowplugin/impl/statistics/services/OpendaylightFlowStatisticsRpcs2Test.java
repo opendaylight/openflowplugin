@@ -43,9 +43,9 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceImpl} - only not delegated method.
+ * Test for {@link OpendaylightFlowStatisticsRpcs} - only not delegated method.
  */
-public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsServiceTest {
+public class OpendaylightFlowStatisticsRpcs2Test extends AbstractStatsServiceTest {
 
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
@@ -54,13 +54,13 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
     private AbstractRequestContext<List<MultipartReply>> rqContextMp;
 
-    private OpendaylightFlowStatisticsServiceImpl flowStatisticsService;
+    private OpendaylightFlowStatisticsRpcs flowStatisticsService;
 
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack,
+        flowStatisticsService = OpendaylightFlowStatisticsRpcs.createWithOook(rqContextStack,
                                                                                      deviceContext,
                                                                                      convertorManager);
 
