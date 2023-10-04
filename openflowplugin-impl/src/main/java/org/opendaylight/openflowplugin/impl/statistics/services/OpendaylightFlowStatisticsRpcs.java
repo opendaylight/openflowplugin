@@ -7,44 +7,52 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.TranslatorLibrary;
 import org.opendaylight.openflowplugin.api.openflow.statistics.compatibility.Delegator;
+import org.opendaylight.openflowplugin.impl.OpendaylightFlowStatistics;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerAggregateFlowMultipartService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerAggregateFlowMultipartService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTables;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowStatisticsService,
-                                                              Delegator<OpendaylightFlowStatisticsService> {
+public class OpendaylightFlowStatisticsRpcs implements OpendaylightFlowStatistics,
+        Delegator<OpendaylightFlowStatistics> {
 
     private final SingleLayerAggregateFlowMultipartService singleLayerService;
     private final MultiLayerAggregateFlowMultipartService multiLayerService;
-    private OpendaylightFlowStatisticsService delegate;
+    private OpendaylightFlowStatistics delegate;
 
-    public static OpendaylightFlowStatisticsServiceImpl createWithOook(final RequestContextStack requestContextStack,
+    public static OpendaylightFlowStatisticsRpcs createWithOook(final RequestContextStack requestContextStack,
                                                                        final DeviceContext deviceContext,
                                                                        final ConvertorExecutor convertorExecutor) {
-        return new OpendaylightFlowStatisticsServiceImpl(requestContextStack,
+        return new OpendaylightFlowStatisticsRpcs(requestContextStack,
                                                          deviceContext,
                                                          deviceContext.oook(),
                                                          convertorExecutor);
     }
 
-    public OpendaylightFlowStatisticsServiceImpl(final RequestContextStack requestContextStack,
+    public OpendaylightFlowStatisticsRpcs(final RequestContextStack requestContextStack,
                                                  final DeviceContext deviceContext,
                                                  final TranslatorLibrary translatorLibrary,
                                                  final ConvertorExecutor convertorExecutor) {
@@ -54,7 +62,7 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
     }
 
     @Override
-    public void setDelegate(OpendaylightFlowStatisticsService delegate) {
+    public void setDelegate(OpendaylightFlowStatistics delegate) {
         this.delegate = delegate;
     }
 
@@ -130,5 +138,17 @@ public class OpendaylightFlowStatisticsServiceImpl implements OpendaylightFlowSt
         } else {
             throw new IllegalAccessError("no delegate available - service is currently out of order");
         }
+    }
+
+    public ClassToInstanceMap<Rpc<?,?>> getRpcClassToInstanceMap() {
+        return ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(GetAggregateFlowStatisticsFromFlowTableForGivenMatch.class,
+                this::getAggregateFlowStatisticsFromFlowTableForGivenMatch)
+            .put(GetAggregateFlowStatisticsFromFlowTableForAllFlows.class,
+                this::getAggregateFlowStatisticsFromFlowTableForAllFlows)
+            .put(GetAllFlowStatisticsFromFlowTable.class, this::getAllFlowStatisticsFromFlowTable)
+            .put(GetAllFlowsStatisticsFromAllFlowTables.class, this::getAllFlowsStatisticsFromAllFlowTables)
+            .put(GetFlowStatisticsFromFlowTable.class, this::getFlowStatisticsFromFlowTable)
+            .build();
     }
 }
