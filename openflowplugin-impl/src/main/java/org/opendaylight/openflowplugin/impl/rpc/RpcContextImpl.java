@@ -14,8 +14,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
@@ -35,11 +34,9 @@ import org.opendaylight.openflowplugin.impl.util.MdSalRegistrationUtils;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.Rpc;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +49,8 @@ class RpcContextImpl implements RpcContext {
     private final boolean isStatisticsRpcEnabled;
 
     // TODO: add private Sal salBroker
-    private final ConcurrentMap<Class<?>, ObjectRegistration<? extends RpcService>> rpcRegistrations =
-        new ConcurrentHashMap<>();
-    private final ConcurrentMap<Class, Registration> rpcRegistrationsMap =
-        new ConcurrentHashMap<>();
-    private final ConcurrentMap<Class, Object> rpcInstancesMap =
-        new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, Registration> rpcRegistrationsMap = new ConcurrentHashMap<>();
+    private final ConcurrentMap<Class, Object> rpcInstancesMap = new ConcurrentHashMap<>();
     private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
@@ -86,41 +79,21 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <S extends RpcService> void registerRpcServiceImplementation(final Class<S> serviceClass,
-        final S serviceInstance) {
-        if (!rpcRegistrations.containsKey(serviceClass)) {
-            final ObjectRegistration<S> routedRpcReg = rpcProviderRegistry.registerRpcImplementation(serviceClass,
-                serviceInstance, ImmutableSet.of(nodeInstanceIdentifier));
-            rpcRegistrations.put(serviceClass, routedRpcReg);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Registration of service {} for device {}.",
-                    serviceClass.getSimpleName(),
-                    nodeInstanceIdentifier.getKey().getId().getValue());
-            }
-        }
-    }
-
-    @Override
-    public <S extends RpcService> S lookupRpcService(final Class<S> serviceClass) {
-        ObjectRegistration<? extends RpcService> registration = rpcRegistrations.get(serviceClass);
-        final RpcService rpcService = registration.getInstance();
-        return serviceClass.cast(rpcService);
-    }
-
-    @Override
     public void close() {
         unregisterRPCs();
     }
 
     private void unregisterRPCs() {
-        for (final Iterator<Entry<Class<?>, ObjectRegistration<? extends RpcService>>> iterator = Iterators
-            .consumingIterator(rpcRegistrations.entrySet().iterator()); iterator.hasNext(); ) {
-            final ObjectRegistration<? extends RpcService> rpcRegistration = iterator.next().getValue();
+        for (final var iterator =
+                Iterators.consumingIterator(rpcRegistrationsMap.entrySet().iterator()); iterator.hasNext(); ) {
+            final var nextIteration = iterator.next();
+            final var rpcRegistration = nextIteration.getValue();
             rpcRegistration.close();
+            rpcInstancesMap.remove(nextIteration.getKey());
 
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Closing RPC Registration of service {} for device {}.",
-                    rpcRegistration.getInstance().getClass().getSimpleName(),
+                    nextIteration.getKey().getSimpleName(),
                     nodeInstanceIdentifier.getKey().getId().getValue());
             }
         }
@@ -155,10 +128,11 @@ class RpcContextImpl implements RpcContext {
     }
 
     @Override
-    public <S extends RpcService> void unregisterRpcServiceImplementation(final Class<S> serviceClass) {
+    public void unregisterRpcServiceImplementations(final Class serviceClass) {
         LOG.trace("Try to unregister serviceClass {} for Node {}",
             serviceClass, nodeInstanceIdentifier.getKey().getId());
-        final ObjectRegistration<? extends RpcService> rpcRegistration = rpcRegistrations.remove(serviceClass);
+        final var rpcRegistration = rpcRegistrationsMap.remove(serviceClass);
+        rpcInstancesMap.remove(serviceClass);
         if (rpcRegistration != null) {
             rpcRegistration.close();
             LOG.debug("Un-registration serviceClass {} for Node {}", serviceClass.getSimpleName(),
@@ -184,9 +158,9 @@ class RpcContextImpl implements RpcContext {
 
     @Override
     public <S> S lookupRpcServices(Class<S> serviceClass) {
-        for (Class r: serviceClass.getClasses()) {
-            if (rpcInstancesMap.containsKey(r)) {
-                return serviceClass.cast(r);
+        for (Map.Entry<Class, ?> c: rpcInstancesMap.entrySet()) {
+            if (serviceClass.isAssignableFrom(c.getKey())) {
+                return (S) c.getValue();
             }
         }
         return null;
@@ -194,7 +168,7 @@ class RpcContextImpl implements RpcContext {
 
     @VisibleForTesting
     boolean isEmptyRpcRegistrations() {
-        return this.rpcRegistrations.isEmpty();
+        return this.rpcRegistrationsMap.isEmpty();
     }
 
     @Override
