@@ -12,12 +12,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,10 +39,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.RpcService;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -59,7 +60,7 @@ public class RpcContextImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private ObjectRegistration<TestRpcService> routedRpcReg;
+    private Registration routedRpcReg;
 
     @Mock
     private NotificationPublishService notificationPublishService;
@@ -71,7 +72,8 @@ public class RpcContextImplTest {
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private ConvertorExecutor convertorExecutor;
-
+    @Mock
+    private ClassToInstanceMap<Rpc<?, ?>> rpcMap;
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
 
     @Before
@@ -93,7 +95,7 @@ public class RpcContextImplTest {
                 convertorExecutor,
                 notificationPublishService, true);
 
-        when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
+        when(rpcProviderRegistry.registerRpcImplementations(any(), anySet()))
                 .thenReturn(routedRpcReg);
     }
 
@@ -142,23 +144,22 @@ public class RpcContextImplTest {
     }
 
     public void testRegisterRpcServiceImplementation() {
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        verify(rpcProviderRegistry, times(1)).registerRpcImplementation(TestRpcService.class, serviceInstance,
+        rpcContext.registerRpcServiceImplementations(serviceInstance, rpcMap);
+        verify(rpcProviderRegistry, times(1)).registerRpcImplementations(rpcMap,
             ImmutableSet.of(nodeInstanceIdentifier));
         assertFalse(rpcContext.isEmptyRpcRegistrations());
     }
 
     @Test
     public void testLookupRpcService() {
-        when(routedRpcReg.getInstance()).thenReturn(serviceInstance);
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        TestRpcService temp = rpcContext.lookupRpcService(TestRpcService.class);
+        rpcContext.registerRpcServiceImplementations(serviceInstance, rpcMap);
+        Object temp = rpcContext.lookupRpcServices(ServiceInterface.class);
         assertEquals(serviceInstance, temp);
     }
 
     @Test
     public void testClose() {
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
+        rpcContext.registerRpcServiceImplementations(serviceInstance, rpcMap);
         rpcContext.close();
         assertTrue(rpcContext.isEmptyRpcRegistrations());
     }
@@ -185,14 +186,17 @@ public class RpcContextImplTest {
 
     @Test
     public void testUnregisterRpcServiceImpl() {
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
+        rpcContext.registerRpcServiceImplementations(serviceInstance, rpcMap);
         assertFalse(rpcContext.isEmptyRpcRegistrations());
-        rpcContext.unregisterRpcServiceImplementation(TestRpcService.class);
+        rpcContext.unregisterRpcServiceImplementations(TestRpcService.class);
         assertTrue(rpcContext.isEmptyRpcRegistrations());
     }
 
     //Stub for RpcService class.
-    public class TestRpcService implements RpcService {
+    public class TestRpcService implements ServiceInterface {
+    }
+
+    public interface ServiceInterface{
 
     }
 }
