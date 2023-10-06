@@ -18,6 +18,24 @@
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5531e167_4a6ba092",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 9255
+      },
+      "writtenOn": "2023-10-06T07:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7ce1c5a8_ea67e592",
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "407048d4_f2956ff6",
@@ -31,6 +49,30 @@
       "writtenOn": "2023-09-25T10:10:02Z",
       "side": 1,
       "message": "this seems not required to be public",
+      "range": {
+        "startLine": 210,
+        "startChar": 4,
+        "endLine": 210,
+        "endChar": 10
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe426c12_80b564a7",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 9255
+      },
+      "writtenOn": "2023-10-06T07:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "407048d4_f2956ff6",
       "range": {
         "startLine": 210,
         "startChar": 4,
@@ -64,6 +106,30 @@
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d17d832b_8f2d4e61",
+        "filename": "applications/arbitratorreconciliation/impl/src/main/java/org/opendaylight/openflowplugin/applications/arbitratorreconciliation/impl/ArbitratorReconciliationManagerImpl.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 9255
+      },
+      "writtenOn": "2023-10-06T07:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f2a6c22e_23774fc9",
+      "range": {
+        "startLine": 390,
+        "startChar": 0,
+        "endLine": 394,
+        "endChar": 9
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "00846c27_b39e4eb2",
@@ -87,6 +153,30 @@
       "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee76329d_08bcae6d",
+        "filename": "applications/forwardingrules-manager/src/main/java/org/opendaylight/openflowplugin/applications/frm/ForwardingRulesManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 9255
+      },
+      "writtenOn": "2023-10-06T07:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00846c27_b39e4eb2",
+      "range": {
+        "startLine": 71,
+        "startChar": 0,
+        "endLine": 74,
+        "endChar": 41
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ba068ed1_ff86a123",
@@ -100,6 +190,30 @@
       "writtenOn": "2023-09-25T10:10:02Z",
       "side": 1,
       "message": "its not how mocks are working\nyou can stab a method of a mock, not of a mock return result\nif return result is also a mock, it should be stabbed separately:\n```\n@Mock\nAddFlow addFlowRpc; // define rpc implementation as a mock\n\n// in method\nwhen(salFlowRpcs.getRpcClassToInstanceMap())\n    .doReturn(ImmutableClassToInstanceMap.of(AddFlow.class, addFlow));\nwhen(addFlowRpc.invoke(any())).thenReturn(...)\n// do capture on verify\nverify(addFlowRpc, times(1)).invoke(addFlowInputCpt.capture());\n```\nsimilar below",
+      "range": {
+        "startLine": 107,
+        "startChar": 0,
+        "endLine": 117,
+        "endChar": 44
+      },
+      "revId": "2e77177f9132c85a48f5ebb516782276d6110d44",
+      "serverId": "7fc14799-209e-464c-9743-7a06c2c21a81"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "501b6a2c_bec050c3",
+        "filename": "applications/forwardingrules-sync/src/test/java/org/opendaylight/openflowplugin/applications/frsync/impl/strategy/FlowForwarderTest.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 9255
+      },
+      "writtenOn": "2023-10-06T07:42:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ba068ed1_ff86a123",
       "range": {
         "startLine": 107,
         "startChar": 0,
