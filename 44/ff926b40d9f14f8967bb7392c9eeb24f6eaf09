@@ -1,0 +1,8 @@
+Verified+1: Robert Varga <nite@hq.sk>
+Code-Review+2: Robert Varga <nite@hq.sk>
+Verified+1: ODL Required.GHA <releng+odl.required.gha@linuxfoundation.org>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Wed, 15 Nov 2023 13:32:29 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/108962
+Project: openflowplugin
+Branch: refs/heads/stable/potassium
