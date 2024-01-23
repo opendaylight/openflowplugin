@@ -15,6 +15,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetAddress;
 import java.util.concurrent.Callable;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -24,8 +25,7 @@ import org.slf4j.LoggerFactory;
  * @author Jozef Bacigal
  */
 public class CallableClient implements Callable<Boolean>, OFClient {
-
-    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(CallableClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CallableClient.class);
 
     private int port = 6653;
     private boolean securedClient = false;
@@ -33,8 +33,8 @@ public class CallableClient implements Callable<Boolean>, OFClient {
     private String name = "Empty name";
 
     private final EventLoopGroup workerGroup;
-    private SettableFuture<Boolean> isOnlineFuture;
-    private SettableFuture<Boolean> scenarioDone;
+    private final SettableFuture<Boolean> isOnlineFuture = null;
+    private final SettableFuture<Boolean> scenarioDone = null;
     private ScenarioHandler scenarioHandler = null;
     private Bootstrap bootstrap = null;
 
@@ -49,7 +49,7 @@ public class CallableClient implements Callable<Boolean>, OFClient {
         this.port = port;
         this.securedClient = securedClient;
         this.ipAddress = requireNonNull(ipAddress, "IP address cannot be null");
-        this.workerGroup = eventExecutors;
+        workerGroup = eventExecutors;
         this.bootstrap = bootstrap;
         this.name = name;
         this.scenarioHandler = requireNonNull(scenarioHandler, "Scenario handler cannot be null");
@@ -67,7 +67,7 @@ public class CallableClient implements Callable<Boolean>, OFClient {
 
     @Override
     public void setScenarioHandler(final ScenarioHandler scenario) {
-        this.scenarioHandler = scenario;
+        scenarioHandler = scenario;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class CallableClient implements Callable<Boolean>, OFClient {
     public Boolean call() throws Exception {
         requireNonNull(bootstrap);
         requireNonNull(workerGroup);
-        LOG.info("Switch {} trying connect to controller", this.name);
+        LOG.info("Switch {} trying connect to controller", name);
         SimpleClientInitializer clientInitializer = new SimpleClientInitializer(isOnlineFuture, securedClient);
         clientInitializer.setScenario(scenarioHandler);
         try {
@@ -101,9 +101,9 @@ public class CallableClient implements Callable<Boolean>, OFClient {
             return false;
         }
         if (scenarioHandler.isFinishedOK()) {
-            LOG.info("Device {} finished scenario OK", this.name);
+            LOG.info("Device {} finished scenario OK", name);
         } else {
-            LOG.error("Device {} finished scenario with error", this.name);
+            LOG.error("Device {} finished scenario with error", name);
         }
         return scenarioHandler.isFinishedOK();
 

@@ -59,16 +59,13 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
  */
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
-
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
-    private ListenerRegistration<GroupForwarder> listenerRegistration;
 
-    private final BundleGroupForwarder bundleGroupForwarder;
+    private ListenerRegistration<GroupForwarder> listenerRegistration;
 
     public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db,
                           final ListenerRegistrationHelper registrationHelper) {
         super(manager, db, registrationHelper);
-        this.bundleGroupForwarder = new BundleGroupForwarder(manager);
     }
 
     @Override
