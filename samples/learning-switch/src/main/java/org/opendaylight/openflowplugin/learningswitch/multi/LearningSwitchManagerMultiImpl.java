@@ -39,13 +39,13 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerRegistrationHolder, LearningSwitchManager {
-    private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerMultiImpl.class);
 
-    private NotificationService notificationService = null;
+    private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerMultiImpl.class);
+    private NotificationService notificationService;
     private PacketProcessingService packetProcessingService;
-    private DataBroker data = null;
-    private Registration packetInRegistration = null;
-    private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration = null;
+    private DataBroker data;
+    private Registration packetInRegistration;
+    private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
 
     /**
      * Sets the NotificationService.
@@ -53,7 +53,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      * @param notificationService the notificationService to set
      */
     @Override
-    public void setNotificationService(final NotificationService notificationService) {
+    public void setNotificationService(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
@@ -64,7 +64,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      */
     @Override
     public void setPacketProcessingService(
-            final PacketProcessingService packetProcessingService) {
+            PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
     }
 
@@ -74,7 +74,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      * @param broker the data to set
      */
     @Override
-    public void setDataBroker(final DataBroker broker) {
+    public void setDataBroker(DataBroker broker) {
         data = broker;
     }
 

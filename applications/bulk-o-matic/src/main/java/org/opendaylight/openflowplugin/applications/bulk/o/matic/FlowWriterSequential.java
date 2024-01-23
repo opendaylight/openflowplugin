@@ -23,23 +23,24 @@ import org.slf4j.LoggerFactory;
 
 public class FlowWriterSequential implements FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowWriterSequential.class);
-
     private final DataBroker dataBroker;
     private final ExecutorService flowPusher;
+    protected int dpnCount;
     private long startTime;
     private final AtomicInteger writeOpStatus = new AtomicInteger(FlowCounter.OperationStatus.INIT.status());
     private final AtomicInteger countDpnWriteCompletion = new AtomicInteger();
     private final AtomicLong taskCompletionTime = new AtomicLong();
 
-    public FlowWriterSequential(final DataBroker dataBroker, final ExecutorService flowPusher) {
+    public FlowWriterSequential(final DataBroker dataBroker, ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
         this.flowPusher = flowPusher;
         LOG.info("Using Sequential implementation of Flow Writer.");
     }
 
-    public void addFlows(final Integer count, final Integer flowsPerDPN, final int batchSize, final int sleepMillis,
-            final short startTableId, final short endTableId, final boolean isCreateParents) {
+    public void addFlows(Integer count, Integer flowsPerDPN, int batchSize, int sleepMillis, short startTableId,
+            short endTableId, boolean isCreateParents) {
         LOG.info("Using Sequential implementation of Flow Writer.");
+        this.dpnCount = count;
         countDpnWriteCompletion.set(count);
         startTime = System.nanoTime();
         for (int i = 1; i <= count; i++) {
@@ -49,8 +50,8 @@ public class FlowWriterSequential implements FlowCounterMBean {
         }
     }
 
-    public void deleteFlows(final Integer count, final Integer flowsPerDPN, final int batchSize,
-            final short startTableId, final short endTableId) {
+    public void deleteFlows(Integer count, Integer flowsPerDPN, int batchSize, short startTableId,
+            short endTableId) {
         LOG.info("Using Sequential implementation of Flow Writer.");
         countDpnWriteCompletion.set(count);
         for (int i = 1; i <= count; i++) {
@@ -70,7 +71,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
         return taskCompletionTime.get();
     }
 
-    private final class FlowHandlerTask implements Runnable {
+    private class FlowHandlerTask implements Runnable {
         private final String dpId;
         private final int flowsPerDpn;
         private final boolean add;
@@ -84,7 +85,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
                         final int flowsPerDpn,
                         final boolean add,
                         final int batchSize,
-                        final int sleepMillis,
+                        int sleepMillis,
                         final short startTableId,
                         final short endTableId,
                         final boolean isCreateParents) {
@@ -135,8 +136,8 @@ public class FlowWriterSequential implements FlowCounterMBean {
                     MoreExecutors.directExecutor());
         }
 
-        private void addFlowToTx(final WriteTransaction writeTransaction, final String flowId,
-                final InstanceIdentifier<Flow> flowIid, final Flow flow) {
+        private void addFlowToTx(WriteTransaction writeTransaction, String flowId, InstanceIdentifier<Flow> flowIid,
+                Flow flow) {
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 if (isCreateParents) {
@@ -156,7 +157,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
 
             private int sourceIp;
 
-            DsCallBack(final String dpId, final int sourceIp, final short tableId) {
+            DsCallBack(String dpId, int sourceIp, short tableId) {
                 this.dpId = dpId;
                 this.sourceIp = sourceIp;
                 short numberA = 1;
@@ -165,7 +166,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             }
 
             @Override
-            public void onSuccess(final Object notUsed) {
+            public void onSuccess(Object notUsed) {
                 if (sourceIp > flowsPerDpn) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {}, tableId: {}, sourceIp: {} in {}ns", dpId,
@@ -213,7 +214,7 @@ public class FlowWriterSequential implements FlowCounterMBean {
             }
 
             @Override
-            public void onFailure(final Throwable error) {
+            public void onFailure(Throwable error) {
                 LOG.error("Error: {} in Datastore write operation: dpid: {}, tableId: {}, sourceIp: {}", error, dpId,
                         tableId, sourceIp);
                 writeOpStatus.set(FlowCounter.OperationStatus.FAILURE.status());

@@ -70,9 +70,10 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
     private final FrmReconciliationService frmReconciliationService;
     private final AlarmAgent alarmAgent;
     private final NodeListener nodeListener;
+    private final int threadPoolSize = 10;
     private final Map<String, ReconciliationState> reconciliationStates;
 
-    private ExecutorService executor = Executors.newWorkStealingPool(10);
+    private ExecutorService executor = Executors.newWorkStealingPool(threadPoolSize);
 
     public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
                                      final AlarmAgent alarmAgent, final NodeListener nodeListener,

@@ -57,8 +57,7 @@ class RpcContextImpl implements RpcContext {
     private final ExtensionConverterProvider extensionConverterProvider;
     private final ConvertorExecutor convertorExecutor;
     private final NotificationPublishService notificationPublishService;
-
-    private ContextChainMastershipWatcher contextChainMastershipWatcher = null;
+    private ContextChainMastershipWatcher contextChainMastershipWatcher;
 
     RpcContextImpl(@NonNull final RpcProviderService rpcProviderRegistry,
                    final int maxRequests,
@@ -68,15 +67,15 @@ class RpcContextImpl implements RpcContext {
                    @NonNull final NotificationPublishService notificationPublishService,
                    final boolean statisticsRpcEnabled) {
         this.deviceContext = deviceContext;
-        deviceInfo = deviceContext.getDeviceInfo();
-        nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
-        messageSpy = deviceContext.getMessageSpy();
+        this.deviceInfo = deviceContext.getDeviceInfo();
+        this.nodeInstanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
+        this.messageSpy = deviceContext.getMessageSpy();
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.extensionConverterProvider = extensionConverterProvider;
         this.notificationPublishService = notificationPublishService;
         this.convertorExecutor = convertorExecutor;
-        isStatisticsRpcEnabled = statisticsRpcEnabled;
-        tracker = new Semaphore(maxRequests, true);
+        this.isStatisticsRpcEnabled = statisticsRpcEnabled;
+        this.tracker = new Semaphore(maxRequests, true);
     }
 
     @Override
@@ -162,17 +161,17 @@ class RpcContextImpl implements RpcContext {
 
     @VisibleForTesting
     boolean isEmptyRpcRegistrations() {
-        return rpcRegistrations.isEmpty();
+        return this.rpcRegistrations.isEmpty();
     }
 
     @Override
     public DeviceInfo getDeviceInfo() {
-        return deviceInfo;
+        return this.deviceInfo;
     }
 
     @Override
     public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
-        contextChainMastershipWatcher = newWatcher;
+        this.contextChainMastershipWatcher = newWatcher;
     }
 
     @Override

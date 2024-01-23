@@ -34,8 +34,7 @@ public class OF13MatchSerializer implements OFSerializer<Match>, SerializerRegis
     private static final Logger LOG = LoggerFactory.getLogger(OF13MatchSerializer.class);
     private static final byte STANDARD_MATCH_TYPE_CODE = 0;
     private static final byte OXM_MATCH_TYPE_CODE = 1;
-
-    private SerializerRegistry registry = null;
+    private SerializerRegistry registry;
 
     @Override
     public void serialize(final Match match, final ByteBuf outBuffer) {

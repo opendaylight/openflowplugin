@@ -29,11 +29,13 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, SalGroupService {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginGroupTestServiceProvider.class);
+public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable,
+        SalGroupService {
 
-    private ObjectRegistration<SalGroupService> groupRegistration = null;
-    private NotificationPublishService notificationService = null;
+    private static final Logger LOG = LoggerFactory
+            .getLogger(OpenflowpluginGroupTestServiceProvider.class);
+    private ObjectRegistration<SalGroupService> groupRegistration;
+    private NotificationPublishService notificationService;
 
     /**
      * Get group registration.
@@ -68,7 +70,8 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
     }
 
     public void start() {
-        LOG.info("SalGroupServiceProvider Started.");
+        OpenflowpluginGroupTestServiceProvider.LOG
+                .info("SalGroupServiceProvider Started.");
     }
 
     /*
@@ -78,7 +81,8 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
      */
     @Override
     public void close() {
-        LOG.info("SalGroupServiceProvide stopped.");
+        OpenflowpluginGroupTestServiceProvider.LOG
+                .info("SalGroupServiceProvide stopped.");
         groupRegistration.close();
     }
 
@@ -93,7 +97,7 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
      */
     @Override
     public ListenableFuture<RpcResult<AddGroupOutput>> addGroup(final AddGroupInput input) {
-        LOG.info("addGroup - {}", input);
+        OpenflowpluginGroupTestServiceProvider.LOG.info("addGroup - {}", input);
         return null;
     }
 
@@ -107,8 +111,9 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
      * .group.service.rev130918.RemoveGroupInput)
      */
     @Override
-    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(final RemoveGroupInput input) {
-        LOG.info("removeGroup - {}", input);
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeGroup(
+            final RemoveGroupInput input) {
+        OpenflowpluginGroupTestServiceProvider.LOG.info("removeGroup - {}", input);
         return null;
     }
 
@@ -122,8 +127,9 @@ public class OpenflowpluginGroupTestServiceProvider implements AutoCloseable, Sa
      * .group.service.rev130918.UpdateGroupInput)
      */
     @Override
-    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(final UpdateGroupInput input) {
-        LOG.info("updateGroup - {}", input);
+    public ListenableFuture<RpcResult<UpdateGroupOutput>> updateGroup(
+            final UpdateGroupInput input) {
+        OpenflowpluginGroupTestServiceProvider.LOG.info("updateGroup - {}", input);
         return null;
     }
 

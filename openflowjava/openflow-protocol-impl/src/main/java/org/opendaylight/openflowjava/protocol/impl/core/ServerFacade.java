@@ -5,6 +5,8 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
+
+
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
@@ -15,11 +17,11 @@ import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration
  * @author mirehak
  */
 public interface ServerFacade extends ShutdownProvider, OnlineProvider, Runnable {
+
     /**
      * Sets thread configuration.
      *
      * @param threadConfig desired thread configuration
      */
-    @Deprecated(since = "0.17.2", forRemoval = true)
     void setThreadConfig(ThreadConfiguration threadConfig);
 }

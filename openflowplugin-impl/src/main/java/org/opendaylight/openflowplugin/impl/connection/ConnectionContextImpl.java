@@ -40,17 +40,17 @@ import org.slf4j.LoggerFactory;
 public class ConnectionContextImpl implements ConnectionContext {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionContextImpl.class);
 
-    private final List<PortStatusMessage> portStatusMessages = new ArrayList<>();
     private final ConnectionAdapter connectionAdapter;
-
     private volatile CONNECTION_STATE connectionState;
-    private FeaturesReply featuresReply = null;
+    private FeaturesReply featuresReply;
     private NodeId nodeId;
     private DeviceDisconnectedHandler deviceDisconnectedHandler;
     private OutboundQueueProvider outboundQueueProvider;
     private OutboundQueueHandlerRegistration<OutboundQueueProvider> outboundQueueHandlerRegistration;
-    private HandshakeContext handshakeContext = null;
-    private DeviceInfo deviceInfo = null;
+    private HandshakeContext handshakeContext;
+    private DeviceInfo deviceInfo;
+    private final List<PortStatusMessage> portStatusMessages = new ArrayList<>();
+    private final DeviceConnectionStatusProvider deviceConnectionStatusProvider;
 
     /**
      * Constructor.
@@ -60,6 +60,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     public ConnectionContextImpl(final ConnectionAdapter connectionAdapter,
                                  final DeviceConnectionStatusProvider deviceConnectionStatusProvider) {
         this.connectionAdapter = connectionAdapter;
+        this.deviceConnectionStatusProvider = deviceConnectionStatusProvider;
     }
 
     @Override

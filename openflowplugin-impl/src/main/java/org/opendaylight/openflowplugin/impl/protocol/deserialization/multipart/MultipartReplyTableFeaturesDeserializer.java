@@ -78,7 +78,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     private static final TableFeaturesMatchFieldDeserializer MATCH_FIELD_DESERIALIZER =
             new TableFeaturesMatchFieldDeserializer();
 
-    private DeserializerRegistry registry = null;
+    private DeserializerRegistry registry;
 
     @Override
     public MultipartReplyBody deserialize(final ByteBuf message) {

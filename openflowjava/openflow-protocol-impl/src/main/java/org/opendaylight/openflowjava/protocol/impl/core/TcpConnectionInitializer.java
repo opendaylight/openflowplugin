@@ -40,7 +40,7 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
      *
      * @param workerGroup - shared worker group
      */
-    public TcpConnectionInitializer(final EventLoopGroup workerGroup, final boolean isEpollEnabled) {
+    public TcpConnectionInitializer(EventLoopGroup workerGroup, boolean isEpollEnabled) {
         this.workerGroup = requireNonNull(workerGroup, "WorkerGroup can't be null");
         this.isEpollEnabled = isEpollEnabled;
     }
@@ -69,13 +69,12 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
     }
 
     @Override
-    @Deprecated(since = "0.17.2", forRemoval = true)
-    public void setThreadConfig(final ThreadConfiguration threadConfig) {
+    public void setThreadConfig(ThreadConfiguration threadConfig) {
         // IGNORE
     }
 
     @Override
-    public void initiateConnection(final String host, final int port) {
+    public void initiateConnection(String host, int port) {
         try {
             bootstrap.connect(host, port).sync();
         } catch (InterruptedException e) {
@@ -83,7 +82,7 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
         }
     }
 
-    public void setChannelInitializer(final TcpChannelInitializer channelInitializer) {
+    public void setChannelInitializer(TcpChannelInitializer channelInitializer) {
         this.channelInitializer = channelInitializer;
     }
 }

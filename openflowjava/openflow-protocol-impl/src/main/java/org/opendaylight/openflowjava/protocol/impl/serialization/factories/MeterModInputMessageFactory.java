@@ -38,15 +38,16 @@ import org.slf4j.LoggerFactory;
  * @author timotej.kubas
  * @author michal.polkorab
  */
-public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>, SerializerRegistryInjector {
-    private static final Logger LOG = LoggerFactory .getLogger(MeterModInputMessageFactory.class);
+public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
+        SerializerRegistryInjector {
 
+    private static final Logger LOG = LoggerFactory
+            .getLogger(MeterModInputMessageFactory.class);
     private static final byte MESSAGE_TYPE = 29;
     private static final short LENGTH_OF_METER_BANDS = 16;
     private static final short PADDING_IN_METER_BAND_DROP = 4;
     private static final short PADDING_IN_METER_BAND_DSCP_REMARK = 3;
-
-    private SerializerRegistry registry = null;
+    private SerializerRegistry registry;
 
     @Override
     public void serialize(final MeterModInput message, final ByteBuf outBuffer) {
@@ -70,16 +71,19 @@ public class MeterModInputMessageFactory implements OFSerializer<MeterModInput>,
         if (bands != null) {
             for (Bands currentBand : bands) {
                 MeterBand meterBand = currentBand.getMeterBand();
-                if (meterBand instanceof MeterBandDropCase dropBandCase) {
+                if (meterBand instanceof MeterBandDropCase) {
+                    MeterBandDropCase dropBandCase = (MeterBandDropCase) meterBand;
                     MeterBandDrop dropBand = dropBandCase.getMeterBandDrop();
                     writeBandCommonFields(dropBand, outBuffer);
                     outBuffer.writeZero(PADDING_IN_METER_BAND_DROP);
-                } else if (meterBand instanceof MeterBandDscpRemarkCase dscpRemarkBandCase) {
+                } else if (meterBand instanceof MeterBandDscpRemarkCase) {
+                    MeterBandDscpRemarkCase dscpRemarkBandCase = (MeterBandDscpRemarkCase) meterBand;
                     MeterBandDscpRemark dscpRemarkBand = dscpRemarkBandCase.getMeterBandDscpRemark();
                     writeBandCommonFields(dscpRemarkBand, outBuffer);
                     outBuffer.writeByte(dscpRemarkBand.getPrecLevel().toJava());
                     outBuffer.writeZero(PADDING_IN_METER_BAND_DSCP_REMARK);
-                } else if (meterBand instanceof MeterBandExperimenterCase experimenterBandCase) {
+                } else if (meterBand instanceof MeterBandExperimenterCase) {
+                    MeterBandExperimenterCase experimenterBandCase = (MeterBandExperimenterCase) meterBand;
                     MeterBandExperimenter experimenterBand = experimenterBandCase.getMeterBandExperimenter();
                     ExperimenterIdMeterBand expIdMeterBand =
                             experimenterBand.augmentation(ExperimenterIdMeterBand.class);

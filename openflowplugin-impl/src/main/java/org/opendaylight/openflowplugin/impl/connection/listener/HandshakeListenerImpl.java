@@ -29,13 +29,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HandshakeListenerImpl implements HandshakeListener {
+
     private static final Logger LOG = LoggerFactory.getLogger(HandshakeListenerImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
     private final ConnectionContext connectionContext;
     private final DeviceConnectedHandler deviceConnectedHandler;
-
-    private HandshakeContext handshakeContext = null;
+    private HandshakeContext handshakeContext;
 
     /**
      * Constructor.
@@ -55,7 +55,7 @@ public class HandshakeListenerImpl implements HandshakeListener {
             LOG.debug("handshake succeeded: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
         }
         OF_EVENT_LOG.debug("Connect, Node: {}", featureOutput.getDatapathId());
-        handshakeContext.close();
+        this.handshakeContext.close();
         connectionContext.changeStateToWorking();
         connectionContext.setFeatures(featureOutput);
         connectionContext.setNodeId(InventoryDataServiceUtil.nodeIdFromDatapathId(featureOutput.getDatapathId()));
@@ -104,16 +104,16 @@ public class HandshakeListenerImpl implements HandshakeListener {
                 .setXid(xid)
                 .setVersion(version)
                 .build();
-        return connectionContext.getConnectionAdapter().barrier(barrierInput);
+        return this.connectionContext.getConnectionAdapter().barrier(barrierInput);
     }
 
     @Override
     public void onHandshakeFailure() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("handshake failed: {}", connectionContext.getConnectionAdapter().getRemoteAddress());
+            LOG.debug("handshake failed: {}", this.connectionContext.getConnectionAdapter().getRemoteAddress());
         }
-        handshakeContext.close();
-        connectionContext.closeConnection(false);
+        this.handshakeContext.close();
+        this.connectionContext.closeConnection(false);
     }
 
     @Override

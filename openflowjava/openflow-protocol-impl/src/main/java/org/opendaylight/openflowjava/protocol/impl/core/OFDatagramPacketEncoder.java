@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public class OFDatagramPacketEncoder extends MessageToMessageEncoder<UdpMessageListenerWrapper> {
-    private static final Logger LOG = LoggerFactory.getLogger(OFDatagramPacketEncoder.class);
 
-    private SerializationFactory serializationFactory = null;
+    private static final Logger LOG = LoggerFactory.getLogger(OFDatagramPacketEncoder.class);
+    private SerializationFactory serializationFactory;
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")

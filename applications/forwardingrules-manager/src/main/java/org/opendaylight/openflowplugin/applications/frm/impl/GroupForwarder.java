@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -58,11 +59,29 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
  */
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
+
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
+    private ListenerRegistration<GroupForwarder> listenerRegistration;
+
+    private final BundleGroupForwarder bundleGroupForwarder;
 
     public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db,
                           final ListenerRegistrationHelper registrationHelper) {
         super(manager, db, registrationHelper);
+        this.bundleGroupForwarder = new BundleGroupForwarder(manager);
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
+    }
+
+    @Override
+    public void close() {
+        if (listenerRegistration != null) {
+            listenerRegistration.close();
+            listenerRegistration = null;
+        }
     }
 
     @Override
@@ -90,7 +109,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                         .build();
 
                 final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
-                    provider.getSalGroupService()
+                    this.provider.getSalGroupService()
                             .removeGroup(removeGroup);
                 Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
@@ -112,7 +131,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setGroupRef(new GroupRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return provider.getSalGroupService().removeGroup(builder.build());
+        return this.provider.getSalGroupService().removeGroup(builder.build());
     }
 
     @Override
@@ -133,7 +152,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
                 builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
                 UpdateGroupInput updateGroupInput = builder.build();
-                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = provider.getSalGroupService()
+                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = this.provider.getSalGroupService()
                         .updateGroup(updateGroupInput);
                 LoggingFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
                 Futures.addCallback(resultFuture,
@@ -161,7 +180,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
                         AddGroupInput addGroupInput = builder.build();
                         final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture;
-                        resultFuture = provider.getSalGroupService().addGroup(addGroupInput);
+                        resultFuture = this.provider.getSalGroupService().addGroup(addGroupInput);
                         Futures.addCallback(resultFuture,
                                 new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
                                 MoreExecutors.directExecutor());
@@ -171,21 +190,21 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    public void createStaleMarkEntity(final InstanceIdentifier<Group> identifier, final Group del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(InstanceIdentifier<Group> identifier, Group del,
+            InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent, del);
         StaleGroup staleGroup = makeStaleGroup(identifier, del, nodeIdent);
         persistStaleGroup(staleGroup, nodeIdent);
 
     }
 
-    private static StaleGroup makeStaleGroup(final InstanceIdentifier<Group> identifier, final Group del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private static StaleGroup makeStaleGroup(InstanceIdentifier<Group> identifier, Group del,
+            InstanceIdentifier<FlowCapableNode> nodeIdent) {
         StaleGroupBuilder staleGroupBuilder = new StaleGroupBuilder(del);
         return staleGroupBuilder.setGroupId(del.getGroupId()).build();
     }
 
-    private void persistStaleGroup(final StaleGroup staleGroup, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private void persistStaleGroup(StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleGroupInstanceIdentifier(staleGroup, nodeIdent),
                 staleGroup);
@@ -194,15 +213,15 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         handleStaleGroupResultFuture(submitFuture);
     }
 
-    private static void handleStaleGroupResultFuture(final FluentFuture<?> submitFuture) {
+    private static void handleStaleGroupResultFuture(FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(final Object result) {
+            public void onSuccess(Object result) {
                 LOG.debug("Stale Group creation success");
             }
 
             @Override
-            public void onFailure(final Throwable throwable) {
+            public void onFailure(Throwable throwable) {
                 LOG.error("Stale Group creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -210,7 +229,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
         .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
-            final StaleGroup staleGroup, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            StaleGroup staleGroup, InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
@@ -224,7 +243,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         }
 
         @Override
-        public void onSuccess(final RpcResult<AddGroupOutput> result) {
+        public void onSuccess(RpcResult<AddGroupOutput> result) {
             if (result.isSuccessful()) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 LOG.debug("Group add with id {} finished without error for node {}", groupId, nodeId);
@@ -235,7 +254,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         }
 
         @Override
-        public void onFailure(final Throwable throwable) {
+        public void onFailure(Throwable throwable) {
             LOG.error("Service call for adding group {} failed for node with error {}", groupId, nodeId, throwable);
         }
     }
@@ -250,7 +269,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         }
 
         @Override
-        public void onSuccess(final RpcResult<UpdateGroupOutput> result) {
+        public void onSuccess(RpcResult<UpdateGroupOutput> result) {
             if (result.isSuccessful()) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
                 LOG.debug("Group update with id {} finished without error for node {}", groupId, nodeId);
@@ -261,7 +280,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         }
 
         @Override
-        public void onFailure(final Throwable throwable) {
+        public void onFailure(Throwable throwable) {
             LOG.error("Service call for updating group {} failed for node {} with", groupId, nodeId,
                     throwable);
         }
@@ -277,7 +296,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         }
 
         @Override
-        public void onSuccess(final RpcResult<RemoveGroupOutput> result) {
+        public void onSuccess(RpcResult<RemoveGroupOutput> result) {
             if (result.isSuccessful()) {
                 LOG.debug("Group remove with id {} finished without error for node {}", groupId, nodeId);
                 provider.getDevicesGroupRegistry().removeGroup(nodeId, groupId);
@@ -288,7 +307,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         }
 
         @Override
-        public void onFailure(final Throwable throwable) {
+        public void onFailure(Throwable throwable) {
             LOG.error("Service call for removing group {} failed for node with error {}", groupId, nodeId, throwable);
         }
     }

@@ -37,12 +37,13 @@ import org.slf4j.LoggerFactory;
 
 public class MatchSerializer implements OFSerializer<Match>, HeaderSerializer<Match>,
         MatchEntrySerializerRegistry, SerializerRegistryInjector {
+
     private static final Logger LOG = LoggerFactory.getLogger(MatchSerializer.class);
     private static final byte OXM_MATCH_TYPE_CODE = 1;
 
     private final Map<org.opendaylight.openflowplugin.api.openflow.protocol.serialization.MatchEntrySerializerKey,
             MatchEntrySerializer> entryRegistry = new LinkedHashMap<>();
-    private SerializerRegistry registry = null;
+    private SerializerRegistry registry;
 
     @Override
     public void serialize(final Match match, final ByteBuf outBuffer) {

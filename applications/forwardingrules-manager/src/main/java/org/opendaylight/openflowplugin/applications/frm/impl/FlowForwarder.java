@@ -60,6 +60,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -76,12 +77,32 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
  */
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
+
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
+
     private static final String GROUP_EXISTS_IN_DEVICE_ERROR = "GROUPEXISTS";
+
+    private ListenerRegistration<FlowForwarder> listenerRegistration;
+
+    private final BundleFlowForwarder bundleFlowForwarder;
 
     public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db,
                          final ListenerRegistrationHelper registrationHelper) {
         super(manager, db, registrationHelper);
+        bundleFlowForwarder = new BundleFlowForwarder(manager);
+    }
+
+    @Override
+    public  void deregisterListener() {
+        close();
+    }
+
+    @Override
+    public void close() {
+        if (listenerRegistration != null) {
+            listenerRegistration.close();
+            listenerRegistration = null;
+        }
     }
 
     @Override

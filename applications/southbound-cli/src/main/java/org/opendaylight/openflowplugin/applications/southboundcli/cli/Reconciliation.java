@@ -28,9 +28,9 @@ import org.slf4j.LoggerFactory;
 
 @Command(scope = "openflow", name = "reconcile", description = "Launch reconciliation for openflow nodes")
 public class Reconciliation extends OsgiCommandSupport {
-    private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
 
-    private ReconciliationService reconciliationService = null;
+    private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
+    private ReconciliationService reconciliationService;
 
     public void setReconciliationService(final ReconciliationService reconciliationService) {
         this.reconciliationService = reconciliationService;

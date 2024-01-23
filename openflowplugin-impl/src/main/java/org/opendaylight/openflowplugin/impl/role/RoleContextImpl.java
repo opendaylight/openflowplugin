@@ -47,15 +47,15 @@ public class RoleContextImpl implements RoleContext {
     // Timeout  after what we will give up on propagating role
     private static final long SET_ROLE_TIMEOUT = 10000;
 
-    private final AtomicReference<ListenableFuture<RpcResult<SetRoleOutput>>> lastRoleFuture = new AtomicReference<>();
-    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final DeviceInfo deviceInfo;
     private final HashedWheelTimer timer;
+    private final AtomicReference<ListenableFuture<RpcResult<SetRoleOutput>>> lastRoleFuture = new AtomicReference<>();
+    private final Collection<RequestContext<?>> requestContexts = new HashSet<>();
     private final Timeout slaveTask;
     private final OpenflowProviderConfig config;
     private final ExecutorService executorService;
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
-    private SalRoleService roleService = null;
+    private SalRoleService roleService;
 
     RoleContextImpl(@NonNull final DeviceInfo deviceInfo,
                     @NonNull final HashedWheelTimer timer,
@@ -68,7 +68,8 @@ public class RoleContextImpl implements RoleContext {
         this.executorService = executorService;
         slaveTask = timer.newTimeout(timerTask -> makeDeviceSlave(), checkRoleMasterTimeout, TimeUnit.MILLISECONDS);
 
-        LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.", deviceInfo,
+        LOG.info("Started timer for setting SLAVE role on device {} if no role will be set in {}s.",
+                deviceInfo,
                 checkRoleMasterTimeout / 1000L);
     }
 
@@ -84,7 +85,7 @@ public class RoleContextImpl implements RoleContext {
 
     @Override
     public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
-        contextChainMastershipWatcher = newWatcher;
+        this.contextChainMastershipWatcher = newWatcher;
     }
 
     @Override

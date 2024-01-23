@@ -98,12 +98,11 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkGroupTransactionProvider.class);
-    private static final String ORIGINAL_FLOW_NAME = "Foo";
-    private static final String ORIGINAL_GROUP_NAME = "Foo";
-
     private final DataBroker dataBroker;
     private final BundleContext ctx;
+    private final String originalFlowName = "Foo";
     private Node testNode12;
+    private final String originalGroupName = "Foo";
 
     public OpenflowPluginBulkGroupTransactionProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
@@ -307,8 +306,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
                 .build()));
     }
 
-    private static FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg,
-            final String tableId) {
+    private FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg, final String tableId) {
 
         FlowBuilder flow = new FlowBuilder();
         long id = 123;
@@ -411,7 +409,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         flow.withKey(key);
         flow.setPriority(Uint16.TWO);
-        flow.setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
+        flow.setFlowName(originalFlowName + "X" + flowType);
         return flow;
     }
 
@@ -631,7 +629,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
         }, MoreExecutors.directExecutor());
     }
 
-    private static GroupBuilder createTestGroup(String actionType, String groupType, final String groupmod,
+    private GroupBuilder createTestGroup(String actionType, String groupType, final String groupmod,
             final String strId) {
         // Sample data , committing to DataStore
 
@@ -714,7 +712,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
 
         return group.withKey(new GroupKey(new GroupId(Uint32.valueOf(strId))))
             // .group.setInstall(false)
-            .setGroupName(ORIGINAL_GROUP_NAME)
+            .setGroupName(originalGroupName)
             .setBarrier(false)
             .setBuckets(new BucketsBuilder().setBucket(BindingMap.of(bucket.build())).build());
     }

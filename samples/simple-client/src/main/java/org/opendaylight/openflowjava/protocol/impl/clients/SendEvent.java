@@ -20,17 +20,17 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public class SendEvent implements ClientEvent {
-    private static final Logger LOG = LoggerFactory.getLogger(SendEvent.class);
 
+    private static final Logger LOG = LoggerFactory.getLogger(SendEvent.class);
     protected byte[] msgToSend;
-    protected ChannelHandlerContext ctx = null;
+    protected ChannelHandlerContext ctx;
 
     /**
      * Constructor.
      *
      * @param msgToSend message to be sent
      */
-    public SendEvent(final byte[] msgToSend) {
+    public SendEvent(byte[] msgToSend) {
         this.msgToSend = new byte[msgToSend.length];
         System.arraycopy(msgToSend, 0, this.msgToSend, 0, msgToSend.length);
     }
@@ -55,7 +55,8 @@ public class SendEvent implements ClientEvent {
      *
      * @param ctx context which will be used for sending messages (SendEvents)
      */
-    public void setCtx(final ChannelHandlerContext ctx) {
+    public void setCtx(ChannelHandlerContext ctx) {
         this.ctx = ctx;
     }
+
 }

@@ -55,6 +55,7 @@ public class TcpHandler implements ServerFacade {
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
     private final SettableFuture<Boolean> isOnlineFuture = SettableFuture.create();
+    private ThreadConfiguration threadConfig;
 
     private TcpChannelInitializer channelInitializer;
 
@@ -65,7 +66,7 @@ public class TcpHandler implements ServerFacade {
      *
      * @param port listening port of TCPHandler server
      */
-    public TcpHandler(final int port, final Runnable readyRunnable) {
+    public TcpHandler(final int port, Runnable readyRunnable) {
         this(null, port, readyRunnable);
     }
 
@@ -74,9 +75,9 @@ public class TcpHandler implements ServerFacade {
      * @param address listening address of TCPHandler server
      * @param port listening port of TCPHandler server
      */
-    public TcpHandler(final InetAddress address, final int port, final Runnable readyRunnable) {
+    public TcpHandler(final InetAddress address, final int port, Runnable readyRunnable) {
         this.port = port;
-        startupAddress = address;
+        this.startupAddress = address;
         this.readyRunnable = readyRunnable;
     }
 
@@ -131,7 +132,7 @@ public class TcpHandler implements ServerFacade {
             address = isa.getHostString();
 
             // Update port, as it may have been specified as 0
-            port = isa.getPort();
+            this.port = isa.getPort();
 
             LOG.debug("address from tcphandler: {}", address);
             LOG.info("Switch listener started and ready to accept incoming tcp/tls connections on port: {}", port);
@@ -186,14 +187,13 @@ public class TcpHandler implements ServerFacade {
         return address;
     }
 
-    public void setChannelInitializer(final TcpChannelInitializer channelInitializer) {
+    public void setChannelInitializer(TcpChannelInitializer channelInitializer) {
         this.channelInitializer = channelInitializer;
     }
 
     @Override
-    @Deprecated(since = "0.17.2", forRemoval = true)
-    public void setThreadConfig(final ThreadConfiguration threadConfig) {
-        // No-op
+    public void setThreadConfig(ThreadConfiguration threadConfig) {
+        this.threadConfig = threadConfig;
     }
 
     /**
@@ -201,7 +201,7 @@ public class TcpHandler implements ServerFacade {
      *
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
-    public void initiateEventLoopGroups(final ThreadConfiguration threadConfiguration, final boolean isEpollEnabled) {
+    public void initiateEventLoopGroups(ThreadConfiguration threadConfiguration, boolean isEpollEnabled) {
         if (isEpollEnabled) {
             initiateEpollEventLoopGroups(threadConfiguration);
         } else {
@@ -214,7 +214,7 @@ public class TcpHandler implements ServerFacade {
      *
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
-    public void initiateNioEventLoopGroups(final ThreadConfiguration threadConfiguration) {
+    public void initiateNioEventLoopGroups(ThreadConfiguration threadConfiguration) {
         socketChannelClass = NioServerSocketChannel.class;
         if (threadConfiguration != null) {
             bossGroup = new NioEventLoopGroup(threadConfiguration.getBossThreadCount());
@@ -232,7 +232,7 @@ public class TcpHandler implements ServerFacade {
      * @param threadConfiguration the ThreadConfiguration
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    protected void initiateEpollEventLoopGroups(final ThreadConfiguration threadConfiguration) {
+    protected void initiateEpollEventLoopGroups(ThreadConfiguration threadConfiguration) {
         try {
             socketChannelClass = EpollServerSocketChannel.class;
             if (threadConfiguration != null) {
