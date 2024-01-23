@@ -39,10 +39,7 @@ import org.slf4j.LoggerFactory;
 public class DropTestCommiter extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
     private static final TableKey ZERO_TABLE = new TableKey(Uint8.ZERO);
-    private DataBroker dataService;
-
     private static final AtomicLong ID_COUNTER = new AtomicLong();
-
     private static final ThreadLocal<FlowBuilder> BUILDER = ThreadLocal.withInitial(() -> {
         final var cookie = new FlowCookie(Uint64.TEN);
         return new FlowBuilder()
@@ -56,9 +53,9 @@ public class DropTestCommiter extends AbstractDropTest {
             .setFlags(new FlowModFlags(false, false, false, false, false));
     });
 
-    private NotificationService notificationService;
-
-    private Registration notificationRegistration;
+    private NotificationService notificationService = null;
+    private Registration notificationRegistration = null;
+    private DataBroker dataService = null;
 
     /**
      * start listening on packetIn.

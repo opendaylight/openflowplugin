@@ -22,11 +22,10 @@ import org.slf4j.LoggerFactory;
  * deserialize.
  */
 public abstract class Packet {
-
     private static final Logger LOG = LoggerFactory.getLogger(Packet.class);
 
     // Access level granted to this packet
-    protected boolean writeAccess;
+    protected final boolean writeAccess;
 
     // When deserialized from wire, packet could result corrupted
     protected boolean corrupted;
@@ -99,8 +98,8 @@ public abstract class Packet {
         for (Entry<String, Pair<Integer, Integer>> pairs : hdrFieldCoordMap
                 .entrySet()) {
             String hdrField = pairs.getKey();
-            startOffset = bitOffset + this.getfieldOffset(hdrField);
-            numBits = this.getfieldnumBits(hdrField);
+            startOffset = bitOffset + getfieldOffset(hdrField);
+            numBits = getfieldnumBits(hdrField);
 
             byte[] hdrFieldBytes;
             try {
@@ -114,7 +113,7 @@ public abstract class Packet {
              * Store the raw read value, checks the payload type and set the
              * payloadClass accordingly
              */
-            this.setHeaderField(hdrField, hdrFieldBytes);
+            setHeaderField(hdrField, hdrFieldBytes);
 
             if (LOG.isTraceEnabled()) {
                 LOG.trace("{}: {}: {} (offset {} bitsize {})", this.getClass().getSimpleName(), hdrField,
@@ -165,7 +164,7 @@ public abstract class Packet {
         int payloadSize = payloadBytes == null ? 0 : payloadBytes.length;
 
         // Allocate the buffer to contain the full (header + payload) packet
-        int headerSize = this.getHeaderSize() / NetUtils.NUM_BITS_IN_A_BYTE;
+        int headerSize = getHeaderSize() / NetUtils.NUM_BITS_IN_A_BYTE;
         byte[] packetBytes = new byte[headerSize + payloadSize];
         if (payloadBytes != null) {
             System.arraycopy(payloadBytes, 0, packetBytes, headerSize, payloadSize);
@@ -303,7 +302,7 @@ public abstract class Packet {
      * @param bytes The raw payload as byte array
      */
     public void setRawPayload(final byte[] bytes) {
-        this.rawPayload = Arrays.copyOf(bytes, bytes.length);
+        rawPayload = Arrays.copyOf(bytes, bytes.length);
     }
 
     /**
@@ -326,7 +325,7 @@ public abstract class Packet {
         final int prime = 31;
         int result = super.hashCode();
         result = prime * result
-                + (this.hdrFieldsMap == null ? 0 : hdrFieldsMap.hashCode());
+                + (hdrFieldsMap == null ? 0 : hdrFieldsMap.hashCode());
         return result;
     }
 

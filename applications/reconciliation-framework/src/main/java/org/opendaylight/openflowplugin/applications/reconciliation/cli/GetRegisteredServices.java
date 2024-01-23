@@ -17,17 +17,17 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Command(scope = "reconciliation", name = "getRegisteredServices", description = "displaying services registered to "
-        + "Reconciliation Framework")
 /*
- * CLI to display the service priority, service name and service status TODO
- * service status
+ * CLI to display the service priority, service name and service status
+ * FIXME: service status
  */
+@Command(scope = "reconciliation", name = "getRegisteredServices",
+    description = "displaying services registered to Reconciliation Framework")
 public class GetRegisteredServices extends OsgiCommandSupport {
     private static final Logger LOG = LoggerFactory.getLogger(GetRegisteredServices.class);
     private static final String CLI_FORMAT = "%d %-20s ";
 
-    private ReconciliationManager reconciliationManager;
+    private ReconciliationManager reconciliationManager = null;
 
     public void setReconciliationManager(final ReconciliationManager reconciliationManager) {
         this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager can not be null!");

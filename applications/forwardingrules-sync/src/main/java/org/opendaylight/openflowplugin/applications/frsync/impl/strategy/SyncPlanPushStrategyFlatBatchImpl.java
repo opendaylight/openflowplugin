@@ -100,11 +100,9 @@ import org.slf4j.LoggerFactory;
  * Execute CRUD API for flow + group + meter involving flat-batch strategy.
  */
 public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
-
     private static final Logger LOG = LoggerFactory.getLogger(SyncPlanPushStrategyFlatBatchImpl.class);
 
-    private SalFlatBatchService flatBatchService;
-    private TableForwarder tableForwarder;
+    private SalFlatBatchService flatBatchService = null;
 
     @Override
     public ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,
@@ -482,8 +480,8 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
         return this;
     }
 
+    @Deprecated(since = "0.17.2", forRemoval = true)
     public SyncPlanPushStrategyFlatBatchImpl setTableForwarder(final TableForwarder tableForwarder) {
-        this.tableForwarder = tableForwarder;
         return this;
     }
 }

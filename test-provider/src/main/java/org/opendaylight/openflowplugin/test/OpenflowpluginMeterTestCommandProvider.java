@@ -37,11 +37,10 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.framework.BundleContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
-    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestCommandProvider.class);
+    private static final String ORIGINAL_METER_NAME = "Foo";
+    private static final String UPDATED_METER_NAME = "Bar";
 
     private final DataBroker dataBroker;
     private final BundleContext ctx;
@@ -49,8 +48,6 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
     private Meter testMeter1;
     private Meter testMeter2;
     private Node testNode;
-    private final String originalMeterName = "Foo";
-    private final String updatedMeterName = "Bar";
 
     public OpenflowpluginMeterTestCommandProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
@@ -81,7 +78,7 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             .setContainerName("abcd")
             .withKey(new MeterKey(new MeterId(Uint32.valueOf(12))))
             .setMeterId(new MeterId(Uint32.valueOf(9)))
-            .setMeterName(originalMeterName)
+            .setMeterName(ORIGINAL_METER_NAME)
             .setFlags(new MeterFlags(true, false, false, false))
             .setMeterBandHeaders(new MeterBandHeadersBuilder()
                 .setMeterBandHeader(BindingMap.of(new MeterBandHeaderBuilder()
@@ -119,10 +116,10 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             .setBandId(new BandId(Uint32.ZERO));
 
         if (s2.equalsIgnoreCase("modify")) {
-            meter.setMeterName(updatedMeterName);
+            meter.setMeterName(UPDATED_METER_NAME);
             bandHeader.setBandRate(Uint32.valueOf(234));
         } else {
-            meter.setMeterName(originalMeterName);
+            meter.setMeterName(ORIGINAL_METER_NAME);
             bandHeader.setBandRate(Uint32.valueOf(123));
         }
 
@@ -375,9 +372,9 @@ public class OpenflowpluginMeterTestCommandProvider implements CommandProvider {
             createUserNode(nref);
         }
         MeterBuilder meter = createTestMeter();
-        meter.setMeterName(updatedMeterName);
+        meter.setMeterName(UPDATED_METER_NAME);
         writeMeter(ci, meter.build());
-        meter.setMeterName(originalMeterName);
+        meter.setMeterName(ORIGINAL_METER_NAME);
         writeMeter(ci, meter.build());
     }
 

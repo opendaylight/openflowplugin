@@ -30,7 +30,6 @@ public class ListenerRegistrationHelper {
     private static final Logger LOG = LoggerFactory.getLogger(ListenerRegistrationHelper.class);
     private static final long INVENTORY_CHECK_TIMER = 1;
 
-    private final String operational = "OPERATIONAL";
     private final ListeningExecutorService listeningExecutorService;
     private final DataBroker dataBroker;
 
@@ -47,9 +46,9 @@ public class ListenerRegistrationHelper {
 
     public <T extends DataObject, L extends ClusteredDataTreeChangeListener<T>>
             ListenableFuture<ListenerRegistration<L>> checkedRegisterListener(
-                DataTreeIdentifier<T> treeId, L listener) {
+                final DataTreeIdentifier<T> treeId, final L listener) {
         return listeningExecutorService.submit(() -> {
-            while (!getInventoryConfigDataStoreStatus().equals(operational)) {
+            while (!getInventoryConfigDataStoreStatus().equals("OPERATIONAL")) {
                 try {
                     LOG.debug("Retrying for datastore to become operational for listener {}", listener);
                     Thread.sleep(INVENTORY_CHECK_TIMER * 1000);
