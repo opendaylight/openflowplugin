@@ -29,25 +29,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
-
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
 
     public TableForwarder(final ForwardingRulesManager manager, final DataBroker db,
                           final ListenerRegistrationHelper registrationHelper) {
         super(manager, db, registrationHelper);
-    }
-
-    @Override
-    public  void deregisterListener() {
-        close();
-    }
-
-    @Override
-    public void close() {
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-            listenerRegistration = null;
-        }
     }
 
     @Override
@@ -94,11 +80,11 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
             .build());
         LOG.debug("Invoking SalTableService ");
 
-        if (this.provider.getSalTableService() != null) {
-            LOG.debug(" Handle to SalTableServices {}", this.provider.getSalTableService());
+        if (provider.getSalTableService() != null) {
+            LOG.debug(" Handle to SalTableServices {}", provider.getSalTableService());
         }
 
-        LoggingFutures.addErrorLogging(this.provider.getSalTableService().updateTable(builder.build()), LOG,
+        LoggingFutures.addErrorLogging(provider.getSalTableService().updateTable(builder.build()), LOG,
             "updateTable");
     }
 
@@ -109,14 +95,14 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public void createStaleMarkEntity(InstanceIdentifier<TableFeatures> identifier, TableFeatures del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures del,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("NO-OP");
     }
 
     @Override
-    public Future<? extends RpcResult<?>> removeWithResult(InstanceIdentifier<TableFeatures> identifier,
-            TableFeatures del, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public Future<? extends RpcResult<?>> removeWithResult(final InstanceIdentifier<TableFeatures> identifier,
+            final TableFeatures del, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return null;
     }
 }

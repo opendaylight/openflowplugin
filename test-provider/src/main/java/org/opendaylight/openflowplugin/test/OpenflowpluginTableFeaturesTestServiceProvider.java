@@ -15,22 +15,23 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yangtools.concepts.AbstractObjectRegistration;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginTableFeaturesTestServiceProvider implements
-        AutoCloseable, SalTableService {
+public class OpenflowpluginTableFeaturesTestServiceProvider implements AutoCloseable, UpdateTable {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTableFeaturesTestServiceProvider.class);
 
-    private static final Logger LOG = LoggerFactory
-            .getLogger(OpenflowpluginTableFeaturesTestServiceProvider.class);
-    private ObjectRegistration<SalTableService> tableRegistration;
+    private Registration tableRegistration = null;
     private NotificationPublishService notificationService;
 
     /**
@@ -38,14 +39,14 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
      *
      * @return {@link #tableRegistration}
      */
-    public ObjectRegistration<SalTableService> getTableRegistration() {
-        return this.tableRegistration;
+    public Registration getTableRegistration() {
+        return tableRegistration;
     }
 
     /**
      * Set {@link #tableRegistration}.
      */
-    public void setTableRegistration(final ObjectRegistration<SalTableService> tableRegistration) {
+    public void setTableRegistration(final Registration tableRegistration) {
         this.tableRegistration = tableRegistration;
     }
 
@@ -55,7 +56,7 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
      * @return {@link #notificationService}
      */
     public NotificationPublishService getNotificationService() {
-        return this.notificationService;
+        return notificationService;
     }
 
     /**
@@ -66,41 +67,24 @@ public class OpenflowpluginTableFeaturesTestServiceProvider implements
     }
 
     public void start() {
-        OpenflowpluginTableFeaturesTestServiceProvider.LOG
-                .info("SalTableServiceProvider Started.");
+        LOG.info("SalTableServiceProvider Started.");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.AutoCloseable#close()
-     */
     @Override
     public void close() {
-        OpenflowpluginTableFeaturesTestServiceProvider.LOG
-                .info("SalTableServiceProvider stopped.");
+        LOG.info("SalTableServiceProvider stopped.");
         tableRegistration.close();
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026
-     * .SalTableService
-     * #updateTable(org.opendaylight.yang.gen.v1.urn.opendaylight
-     * .table.service.rev131026.UpdateTableInput)
-     */
     @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(
-            final UpdateTableInput input) {
-        OpenflowpluginTableFeaturesTestServiceProvider.LOG.info("updateTable - {}", input);
-        return null;
+    public ListenableFuture<RpcResult<UpdateTableOutput>> invoke(final UpdateTableInput input) {
+        LOG.info("updateTable - {}", input);
+        return RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture();
     }
 
     public ObjectRegistration<OpenflowpluginTableFeaturesTestServiceProvider> register(
             final RpcProviderService rpcRegistry) {
-        setTableRegistration(rpcRegistry.registerRpcImplementation(SalTableService.class, this, ImmutableSet.of(
+        setTableRegistration(rpcRegistry.registerRpcImplementation(this, ImmutableSet.of(
             InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))))));
 

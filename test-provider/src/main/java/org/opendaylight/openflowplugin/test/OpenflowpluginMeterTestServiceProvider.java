@@ -30,13 +30,12 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
-        SalMeterService {
-    private static final Logger LOG = LoggerFactory
-            .getLogger(OpenflowpluginMeterTestServiceProvider.class);
-    private DataBroker dataService;
-    private ObjectRegistration<SalMeterService> meterRegistration;
-    private NotificationPublishService notificationService;
+public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable, SalMeterService {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginMeterTestServiceProvider.class);
+
+    private DataBroker dataService = null;
+    private ObjectRegistration<SalMeterService> meterRegistration = null;
+    private NotificationPublishService notificationService = null;
 
     /**
      * Gets the data service.
@@ -44,7 +43,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * @return {@link #dataService}
      */
     public DataBroker getDataService() {
-        return this.dataService;
+        return dataService;
     }
 
     /**
@@ -60,7 +59,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * @return {@link #meterRegistration}
      */
     public ObjectRegistration<SalMeterService> getMeterRegistration() {
-        return this.meterRegistration;
+        return meterRegistration;
     }
 
     /**
@@ -76,7 +75,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * @return {@link #notificationService}
      */
     public NotificationPublishService getNotificationService() {
-        return this.notificationService;
+        return notificationService;
     }
 
     /**
@@ -87,8 +86,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
     }
 
     public void start() {
-        OpenflowpluginMeterTestServiceProvider.LOG
-                .info("SalMeterServiceProvider Started.");
+        LOG.info("SalMeterServiceProvider Started.");
     }
 
     /*
@@ -98,8 +96,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      */
     @Override
     public void close() {
-        OpenflowpluginMeterTestServiceProvider.LOG
-                .info("SalMeterServiceProvide stopped.");
+        LOG.info("SalMeterServiceProvide stopped.");
         meterRegistration.close();
     }
 
@@ -114,7 +111,7 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      */
     @Override
     public ListenableFuture<RpcResult<AddMeterOutput>> addMeter(final AddMeterInput input) {
-        OpenflowpluginMeterTestServiceProvider.LOG.info("addMeter - {}", input);
+        LOG.info("addMeter - {}", input);
         return null;
     }
 
@@ -128,9 +125,8 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * .meter.service.rev130918.RemoveMeterInput)
      */
     @Override
-    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(
-            final RemoveMeterInput input) {
-        OpenflowpluginMeterTestServiceProvider.LOG.info("removeMeter - {}", input);
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeMeter(final RemoveMeterInput input) {
+        LOG.info("removeMeter - {}", input);
         return null;
     }
 
@@ -144,9 +140,8 @@ public class OpenflowpluginMeterTestServiceProvider implements AutoCloseable,
      * .meter.service.rev130918.UpdateMeterInput)
      */
     @Override
-    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(
-            final UpdateMeterInput input) {
-        OpenflowpluginMeterTestServiceProvider.LOG.info("updateMeter - {}", input);
+    public ListenableFuture<RpcResult<UpdateMeterOutput>> updateMeter(final UpdateMeterInput input) {
+        LOG.info("updateMeter - {}", input);
         return null;
     }
 
