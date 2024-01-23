@@ -23,9 +23,9 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public class OFDatagramPacketDecoder extends SimpleChannelInboundHandler<VersionMessageUdpWrapper> {
-
     private static final Logger LOG = LoggerFactory.getLogger(OFDatagramPacketDecoder.class);
-    private DeserializationFactory deserializationFactory;
+
+    private DeserializationFactory deserializationFactory = null;
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")

@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collection;
-import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -37,19 +36,19 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractListeningCommiter<T extends DataObject>
         implements ForwardingRulesCommiter<T>, RecoverableListener {
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractListeningCommiter.class);
+
     final ForwardingRulesManager provider;
     NodeConfigurator nodeConfigurator;
     protected final DataBroker dataBroker;
-    protected final ListenerRegistrationHelper registrationHelper;
-    protected ListenerRegistration<AbstractListeningCommiter> listenerRegistration;
+    private final ListenerRegistrationHelper registrationHelper;
+    private ListenerRegistration<AbstractListeningCommiter> listenerRegistration;
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "See FIXME below")
     protected AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
                                      final ListenerRegistrationHelper registrationHelper) {
         this.provider = requireNonNull(provider, "ForwardingRulesManager can not be null!");
-        this.nodeConfigurator = requireNonNull(provider.getNodeConfigurator(), "NodeConfigurator can not be null!");
+        nodeConfigurator = requireNonNull(provider.getNodeConfigurator(), "NodeConfigurator can not be null!");
         this.dataBroker = requireNonNull(dataBroker, "DataBroker can not be null!");
         this.registrationHelper = requireNonNull(registrationHelper, "registrationHelper can not be null!");
 
@@ -89,24 +88,22 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
                                     IllegalArgumentException("Unhandled modification type "
                                     + mod.getModificationType());
                     }
-                } else {
-                    if (provider.isStaleMarkingEnabled()) {
-                        LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
-                                nodeIdent.toString());
-                        // Switch is NOT connected
-                        switch (mod.getModificationType()) {
-                            case DELETE:
-                                createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
-                                break;
-                            case SUBTREE_MODIFIED:
-                                break;
-                            case WRITE:
-                                break;
-                            default:
-                                throw new
-                                        IllegalArgumentException("Unhandled modification type "
-                                        + mod.getModificationType());
-                        }
+                } else if (provider.isStaleMarkingEnabled()) {
+                    LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
+                            nodeIdent.toString());
+                    // Switch is NOT connected
+                    switch (mod.getModificationType()) {
+                        case DELETE:
+                            createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                            break;
+                        case SUBTREE_MODIFIED:
+                            break;
+                        case WRITE:
+                            break;
+                        default:
+                            throw new
+                                    IllegalArgumentException("Unhandled modification type "
+                                    + mod.getModificationType());
                     }
                 }
             } catch (RuntimeException e) {
@@ -117,22 +114,33 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
 
     @Override
     public final void registerListener() {
-        final DataTreeIdentifier<T> treeId =
-                DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, getWildCardPath());
-        Futures.addCallback(registrationHelper.checkedRegisterListener(treeId, this),
-                new FutureCallback<ListenerRegistration<AbstractListeningCommiter>>() {
-                    @Override
-                    public void onSuccess(
-                            @Nullable final ListenerRegistration<AbstractListeningCommiter> flowListenerRegistration) {
-                        LOG.info("{} registered successfully", flowListenerRegistration.getInstance());
-                        listenerRegistration = flowListenerRegistration;
-                    }
+        Futures.addCallback(registrationHelper.checkedRegisterListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, getWildCardPath()), this),
+            new FutureCallback<ListenerRegistration<AbstractListeningCommiter>>() {
+                @Override
+                public void onSuccess(final ListenerRegistration<AbstractListeningCommiter> flowListenerRegistration) {
+                    LOG.info("{} registered successfully", flowListenerRegistration.getInstance());
+                    listenerRegistration = flowListenerRegistration;
+                }
 
-                    @Override
-                    public void onFailure(final Throwable throwable) {
-                        LOG.error("Registration failed ", throwable);
-                    }
-                }, MoreExecutors.directExecutor());
+                @Override
+                public void onFailure(final Throwable throwable) {
+                    LOG.error("Registration failed ", throwable);
+                }
+            }, MoreExecutors.directExecutor());
+    }
+
+    @Override
+    public void deregisterListener() {
+        close();
+    }
+
+    @Override
+    public void close() {
+        if (listenerRegistration != null) {
+            listenerRegistration.close();
+            listenerRegistration = null;
+        }
     }
 
     /**

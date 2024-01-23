@@ -104,10 +104,10 @@ import org.slf4j.LoggerFactory;
 
 public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowPluginBulkTransactionProvider.class);
+    private static final String ORIGINAL_FLOW_NAME = "Foo";
 
     private final DataBroker dataBroker;
     private final BundleContext ctx;
-    private final String originalFlowName = "Foo";
 
     public OpenflowPluginBulkTransactionProvider(final DataBroker dataBroker, final BundleContext ctx) {
         this.dataBroker = dataBroker;
@@ -131,7 +131,8 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         return "No help";
     }
 
-    private FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg, final String tableId) {
+    private static FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg,
+            final String tableId) {
 
         FlowBuilder flow = new FlowBuilder();
         long id = 123;
@@ -394,7 +395,7 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowKey key = new FlowKey(new FlowId(Long.toString(id)));
         flow.withKey(key);
         flow.setPriority(Uint16.TWO);
-        flow.setFlowName(originalFlowName + "X" + flowType);
+        flow.setFlowName(ORIGINAL_FLOW_NAME + "X" + flowType);
         return flow;
     }
 
@@ -417,49 +418,47 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowBuilder tf;
         FlowBuilder tf1;
         FlowBuilder tf2;
-        FlowBuilder tf3;
-        switch (flowcnt) {
-            case 1:
+        FlowBuilder tf3 = switch (flowcnt) {
+            case 1 -> {
                 tf = createTestFlow(tn, "f1", "10");
                 tf1 = createTestFlow(tn, "f2", "11");
                 tf2 = createTestFlow(tn, "f3", "12");
-                tf3 = createTestFlow(tn, "f4", "13");
-                break;
-            case 2:
+                yield createTestFlow(tn, "f4", "13");
+            }
+            case 2 -> {
                 tf = createTestFlow(tn, "f3", "3");
                 tf1 = createTestFlow(tn, "f4", "4");
                 tf2 = createTestFlow(tn, "f5", "5");
-                tf3 = createTestFlow(tn, "f6", "6");
-                break;
-            case 3:
+                yield createTestFlow(tn, "f6", "6");
+            }
+            case 3 -> {
                 tf = createTestFlow(tn, "f7", "7");
                 tf1 = createTestFlow(tn, "f8", "8");
                 tf2 = createTestFlow(tn, "f9", "9");
-                tf3 = createTestFlow(tn, "f10", "10");
-                break;
-            case 4:
+                yield createTestFlow(tn, "f10", "10");
+            }
+            case 4 -> {
                 // -ve scenario
                 tf = createTestFlow(tn, "f23", "3");
                 tf1 = createTestFlow(tn, "f34", "4");
                 tf2 = createTestFlow(tn, "f35", "5");
-                tf3 = createTestFlow(tn, "f36", "6");
-                break;
-            case 5:
+                yield createTestFlow(tn, "f36", "6");
+            }
+            case 5 -> {
                 // +ve scenario
                 // modify case 6 -ve
                 tf = createTestFlow(tn, "f230", "3");
                 tf1 = createTestFlow(tn, "f34", "4");
                 tf2 = createTestFlow(tn, "f35", "5");
-                tf3 = createTestFlow(tn, "f36", "6");
-                break;
-
-            default:
+                yield createTestFlow(tn, "f36", "6");
+            }
+            default -> {
                 tf = createTestFlow(tn, "f42", "42");
                 tf1 = createTestFlow(tn, "f43", "43");
                 tf2 = createTestFlow(tn, "f44", "44");
-                tf3 = createTestFlow(tn, "f45", "45");
-
-        }
+                yield createTestFlow(tn, "f45", "45");
+            }
+        };
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
     }
 
@@ -475,50 +474,47 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowBuilder tf;
         FlowBuilder tf1;
         FlowBuilder tf2;
-        FlowBuilder tf3;
-        switch (flowcnt) {
-            case 1:
+        FlowBuilder tf3 = switch (flowcnt) {
+            case 1 -> {
                 tf = createTestFlow(tn, "f82", "10");
                 tf1 = createTestFlow(tn, "f83", "11");
                 tf2 = createTestFlow(tn, "f84", "12");
-                tf3 = createTestFlow(tn, "f85", "13");
-                break;
-            case 2:
+                yield createTestFlow(tn, "f85", "13");
+            }
+            case 2 -> {
                 tf = createTestFlow(tn, "f700", "3");
                 tf1 = createTestFlow(tn, "f4", "4");
                 tf2 = createTestFlow(tn, "f900", "5");
-                tf3 = createTestFlow(tn, "f86", "6");
-                break;
-            case 3:
+                yield createTestFlow(tn, "f86", "6");
+            }
+            case 3 -> {
                 // +
                 tf = createTestFlow(tn, "f91", "7");
                 tf1 = createTestFlow(tn, "f92", "8");
                 tf2 = createTestFlow(tn, "f93", "9");
-                tf3 = createTestFlow(tn, "f94", "10");
-                break;
-            case 4:
+                yield createTestFlow(tn, "f94", "10");
+            }
+            case 4 -> {
                 // +ve scenario
                 tf = createTestFlow(tn, "f230", "3");
                 tf1 = createTestFlow(tn, "f99", "4");
                 tf2 = createTestFlow(tn, "f100", "5");
-                tf3 = createTestFlow(tn, "f101", "6");
-                break;
-            case 5:
+                yield createTestFlow(tn, "f101", "6");
+            }
+            case 5 -> {
                 // -
                 tf = createTestFlow(tn, "f23", "3");
                 tf1 = createTestFlow(tn, "f99", "4");
                 tf2 = createTestFlow(tn, "f100", "5");
-                tf3 = createTestFlow(tn, "f101", "6");
-                break;
-
-            default:
+                yield createTestFlow(tn, "f101", "6");
+            }
+            default -> {
                 tf = createTestFlow(tn, "f87", "12");
                 tf1 = createTestFlow(tn, "f88", "13");
                 tf2 = createTestFlow(tn, "f89", "14");
-                tf3 = createTestFlow(tn, "f90", "15");
-
-        }
-
+                yield createTestFlow(tn, "f90", "15");
+            }
+        };
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
     }
 
@@ -532,74 +528,73 @@ public class OpenflowPluginBulkTransactionProvider implements CommandProvider {
         FlowBuilder tf1 = null;
         FlowBuilder tf2 = null;
         FlowBuilder tf3 = null;
-        switch (flowcnt) {
-            case 1:
+        tf3 = switch (flowcnt) {
+            case 1 -> {
                 // add case 1
                 tf = createTestFlow(tn, "f1", "10");
                 tf1 = createTestFlow(tn, "f2", "11");
                 tf2 = createTestFlow(tn, "f3", "12");
-                tf3 = createTestFlow(tn, "f4", "13");
-                break;
-            case 2:
+                yield createTestFlow(tn, "f4", "13");
+            }
+            case 2 -> {
                 // modify case 1
                 tf = createTestFlow(tn, "f82", "10");
                 tf1 = createTestFlow(tn, "f83", "11");
                 tf2 = createTestFlow(tn, "f84", "12");
-                tf3 = createTestFlow(tn, "f85", "13");
-                break;
-            case 3:
+                yield createTestFlow(tn, "f85", "13");
+            }
+            case 3 -> {
                 // add case 2
                 tf = createTestFlow(tn, "f3", "3");
                 tf1 = createTestFlow(tn, "f4", "4");
                 tf2 = createTestFlow(tn, "f5", "5");
-                tf3 = createTestFlow(tn, "f6", "6");
-                break;
-            case 4:
+                yield createTestFlow(tn, "f6", "6");
+            }
+            case 4 -> {
                 // modify case 2
                 tf = createTestFlow(tn, "f700", "3");
                 tf1 = createTestFlow(tn, "f4", "4");
                 tf2 = createTestFlow(tn, "f900", "5");
-                tf3 = createTestFlow(tn, "f86", "6");
-                break;
-            case 5:
+                yield createTestFlow(tn, "f86", "6");
+            }
+            case 5 -> {
                 // add case 3
                 tf = createTestFlow(tn, "f7", "7");
                 tf1 = createTestFlow(tn, "f8", "8");
                 tf2 = createTestFlow(tn, "f9", "9");
-                tf3 = createTestFlow(tn, "f10", "10");
-                break;
-            case 6:
+                yield createTestFlow(tn, "f10", "10");
+            }
+            case 6 -> {
                 // modify case 3
                 tf = createTestFlow(tn, "f91", "7");
                 tf1 = createTestFlow(tn, "f92", "8");
                 tf2 = createTestFlow(tn, "f93", "9");
-                tf3 = createTestFlow(tn, "f94", "10");
-                break;
-            case 7:
+                yield createTestFlow(tn, "f94", "10");
+            }
+            case 7 -> {
                 // -ve scenario
                 tf = createTestFlow(tn, "f23", "3");
                 tf1 = createTestFlow(tn, "f34", "4");
                 tf2 = createTestFlow(tn, "f35", "5");
-                tf3 = createTestFlow(tn, "f36", "6");
-                break;
-            case 8:
+                yield createTestFlow(tn, "f36", "6");
+            }
+            case 8 -> {
                 // +ve scenario
                 // modify case 6 -ve
                 tf = createTestFlow(tn, "f23", "3");
                 tf1 = createTestFlow(tn, "f99", "4");
                 tf2 = createTestFlow(tn, "f100", "5");
-                tf3 = createTestFlow(tn, "f101", "6");
-                break;
-            case 9:
+                yield createTestFlow(tn, "f101", "6");
+            }
+            case 9 -> {
                 // modify case 6
                 tf = createTestFlow(tn, "f700", "7");
                 tf1 = createTestFlow(tn, "f230", "23");
                 tf2 = createTestFlow(tn, "f900", "9");
-                tf3 = createTestFlow(tn, "f1000", "10");
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid flowtype: " + flowtype);
-        }
+                yield createTestFlow(tn, "f1000", "10");
+            }
+            default -> throw new IllegalArgumentException("Invalid flowtype: " + flowtype);
+        };
 
         InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))

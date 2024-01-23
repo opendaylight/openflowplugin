@@ -40,7 +40,7 @@ public class MeterMessageSerializer extends AbstractMessageSerializer<MeterMessa
     private static final short PADDING_IN_METER_BAND_DSCP_REMARK = 3;
     private static final int DEFAULT_METER_FLAGS = createMeterFlagsBitMask(new MeterFlags(false, false, true, false));
 
-    private SerializerRegistry registry;
+    private SerializerRegistry registry = null;
 
     @Override
     public void serialize(final MeterMessage message, final ByteBuf outBuffer) {

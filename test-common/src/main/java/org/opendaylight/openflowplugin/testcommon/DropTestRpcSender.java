@@ -36,13 +36,6 @@ import org.slf4j.LoggerFactory;
  */
 public class DropTestRpcSender extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
-
-    private SalFlowService flowService;
-
-    public void setFlowService(final SalFlowService flowService) {
-        this.flowService = flowService;
-    }
-
     private static final ThreadLocal<AddFlowInputBuilder> BUILDER = ThreadLocal.withInitial(() -> {
         final var cookie = new FlowCookie(Uint64.TEN);
         return new AddFlowInputBuilder()
@@ -56,9 +49,13 @@ public class DropTestRpcSender extends AbstractDropTest {
             .setFlags(new FlowModFlags(false, false, false, false, false));
     });
 
-    private NotificationService notificationService;
+    private NotificationService notificationService = null;
+    private Registration notificationRegistration = null;
+    private SalFlowService flowService = null;
 
-    private Registration notificationRegistration;
+    public void setFlowService(final SalFlowService flowService) {
+        this.flowService = flowService;
+    }
 
     /**
      * Start listening on packetIn.
