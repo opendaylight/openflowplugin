@@ -39,13 +39,13 @@ import org.slf4j.LoggerFactory;
  * </ul>
  */
 public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerRegistrationHolder, LearningSwitchManager {
-
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerMultiImpl.class);
-    private NotificationService notificationService;
+
+    private NotificationService notificationService = null;
     private PacketProcessingService packetProcessingService;
-    private DataBroker data;
-    private Registration packetInRegistration;
-    private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
+    private DataBroker data = null;
+    private Registration packetInRegistration = null;
+    private ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration = null;
 
     /**
      * Sets the NotificationService.
@@ -53,7 +53,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      * @param notificationService the notificationService to set
      */
     @Override
-    public void setNotificationService(NotificationService notificationService) {
+    public void setNotificationService(final NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
@@ -64,7 +64,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      */
     @Override
     public void setPacketProcessingService(
-            PacketProcessingService packetProcessingService) {
+            final PacketProcessingService packetProcessingService) {
         this.packetProcessingService = packetProcessingService;
     }
 
@@ -74,7 +74,7 @@ public class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerReg
      * @param broker the data to set
      */
     @Override
-    public void setDataBroker(DataBroker broker) {
+    public void setDataBroker(final DataBroker broker) {
         data = broker;
     }
 

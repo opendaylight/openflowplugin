@@ -29,11 +29,12 @@ import org.slf4j.LoggerFactory;
 
 public class MatchDeserializer implements OFDeserializer<Match>, HeaderDeserializer<Match>,
         MatchEntryDeserializerRegistry, MatchEntryDeserializer, DeserializerRegistryInjector {
-
     private static final Logger LOG = LoggerFactory.getLogger(MatchDeserializer.class);
+
     private final Map<MatchEntryDeserializerKey, MatchEntryDeserializer> entryRegistry = new HashMap<>();
     private final MatchPath matchPath;
-    private DeserializerRegistry registry;
+
+    private DeserializerRegistry registry = null;
 
     public MatchDeserializer(final MatchPath matchPath) {
         this.matchPath = matchPath;

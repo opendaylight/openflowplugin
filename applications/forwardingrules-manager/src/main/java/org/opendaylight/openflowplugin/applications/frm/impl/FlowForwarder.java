@@ -77,19 +77,14 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
  */
 public class FlowForwarder extends AbstractListeningCommiter<Flow> {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
-
     private static final String GROUP_EXISTS_IN_DEVICE_ERROR = "GROUPEXISTS";
 
     private ListenerRegistration<FlowForwarder> listenerRegistration;
 
-    private final BundleFlowForwarder bundleFlowForwarder;
-
     public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db,
                          final ListenerRegistrationHelper registrationHelper) {
         super(manager, db, registrationHelper);
-        bundleFlowForwarder = new BundleFlowForwarder(manager);
     }
 
     @Override
