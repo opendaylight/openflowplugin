@@ -25,13 +25,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.multipart.reply.multipart.reply.body.MultipartReplyExperimenterBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MultipartReplyExperimenterDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
-    private static final Logger LOG = LoggerFactory.getLogger(MultipartReplyExperimenterDeserializer.class);
-    private DeserializerRegistry registry;
+    private DeserializerRegistry registry = null;
 
     @Override
     @SuppressWarnings("unchecked")

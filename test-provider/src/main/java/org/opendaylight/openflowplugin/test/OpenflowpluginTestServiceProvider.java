@@ -30,15 +30,13 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowpluginTestServiceProvider implements AutoCloseable,
-        SalFlowService {
-
-    private static final Logger LOG = LoggerFactory
-            .getLogger(OpenflowpluginTestServiceProvider.class);
+public class OpenflowpluginTestServiceProvider implements AutoCloseable, SalFlowService {
+    private static final Logger LOG = LoggerFactory.getLogger(OpenflowpluginTestServiceProvider.class);
 
     private final DataBroker dataService;
-    private ObjectRegistration<SalFlowService> flowRegistration;
     private final NotificationPublishService notificationProviderService;
+
+    private ObjectRegistration<SalFlowService> flowRegistration = null;
 
     public OpenflowpluginTestServiceProvider(final DataBroker dataService,
             final NotificationPublishService notificationProviderService) {

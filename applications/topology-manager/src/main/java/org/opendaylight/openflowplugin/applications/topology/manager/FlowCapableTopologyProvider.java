@@ -43,8 +43,9 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
     private final NotificationService notificationService;
     private final OperationProcessor processor;
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
+
     private InstanceIdentifier<Topology> topologyPathIID;
-    private TransactionChainManager transactionChainManager;
+    private TransactionChainManager transactionChainManager = null;
     private Registration listenerRegistration;
     private ClusterSingletonServiceRegistration singletonServiceRegistration;
 

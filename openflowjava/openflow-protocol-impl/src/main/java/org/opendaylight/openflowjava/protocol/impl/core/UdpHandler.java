@@ -39,8 +39,8 @@ public final class UdpHandler implements ServerFacade {
     private final InetAddress startupAddress;
     private final Runnable readyRunnable;
     private final SettableFuture<Boolean> isOnlineFuture = SettableFuture.create();
+
     private UdpChannelInitializer channelInitializer;
-    private ThreadConfiguration threadConfig;
     private Class<? extends DatagramChannel> datagramChannelClass;
 
     /**
@@ -48,7 +48,7 @@ public final class UdpHandler implements ServerFacade {
      *
      * @param port listening port of UdpHandler server
      */
-    public UdpHandler(final int port, Runnable readyRunnable) {
+    public UdpHandler(final int port, final Runnable readyRunnable) {
         this(null, port, readyRunnable);
     }
 
@@ -57,9 +57,9 @@ public final class UdpHandler implements ServerFacade {
      * @param address listening address of UdpHandler server
      * @param port listening port of UdpHandler server
      */
-    public UdpHandler(final InetAddress address, final int port, Runnable readyRunnable) {
+    public UdpHandler(final InetAddress address, final int port, final Runnable readyRunnable) {
         this.port = port;
-        this.startupAddress = address;
+        startupAddress = address;
         this.readyRunnable = readyRunnable;
     }
 
@@ -91,7 +91,7 @@ public final class UdpHandler implements ServerFacade {
             String address = isa.getHostString();
 
             // Update port, as it may have been specified as 0
-            this.port = isa.getPort();
+            port = isa.getPort();
 
             LOG.debug("Address from udpHandler: {}", address);
             LOG.info("Switch listener started and ready to accept incoming udp connections on port: {}", port);
@@ -128,13 +128,14 @@ public final class UdpHandler implements ServerFacade {
         return port;
     }
 
-    public void setChannelInitializer(UdpChannelInitializer channelInitializer) {
+    public void setChannelInitializer(final UdpChannelInitializer channelInitializer) {
         this.channelInitializer = channelInitializer;
     }
 
     @Override
-    public void setThreadConfig(ThreadConfiguration threadConfig) {
-        this.threadConfig = threadConfig;
+    @Deprecated(since = "0.17.2", forRemoval = true)
+    public void setThreadConfig(final ThreadConfiguration threadConfig) {
+        // No-op
     }
 
     /**
@@ -142,7 +143,7 @@ public final class UdpHandler implements ServerFacade {
      *
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
-    public void initiateEventLoopGroups(ThreadConfiguration threadConfiguration, boolean isEpollEnabled) {
+    public void initiateEventLoopGroups(final ThreadConfiguration threadConfiguration, final boolean isEpollEnabled) {
         if (isEpollEnabled) {
             initiateEpollEventLoopGroups(threadConfiguration);
         } else {
@@ -155,7 +156,7 @@ public final class UdpHandler implements ServerFacade {
      *
      * @param threadConfiguration number of threads to be created, if not specified in threadConfig
      */
-    public void initiateNioEventLoopGroups(ThreadConfiguration threadConfiguration) {
+    public void initiateNioEventLoopGroups(final ThreadConfiguration threadConfiguration) {
         datagramChannelClass = NioDatagramChannel.class;
         if (threadConfiguration != null) {
             group = new NioEventLoopGroup(threadConfiguration.getWorkerThreadCount());
@@ -170,7 +171,7 @@ public final class UdpHandler implements ServerFacade {
      * @param threadConfiguration the ThreadConfiguration
      */
     @SuppressWarnings("checkstyle:IllegalCatch")
-    protected void initiateEpollEventLoopGroups(ThreadConfiguration threadConfiguration) {
+    protected void initiateEpollEventLoopGroups(final ThreadConfiguration threadConfiguration) {
         try {
             datagramChannelClass = EpollDatagramChannel.class;
             if (threadConfiguration != null) {

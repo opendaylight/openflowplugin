@@ -48,25 +48,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
-
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
 
     public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db,
                           final ListenerRegistrationHelper listenerRegistrationHelper) {
         super(manager, db, listenerRegistrationHelper);
-    }
-
-    @Override
-    public void deregisterListener() {
-        close();
-    }
-
-    @Override
-    public void close() {
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-            listenerRegistration = null;
-        }
     }
 
     @Override
@@ -85,7 +71,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
-        LoggingFutures.addErrorLogging(this.provider.getSalMeterService().removeMeter(builder.build()), LOG,
+        LoggingFutures.addErrorLogging(provider.getSalMeterService().removeMeter(builder.build()), LOG,
             "removeMeter");
     }
 
@@ -98,7 +84,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalMeterService().removeMeter(builder.build());
+        return provider.getSalMeterService().removeMeter(builder.build());
     }
 
     @Override
@@ -113,7 +99,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
         builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
 
-        LoggingFutures.addErrorLogging(this.provider.getSalMeterService().updateMeter(builder.build()), LOG,
+        LoggingFutures.addErrorLogging(provider.getSalMeterService().updateMeter(builder.build()), LOG,
             "updateMeter");
     }
 
@@ -126,23 +112,23 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
         builder.setMeterRef(new MeterRef(identifier));
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return this.provider.getSalMeterService().addMeter(builder.build());
+        return provider.getSalMeterService().addMeter(builder.build());
     }
 
     @Override
-    public void createStaleMarkEntity(InstanceIdentifier<Meter> identifier, Meter del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final InstanceIdentifier<Meter> identifier, final Meter del,
+            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent, del);
         StaleMeter staleMeter = makeStaleMeter(del);
         persistStaleMeter(staleMeter, nodeIdent);
     }
 
-    private static StaleMeter makeStaleMeter(Meter del) {
+    private static StaleMeter makeStaleMeter(final Meter del) {
         StaleMeterBuilder staleMeterBuilder = new StaleMeterBuilder(del);
         return staleMeterBuilder.setMeterId(del.getMeterId()).build();
     }
 
-    private void persistStaleMeter(StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private void persistStaleMeter(final StaleMeter staleMeter, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleMeterInstanceIdentifier(staleMeter, nodeIdent),
                 staleMeter);
@@ -151,15 +137,15 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
         handleStaleMeterResultFuture(submitFuture);
     }
 
-    private static void handleStaleMeterResultFuture(FluentFuture<?> submitFuture) {
+    private static void handleStaleMeterResultFuture(final FluentFuture<?> submitFuture) {
         submitFuture.addCallback(new FutureCallback<Object>() {
             @Override
-            public void onSuccess(Object result) {
+            public void onSuccess(final Object result) {
                 LOG.debug("Stale Meter creation success");
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
+            public void onFailure(final Throwable throwable) {
                 LOG.error("Stale Meter creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -167,7 +153,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819
         .meters.StaleMeter> getStaleMeterInstanceIdentifier(
-            StaleMeter staleMeter, InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final StaleMeter staleMeter, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 }
