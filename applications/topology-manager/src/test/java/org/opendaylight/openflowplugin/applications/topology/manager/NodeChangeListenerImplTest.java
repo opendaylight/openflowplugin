@@ -30,7 +30,6 @@ import static org.opendaylight.openflowplugin.applications.topology.manager.Test
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -93,14 +92,13 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         int expDeleteCalls = expDeletedIIDs.length;
         CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(InstanceIdentifier.class);
         setupStubbedDeletes(mockTx1, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID, false);
-        nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeChangeListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch1);
 
@@ -144,7 +142,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID, false);
-        nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeChangeListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
@@ -167,7 +165,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeID, false);
-        nodeChangeListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeChangeListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch);
 

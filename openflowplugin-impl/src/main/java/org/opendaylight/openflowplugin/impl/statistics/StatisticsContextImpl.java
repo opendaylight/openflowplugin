@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.ConnectionException;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -82,14 +82,14 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
                           final boolean isStatisticsPollingOn,
                           final boolean isUsingReconciliationFramework) {
         this.deviceContext = deviceContext;
-        this.devState = requireNonNull(deviceContext.getDeviceState());
+        devState = requireNonNull(deviceContext.getDeviceState());
         this.executorService = executorService;
         this.isStatisticsPollingOn = isStatisticsPollingOn;
         this.config = config;
         this.convertorExecutor = convertorExecutor;
-        this.deviceInfo = deviceContext.getDeviceInfo();
-        this.statisticsPollingInterval = config.getBasicTimerDelay().getValue().toJava();
-        this.maximumPollingDelay = config.getMaximumTimerDelay().getValue().toJava();
+        deviceInfo = deviceContext.getDeviceInfo();
+        statisticsPollingInterval = config.getBasicTimerDelay().getValue().toJava();
+        maximumPollingDelay = config.getMaximumTimerDelay().getValue().toJava();
         this.statisticsWriterProvider = statisticsWriterProvider;
         this.isUsingReconciliationFramework = isUsingReconciliationFramework;
 
@@ -101,7 +101,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     @Override
     public DeviceInfo getDeviceInfo() {
-        return this.deviceInfo;
+        return deviceInfo;
     }
 
     @NonNull
@@ -112,7 +112,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     @Override
     public void registerMastershipWatcher(@NonNull final ContextChainMastershipWatcher newWatcher) {
-        this.contextChainMastershipWatcher = newWatcher;
+        contextChainMastershipWatcher = newWatcher;
     }
 
     @Override
@@ -130,12 +130,12 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
     @Override
     public void enableGathering() {
-        this.schedulingEnabled.set(true);
+        schedulingEnabled.set(true);
     }
 
     @Override
     public void disableGathering() {
-        this.schedulingEnabled.set(false);
+        schedulingEnabled.set(false);
     }
 
     @Override
@@ -217,7 +217,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
             return Futures.immediateFuture(Boolean.TRUE);
         }
 
-        return this.lastDataGatheringRef.updateAndGet(future -> {
+        return lastDataGatheringRef.updateAndGet(future -> {
             // write start timestamp to state snapshot container
             StatisticsGatheringUtils.markDeviceStateSnapshotStart(deviceInfo, deviceContext);
 
@@ -291,7 +291,7 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
 
         schedulingEnabled.set(true);
         statisticsPollingService.startAsync();
-        this.statisticsPollingServiceRef.set(statisticsPollingService);
+        statisticsPollingServiceRef.set(statisticsPollingService);
     }
 
     private ListenableFuture<Void> stopGatheringData() {

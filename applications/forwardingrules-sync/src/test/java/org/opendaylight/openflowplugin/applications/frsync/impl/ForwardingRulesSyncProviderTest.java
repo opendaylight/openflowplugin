@@ -18,8 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.binding.api.RpcService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 
@@ -31,7 +31,7 @@ public class ForwardingRulesSyncProviderTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private RpcConsumerRegistry rpcRegistry;
+    private RpcService rpcRegistry;
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonService;
 
