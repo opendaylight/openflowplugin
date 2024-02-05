@@ -11,6 +11,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
@@ -18,41 +19,35 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
- * Test for {@link FlowCapableTransactionServiceImpl}.
+ * Test for {@link SendBarrierImpl}.
  */
-public class FlowCapableTransactionServiceImplTest extends ServiceMocking {
-
+public class SendBarrierImplTest extends ServiceMocking {
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
-    FlowCapableTransactionServiceImpl flowCapableTransactionService;
+
+    private SendBarrierImpl sendBarrier;
 
     @Override
     protected void setup() {
-        flowCapableTransactionService =
-                new FlowCapableTransactionServiceImpl(mockedRequestContextStack, mockedDeviceContext);
+        sendBarrier = new SendBarrierImpl(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test
     public void testBuildRequest() {
-        SendBarrierInput sendBarrierInput = buildSendBarrierInput();
-
-        final OfHeader request = flowCapableTransactionService.buildRequest(new Xid(DUMMY_XID_VALUE), sendBarrierInput);
+        final var request = sendBarrier.buildRequest(new Xid(DUMMY_XID_VALUE), buildSendBarrierInput());
         assertEquals(DUMMY_XID_VALUE, request.getXid());
         assertTrue(request instanceof BarrierInput);
     }
 
     @Test
     public void testSendBarrier() {
-        SendBarrierInput sendBarrierInput = buildSendBarrierInput();
-        flowCapableTransactionService.sendBarrier(sendBarrierInput);
+        sendBarrier.invoke(buildSendBarrierInput());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
-    private SendBarrierInput buildSendBarrierInput() {
-        return new SendBarrierInputBuilder()
-                .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier())).build();
+    private @NonNull SendBarrierInput buildSendBarrierInput() {
+        return new SendBarrierInputBuilder().setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier())).build();
     }
 }

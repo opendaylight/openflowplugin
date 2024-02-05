@@ -17,29 +17,28 @@ import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class NodeConfigServiceImplTest extends ServiceMocking {
-
+public class SetConfigImplTest extends ServiceMocking {
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(150);
     private static final SwitchConfigFlag DUMMY_FLAG = SwitchConfigFlag.FRAGNORMAL;
     private static final String DUMMY_FLAG_STR = "FRAGNORMAL";
     private static final Uint16 DUMMY_MISS_SEARCH_LENGTH = Uint16.valueOf(3000);
-    NodeConfigServiceImpl nodeConfigService;
+
+    private SetConfigImpl setConfig;
 
     @Test
     public void testSetConfig() {
-        nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-        nodeConfigService.setConfig(dummyConfigInput());
+        setConfig = new SetConfigImpl(mockedRequestContextStack, mockedDeviceContext);
+        setConfig.invoke(dummyConfigInput());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testBuildRequest() {
-        nodeConfigService = new NodeConfigServiceImpl(mockedRequestContextStack, mockedDeviceContext);
-        final OfHeader request = nodeConfigService.buildRequest(new Xid(DUMMY_XID_VALUE), dummyConfigInput());
+        setConfig = new SetConfigImpl(mockedRequestContextStack, mockedDeviceContext);
+        final var request = setConfig.buildRequest(new Xid(DUMMY_XID_VALUE), dummyConfigInput());
 
         assertTrue(request instanceof org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflow.protocol.rev130731.SetConfigInput);
@@ -51,9 +50,9 @@ public class NodeConfigServiceImplTest extends ServiceMocking {
     }
 
     private static SetConfigInput dummyConfigInput() {
-        SetConfigInputBuilder setConfigInputBuilder = new SetConfigInputBuilder();
-        setConfigInputBuilder.setFlag(DUMMY_FLAG_STR);
-        setConfigInputBuilder.setMissSearchLength(DUMMY_MISS_SEARCH_LENGTH);
-        return setConfigInputBuilder.build();
+        return new SetConfigInputBuilder()
+            .setFlag(DUMMY_FLAG_STR)
+            .setMissSearchLength(DUMMY_MISS_SEARCH_LENGTH)
+            .build();
     }
 }

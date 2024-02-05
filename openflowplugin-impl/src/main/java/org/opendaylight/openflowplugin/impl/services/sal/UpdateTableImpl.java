@@ -14,31 +14,27 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerTableMultipartService;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerTableMultipartService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
-public final class SalTableServiceImpl implements SalTableService {
-
+public final class UpdateTableImpl implements UpdateTable {
     private final SingleLayerTableMultipartService singleLayerService;
     private final MultiLayerTableMultipartService multiLayerService;
 
-    public SalTableServiceImpl(final RequestContextStack requestContextStack,
+    public UpdateTableImpl(final RequestContextStack requestContextStack,
                                final DeviceContext deviceContext,
                                final ConvertorExecutor convertorExecutor,
                                final MultipartWriterProvider multipartWriterProvider) {
-        singleLayerService = new SingleLayerTableMultipartService(requestContextStack,
-                                                                  deviceContext,
-                                                                  multipartWriterProvider);
-        multiLayerService = new MultiLayerTableMultipartService(requestContextStack,
-                                                                deviceContext,
-                                                                convertorExecutor,
-                                                                multipartWriterProvider);
+        singleLayerService = new SingleLayerTableMultipartService(requestContextStack, deviceContext,
+            multipartWriterProvider);
+        multiLayerService = new MultiLayerTableMultipartService(requestContextStack, deviceContext, convertorExecutor,
+            multipartWriterProvider);
     }
 
     @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(final UpdateTableInput input) {
+    public ListenableFuture<RpcResult<UpdateTableOutput>> invoke(final UpdateTableInput input) {
         return singleLayerService.canUseSingleLayerSerialization()
             ? singleLayerService.handleAndReply(input)
             : multiLayerService.handleAndReply(input);

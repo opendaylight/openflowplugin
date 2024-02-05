@@ -12,24 +12,16 @@ import static java.util.Objects.requireNonNull;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.ArrayList;
-import java.util.List;
 import org.opendaylight.openflowplugin.impl.util.BarrierUtil;
 import org.opendaylight.openflowplugin.impl.util.FlowUtil;
 import org.opendaylight.openflowplugin.impl.util.PathUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
@@ -40,8 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.update.flows.batch.input.BatchUpdateFlows;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -56,70 +46,59 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
     private static final Logger LOG = LoggerFactory.getLogger(SalFlowsBatchServiceImpl.class);
 
     private final SalFlowService salFlowService;
-    private final FlowCapableTransactionService transactionService;
+    private final SendBarrier sendBarrier;
 
-    public SalFlowsBatchServiceImpl(final SalFlowService salFlowService,
-                                    final FlowCapableTransactionService transactionService) {
+    public SalFlowsBatchServiceImpl(final SalFlowService salFlowService, final SendBarrier sendBarrier) {
         this.salFlowService = requireNonNull(salFlowService, "delegate flow service must not be null");
-        this.transactionService = requireNonNull(transactionService, "delegate transaction service must not be null");
+        this.sendBarrier = requireNonNull(sendBarrier, "delegate transaction service must not be null");
     }
 
     @Override
     public ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBatch(final RemoveFlowsBatchInput input) {
-        LOG.trace("Removing flows @ {} : {}",
-                  PathUtil.extractNodeId(input.getNode()),
-                  input.getBatchRemoveFlows().size());
-        final ArrayList<ListenableFuture<RpcResult<RemoveFlowOutput>>> resultsLot = new ArrayList<>();
-        for (BatchFlowInputGrouping batchFlow : input.nonnullBatchRemoveFlows().values()) {
-            final RemoveFlowInput removeFlowInput = new RemoveFlowInputBuilder(batchFlow)
-                    .setFlowRef(createFlowRef(input.getNode(), batchFlow))
-                    .setNode(input.getNode())
-                    .build();
-            resultsLot.add(salFlowService.removeFlow(removeFlowInput));
+        final var flows = input.nonnullBatchRemoveFlows().values();
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Removing flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), flows.size());
         }
 
-        final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
-                Futures.transform(Futures.successfulAsList(resultsLot),
-                        FlowUtil.createCumulatingFunction(input.nonnullBatchRemoveFlows().values()),
-                        MoreExecutors.directExecutor());
+        final var resultsLot = flows.stream()
+            .map(batchFlow -> salFlowService.removeFlow(new RemoveFlowInputBuilder(batchFlow)
+                .setFlowRef(createFlowRef(input.getNode(), batchFlow))
+                .setNode(input.getNode())
+                .build()))
+            .toList();
 
-        ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> removeFlowsBulkFuture =
-                Futures.transform(commonResult, FlowUtil.FLOW_REMOVE_TRANSFORM, MoreExecutors.directExecutor());
-
-        if (input.getBarrierAfter()) {
-            removeFlowsBulkFuture = BarrierUtil.chainBarrier(removeFlowsBulkFuture, input.getNode(),
-                    transactionService, FlowUtil.FLOW_REMOVE_COMPOSING_TRANSFORM);
-        }
-
-        return removeFlowsBulkFuture;
+        final var commonResult = Futures.transform(Futures.successfulAsList(resultsLot),
+            FlowUtil.createCumulatingFunction(flows), MoreExecutors.directExecutor());
+        final var removeFlowsBulkFuture = Futures.transform(commonResult, FlowUtil.FLOW_REMOVE_TRANSFORM,
+            MoreExecutors.directExecutor());
+        return input.getBarrierAfter()
+            ? BarrierUtil.chainBarrier(removeFlowsBulkFuture, input.getNode(), sendBarrier,
+                FlowUtil.FLOW_REMOVE_COMPOSING_TRANSFORM)
+            : removeFlowsBulkFuture;
     }
 
     @Override
     public ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBatch(final AddFlowsBatchInput input) {
-        LOG.trace("Adding flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), input.getBatchAddFlows().size());
-        final ArrayList<ListenableFuture<RpcResult<AddFlowOutput>>> resultsLot = new ArrayList<>();
-        for (BatchFlowInputGrouping batchFlow : input.nonnullBatchAddFlows().values()) {
-            final AddFlowInput addFlowInput = new AddFlowInputBuilder(batchFlow)
-                    .setFlowRef(createFlowRef(input.getNode(), batchFlow))
-                    .setNode(input.getNode())
-                    .build();
-            resultsLot.add(salFlowService.addFlow(addFlowInput));
+        final var flows = input.nonnullBatchAddFlows().values();
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Adding flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), flows.size());
         }
 
-        final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
-                Futures.transform(Futures.successfulAsList(resultsLot),
-                        FlowUtil.createCumulatingFunction(input.nonnullBatchAddFlows().values()),
-                        MoreExecutors.directExecutor());
+        final var resultsLot = flows.stream()
+            .map(batchFlow -> salFlowService.addFlow(new AddFlowInputBuilder(batchFlow)
+                .setFlowRef(createFlowRef(input.getNode(), batchFlow))
+                .setNode(input.getNode())
+                .build()))
+            .toList();
 
-        ListenableFuture<RpcResult<AddFlowsBatchOutput>> addFlowsBulkFuture =
-                Futures.transform(commonResult, FlowUtil.FLOW_ADD_TRANSFORM, MoreExecutors.directExecutor());
-
-        if (input.getBarrierAfter()) {
-            addFlowsBulkFuture = BarrierUtil.chainBarrier(addFlowsBulkFuture, input.getNode(),
-                    transactionService, FlowUtil.FLOW_ADD_COMPOSING_TRANSFORM);
-        }
-
-        return addFlowsBulkFuture;
+        final var commonResult = Futures.transform(Futures.successfulAsList(resultsLot),
+            FlowUtil.createCumulatingFunction(flows), MoreExecutors.directExecutor());
+        final var addFlowsBulkFuture = Futures.transform(commonResult, FlowUtil.FLOW_ADD_TRANSFORM,
+            MoreExecutors.directExecutor());
+        return input.getBarrierAfter()
+            ? BarrierUtil.chainBarrier(addFlowsBulkFuture, input.getNode(), sendBarrier,
+                FlowUtil.FLOW_ADD_COMPOSING_TRANSFORM)
+            : addFlowsBulkFuture;
     }
 
     private static FlowRef createFlowRef(final NodeRef nodeRef, final BatchFlowInputGrouping batchFlow) {
@@ -134,33 +113,27 @@ public class SalFlowsBatchServiceImpl implements SalFlowsBatchService {
 
     @Override
     public ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBatch(final UpdateFlowsBatchInput input) {
-        LOG.trace("Updating flows @ {} : {}",
-                  PathUtil.extractNodeId(input.getNode()),
-                  input.getBatchUpdateFlows().size());
-        final ArrayList<ListenableFuture<RpcResult<UpdateFlowOutput>>> resultsLot = new ArrayList<>();
-        for (BatchUpdateFlows batchFlow : input.nonnullBatchUpdateFlows().values()) {
-            final UpdateFlowInput updateFlowInput = new UpdateFlowInputBuilder(input)
-                    .setOriginalFlow(new OriginalFlowBuilder(batchFlow.getOriginalBatchedFlow()).build())
-                    .setUpdatedFlow(new UpdatedFlowBuilder(batchFlow.getUpdatedBatchedFlow()).build())
-                    .setFlowRef(createFlowRef(input.getNode(), batchFlow))
-                    .setNode(input.getNode())
-                    .build();
-            resultsLot.add(salFlowService.updateFlow(updateFlowInput));
+        final var flows = input.nonnullBatchUpdateFlows().values();
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Updating flows @ {} : {}", PathUtil.extractNodeId(input.getNode()), flows.size());
         }
 
-        final ListenableFuture<RpcResult<List<BatchFailedFlowsOutput>>> commonResult =
-                Futures.transform(Futures.successfulAsList(resultsLot),
-                                  FlowUtil.createCumulatingFunction(input.nonnullBatchUpdateFlows().values()),
-                        MoreExecutors.directExecutor());
+        final var resultsLot = flows.stream()
+            .map(batchFlow -> salFlowService.updateFlow(new UpdateFlowInputBuilder(input)
+                .setOriginalFlow(new OriginalFlowBuilder(batchFlow.getOriginalBatchedFlow()).build())
+                .setUpdatedFlow(new UpdatedFlowBuilder(batchFlow.getUpdatedBatchedFlow()).build())
+                .setFlowRef(createFlowRef(input.getNode(), batchFlow))
+                .setNode(input.getNode())
+                .build()))
+            .toList();
 
-        ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> updateFlowsBulkFuture =
-                Futures.transform(commonResult, FlowUtil.FLOW_UPDATE_TRANSFORM, MoreExecutors.directExecutor());
-
-        if (input.getBarrierAfter()) {
-            updateFlowsBulkFuture = BarrierUtil.chainBarrier(updateFlowsBulkFuture, input.getNode(),
-                    transactionService, FlowUtil.FLOW_UPDATE_COMPOSING_TRANSFORM);
-        }
-
-        return updateFlowsBulkFuture;
+        final var commonResult = Futures.transform(Futures.successfulAsList(resultsLot),
+            FlowUtil.createCumulatingFunction(flows), MoreExecutors.directExecutor());
+        final var updateFlowsBulkFuture = Futures.transform(commonResult, FlowUtil.FLOW_UPDATE_TRANSFORM,
+            MoreExecutors.directExecutor());
+        return input.getBarrierAfter()
+            ? BarrierUtil.chainBarrier(updateFlowsBulkFuture, input.getNode(), sendBarrier,
+                FlowUtil.FLOW_UPDATE_COMPOSING_TRANSFORM)
+            : updateFlowsBulkFuture;
     }
 }
