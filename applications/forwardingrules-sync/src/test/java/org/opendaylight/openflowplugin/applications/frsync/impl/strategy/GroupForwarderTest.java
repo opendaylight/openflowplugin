@@ -19,7 +19,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
@@ -72,7 +72,7 @@ public class GroupForwarderTest {
     private final InstanceIdentifier<Group> groupPath = flowCapableNodePath.child(Group.class, groupKey);
 
     @Mock
-    private RpcConsumerRegistry rpcConsumerRegistry;
+    private RpcService rpcConsumerRegistry;
     @Mock
     private AddGroup addGroup;
     @Mock

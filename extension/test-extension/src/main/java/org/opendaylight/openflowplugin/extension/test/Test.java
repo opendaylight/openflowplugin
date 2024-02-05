@@ -13,8 +13,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
@@ -77,8 +77,7 @@ public final class Test implements TestFlow, AutoCloseable {
 
     @Inject
     @Activate
-    public Test(@Reference final RpcConsumerRegistry rpcService,
-            @Reference final RpcProviderService rpcProviderService) {
+    public Test(@Reference final RpcService rpcService, @Reference final RpcProviderService rpcProviderService) {
         addFlow = rpcService.getRpc(AddFlow.class);
         reg = rpcProviderService.registerRpcImplementation(this);
     }
