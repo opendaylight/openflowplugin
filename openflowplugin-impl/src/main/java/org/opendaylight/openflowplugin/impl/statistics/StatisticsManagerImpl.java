@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
-import static java.util.Objects.requireNonNull;
-
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -24,30 +24,33 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkMode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkMode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class StatisticsManagerImpl implements StatisticsManager, StatisticsManagerControlService {
-
+public final class StatisticsManagerImpl implements StatisticsManager {
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImpl.class);
+
+    @VisibleForTesting
+    final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
 
     private final OpenflowProviderConfig config;
     private final ConvertorExecutor converterExecutor;
     private final Executor executor;
-    private final ConcurrentMap<DeviceInfo, StatisticsContext> contexts = new ConcurrentHashMap<>();
     private final Semaphore workModeGuard = new Semaphore(1, true);
-    private final ObjectRegistration<StatisticsManagerControlService> controlServiceRegistration;
+    private final Registration controlServiceRegistration;
     private final StatisticsWorkMode workMode = StatisticsWorkMode.COLLECTALL;
     private boolean isStatisticsFullyDisabled;
 
@@ -58,20 +61,23 @@ public final class StatisticsManagerImpl implements StatisticsManager, Statistic
         this.config = config;
         this.executor = executor;
         converterExecutor = convertorExecutor;
-        controlServiceRegistration = requireNonNull(rpcProviderRegistry)
-                .registerRpcImplementation(StatisticsManagerControlService.class, this);
+        controlServiceRegistration = rpcProviderRegistry.registerRpcImplementations(
+            ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(GetStatisticsWorkMode.class, this::getStatisticsWorkMode)
+            .put(ChangeStatisticsWorkMode.class, this::changeStatisticsWorkMode)
+            .build());
     }
 
-    @Override
-    public ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<GetStatisticsWorkModeOutput>> getStatisticsWorkMode(
             final GetStatisticsWorkModeInput input) {
         return RpcResultBuilder.success(new GetStatisticsWorkModeOutputBuilder()
                 .setMode(workMode)
                 .build()).buildFuture();
     }
 
-    @Override
-    public ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> changeStatisticsWorkMode(
+    @VisibleForTesting
+    ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> changeStatisticsWorkMode(
             final ChangeStatisticsWorkModeInput input) {
         if (workModeGuard.tryAcquire()) {
             final StatisticsWorkMode targetWorkMode = input.getMode();

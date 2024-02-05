@@ -7,25 +7,22 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -53,20 +50,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.ChangeStatisticsWorkModeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsManagerControlService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsManagerImplTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(StatisticsManagerImplTest.class);
-
     public static final NodeId NODE_ID = new NodeId("ofp-unit-dummy-node-id");
 
     @Mock
@@ -90,17 +81,18 @@ public class StatisticsManagerImplTest {
     @Mock
     private MultiMsgCollector multiMagCollector;
     @Mock
-    private ObjectRegistration<StatisticsManagerControlService> serviceControlRegistration;
+    private Registration serviceControlRegistration;
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
     private DataBroker dataBroker;
     @Mock
     private ReconciliationFrameworkRegistrar reconciliationFrameworkRegistrar;
+    @Mock
+    private StatisticsContext statisticContext;
 
     private RequestContext<List<MultipartReply>> currentRequestContext;
     private StatisticsManagerImpl statisticsManager;
-
 
     @Before
     public void initialization() {
@@ -108,9 +100,7 @@ public class StatisticsManagerImplTest {
                 .create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId("openflow:10")));
 
-        when(rpcProviderRegistry.registerRpcImplementation(
-                eq(StatisticsManagerControlService.class),
-                ArgumentMatchers.any())).thenReturn(serviceControlRegistration);
+        when(rpcProviderRegistry.registerRpcImplementations(any())).thenReturn(serviceControlRegistration);
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
 
@@ -124,22 +114,13 @@ public class StatisticsManagerImplTest {
                 MoreExecutors.directExecutor());
     }
 
-    private static Map<DeviceInfo, StatisticsContext> getContextsMap(final StatisticsManagerImpl statisticsManager)
-            throws NoSuchFieldException, IllegalAccessException {
-        // HACK: contexts map for testing shall be accessed in some more civilized way
-        final Field contextsField = StatisticsManagerImpl.class.getDeclaredField("contexts");
-        assertNotNull(contextsField);
-        contextsField.setAccessible(true);
-        return (Map<DeviceInfo, StatisticsContext>) contextsField.get(statisticsManager);
-    }
-
     @Test
     public void testGetStatisticsWorkMode() throws Exception {
         final Future<RpcResult<GetStatisticsWorkModeOutput>> workMode = statisticsManager.getStatisticsWorkMode(null);
-        Assert.assertTrue(workMode.isDone());
-        Assert.assertTrue(workMode.get().isSuccessful());
+        assertTrue(workMode.isDone());
+        assertTrue(workMode.get().isSuccessful());
         assertNotNull(workMode.get().getResult());
-        Assert.assertEquals(StatisticsWorkMode.COLLECTALL, workMode.get().getResult().getMode());
+        assertEquals(StatisticsWorkMode.COLLECTALL, workMode.get().getResult().getMode());
     }
 
     /**
@@ -148,9 +129,7 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode1() throws Exception {
-        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-
-        getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
+        statisticsManager.contexts.put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -163,10 +142,11 @@ public class StatisticsManagerImplTest {
         verify(statisticContext).disableGathering();
     }
 
-    private static void checkWorkModeChangeOutcome(ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode)
+    private static void checkWorkModeChangeOutcome(
+            final ListenableFuture<RpcResult<ChangeStatisticsWorkModeOutput>> workMode)
             throws InterruptedException, ExecutionException {
-        Assert.assertTrue(workMode.isDone());
-        Assert.assertTrue(workMode.get().isSuccessful());
+        assertTrue(workMode.isDone());
+        assertTrue(workMode.get().isSuccessful());
     }
 
 
@@ -176,9 +156,7 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode2() throws Exception {
-        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-
-        getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
+        statisticsManager.contexts.put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
@@ -198,9 +176,7 @@ public class StatisticsManagerImplTest {
      */
     @Test
     public void testChangeStatisticsWorkMode3() throws Exception {
-        final StatisticsContext statisticContext = Mockito.mock(StatisticsContext.class);
-
-        getContextsMap(statisticsManager).put(deviceInfo, statisticContext);
+        statisticsManager.contexts.put(deviceInfo, statisticContext);
 
         final ChangeStatisticsWorkModeInputBuilder changeStatisticsWorkModeInputBld =
                 new ChangeStatisticsWorkModeInputBuilder()
