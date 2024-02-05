@@ -13,84 +13,57 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SalMeterServiceImplTest extends ServiceMocking {
-
     private static final Uint32 DUMMY_METER_ID = Uint32.valueOf(15);
     private static final Uint32 DUMMY_METTER_ID = Uint32.valueOf(2000);
 
     @Mock
-    DeviceMeterRegistry mockedDeviceMeterRegistry;
+    private DeviceMeterRegistry mockedDeviceMeterRegistry;
 
-    SalMeterServiceImpl salMeterService;
+    private AddMeterImpl addMeter;
+    private RemoveMeterImpl removeMeter;
+    private UpdateMeterImpl updateMeter;
 
     @Override
     protected void setup() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salMeterService = new SalMeterServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        addMeter = new AddMeterImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        removeMeter = new RemoveMeterImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        updateMeter = new UpdateMeterImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test
     public void testAddMeter() {
-        addMeter();
-    }
-
-
-    private void addMeter() {
-        final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
-        AddMeterInput addMeterInput = new AddMeterInputBuilder().setMeterId(dummyMeterId).build();
         this.<AddMeterOutput>mockSuccessfulFuture();
-        salMeterService.addMeter(addMeterInput);
+        addMeter.invoke(new AddMeterInputBuilder().setMeterId(new MeterId(DUMMY_METER_ID)).build());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testUpdateMeter() {
-        updateMeter();
-    }
-
-
-    private void updateMeter() {
-        final UpdatedMeter dummyUpdatedMeter =
-                new UpdatedMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
-        final OriginalMeter dummyOriginalMeter =
-                new OriginalMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build();
-
-        final UpdateMeterInput updateMeterInput = new UpdateMeterInputBuilder()
-                .setUpdatedMeter(dummyUpdatedMeter).setOriginalMeter(dummyOriginalMeter).build();
-
         this.<AddMeterOutput>mockSuccessfulFuture();
-        salMeterService.updateMeter(updateMeterInput);
+        updateMeter.invoke(new UpdateMeterInputBuilder()
+            .setUpdatedMeter(new UpdatedMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build())
+            .setOriginalMeter(new OriginalMeterBuilder().setMeterId(new MeterId(DUMMY_METTER_ID)).build())
+            .build());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testRemoveMeter() {
-        removeMeter();
-    }
-
-
-    private void removeMeter() {
-        final MeterId dummyMeterId = new MeterId(DUMMY_METER_ID);
-        RemoveMeterInput removeMeterInput = new RemoveMeterInputBuilder().setMeterId(dummyMeterId).build();
         this.<RemoveMeterOutput>mockSuccessfulFuture();
-        salMeterService.removeMeter(removeMeterInput);
+        removeMeter.invoke(new RemoveMeterInputBuilder().setMeterId(new MeterId(DUMMY_METER_ID)).build());
         verify(mockedRequestContextStack).createRequestContext();
     }
 }

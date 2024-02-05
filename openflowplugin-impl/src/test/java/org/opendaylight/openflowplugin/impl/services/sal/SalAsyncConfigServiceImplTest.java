@@ -7,26 +7,23 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.Future;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.GetAsyncImpl;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SetAsyncImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsyncOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsyncOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
@@ -34,45 +31,38 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SalAsyncConfigServiceImplTest extends ServiceMocking {
-
-    private SalAsyncConfigServiceImpl salAsyncConfigService;
-
-    @Override
-    public void setup() {
-        salAsyncConfigService = new SalAsyncConfigServiceImpl(
-                mockedRequestContextStack, mockedDeviceContext);
-    }
-
     @Test
     public void testSetAsync() throws Exception {
-        final SetAsyncInput setAsyncInput = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol
+        final var setAsync = new SetAsyncImpl(mockedRequestContextStack, mockedDeviceContext);
+
+        final var setAsyncInput = new org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol
                 .rev130731.SetAsyncInputBuilder().build();
-        final RpcResult<SetAsyncInput> replyRpcResult = RpcResultBuilder.success(setAsyncInput).build();
-        final ListenableFuture<RpcResult<SetAsyncInput>> replyFuture = Futures.immediateFuture(replyRpcResult);
-        Mockito.when(mockedRequestContext.getFuture()).thenReturn(replyFuture);
+        final var replyRpcResult = RpcResultBuilder.success(setAsyncInput).build();
+        final var replyFuture = Futures.immediateFuture(replyRpcResult);
+        when(mockedRequestContext.getFuture()).thenReturn(replyFuture);
 
-        final ListenableFuture<RpcResult<SetAsyncOutput>> setAsyncResult =
-                salAsyncConfigService.setAsync(new SetAsyncInputBuilder().build());
+        final var setAsyncResult = setAsync.invoke(new SetAsyncInputBuilder().build());
 
-        Assert.assertNotNull(setAsyncResult);
-        Assert.assertTrue(setAsyncResult.isDone());
-        Assert.assertTrue(setAsyncResult.get().isSuccessful());
+        assertNotNull(setAsyncResult);
+        assertTrue(setAsyncResult.isDone());
+        assertTrue(setAsyncResult.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testGetAsyncTest() throws Exception {
-        final GetAsyncOutput getAsyncOutput = new GetAsyncOutputBuilder().build();
-        final RpcResult<GetAsyncOutput> replyRpcResult = RpcResultBuilder.success(getAsyncOutput).build();
-        final ListenableFuture<RpcResult<GetAsyncOutput>> replyFuture = Futures.immediateFuture(replyRpcResult);
-        Mockito.when(mockedRequestContext.getFuture()).thenReturn(replyFuture);
+        final var getAsync = new GetAsyncImpl(mockedRequestContextStack, mockedDeviceContext);
 
-        final Future<RpcResult<GetAsyncOutput>> getAsyncResult =
-                salAsyncConfigService.getAsync(new GetAsyncInputBuilder().build());
+        final var getAsyncOutput = new GetAsyncOutputBuilder().build();
+        final var replyRpcResult = RpcResultBuilder.success(getAsyncOutput).build();
+        final var replyFuture = Futures.immediateFuture(replyRpcResult);
+        when(mockedRequestContext.getFuture()).thenReturn(replyFuture);
 
-        Assert.assertNotNull(getAsyncResult);
-        Assert.assertTrue(getAsyncResult.isDone());
-        Assert.assertTrue(getAsyncResult.get().isSuccessful());
+        final var getAsyncResult = getAsync.invoke(new GetAsyncInputBuilder().build());
+
+        assertNotNull(getAsyncResult);
+        assertTrue(getAsyncResult.isDone());
+        assertTrue(getAsyncResult.get().isSuccessful());
         verify(mockedRequestContextStack).createRequestContext();
         verify(mockedOutboundQueue).commitEntry(eq(ServiceMocking.DUMMY_XID_VALUE), any(), any());
     }
