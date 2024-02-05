@@ -30,7 +30,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -129,7 +129,7 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     @Inject
     @Activate
     public ArbitratorReconciliationManagerImpl(@Reference final ReconciliationManager reconciliationManager,
-            @Reference final RpcProviderService rpcProviderService, @Reference final RpcConsumerRegistry rpcService,
+            @Reference final RpcProviderService rpcProviderService, @Reference final RpcService rpcService,
             @Reference final UpgradeState upgradeState) {
         this.rpcProviderService = requireNonNull(rpcProviderService);
         this.upgradeState = requireNonNull(upgradeState);
