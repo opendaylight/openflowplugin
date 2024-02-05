@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +32,7 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -49,7 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -64,9 +64,9 @@ public class LLDPDataTreeChangeListenerTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private ListenerRegistration<?> reg;
+    private Registration reg;
     @Mock
-    private RpcConsumerRegistry rpcService;
+    private RpcService rpcService;
     @Mock
     private AddFlow addFlow;
     @Mock
@@ -88,7 +88,7 @@ public class LLDPDataTreeChangeListenerTest {
                 LogicalDatastoreType.OPERATIONAL, NODE_IID.augmentation(FlowCapableNode.class));
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
-        when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
+        when(dataTreeModification.getRootNode().modificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
     }
 
@@ -99,7 +99,7 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Test
     public void testOnDataTreeChanged() {
-        lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        lldpPacketPuntEnforcer.onDataTreeChanged(List.of(dataTreeModification));
         verify(addFlow).invoke(addFlowInputCaptor.capture());
         AddFlowInput captured = addFlowInputCaptor.getValue();
         assertEquals(NODE_IID, captured.getNode().getValue());

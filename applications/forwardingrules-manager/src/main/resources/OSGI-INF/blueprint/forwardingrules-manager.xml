@@ -6,7 +6,7 @@
   <reference id="dataBroker"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
   <reference id="rpcConsumerRegistry"
-             interface="org.opendaylight.mdsal.binding.api.RpcConsumerRegistry"/>
+             interface="org.opendaylight.mdsal.binding.api.RpcService"/>
   <reference id="rpcProviderService"
              interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
   <reference id="mastershipChangeServiceManager"

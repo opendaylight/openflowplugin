@@ -14,16 +14,16 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -47,7 +47,7 @@ import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificati
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -160,19 +160,17 @@ public class ConnectionManagerImpl implements ConnectionManager {
         }
     }
 
-    class DeviceConnectionStatusProviderImpl implements DeviceConnectionStatusProvider,
-            ClusteredDataTreeChangeListener<Node> {
+    class DeviceConnectionStatusProviderImpl implements DeviceConnectionStatusProvider, DataTreeChangeListener<Node> {
         private final Map<BigInteger, LocalDateTime> deviceConnectionMap = new ConcurrentHashMap<>();
 
-        private ListenerRegistration<DeviceConnectionStatusProviderImpl> listenerRegistration;
+        private Registration listenerRegistration;
 
         @Override
         @SuppressWarnings({"checkstyle:IllegalCatch"})
         public void init() {
-            DataTreeIdentifier<Node> treeId = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
-                    getWildCardPath());
+            final var treeId = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
             try {
-                listenerRegistration = dataBroker.registerDataTreeChangeListener(treeId, this);
+                listenerRegistration = dataBroker.registerTreeChangeListener(treeId, this);
             } catch (Exception e) {
                 LOG.error("DeviceConnectionStatusProvider listener registration failed", e);
             }
@@ -194,7 +192,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         }
 
         @Override
-        public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<Node>> changes) {
+        public void onDataTreeChanged(final List<DataTreeModification<Node>> changes) {
             requireNonNull(changes, "Changes must not be null!");
             for (DataTreeModification<Node> change : changes) {
                 final DataObjectModification<Node> mod = change.getRootNode();

@@ -63,7 +63,7 @@
   <reference id="notificationPublishService"
              interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
   <reference id="clusterSingletonServiceProvider"
-             interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
+             interface="org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider"/>
   <reference id="entityOwnershipService"
              interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
   <reference id="diagStatusProvider"
@@ -72,6 +72,4 @@
              interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
   <reference id="mastershipChangeServiceManager"
              interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
-
-  <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
 </blueprint>

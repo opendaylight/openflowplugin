@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -62,7 +62,7 @@ public final class ListenerRegistrationHelperImpl implements AutoCloseable, List
     }
 
     @Override
-    public <T extends DataObject> ListenableFuture<ObjectRegistration<?>> checkedRegisterListener(
+    public <T extends DataObject> ListenableFuture<Registration> checkedRegisterListener(
             final DataTreeIdentifier<T> treeId, final ClusteredDataTreeChangeListener<T> listener) {
         return Futures.submit(() -> {
             while (!getInventoryConfigDataStoreStatus().equals("OPERATIONAL")) {
