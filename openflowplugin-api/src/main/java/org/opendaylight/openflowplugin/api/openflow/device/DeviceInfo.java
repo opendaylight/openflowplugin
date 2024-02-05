@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;

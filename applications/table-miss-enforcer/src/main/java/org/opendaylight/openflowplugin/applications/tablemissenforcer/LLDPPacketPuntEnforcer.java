@@ -19,7 +19,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -74,7 +74,7 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDat
     @Activate
     public LLDPPacketPuntEnforcer(@Reference final DataBroker dataBroker,
             @Reference final DeviceOwnershipService deviceOwnershipService,
-            @Reference final RpcConsumerRegistry rpcService) {
+            @Reference final RpcService rpcService) {
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
         addFlow = rpcService.getRpc(AddFlow.class);
         listenerRegistration = dataBroker.registerDataTreeChangeListener(

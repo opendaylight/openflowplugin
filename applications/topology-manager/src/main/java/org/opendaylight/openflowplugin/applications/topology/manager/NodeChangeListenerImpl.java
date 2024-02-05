@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import java.util.Collection;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -38,7 +38,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
             switch (modification.getRootNode().getModificationType()) {
                 case WRITE:

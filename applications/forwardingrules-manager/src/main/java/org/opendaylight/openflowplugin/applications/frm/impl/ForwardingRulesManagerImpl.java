@@ -20,10 +20,10 @@ import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -104,7 +104,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
 
     @Inject
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
-                                      final RpcConsumerRegistry rpcRegistry,
+                                      final RpcService rpcRegistry,
                                       final RpcProviderService rpcProviderService,
                                       final ForwardingRulesManagerConfig config,
                                       final MastershipChangeServiceManager mastershipChangeServiceManager,
