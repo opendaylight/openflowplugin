@@ -8,8 +8,8 @@
 package org.opendaylight.openflowplugin.applications.topology.lldp;
 
 import com.google.common.annotations.VisibleForTesting;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -41,7 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,7 +60,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
     private final NotificationPublishService notificationService;
     private final AutoCloseable configurationServiceRegistration;
     private final EntityOwnershipService eos;
-    private ListenerRegistration<?> listenerRegistration;
+    private Registration listenerRegistration;
 
     /**
      * default ctor - start timer.
@@ -76,7 +76,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
         this.notificationService = notificationService;
         configurationServiceRegistration = configurationService.registerListener(this);
         eos = entityOwnershipService;
-        final DataTreeIdentifier<Link> dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        final DataTreeIdentifier<Link> dtiToNodeConnector = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                 II_TO_LINK);
         try {
             listenerRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, LLDPLinkAger.this);
@@ -88,7 +88,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
             topologyLldpDiscoveryConfig.getTopologyLldpInterval().getValue().toJava());
     }
 
-    public void put(LinkDiscovered link) {
+    public void put(final LinkDiscovered link) {
         Date expires = new Date();
         expires.setTime(expires.getTime() + linkExpirationTime);
         linkToDate.put(link, expires);
@@ -107,9 +107,9 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull Collection<DataTreeModification<Link>> changes) {
+    public void onDataTreeChanged(final List<DataTreeModification<Link>> changes) {
         for (DataTreeModification<Link> modification : changes) {
-            switch (modification.getRootNode().getModificationType()) {
+            switch (modification.getRootNode().modificationType()) {
                 case WRITE:
                     break;
                 case SUBTREE_MODIFIED:
@@ -119,7 +119,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
                     processLinkDeleted(modification.getRootNode());
                     break;
                 default:
-                    LOG.error("Unhandled modification type: {}", modification.getRootNode().getModificationType());
+                    LOG.error("Unhandled modification type: {}", modification.getRootNode().modificationType());
             }
         }
     }
@@ -151,7 +151,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
         return linkToDate.containsKey(linkDiscovered);
     }
 
-    private void processLinkDeleted(DataObjectModification<Link> rootNode) {
+    private void processLinkDeleted(final DataObjectModification<Link> rootNode) {
         Link link = rootNode.getDataBefore();
         LOG.trace("Removing link {} from linkToDate cache", link);
         LinkDiscovered linkDiscovered = LLDPDiscoveryUtils.toLLDPLinkDiscovered(link);

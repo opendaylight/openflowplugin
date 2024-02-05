@@ -10,8 +10,8 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
@@ -64,7 +64,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<Node>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<Node>> modifications) {
         super.onDataTreeChanged(modifications);
     }
 
