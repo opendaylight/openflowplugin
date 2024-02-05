@@ -15,10 +15,10 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.concepts.Registration;
 
 /**
  * Test for {@link DeviceMastershipManager}.
@@ -28,7 +28,7 @@ public class DeviceMastershipManagerTest {
     private static final NodeId NODE_ID = new NodeId("testNode");
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
-    private ClusterSingletonServiceRegistration registration;
+    private Registration registration;
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonService;
 

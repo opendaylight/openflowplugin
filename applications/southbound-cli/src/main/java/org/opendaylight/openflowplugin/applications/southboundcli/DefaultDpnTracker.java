@@ -8,15 +8,14 @@
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -24,7 +23,7 @@ import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -35,20 +34,19 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @Component(service = DpnTracker.class)
-public final class DefaultDpnTracker
-        implements DpnTracker, ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
+public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListener<FlowCapableNode>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDpnTracker.class);
     public static final String DEFAULT_DPN_NAME = "UNKNOWN";
     public static final String SEPARATOR = ":";
 
     private final Map<Long, String> dpnIdToNameCache = new HashMap<>();
-    private final ListenerRegistration<?> listenerReg;
+    private final Registration listenerReg;
 
     @Inject
     @Activate
     public DefaultDpnTracker(@Reference final DataBroker dataBroker) {
-        listenerReg = dataBroker.registerDataTreeChangeListener(
-            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        listenerReg = dataBroker.registerTreeChangeListener(
+            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
     }
 
@@ -72,27 +70,27 @@ public final class DefaultDpnTracker
     }
 
     @Override
-    public synchronized void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> changes) {
+    public synchronized void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (var change : changes) {
-            final var key = change.getRootPath().getRootIdentifier();
+            final var key = change.getRootPath().path();
             final var mod = change.getRootNode();
             final var nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
-            switch (mod.getModificationType()) {
+            switch (mod.modificationType()) {
                 case DELETE:
-                    remove(nodeIdent, mod.getDataBefore());
+                    remove(nodeIdent, mod.dataBefore());
                     break;
                 case SUBTREE_MODIFIED:
-                    update(nodeIdent, mod.getDataBefore(), mod.getDataAfter());
+                    update(nodeIdent, mod.dataBefore(), mod.dataAfter());
                     break;
                 case WRITE:
                     if (mod.getDataBefore() == null) {
-                        add(nodeIdent, mod.getDataAfter());
+                        add(nodeIdent, mod.dataAfter());
                     } else {
-                        update(nodeIdent, mod.getDataBefore(), mod.getDataAfter());
+                        update(nodeIdent, mod.dataBefore(), mod.dataAfter());
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
             }
         }
     }
