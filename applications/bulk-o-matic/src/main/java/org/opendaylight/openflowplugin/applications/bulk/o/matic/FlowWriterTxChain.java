@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.Transaction;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
-import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -33,14 +32,14 @@ public class FlowWriterTxChain implements FlowCounterMBean {
     private final AtomicInteger countDpnWriteCompletion = new AtomicInteger();
     private final AtomicLong taskCompletionTime = new AtomicLong();
 
-    public FlowWriterTxChain(final DataBroker dataBroker, ExecutorService flowPusher) {
+    public FlowWriterTxChain(final DataBroker dataBroker, final ExecutorService flowPusher) {
         this.dataBroker = dataBroker;
         this.flowPusher = flowPusher;
         LOG.info("Using Ping Pong Flow Tester Impl");
     }
 
-    public void addFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize, int sleepMillis, int sleepAfter,
-            short startTableId, short endTableId, boolean isCreateParents) {
+    public void addFlows(final Integer dpnCount, final Integer flowsPerDPN, final int batchSize, final int sleepMillis,
+            final int sleepAfter, final short startTableId, final short endTableId, final boolean isCreateParents) {
         LOG.info("Using Transaction Chain Flow Writer Impl");
         countDpnWriteCompletion.set(dpnCount);
         startTime = System.nanoTime();
@@ -51,8 +50,8 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         }
     }
 
-    public void deleteFlows(Integer dpnCount, Integer flowsPerDPN, int batchSize, short startTableId,
-            short endTableId) {
+    public void deleteFlows(final Integer dpnCount, final Integer flowsPerDPN, final int batchSize,
+            final short startTableId, final short endTableId) {
         LOG.info("Using Transaction Chain Flow Writer Impl");
         countDpnWriteCompletion.set(dpnCount);
         for (int i = 1; i <= dpnCount; i++) {
@@ -160,20 +159,20 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         }
 
         @Override
-        public void onTransactionChainFailed(TransactionChain transactionChain,
-                Transaction asyncTransaction, Throwable throwable) {
+        public void onTransactionChainFailed(final TransactionChain transactionChain,
+                final Transaction asyncTransaction, final Throwable throwable) {
             LOG.error("Transaction chain: {} FAILED at asyncTransaction: {} due to: ", transactionChain,
                     asyncTransaction.getIdentifier(), throwable);
             transactionChain.close();
         }
 
         @Override
-        public void onTransactionChainSuccessful(TransactionChain transactionChain) {
+        public void onTransactionChainSuccessful(final TransactionChain transactionChain) {
             LOG.info("Transaction chain: {} closed successfully.", transactionChain);
         }
 
-        private void writeTxToDs(WriteTransaction writeTransaction, String flowId, InstanceIdentifier<Flow> flowIid,
-                Flow flow, Integer sourceIp, Short tableId) {
+        private void writeTxToDs(final WriteTransaction writeTransaction, final String flowId,
+                final InstanceIdentifier<Flow> flowIid, final Flow flow, final Integer sourceIp, final Short tableId) {
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 if (isCreateParents) {
@@ -194,8 +193,8 @@ public class FlowWriterTxChain implements FlowCounterMBean {
             private final short beginTableId;
             private final TransactionChain txChain;
 
-            DsCallBack(String dpId, short beginTableId, short endTableId, int sourceIp,
-                    TransactionChain txChain) {
+            DsCallBack(final String dpId, final short beginTableId, final short endTableId, final int sourceIp,
+                    final TransactionChain txChain) {
                 this.dpId = dpId;
                 this.sourceIp = sourceIp;
                 this.endTableId = endTableId;
@@ -204,7 +203,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
             }
 
             @Override
-            public void onSuccess(Object notUsed) {
+            public void onSuccess(final Object notUsed) {
                 if (remainingTxReturn.decrementAndGet() <= 0) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {} in {}ns", dpId, dur);
@@ -218,7 +217,7 @@ public class FlowWriterTxChain implements FlowCounterMBean {
             }
 
             @Override
-            public void onFailure(Throwable error) {
+            public void onFailure(final Throwable error) {
                 if (remainingTxReturn.decrementAndGet() <= 0) {
                     long dur = System.nanoTime() - startTime;
                     LOG.info("Completed all flows installation for: dpid: {} in {}ns", dpId, dur);

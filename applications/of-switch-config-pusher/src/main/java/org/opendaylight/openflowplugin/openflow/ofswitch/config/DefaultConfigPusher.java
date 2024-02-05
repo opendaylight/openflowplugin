@@ -19,7 +19,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -50,7 +50,7 @@ public final class DefaultConfigPusher implements AutoCloseable, ClusteredDataTr
 
     @Inject
     @Activate
-    public DefaultConfigPusher(@Reference final DataBroker dataBroker, @Reference final RpcConsumerRegistry rpcService,
+    public DefaultConfigPusher(@Reference final DataBroker dataBroker, @Reference final RpcService rpcService,
             @Reference final DeviceOwnershipService deviceOwnershipService) {
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
         setConfig = rpcService.getRpc(SetConfig.class);

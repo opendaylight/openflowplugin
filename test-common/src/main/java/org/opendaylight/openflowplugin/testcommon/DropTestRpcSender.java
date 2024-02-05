@@ -16,7 +16,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
@@ -67,7 +67,7 @@ public final class DropTestRpcSender extends AbstractDropTest {
     @Inject
     @Activate
     public DropTestRpcSender(@Reference final NotificationService notificationService,
-            @Reference final RpcConsumerRegistry rpcService) {
+            @Reference final RpcService rpcService) {
         this.notificationService = requireNonNull(notificationService);
         addFlow = rpcService.getRpc(AddFlow.class);
     }

@@ -28,7 +28,7 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -55,7 +55,7 @@ public class DefaultConfigPusherTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private RpcConsumerRegistry rpcService;
+    private RpcService rpcService;
     @Mock
     private SetConfig setConfig;
     @Mock
