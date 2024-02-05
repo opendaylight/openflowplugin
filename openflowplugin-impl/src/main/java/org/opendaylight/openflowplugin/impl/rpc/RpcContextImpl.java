@@ -8,10 +8,12 @@
 package org.opendaylight.openflowplugin.impl.rpc;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
@@ -29,23 +31,30 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
-import org.opendaylight.openflowplugin.impl.services.sal.FlowCapableTransactionServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.NodeConfigServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.PacketProcessingServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalAsyncConfigServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.SendEchoImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.AddFlowImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.AddGroupImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.AddMeterImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.RemoveFlowImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.RemoveGroupImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.RemoveMeterImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalBundleServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalEchoServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalExperimenterMpMessageServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlatBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalFlowServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalFlowsBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalGroupServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalGroupsBatchServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalMeterServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalMetersBatchServiceImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.SalPortServiceImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.SalTableServiceImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SendBarrierImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.SetConfigImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.TransmitPacketImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.UpdateFlowImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.UpdateGroupImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.UpdateMeterImpl;
+import org.opendaylight.openflowplugin.impl.services.sal.UpdateTableImpl;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.GetAsyncImpl;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SetAsyncImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightFlowTableStatisticsServiceImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.OpendaylightGroupStatisticsServiceImpl;
@@ -57,31 +66,39 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.Opendayli
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.multilayer.MultiLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleLayerDirectStatisticsProviderInitializer;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SalAsyncConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsync;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsync;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.OpendaylightDirectStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SalEchoService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEcho;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SalExperimenterMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SalExperimenterMpMessageService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.OpendaylightFlowStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.OpendaylightFlowTableStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.OpendaylightGroupStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.OpendaylightMeterStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.NodeConfigService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.SalPortService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.OpendaylightPortStatisticsService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.OpendaylightQueueStatisticsService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -137,6 +154,11 @@ final class RpcContextImpl implements RpcContext {
                         nodeInstanceIdentifier.getKey().getId().getValue());
             }
         }
+    }
+
+    @Override
+    public ServiceGroupIdentifier getIdentifier() {
+        return deviceInfo.getServiceIdentifier();
     }
 
     @Override
@@ -208,32 +230,68 @@ final class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
-        // TODO: Use multipart writer provider from device context
+        // FIXME:: Use multipart writer provider from device context
         final var multipartWriterProvider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);
 
-        // create service instances
-        final var salFlowService = new SalFlowServiceImpl(this, deviceContext, convertorExecutor);
-        final var flowCapableTransactionService = new FlowCapableTransactionServiceImpl(this, deviceContext);
-        final var salAsyncConfigService = new SalAsyncConfigServiceImpl(this, deviceContext);
-        final var salGroupService = new SalGroupServiceImpl(this, deviceContext, convertorExecutor);
-        final var salMeterService = new SalMeterServiceImpl(this, deviceContext, convertorExecutor);
+        // flow-capable-transaction.yang
+        final var sendBarrier = new SendBarrierImpl(this, deviceContext);
+
+        // node-config.yang
+        final var setConfig = new SetConfigImpl(this, deviceContext);
+
+        // packet-processing.yang
+        final var transmitPacket = new TransmitPacketImpl(this, deviceContext, convertorExecutor);
+
+        // sal-async-config.yang
+        final var getAsync = new GetAsyncImpl(this, deviceContext);
+        final var setAsync = new SetAsyncImpl(this, deviceContext);
+
+        // sal-echo.yang
+        final var sendEcho = new SendEchoImpl(this, deviceContext);
+
+        // sal-flow.yang
+        final var addFlow = new AddFlowImpl(this, deviceContext, convertorExecutor);
+        final var removeFlow = new RemoveFlowImpl(this, deviceContext, convertorExecutor);
+        final var updateFlow = new UpdateFlowImpl(this, deviceContext, convertorExecutor);
+
+        // sal-group.yang
+        final var addGroup = new AddGroupImpl(this, deviceContext, convertorExecutor);
+        final var removeGroup = new RemoveGroupImpl(this, deviceContext, convertorExecutor);
+        final var updateGroup = new UpdateGroupImpl(this, deviceContext, convertorExecutor);
+
+        // sal-meter.yang
+        final var addMeter = new AddMeterImpl(this, deviceContext, convertorExecutor);
+        final var removeMeter = new RemoveMeterImpl(this, deviceContext, convertorExecutor);
+        final var updateMeter = new UpdateMeterImpl(this, deviceContext, convertorExecutor);
+
+        // sal-table.yang
+        final var updateTable = new UpdateTableImpl(this, deviceContext, convertorExecutor, multipartWriterProvider);
+
+        final var reg = rpcProviderRegistry.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
+            .put(SendBarrier.class, sendBarrier)
+            .put(SetConfig.class, setConfig)
+            .put(TransmitPacket.class, transmitPacket)
+            .put(GetAsync.class, getAsync)
+            .put(SetAsync.class, setAsync)
+            .put(SendEcho.class, sendEcho)
+            .put(AddFlow.class, addFlow)
+            .put(RemoveFlow.class, removeFlow)
+            .put(UpdateFlow.class, updateFlow)
+            .put(AddGroup.class, addGroup)
+            .put(RemoveGroup.class, removeGroup)
+            .put(UpdateGroup.class, updateGroup)
+            .put(AddMeter.class, addMeter)
+            .put(RemoveMeter.class, removeMeter)
+            .put(UpdateMeter.class, updateMeter)
+            .put(UpdateTable.class, updateTable)
+            .build(), Set.of(nodeInstanceIdentifier));
+
         final var flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(this, deviceContext,
             convertorExecutor);
 
         // register routed service instances
-        registerRpcServiceImplementation(SalEchoService.class, new SalEchoServiceImpl(this, deviceContext));
-        registerRpcServiceImplementation(SalFlowService.class, salFlowService);
-        registerRpcServiceImplementation(FlowCapableTransactionService.class, flowCapableTransactionService);
-        registerRpcServiceImplementation(SalAsyncConfigService.class, salAsyncConfigService);
-        registerRpcServiceImplementation(SalMeterService.class, salMeterService);
-        registerRpcServiceImplementation(SalGroupService.class, salGroupService);
-        registerRpcServiceImplementation(SalTableService.class,
-            new SalTableServiceImpl(this, deviceContext, convertorExecutor, multipartWriterProvider));
         registerRpcServiceImplementation(SalPortService.class,
             new SalPortServiceImpl(this, deviceContext, convertorExecutor));
-        registerRpcServiceImplementation(PacketProcessingService.class,
-            new PacketProcessingServiceImpl(this, deviceContext, convertorExecutor));
-        registerRpcServiceImplementation(NodeConfigService.class, new NodeConfigServiceImpl(this, deviceContext));
         registerRpcServiceImplementation(OpendaylightFlowStatisticsService.class, flowStatisticsService);
 
         // register direct statistics gathering services
@@ -246,9 +304,9 @@ final class RpcContextImpl implements RpcContext {
 
         // register flat batch services
         registerRpcServiceImplementation(SalFlatBatchService.class, new SalFlatBatchServiceImpl(
-            new SalFlowsBatchServiceImpl(salFlowService, flowCapableTransactionService),
-            new SalGroupsBatchServiceImpl(salGroupService, flowCapableTransactionService),
-            new SalMetersBatchServiceImpl(salMeterService, flowCapableTransactionService)));
+            new SalFlowsBatchServiceImpl(salFlowService, sendBarrier),
+            new SalGroupsBatchServiceImpl(salGroupService, sendBarrier),
+            new SalMetersBatchServiceImpl(salMeterService, sendBarrier)));
 
         // register experimenter services
         registerRpcServiceImplementation(SalExperimenterMessageService.class,
@@ -292,10 +350,5 @@ final class RpcContextImpl implements RpcContext {
         if (local != null) {
             local.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         }
-    }
-
-    @Override
-    public ServiceGroupIdentifier getIdentifier() {
-        return deviceInfo.getServiceIdentifier();
     }
 }

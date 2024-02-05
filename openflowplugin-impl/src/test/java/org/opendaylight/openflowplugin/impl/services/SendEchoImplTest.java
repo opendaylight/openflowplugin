@@ -20,28 +20,28 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-public class EchoServiceTest extends ServiceMocking {
-
+public class SendEchoImplTest extends ServiceMocking {
     private static final Uint32 DUMMY_XID_VALUE = Uint32.valueOf(100);
     private static final byte[] DUMMY_DATA = "DUMMY DATA".getBytes();
-    EchoService echoService;
+
+    private SendEchoImpl sendEcho;
 
     @Override
     public void setup() {
-        echoService = new EchoService(mockedRequestContextStack, mockedDeviceContext);
+        sendEcho = new SendEchoImpl(mockedRequestContextStack, mockedDeviceContext);
     }
 
     @Test
     public void testSendEcho() {
         EchoInputBuilder sendEchoInput = new EchoInputBuilder();
-        echoService.handleServiceCall(sendEchoInput);
+        sendEcho.handleServiceCall(sendEchoInput);
         verify(mockedRequestContextStack).createRequestContext();
     }
 
     @Test
     public void testBuildRequest() {
         EchoInputBuilder sendEchoInput = new EchoInputBuilder().setData(DUMMY_DATA);
-        final OfHeader request = this.echoService.buildRequest(new Xid(DUMMY_XID_VALUE), sendEchoInput);
+        final OfHeader request = sendEcho.buildRequest(new Xid(DUMMY_XID_VALUE), sendEchoInput);
         assertEquals(DUMMY_XID_VALUE, request.getXid());
         assertTrue(request instanceof EchoInput);
         final byte[] data = ((EchoInput) request).getData();
