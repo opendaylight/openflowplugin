@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import java.util.Collection;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -43,9 +43,9 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
-            switch (modification.getRootNode().getModificationType()) {
+            switch (modification.getRootNode().modificationType()) {
                 case WRITE:
                     processAddedNode(modification);
                     break;
@@ -57,7 +57,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
                     break;
                 default:
                     throw new IllegalArgumentException(
-                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
+                            "Unhandled modification type: {}" + modification.getRootNode().modificationType());
             }
         }
     }
@@ -70,7 +70,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final var iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
+        final var iiToNodeInInventory = modification.getRootPath().path();
         final var nodeId = provideTopologyNodeId(iiToNodeInInventory);
         final var iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
@@ -84,7 +84,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private void processAddedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().path();
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
             final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology

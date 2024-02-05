@@ -19,10 +19,9 @@ import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
@@ -50,7 +49,7 @@ public final class FlowCapableTopologyProvider implements ClusterSingletonServic
     private final OperationProcessor processor;
 
     private Registration listenerRegistration;
-    private ClusterSingletonServiceRegistration singletonServiceRegistration;
+    private Registration singletonServiceRegistration;
 
     @Inject
     @Activate
@@ -109,7 +108,7 @@ public final class FlowCapableTopologyProvider implements ClusterSingletonServic
 
     @Override
     public ServiceGroupIdentifier getIdentifier() {
-        return ServiceGroupIdentifier.create(TOPOLOGY_PROVIDER);
+        return new ServiceGroupIdentifier(TOPOLOGY_PROVIDER);
     }
 
     private boolean isFlowTopologyExist(final InstanceIdentifier<Topology> path) {

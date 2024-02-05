@@ -176,10 +176,10 @@ public class NodeConnectorInventoryEventTranslatorTest {
             final InstanceIdentifier<T> ii, final FlowCapableNodeConnector connector) {
         final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
-        DataTreeIdentifier<T> identifier = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii);
-        when(dataTreeModification.getRootNode().getModificationType()).thenReturn(type);
+        DataTreeIdentifier<T> identifier = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, ii);
+        when(dataTreeModification.getRootNode().modificationType()).thenReturn(type);
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
-        when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(connector);
+        when(dataTreeModification.getRootNode().dataAfter()).thenReturn(connector);
         return dataTreeModification;
     }
 }
