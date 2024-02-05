@@ -41,15 +41,12 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Uint32 QUEUE_NO = Uint32.ONE;
-    private QueueDirectStatisticsService service;
+    private MultiGetQueueStatistics service;
 
     @Override
     public void setUp() {
-        service = new QueueDirectStatisticsService(requestContextStack,
-                                                   deviceContext,
-                                                   convertorManager,
-                                                   multipartWriterProvider);
+        service = new MultiGetQueueStatistics(requestContextStack, deviceContext, convertorManager,
+            multipartWriterProvider);
     }
 
     @Override
@@ -57,7 +54,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final GetQueueStatisticsInput input = mock(GetQueueStatisticsInput.class);
 
         lenient().when(input.getNode()).thenReturn(createNodeRef(NODE_ID));
-        when(input.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(input.getQueueId()).thenReturn(new QueueId(Uint32.ONE));
         when(input.getNodeConnectorId()).thenReturn(new NodeConnectorId(NODE_ID + ":" + PORT_NO));
 
         final MultipartRequestQueueCase body = (MultipartRequestQueueCase) ((MultipartRequestInput) service
@@ -67,7 +64,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         final MultipartRequestQueue queue = body.getMultipartRequestQueue();
 
         assertEquals(PORT_NO, queue.getPortNo());
-        assertEquals(QUEUE_NO, queue.getQueueId());
+        assertEquals(Uint32.ONE, queue.getQueueId());
     }
 
     @Override
@@ -85,7 +82,7 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         when(reply.getMultipartReplyBody()).thenReturn(queueCase);
 
         when(queueStat.getPortNo()).thenReturn(PORT_NO);
-        when(queueStat.getQueueId()).thenReturn(QUEUE_NO);
+        when(queueStat.getQueueId()).thenReturn(Uint32.ONE);
         when(queueStat.getTxBytes()).thenReturn(Uint64.ONE);
         when(queueStat.getTxErrors()).thenReturn(Uint64.ONE);
         when(queueStat.getTxPackets()).thenReturn(Uint64.ONE);
@@ -96,16 +93,16 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
         assertTrue(output.nonnullQueueIdAndStatisticsMap().size() > 0);
 
         final QueueIdAndStatisticsMap map = output.nonnullQueueIdAndStatisticsMap().values().iterator().next();
-        assertEquals(map.getQueueId().getValue(), QUEUE_NO);
+        assertEquals(map.getQueueId().getValue(), Uint32.ONE);
         assertEquals(map.getNodeConnectorId(), nodeConnectorId);
     }
 
     @Test
     public void testStoreStatisticsBarePortNo() {
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
-        when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(map.getQueueId()).thenReturn(new QueueId(Uint32.ONE));
         when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("1"));
-        when(map.key()).thenReturn(new QueueIdAndStatisticsMapKey(new NodeConnectorId("1"), new QueueId(QUEUE_NO)));
+        when(map.key()).thenReturn(new QueueIdAndStatisticsMapKey(new NodeConnectorId("1"), new QueueId(Uint32.ONE)));
 
         final Map<QueueIdAndStatisticsMapKey, QueueIdAndStatisticsMap> maps = BindingMap.of(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);
@@ -118,10 +115,10 @@ public class QueueDirectStatisticsServiceTest extends AbstractDirectStatisticsSe
     @Override
     public void testStoreStatistics() {
         final QueueIdAndStatisticsMap map = mock(QueueIdAndStatisticsMap.class);
-        when(map.getQueueId()).thenReturn(new QueueId(QUEUE_NO));
+        when(map.getQueueId()).thenReturn(new QueueId(Uint32.ONE));
         when(map.getNodeConnectorId()).thenReturn(new NodeConnectorId("openflow:1:1"));
         when(map.key()).thenReturn(new QueueIdAndStatisticsMapKey(new NodeConnectorId("openflow:1:1"),
-            new QueueId(QUEUE_NO)));
+            new QueueId(Uint32.ONE)));
 
         final Map<QueueIdAndStatisticsMapKey, QueueIdAndStatisticsMap> maps = BindingMap.of(map);
         final GetQueueStatisticsOutput output = mock(GetQueueStatisticsOutput.class);

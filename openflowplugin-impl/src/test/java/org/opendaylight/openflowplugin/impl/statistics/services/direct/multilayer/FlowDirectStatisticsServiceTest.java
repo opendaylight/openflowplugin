@@ -43,11 +43,11 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint8 TABLE_NO = Uint8.ONE;
-    private FlowDirectStatisticsService service;
+    private MultiGetFlowStatistics service;
 
     @Override
     public void setUp() {
-        service = new FlowDirectStatisticsService(requestContextStack,
+        service = new MultiGetFlowStatistics(requestContextStack,
                                                   deviceContext,
                                                   convertorManager,
                                                   multipartWriterProvider);

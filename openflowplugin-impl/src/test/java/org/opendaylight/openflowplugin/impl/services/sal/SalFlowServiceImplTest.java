@@ -7,18 +7,20 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
@@ -32,7 +34,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -42,10 +43,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
@@ -71,18 +70,17 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
-public class SalFlowServiceImplTest extends TestCase {
-
+public class SalFlowServiceImplTest {
     private static final Uint64 DUMMY_DATAPATH_ID = Uint64.valueOf(444);
     private static final String DUMMY_NODE_ID = "dummyNodeID";
     private static final String DUMMY_FLOW_ID = "dummyFlowID";
     private static final Uint8 DUMMY_TABLE_ID = Uint8.ZERO;
 
-    private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II
-            = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
+    private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II =
+        InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
 
-    private static final KeyedInstanceIdentifier<Table, TableKey> TABLE_II
-            = NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
+    private static final KeyedInstanceIdentifier<Table, TableKey> TABLE_II =
+        NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
 
     private final NodeRef noderef = new NodeRef(NODE_II);
 
@@ -132,13 +130,31 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
     }
 
-    private SalFlowServiceImpl mockSalFlowService(final Uint8 version) {
+    private AddFlowImpl mockAddFlow(final Uint8 version) {
         when(mockedFeatures.getVersion()).thenReturn(version);
         when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new SalFlowServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        return new AddFlowImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+    }
+
+    private RemoveFlowImpl mockRemoveFlow(final Uint8 version) {
+        when(mockedFeatures.getVersion()).thenReturn(version);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(version);
+        when(mockedDeviceInfo.getVersion()).thenReturn(version);
+
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        return new RemoveFlowImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+    }
+
+    private UpdateFlowImpl mockUpdateFlow(final Uint8 version) {
+        when(mockedFeatures.getVersion()).thenReturn(version);
+        when(mockedFeaturesOutput.getVersion()).thenReturn(version);
+        when(mockedDeviceInfo.getVersion()).thenReturn(version);
+
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        return new UpdateFlowImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test
@@ -164,14 +180,13 @@ public class SalFlowServiceImplTest extends TestCase {
                 .setNode(noderef)
                 .build();
 
-        Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
+        doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
-        final Future<RpcResult<AddFlowOutput>> rpcResultFuture =
-                mockSalFlowService(version).addFlow(mockedAddFlowInput);
+        final var rpcResultFuture = mockAddFlow(version).invoke(mockedAddFlowInput);
 
         assertNotNull(rpcResultFuture);
-        final RpcResult<?> addFlowOutputRpcResult = rpcResultFuture.get();
+        final var addFlowOutputRpcResult = rpcResultFuture.get();
         assertNotNull(addFlowOutputRpcResult);
         assertFalse(addFlowOutputRpcResult.isSuccessful());
     }
@@ -193,14 +208,13 @@ public class SalFlowServiceImplTest extends TestCase {
                 .setNode(noderef)
                 .build();
 
-        Mockito.doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
+        doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
 
-        final Future<RpcResult<RemoveFlowOutput>> rpcResultFuture =
-                mockSalFlowService(version).removeFlow(mockedRemoveFlowInput);
+        final var rpcResultFuture = mockRemoveFlow(version).invoke(mockedRemoveFlowInput);
 
         assertNotNull(rpcResultFuture);
-        final RpcResult<?> removeFlowOutputRpcResult = rpcResultFuture.get();
+        final var removeFlowOutputRpcResult = rpcResultFuture.get();
         assertNotNull(removeFlowOutputRpcResult);
         assertFalse(removeFlowOutputRpcResult.isSuccessful());
     }
@@ -217,9 +231,9 @@ public class SalFlowServiceImplTest extends TestCase {
                 .setTableId(Uint8.ONE)
                 .setNode(noderef)
                 .build();
-        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
+        var addFlow = mockAddFlow(version);
 
-        verifyOutput(salFlowService.addFlow(mockedAddFlowInput));
+        verifyOutput(addFlow.invoke(mockedAddFlowInput));
     }
 
     @Test
@@ -241,8 +255,8 @@ public class SalFlowServiceImplTest extends TestCase {
                 .setNode(noderef)
                 .build();
 
-        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
-        verifyOutput(salFlowService.removeFlow(mockedRemoveFlowInput));
+        final var removeFlow = mockRemoveFlow(version);
+        verifyOutput(removeFlow.invoke(mockedRemoveFlowInput));
     }
 
     @Test
@@ -276,7 +290,7 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedUpdateFlowInput1.getUpdatedFlow()).thenReturn(mockedUpdateFlow1);
 
         FlowRef mockedFlowRef = mock(FlowRef.class);
-        Mockito.doReturn(TABLE_II.child(Flow.class,
+        doReturn(TABLE_II.child(Flow.class,
                          new FlowKey(new FlowId(DUMMY_FLOW_ID)))).when(mockedFlowRef).getValue();
         when(mockedUpdateFlowInput.getFlowRef()).thenReturn(mockedFlowRef);
         when(mockedUpdateFlowInput1.getFlowRef()).thenReturn(mockedFlowRef);
@@ -295,15 +309,15 @@ public class SalFlowServiceImplTest extends TestCase {
         when(mockedUpdateFlowInput.getOriginalFlow()).thenReturn(mockedOriginalFlow);
         when(mockedUpdateFlowInput1.getOriginalFlow()).thenReturn(mockedOriginalFlow1);
 
-        SalFlowServiceImpl salFlowService = mockSalFlowService(version);
-        verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput));
-        verifyOutput(salFlowService.updateFlow(mockedUpdateFlowInput1));
+        final var updateFlow = mockUpdateFlow(version);
+        verifyOutput(updateFlow.invoke(mockedUpdateFlowInput));
+        verifyOutput(updateFlow.invoke(mockedUpdateFlowInput1));
     }
 
-    private static <T extends DataObject> void verifyOutput(final Future<RpcResult<T>> rpcResultFuture)
+    private static <T extends DataObject> void verifyOutput(final ListenableFuture<RpcResult<T>> rpcResultFuture)
             throws ExecutionException, InterruptedException {
         assertNotNull(rpcResultFuture);
-        final RpcResult<?> addFlowOutputRpcResult = rpcResultFuture.get();
+        final var addFlowOutputRpcResult = rpcResultFuture.get();
         assertNotNull(addFlowOutputRpcResult);
         assertTrue(addFlowOutputRpcResult.isSuccessful());
     }

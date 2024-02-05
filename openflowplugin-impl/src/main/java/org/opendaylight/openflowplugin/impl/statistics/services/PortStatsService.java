@@ -33,20 +33,15 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 final class PortStatsService extends AbstractCompatibleStatService<GetNodeConnectorStatisticsInput,
                                                                    GetNodeConnectorStatisticsOutput,
                                                                    NodeConnectorStatisticsUpdate> {
-
-    PortStatsService(final RequestContextStack requestContextStack,
-                            final DeviceContext deviceContext,
-                            final AtomicLong compatibilityXidSeed) {
+    PortStatsService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+            final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetNodeConnectorStatisticsInput input) {
-        MultipartRequestPortStatsCaseBuilder caseBuilder =
-                new MultipartRequestPortStatsCaseBuilder();
-        MultipartRequestPortStatsBuilder mprPortStatsBuilder =
-                new MultipartRequestPortStatsBuilder();
+    protected OfHeader buildRequest(final Xid xid, final GetNodeConnectorStatisticsInput input) {
+        MultipartRequestPortStatsCaseBuilder caseBuilder = new MultipartRequestPortStatsCaseBuilder();
+        MultipartRequestPortStatsBuilder mprPortStatsBuilder = new MultipartRequestPortStatsBuilder();
         // Set specific port
         final Uint8 version = getVersion();
         mprPortStatsBuilder
@@ -70,9 +65,7 @@ final class PortStatsService extends AbstractCompatibleStatService<GetNodeConnec
     @Override
     public NodeConnectorStatisticsUpdate transformToNotification(final List<MultipartReply> result,
                                                                  final TransactionId emulatedTxId) {
-        return NodeConnectorStatisticsToNotificationTransformer.transformToNotification(result,
-                                                                                        getDeviceInfo(),
-                                                                                        getOfVersion(),
-                                                                                        emulatedTxId);
+        return NodeConnectorStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(),
+            getOfVersion(), emulatedTxId);
     }
 }

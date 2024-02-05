@@ -38,13 +38,13 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class MeterDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    static final Uint32 METER_NO = Uint32.valueOf(1);
-    private MeterDirectStatisticsService service;
+    private static final Uint32 METER_NO = Uint32.ONE;
+    private MultiGetMeterStatistics service;
 
     @Override
     public void setUp() {
-        service = new MeterDirectStatisticsService(requestContextStack, deviceContext, convertorManager,
-                                                   multipartWriterProvider);
+        service = new MultiGetMeterStatistics(requestContextStack, deviceContext, convertorManager,
+            multipartWriterProvider);
     }
 
     @Override
