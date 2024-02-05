@@ -26,7 +26,6 @@ import org.mockito.stubbing.Answer;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.impl.rpc.AbstractRequestContext;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatchOutput;
@@ -59,10 +58,9 @@ public class OpendaylightFlowStatisticsServiceImpl2Test extends AbstractStatsSer
 
     @Override
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsService = OpendaylightFlowStatisticsServiceImpl.createWithOook(rqContextStack,
-                                                                                     deviceContext,
-                                                                                     convertorManager);
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        flowStatisticsService = new OpendaylightFlowStatisticsServiceImpl(rqContextStack, deviceContext,
+            convertorManager);
 
         rqContextMp = new AbstractRequestContext<>(Uint32.valueOf(42L)) {
             @Override
