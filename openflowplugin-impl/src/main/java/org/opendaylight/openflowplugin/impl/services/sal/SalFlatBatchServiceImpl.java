@@ -26,28 +26,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev16032
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.SalFlatBatchService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.AddFlowsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.RemoveFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.SalFlowsBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.RemoveGroupsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.SalGroupsBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.UpdateGroupsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.AddMetersBatchOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.RemoveMetersBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.SalMetersBatchService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -133,76 +115,35 @@ public class SalFlatBatchServiceImpl implements SalFlatBatchService {
     }
 
     private ListenableFuture<RpcResult<ProcessFlatBatchOutput>> getChainOutput(final NodeRef node,
-                                                                               final BatchPlanStep planStep,
-                                                                               final int currentOffset) {
+            final BatchPlanStep planStep, final int currentOffset) {
         return switch (planStep.getStepType()) {
-            case FLOW_ADD -> {
-                final AddFlowsBatchInput addFlowsBatchInput =
-                    FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, node);
-                final ListenableFuture<RpcResult<AddFlowsBatchOutput>> resultAddFlowFuture =
-                    salFlowService.addFlowsBatch(addFlowsBatchInput);
-                yield FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultAddFlowFuture, currentOffset);
-            }
-            case FLOW_REMOVE -> {
-                final RemoveFlowsBatchInput removeFlowsBatchInput =
-                    FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, node);
-                final ListenableFuture<RpcResult<RemoveFlowsBatchOutput>> resultRemoveFlowFuture =
-                    salFlowService.removeFlowsBatch(removeFlowsBatchInput);
-                yield FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultRemoveFlowFuture, currentOffset);
-            }
-            case FLOW_UPDATE -> {
-                final UpdateFlowsBatchInput updateFlowsBatchInput =
-                    FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, node);
-                final ListenableFuture<RpcResult<UpdateFlowsBatchOutput>> resultUpdateFlowFuture =
-                    salFlowService.updateFlowsBatch(updateFlowsBatchInput);
-                yield FlatBatchFlowAdapters.convertFlowBatchFutureForChain(resultUpdateFlowFuture, currentOffset);
-            }
-            case GROUP_ADD -> {
-                final AddGroupsBatchInput addGroupsBatchInput =
-                    FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, node);
-                final ListenableFuture<RpcResult<AddGroupsBatchOutput>> resultAddGroupFuture =
-                    salGroupService.addGroupsBatch(addGroupsBatchInput);
-                yield FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultAddGroupFuture, currentOffset);
-            }
-            case GROUP_REMOVE -> {
-                final RemoveGroupsBatchInput removeGroupsBatchInput =
-                    FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, node);
-                final ListenableFuture<RpcResult<RemoveGroupsBatchOutput>> resultRemoveGroupFuture =
-                    salGroupService.removeGroupsBatch(removeGroupsBatchInput);
-                yield FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultRemoveGroupFuture, currentOffset);
-            }
-            case GROUP_UPDATE -> {
-                final UpdateGroupsBatchInput updateGroupsBatchInput =
-                    FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, node);
-                final ListenableFuture<RpcResult<UpdateGroupsBatchOutput>> resultUpdateGroupFuture =
-                    salGroupService.updateGroupsBatch(updateGroupsBatchInput);
-                yield FlatBatchGroupAdapters.convertGroupBatchFutureForChain(resultUpdateGroupFuture, currentOffset);
-            }
-            case METER_ADD -> {
-                final AddMetersBatchInput addMetersBatchInput =
-                    FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, node);
-                final ListenableFuture<RpcResult<AddMetersBatchOutput>> resultAddMeterFuture =
-                    salMeterService.addMetersBatch(addMetersBatchInput);
-                yield FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultAddMeterFuture, currentOffset);
-            }
-            case METER_REMOVE -> {
-                final RemoveMetersBatchInput removeMetersBatchInput =
-                    FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, node);
-                final ListenableFuture<RpcResult<RemoveMetersBatchOutput>> resultRemoveMeterFuture =
-                    salMeterService.removeMetersBatch(removeMetersBatchInput);
-                yield FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultRemoveMeterFuture, currentOffset);
-            }
-            case METER_UPDATE -> {
-                final UpdateMetersBatchInput updateMetersBatchInput =
-                    FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, node);
-                final ListenableFuture<RpcResult<UpdateMetersBatchOutput>> resultUpdateMeterFuture =
-                    salMeterService.updateMetersBatch(updateMetersBatchInput);
-                yield FlatBatchMeterAdapters.convertMeterBatchFutureForChain(resultUpdateMeterFuture, currentOffset);
-            }
-            default -> {
-                LOG.warn("Unsupported plan-step type occurred: {} -> OMITTING", planStep.getStepType());
-                yield FlatBatchUtil.createEmptyRpcBatchResultFuture(true);
-            }
+            case FLOW_ADD -> FlatBatchFlowAdapters.convertFlowBatchFutureForChain(
+                salFlowService.addFlowsBatch(FlatBatchFlowAdapters.adaptFlatBatchAddFlow(planStep, node)),
+                currentOffset);
+            case FLOW_REMOVE -> FlatBatchFlowAdapters.convertFlowBatchFutureForChain(
+                salFlowService.removeFlowsBatch(FlatBatchFlowAdapters.adaptFlatBatchRemoveFlow(planStep, node)),
+                currentOffset);
+            case FLOW_UPDATE -> FlatBatchFlowAdapters.convertFlowBatchFutureForChain(
+                salFlowService.updateFlowsBatch(FlatBatchFlowAdapters.adaptFlatBatchUpdateFlow(planStep, node)),
+                currentOffset);
+            case GROUP_ADD -> FlatBatchGroupAdapters.convertGroupBatchFutureForChain(
+                salGroupService.addGroupsBatch(FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, node)),
+                currentOffset);
+            case GROUP_REMOVE -> FlatBatchGroupAdapters.convertGroupBatchFutureForChain(
+                salGroupService.removeGroupsBatch(FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, node)),
+                currentOffset);
+            case GROUP_UPDATE -> FlatBatchGroupAdapters.convertGroupBatchFutureForChain(
+                salGroupService.updateGroupsBatch(FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, node)),
+                currentOffset);
+            case METER_ADD -> FlatBatchMeterAdapters.convertMeterBatchFutureForChain(
+                salMeterService.addMetersBatch(FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, node)),
+                currentOffset);
+            case METER_REMOVE -> FlatBatchMeterAdapters.convertMeterBatchFutureForChain(
+                salMeterService.removeMetersBatch(FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, node)),
+                currentOffset);
+            case METER_UPDATE -> FlatBatchMeterAdapters.convertMeterBatchFutureForChain(
+                salMeterService.updateMetersBatch(FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, node)),
+                currentOffset);
         };
     }
 }
