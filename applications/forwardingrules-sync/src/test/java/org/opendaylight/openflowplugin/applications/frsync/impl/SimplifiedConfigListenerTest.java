@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.Futures;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -95,7 +95,7 @@ public class SimplifiedConfigListenerTest {
         final SyncupEntry syncupEntry =
                 loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, operationalDS);
 
-        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
@@ -108,7 +108,7 @@ public class SimplifiedConfigListenerTest {
         Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, confgDS);
 
-        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
@@ -121,7 +121,7 @@ public class SimplifiedConfigListenerTest {
         Mockito.when(configModification.getDataAfter()).thenReturn(null);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(null, confgDS, dataBefore, confgDS);
 
-        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
@@ -133,7 +133,7 @@ public class SimplifiedConfigListenerTest {
         Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(roTx)
             .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
 
-        nodeListenerConfig.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();

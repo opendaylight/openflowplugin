@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
@@ -42,7 +42,7 @@ public class MeterForwarder
     private final AddMeter addMeter;
     private final UpdateMeter updateMeter;
 
-    public MeterForwarder(final RpcConsumerRegistry rpcConsumerRegistry) {
+    public MeterForwarder(final RpcService rpcConsumerRegistry) {
         addMeter = rpcConsumerRegistry.getRpc(AddMeter.class);
         removeMeter = rpcConsumerRegistry.getRpc(RemoveMeter.class);
         updateMeter = rpcConsumerRegistry.getRpc(UpdateMeter.class);
