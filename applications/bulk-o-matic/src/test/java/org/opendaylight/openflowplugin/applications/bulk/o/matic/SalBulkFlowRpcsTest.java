@@ -30,8 +30,8 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -84,7 +84,7 @@ public class SalBulkFlowRpcsTest {
     @Mock
     private DataBroker mockDataBroker;
     @Mock
-    private RpcConsumerRegistry mockRpcService;
+    private RpcService mockRpcService;
     @Mock
     private RpcProviderService mockRpcProviderService;
     @Mock
