@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.common.txchain;
 
-import static org.mockito.ArgumentMatchers.any;
-
 import java.util.concurrent.ExecutionException;
 import org.junit.After;
 import org.junit.Before;
@@ -22,7 +20,6 @@ import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.binding.api.Transaction;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
-import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -56,8 +53,7 @@ public class TransactionChainManagerTest {
     @Before
     public void setUp() {
         final ReadTransaction readOnlyTx = Mockito.mock(ReadTransaction.class);
-        Mockito.when(dataBroker.createTransactionChain(any(TransactionChainListener.class)))
-                .thenReturn(txChain);
+        Mockito.when(dataBroker.createTransactionChain()).thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
         nodeKeyIdent = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         txChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());

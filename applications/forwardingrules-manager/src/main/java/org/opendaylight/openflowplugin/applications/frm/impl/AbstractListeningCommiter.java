@@ -13,7 +13,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.Collection;
+import java.util.List;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -24,7 +24,6 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -61,7 +60,7 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
 
     @SuppressWarnings("checkstyle:IllegalCatch")
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<T>> changes) {
+    public void onDataTreeChanged(final List<DataTreeModification<T>> changes) {
         LOG.trace("Received data changes :{}", requireNonNull(changes, "Changes may not be null!"));
 
         for (DataTreeModification<T> change : changes) {
@@ -113,11 +112,11 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     @Override
     public final void registerListener() {
         Futures.addCallback(registrationHelper.checkedRegisterListener(
-            DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, getWildCardPath()), this),
-            new FutureCallback<>() {
+            DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION, getWildCardPath()), this),
+            new FutureCallback<Registration>() {
                 @Override
-                public void onSuccess(final ObjectRegistration<?> flowListenerRegistration) {
-                    LOG.info("{} registered successfully", flowListenerRegistration.getInstance());
+                public void onSuccess(final Registration flowListenerRegistration) {
+                    LOG.info("{} registered successfully", this);
                     listenerRegistration = flowListenerRegistration;
                 }
 

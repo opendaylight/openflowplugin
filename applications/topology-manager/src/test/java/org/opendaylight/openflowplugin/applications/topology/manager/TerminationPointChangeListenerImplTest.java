@@ -34,7 +34,6 @@ import static org.opendaylight.openflowplugin.applications.topology.manager.Test
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
@@ -113,7 +112,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID, false);
-        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch1);
 
@@ -165,7 +164,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID, false);
-        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
@@ -190,7 +189,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID, true);
-        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch);
 
@@ -240,9 +239,9 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID, false);
-        when(dataTreeModification.getRootNode().getDataAfter())
+        when(dataTreeModification.getRootNode().dataAfter())
                 .thenReturn(provideFlowCapableNodeConnector(true, false));
-        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForDeletes(1, deleteLatch);
 
@@ -287,9 +286,9 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID, false);
-        when(dataTreeModification.getRootNode().getDataAfter())
+        when(dataTreeModification.getRootNode().dataAfter())
                 .thenReturn(provideFlowCapableNodeConnector(false, true));
-        terminationPointListener.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForDeletes(1, deleteLatch);
 
