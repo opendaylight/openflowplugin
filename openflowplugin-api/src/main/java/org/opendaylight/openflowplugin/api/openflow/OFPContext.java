@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.api.openflow;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 

@@ -33,7 +33,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-singleton-common-api</artifactId>
+            <artifactId>mdsal-singleton-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
