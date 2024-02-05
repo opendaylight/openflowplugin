@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -29,7 +29,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
     private static final Logger LOG = LoggerFactory.getLogger(AbstractFrmSyncListener.class);
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<T>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<T>> modifications) {
         for (DataTreeModification<T> modification : modifications) {
             final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
             if (LOG.isTraceEnabled()) {

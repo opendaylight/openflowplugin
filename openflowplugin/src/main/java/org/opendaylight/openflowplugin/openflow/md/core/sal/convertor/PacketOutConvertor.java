@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import com.google.common.collect.Iterables;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,8 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.IdentifiableItem;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier.PathArgument;
+import org.opendaylight.yangtools.yang.binding.DataObjectStep;
+import org.opendaylight.yangtools.yang.binding.KeyStep;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -65,20 +63,21 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
      * @return default empty meter mod input builder
      */
     public static PacketOutInput defaultResult(final Uint8 version) {
-        return new PacketOutInputBuilder()
-                .setVersion(version)
-                .build();
+        return new PacketOutInputBuilder().setVersion(version).build();
     }
 
-    private static PortNumber getPortNumber(final PathArgument pathArgument, final Uint8 ofVersion) {
-        checkArgument(pathArgument instanceof IdentifiableItem, "Unexpected path argument %s", pathArgument);
+    private static PortNumber getPortNumber(final DataObjectStep<?> step, final Uint8 ofVersion) {
+        if (!(step instanceof KeyStep<?, ?> keyStep)) {
+            throw new IllegalArgumentException("Unexpected path argument " + step);
+        }
 
         // FIXME VD P! find InstanceIdentifier helper
-        final Object key = ((IdentifiableItem<?, ?>) pathArgument).getKey();
-        checkArgument(key instanceof NodeConnectorKey, "Unexpected key %s", key);
-
-        return new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
-            ((NodeConnectorKey) key).getId()));
+        final var key = keyStep.key();
+        if (key instanceof NodeConnectorKey nodeConnectorKey) {
+            return new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+                OpenflowVersion.ofVersion(ofVersion), nodeConnectorKey.getId()));
+        }
+        throw new IllegalArgumentException("Unexpected key " + key);
     }
 
     @Override
@@ -92,7 +91,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr;
         Uint32 bufferId = OFConstants.OFP_NO_BUFFER;
-        Iterable<PathArgument> inArgs = null;
+        Iterable<DataObjectStep<?>> inArgs = null;
 
         if (source.getIngress() != null) {
             inArgs = source.getIngress().getValue().getPathArguments();
@@ -111,7 +110,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         }
 
         final PortNumber outPort;
-        final Iterable<PathArgument> outArgs = source.getEgress().getValue().getPathArguments();
+        final var outArgs = source.getEgress().getValue().getPathArguments();
         if (Iterables.size(outArgs) >= 3) {
             outPort = getPortNumber(Iterables.get(outArgs, 2), data.getVersion());
         } else {

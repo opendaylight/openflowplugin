@@ -23,7 +23,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.Service;
 import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
@@ -103,7 +103,7 @@ public class GuardedContextImpl implements GuardedContext {
                 state = STOPPING;
                 final ListenableFuture<?> resultFuture = delegate.closeServiceInstance();
 
-                Futures.addCallback(resultFuture, new FutureCallback<Object>() {
+                Futures.addCallback(resultFuture, new FutureCallback<>() {
                     @Override
                     public void onSuccess(final Object result) {
                         state = TERMINATED;
