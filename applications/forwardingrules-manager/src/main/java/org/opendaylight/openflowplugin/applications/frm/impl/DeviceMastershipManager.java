@@ -15,7 +15,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
@@ -97,7 +97,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<FlowCapableNode>> changes) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (DataTreeModification<FlowCapableNode> change : changes) {
             final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
             final DataObjectModification<FlowCapableNode> mod = change.getRootNode();

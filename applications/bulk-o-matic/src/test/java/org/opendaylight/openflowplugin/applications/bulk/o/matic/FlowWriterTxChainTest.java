@@ -53,8 +53,7 @@ public class FlowWriterTxChainTest {
 
         final TransactionChain mockedTxChain = mock(TransactionChain.class);
         when(mockedTxChain.newWriteOnlyTransaction()).thenReturn(writeTransaction);
-        doReturn(mockedTxChain).when(mockDataBroker)
-                .createMergingTransactionChain(ArgumentMatchers.any());
+        doReturn(mockedTxChain).when(mockDataBroker).createMergingTransactionChain();
 
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
 

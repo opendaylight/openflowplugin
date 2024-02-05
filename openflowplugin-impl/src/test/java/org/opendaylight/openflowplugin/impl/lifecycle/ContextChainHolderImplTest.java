@@ -17,12 +17,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.eos.binding.api.Entity;
-import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
-import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
-import org.opendaylight.mdsal.eos.common.api.EntityOwnershipChangeState;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
+import org.opendaylight.mdsal.eos.common.api.EntityOwnershipStateChange;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -43,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -78,11 +76,11 @@ public class ContextChainHolderImplTest {
     @Mock
     private ExecutorService executorService;
     @Mock
-    private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    private Registration clusterSingletonServiceRegistration;
     @Mock
     private EntityOwnershipService entityOwnershipService;
     @Mock
-    private EntityOwnershipListenerRegistration entityOwnershipListenerRegistration;
+    private Registration entityOwnershipListenerRegistration;
     @Mock
     private ReconciliationFrameworkEvent reconciliationFrameworkEvent;
     @Mock
@@ -262,11 +260,8 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
-        EntityOwnershipChange ownershipChange = new EntityOwnershipChange(
-                new Entity(ENTITY_TEST, OPENFLOW_TEST),
-                EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NO_OWNER
-        );
-        contextChainHolder.ownershipChanged(ownershipChange);
+        contextChainHolder.ownershipChanged(new Entity(ENTITY_TEST, OPENFLOW_TEST),
+            EntityOwnershipStateChange.LOCAL_OWNERSHIP_LOST_NO_OWNER, true);
         Mockito.verify(deviceManager, Mockito.timeout(1000)).removeDeviceFromOperationalDS(Mockito.any());
     }
 
@@ -277,11 +272,8 @@ public class ContextChainHolderImplTest {
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.RPC_REGISTRATION);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.MASTER_ON_DEVICE);
         contextChainHolder.onMasterRoleAcquired(deviceInfo, ContextChainMastershipState.INITIAL_SUBMIT);
-        EntityOwnershipChange ownershipChange = new EntityOwnershipChange(
-                new Entity(ENTITY_TEST, OPENFLOW_TEST),
-                EntityOwnershipChangeState.LOCAL_OWNERSHIP_LOST_NEW_OWNER
-        );
-        contextChainHolder.ownershipChanged(ownershipChange);
+        contextChainHolder.ownershipChanged(new Entity(ENTITY_TEST, OPENFLOW_TEST),
+            EntityOwnershipStateChange.LOCAL_OWNERSHIP_LOST_NEW_OWNER, false);
         Mockito.verify(deviceManager,Mockito.never()).removeDeviceFromOperationalDS(Mockito.any());
     }
 }
