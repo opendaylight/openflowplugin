@@ -31,11 +31,11 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class GroupDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint32 GROUP_NO = Uint32.ONE;
-    private GroupDirectStatisticsService service;
+    private SingleGetGroupStatistics service;
 
     @Override
     public void setUp() {
-        service = new GroupDirectStatisticsService(requestContextStack,
+        service = new SingleGetGroupStatistics(requestContextStack,
                                                    deviceContext,
                                                    convertorManager,
                                                    multipartWriterProvider);

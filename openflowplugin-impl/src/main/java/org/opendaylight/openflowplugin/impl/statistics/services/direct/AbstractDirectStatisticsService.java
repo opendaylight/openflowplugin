@@ -68,17 +68,12 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
      * @param input the input
      * @return the future
      */
-    ListenableFuture<RpcResult<O>> handleAndReply(final I input) {
-        final ListenableFuture<RpcResult<List<T>>> rpcReply = handleServiceCall(input);
-        ListenableFuture<RpcResult<O>> rpcResult = Futures.transform(rpcReply,
-                this::transformResult,
-                MoreExecutors.directExecutor());
+    final ListenableFuture<RpcResult<O>> handleAndReply(final I input) {
+        final var rpcResult = Futures.transform(handleServiceCall(input), this::transformResult,
+            MoreExecutors.directExecutor());
 
-        if (Boolean.TRUE.equals(input.getStoreStats())) {
-            rpcResult = Futures.transform(rpcResult, this::storeResult, MoreExecutors.directExecutor());
-        }
-
-        return rpcResult;
+        return Boolean.TRUE.equals(input.getStoreStats())
+            ? Futures.transform(rpcResult, this::storeResult, MoreExecutors.directExecutor()) : rpcResult;
     }
 
     private RpcResult<O> transformResult(final RpcResult<List<T>> input) {
