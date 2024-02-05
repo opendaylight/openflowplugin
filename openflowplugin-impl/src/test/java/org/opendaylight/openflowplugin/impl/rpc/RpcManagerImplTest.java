@@ -32,9 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -47,8 +45,6 @@ public class RpcManagerImplTest {
     private RpcProviderService rpcProviderRegistry;
     @Mock
     private DeviceContext deviceContext;
-    @Mock
-    private ObjectRegistration<RpcService> routedRpcRegistration;
     @Mock
     private DeviceState deviceState;
     @Mock
