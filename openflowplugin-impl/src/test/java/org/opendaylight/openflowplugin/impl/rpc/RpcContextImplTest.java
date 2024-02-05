@@ -7,18 +7,15 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +23,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
-import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -43,13 +39,10 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint32;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RpcContextImplTest {
-
-    private static final int MAX_REQUESTS = 5;
-    private RpcContextImpl rpcContext;
-
     @Mock
     private RpcProviderService rpcProviderRegistry;
     @Mock
@@ -59,12 +52,11 @@ public class RpcContextImplTest {
     @Mock
     private DeviceContext deviceContext;
     @Mock
-    private ObjectRegistration<TestRpcService> routedRpcReg;
-
+    private ConnectionContext connectionContext;
+    @Mock
+    private ObjectRegistration<RpcService> registration;
     @Mock
     private NotificationPublishService notificationPublishService;
-    @Mock
-    private TestRpcService serviceInstance;
     @Mock
     private DeviceInfo deviceInfo;
     @Mock
@@ -73,6 +65,7 @@ public class RpcContextImplTest {
     private ConvertorExecutor convertorExecutor;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    private RpcContextImpl rpcContext;
 
     @Before
     public void setup() {
@@ -84,83 +77,58 @@ public class RpcContextImplTest {
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceInfo.reserveXidForDeviceMessage()).thenReturn(Uint32.TWO);
+        when(deviceInfo.getVersion()).thenReturn(Uint8.ONE);
+        when(deviceContext.getPrimaryConnectionContext()).thenReturn(connectionContext);
 
         rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
-                MAX_REQUESTS,
+                5,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService, true);
-
-        when(rpcProviderRegistry.registerRpcImplementation(eq(TestRpcService.class), eq(serviceInstance), anySet()))
-                .thenReturn(routedRpcReg);
     }
 
     @Test
     public void testStoreOrFail() {
-        try (RpcContext rpcContext = new RpcContextImpl(
+        try (var rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 100,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService, true)) {
-            final RequestContext<?> requestContext = rpcContext.createRequestContext();
-            assertNotNull(requestContext);
+            assertNotNull(rpcContext.createRequestContext());
         }
     }
 
     @Test
     public void testStoreOrFailThatFails() {
-        try (RpcContext rpcContext = new RpcContextImpl(
+        try (var rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 0,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService, true)) {
-            final RequestContext<?> requestContext = rpcContext.createRequestContext();
-            assertNull(requestContext);
+            assertNull(rpcContext.createRequestContext());
         }
     }
 
     @Test
     public void testStoreAndCloseOrFail() {
-        try (RpcContext rpcContext = new RpcContextImpl(
+        try (var rpcContext = new RpcContextImpl(
                 rpcProviderRegistry,
                 100,
                 deviceContext,
                 extensionConverterProvider,
                 convertorExecutor,
                 notificationPublishService, true)) {
-            final RequestContext<?> requestContext = rpcContext.createRequestContext();
-            assertNotNull(requestContext);
-            requestContext.close();
+            try (var requestContext = rpcContext.createRequestContext()) {
+                assertNotNull(requestContext);
+            }
             verify(messageSpy).spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);
         }
-    }
-
-    public void testRegisterRpcServiceImplementation() {
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        verify(rpcProviderRegistry, times(1)).registerRpcImplementation(TestRpcService.class, serviceInstance,
-            ImmutableSet.of(nodeInstanceIdentifier));
-        assertFalse(rpcContext.isEmptyRpcRegistrations());
-    }
-
-    @Test
-    public void testLookupRpcService() {
-        when(routedRpcReg.getInstance()).thenReturn(serviceInstance);
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        TestRpcService temp = rpcContext.lookupRpcService(TestRpcService.class);
-        assertEquals(serviceInstance, temp);
-    }
-
-    @Test
-    public void testClose() {
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        rpcContext.close();
-        assertTrue(rpcContext.isEmptyRpcRegistrations());
     }
 
     /**
@@ -175,24 +143,22 @@ public class RpcContextImplTest {
     /**
      * When deviceContext.reserveXidForDeviceMessage returns value, AbstractRequestContext should be returned.
      */
-
     @Test
     public void testCreateRequestContext2() {
-        RequestContext temp = rpcContext.createRequestContext();
-        temp.close();
+        try (var temp = rpcContext.createRequestContext()) {
+            // nothing
+        }
         verify(messageSpy).spyMessage(RpcContextImpl.class, MessageSpy.StatisticsGroup.REQUEST_STACK_FREED);
     }
 
     @Test
-    public void testUnregisterRpcServiceImpl() {
-        rpcContext.registerRpcServiceImplementation(TestRpcService.class, serviceInstance);
-        assertFalse(rpcContext.isEmptyRpcRegistrations());
-        rpcContext.unregisterRpcServiceImplementation(TestRpcService.class);
-        assertTrue(rpcContext.isEmptyRpcRegistrations());
-    }
+    public void testInstantiateServiceInstance() {
+        when(rpcProviderRegistry.registerRpcImplementation(any(), any(RpcService.class),
+            eq(Set.of(nodeInstanceIdentifier)))).thenReturn(registration);
 
-    //Stub for RpcService class.
-    public class TestRpcService implements RpcService {
+        rpcContext.instantiateServiceInstance();
 
+        verify(rpcProviderRegistry, times(21)).registerRpcImplementation(any(), any(RpcService.class),
+            eq(Set.of(nodeInstanceIdentifier)));
     }
 }

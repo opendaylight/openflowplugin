@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.api.openflow.rpc;
 
 import org.opendaylight.openflowplugin.api.openflow.OFPContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.yangtools.yang.binding.RpcService;
 
 /**
  * This context is registered with MD-SAL as a routed RPC provider for the inventory node backed by this switch and
@@ -17,11 +16,5 @@ import org.opendaylight.yangtools.yang.binding.RpcService;
  * {@link org.opendaylight.openflowplugin.api.openflow.device.RequestContext} to perform requests.
  */
 public interface RpcContext extends RequestContextStack, OFPContext {
-
-    <S extends RpcService> void registerRpcServiceImplementation(Class<S> serviceClass, S serviceInstance);
-
-    <S extends RpcService> S lookupRpcService(Class<S> serviceClass);
-
-    <S extends RpcService> void unregisterRpcServiceImplementation(Class<S> serviceClass);
-
+    // Just a composition interface
 }
