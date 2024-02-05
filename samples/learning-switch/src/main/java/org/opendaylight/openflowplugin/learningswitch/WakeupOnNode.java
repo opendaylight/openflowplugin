@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
+import java.util.List;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
@@ -28,7 +28,7 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<Table>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<Table>> modifications) {
         Uint8 requiredTableId = Uint8.ZERO;
         // TODO add flow
 

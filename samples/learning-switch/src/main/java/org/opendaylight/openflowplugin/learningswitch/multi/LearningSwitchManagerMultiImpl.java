@@ -14,7 +14,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.learningswitch.DataTreeChangeListenerRegistrationHolder;
 import org.opendaylight.openflowplugin.learningswitch.FlowCommitWrapperImpl;
@@ -25,7 +25,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
@@ -49,13 +48,13 @@ import org.slf4j.LoggerFactory;
 public final class LearningSwitchManagerMultiImpl implements DataTreeChangeListenerRegistrationHolder, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerMultiImpl.class);
 
-    private final ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
+    private final Registration dataTreeChangeListenerRegistration;
     private final Registration packetInRegistration;
 
     @Inject
     @Activate
     public LearningSwitchManagerMultiImpl(@Reference final DataBroker dataBroker,
-            @Reference final NotificationService notificationService, @Reference final RpcConsumerRegistry rpcService) {
+            @Reference final NotificationService notificationService, @Reference final RpcService rpcService) {
         LOG.debug("start() -->");
         final var dataStoreAccessor = new FlowCommitWrapperImpl(dataBroker);
 
@@ -84,9 +83,9 @@ public final class LearningSwitchManagerMultiImpl implements DataTreeChangeListe
         LOG.debug("stop() <--");
     }
 
-
+    // FIXME: why?
     @Override
-    public ListenerRegistration<DataTreeChangeListener> getDataTreeChangeListenerRegistration() {
+    public Registration getDataTreeChangeListenerRegistration() {
         return dataTreeChangeListenerRegistration;
     }
 }
