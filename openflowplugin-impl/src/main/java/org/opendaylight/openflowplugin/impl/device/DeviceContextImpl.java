@@ -29,7 +29,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -465,7 +465,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return;
         }
 
-        Futures.addCallback(offerNotification, new FutureCallback<Object>() {
+        Futures.addCallback(offerNotification, new FutureCallback<>() {
             @Override
             public void onSuccess(final Object result) {
                 messageSpy.spyMessage(implementedInterface, MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS);
@@ -631,7 +631,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
             final ListenableFuture<?> txChainShuttingDown = transactionChainManager.shuttingDown();
 
-            Futures.addCallback(txChainShuttingDown, new FutureCallback<Object>() {
+            Futures.addCallback(txChainShuttingDown, new FutureCallback<>() {
                 @Override
                 public void onSuccess(final Object result) {
                     transactionChainManager.close();

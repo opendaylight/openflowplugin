@@ -9,13 +9,13 @@ package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * and update LLDPSpeaker and topology.
  */
 public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
-        implements ClusteredDataTreeChangeListener<T>, AutoCloseable {
+        implements DataTreeChangeListener<T>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
     private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR =
         InstanceIdentifier.builder(Nodes.class)
@@ -58,12 +58,12 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
             final NodeConnectorEventsObserver... observers) {
         this.observers = ImmutableSet.copyOf(observers);
 
-        final DataTreeIdentifier dtiToNodeConnector = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        final DataTreeIdentifier dtiToNodeConnector = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                                                                                    II_TO_FLOW_CAPABLE_NODE_CONNECTOR);
-        final DataTreeIdentifier dtiToNodeConnectorState = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        final DataTreeIdentifier dtiToNodeConnectorState = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                                                                                    II_TO_STATE);
-        listenerOnPortRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, this);
-        listenerOnPortStateRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnectorState, this);
+        listenerOnPortRegistration = dataBroker.registerTreeChangeListener(dtiToNodeConnector, this);
+        listenerOnPortStateRegistration = dataBroker.registerTreeChangeListener(dtiToNodeConnectorState, this);
         LOG.info("NodeConnectorInventoryEventTranslator has started.");
     }
 
@@ -78,10 +78,10 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<T>> modifications) {
-        for (DataTreeModification modification : modifications) {
-            LOG.trace("Node connectors in inventory changed -> {}", modification.getRootNode().getModificationType());
-            switch (modification.getRootNode().getModificationType()) {
+    public void onDataTreeChanged(@NonNull final List<DataTreeModification<T>> modifications) {
+        for (var modification : modifications) {
+            LOG.trace("Node connectors in inventory changed -> {}", modification.getRootNode().modificationType());
+            switch (modification.getRootNode().modificationType()) {
                 case WRITE:
                     processAddedConnector(modification);
                     break;
@@ -93,17 +93,17 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
                     break;
                 default:
                     throw new IllegalArgumentException(
-                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
+                        "Unhandled modification type: " + modification.getRootNode().modificationType());
             }
         }
     }
 
     private void processAddedConnector(final DataTreeModification<T> modification) {
-        final InstanceIdentifier<T> identifier = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<T> identifier = modification.getRootPath().path();
         InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier.firstIdentifierOf(NodeConnector.class);
         if (compareIITail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) modification.getRootNode()
-                    .getDataAfter();
+                    .dataAfter();
             if (!isPortDown(flowConnector)) {
                 notifyNodeConnectorAppeared(nodeConnectorInstanceId, flowConnector);
             } else {
@@ -113,11 +113,11 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
     }
 
     private void processUpdatedConnector(final DataTreeModification<T> modification) {
-        final InstanceIdentifier<T> identifier = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<T> identifier = modification.getRootPath().path();
         InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier.firstIdentifierOf(NodeConnector.class);
         if (compareIITail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             FlowCapableNodeConnector flowConnector = (FlowCapableNodeConnector) modification.getRootNode()
-                    .getDataAfter();
+                    .dataAfter();
             if (isPortDown(flowConnector)) {
                 notifyNodeConnectorDisappeared(nodeConnectorInstanceId);
             } else {
@@ -126,7 +126,7 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
         } else if (compareIITail(identifier, II_TO_STATE)) {
             FlowCapableNodeConnector flowNodeConnector = iiToDownFlowCapableNodeConnectors.get(nodeConnectorInstanceId);
             if (flowNodeConnector != null) {
-                State state = (State) modification.getRootNode().getDataAfter();
+                State state = (State) modification.getRootNode().dataAfter();
                 if (!state.getLinkDown()) {
                     FlowCapableNodeConnectorBuilder flowCapableNodeConnectorBuilder
                             = new FlowCapableNodeConnectorBuilder(flowNodeConnector);
@@ -139,7 +139,7 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
     }
 
     private void processRemovedConnector(final DataTreeModification<T> modification) {
-        final InstanceIdentifier<T> identifier = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<T> identifier = modification.getRootPath().path();
         if (compareIITail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             InstanceIdentifier<NodeConnector> nodeConnectorInstanceId = identifier
                     .firstIdentifierOf(NodeConnector.class);

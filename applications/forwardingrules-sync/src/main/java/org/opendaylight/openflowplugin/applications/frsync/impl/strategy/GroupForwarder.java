@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.openflowplugin.applications.frsync.ForwardingRulesCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
@@ -42,7 +42,7 @@ public class GroupForwarder
     private final UpdateGroup updateGroupRpc;
     private final RemoveGroup removeGroupRpc;
 
-    public GroupForwarder(final RpcConsumerRegistry rpcConsumerRegistry) {
+    public GroupForwarder(final RpcService rpcConsumerRegistry) {
         addGroupRpc = rpcConsumerRegistry.getRpc(AddGroup.class);
         updateGroupRpc = rpcConsumerRegistry.getRpc(UpdateGroup.class);
         removeGroupRpc = rpcConsumerRegistry.getRpc(RemoveGroup.class);

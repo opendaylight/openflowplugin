@@ -23,28 +23,26 @@ import org.checkerframework.checker.lock.qual.Holding;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
-import org.opendaylight.mdsal.binding.api.Transaction;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.TransactionChainClosedException;
-import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.Empty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The openflowplugin-impl.org.opendaylight.openflowplugin.impl.device
- * package protected class for controlling {@link WriteTransaction} life cycle. It is
- * a {@link TransactionChainListener} and provide package protected methods for writeToTransaction
+ * package protected class for controlling {@link WriteTransaction} life cycle. It listens on chains and provides
+ * package-protected methods for writeToTransaction
  * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
  * and submitTransaction method (wrapped {@link WriteTransaction#commit()}).
  */
-public class TransactionChainManager implements TransactionChainListener, AutoCloseable {
-
+public class TransactionChainManager implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
     private static final String CANNOT_WRITE_INTO_TRANSACTION = "Cannot write into transaction.";
 
@@ -65,22 +63,34 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-    private ReadWriteLock readWriteTransactionLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock readWriteTransactionLock = new ReentrantReadWriteLock();
 
     public TransactionChainManager(@NonNull final DataBroker dataBroker,
                                    @NonNull final String deviceIdentifier) {
         this.dataBroker = dataBroker;
-        this.nodeId = deviceIdentifier;
-        this.lastSubmittedFuture = CommitInfo.emptyFluentFuture();
+        nodeId = deviceIdentifier;
+        lastSubmittedFuture = CommitInfo.emptyFluentFuture();
     }
 
     @Holding("txLock")
     private void createTxChain() {
-        TransactionChain txChainFactoryTemp = transactionChain;
-        transactionChain = dataBroker.createTransactionChain(TransactionChainManager.this);
-        if (txChainFactoryTemp != null) {
-            txChainFactoryTemp.close();
+        final var prev = transactionChain;
+        final var next = dataBroker.createTransactionChain();
+        transactionChain = next;
+        if (prev != null) {
+            prev.close();
         }
+        next.addCallback(new FutureCallback<Empty>() {
+            @Override
+            public void onSuccess(final Empty result) {
+                // No-op
+            }
+
+            @Override
+            public void onFailure(final Throwable cause) {
+                onTransactionChainFailed(next, cause);
+            }
+        });
     }
 
     public boolean initialSubmitWriteTransaction() {
@@ -89,46 +99,38 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     }
 
     /**
-     * Method change status for TxChainManager to WORKING and it has to make
-     * registration for this class instance as {@link TransactionChainListener} to provide possibility a make DS
-     * transactions. Call this method for MASTER role only.
+     * Method change status for TxChainManager to WORKING and it has to make registration for this instance as
+     * a {@link TransactionChain} callback to provide possibility a make DS transactions. Call this method for MASTER
+     * role only.
      */
     public void activateTransactionManager() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("activateTransactionManager for node {} transaction submit is set to {}",
-                    this.nodeId, submitIsEnabled);
-        }
+        LOG.debug("activateTransactionManager for node {} transaction submit is set to {}", nodeId, submitIsEnabled);
         synchronized (txLock) {
             if (TransactionChainManagerStatus.SLEEPING == transactionChainManagerStatus) {
-                Preconditions.checkState(transactionChain == null,
-                        "TxChainFactory survive last close.");
-                Preconditions.checkState(writeTx == null,
-                        "We have some unexpected WriteTransaction.");
-                this.transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
-                this.submitIsEnabled = false;
-                this.initCommit = true;
+                Preconditions.checkState(transactionChain == null, "TxChainFactory survive last close.");
+                Preconditions.checkState(writeTx == null, "We have some unexpected WriteTransaction.");
+                transactionChainManagerStatus = TransactionChainManagerStatus.WORKING;
+                submitIsEnabled = false;
+                initCommit = true;
                 createTxChain();
             }
         }
     }
 
     /**
-     * Method change status for TxChainManger to SLEEPING and it unregisters
-     * this class instance as {@link TransactionChainListener} so it broke a possibility to write something to DS.
-     * Call this method for SLAVE only.
-     * @return Future
+     * Method change status for TxChainManger to SLEEPING and it unregisters this instance so it broke a possibility to
+     * write something to DS. Call this method for SLAVE only.
+     *
+     * @return Future competing when deactivation completes
      */
     public FluentFuture<?> deactivateTransactionManager() {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("deactivateTransactionManager for node {}", this.nodeId);
-        }
+        LOG.debug("deactivateTransactionManager for node {}", nodeId);
         final FluentFuture<? extends CommitInfo> future;
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus) {
                 transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
-                future =  txChainShuttingDown();
-                Preconditions.checkState(writeTx == null,
-                        "We have some unexpected WriteTransaction.");
+                future = txChainShuttingDown();
+                Preconditions.checkState(writeTx == null, "We have some unexpected WriteTransaction.");
                 future.addCallback(new FutureCallback<CommitInfo>() {
                     @Override
                     public void onSuccess(final CommitInfo result) {
@@ -136,7 +138,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                     }
 
                     @Override
-                    public void onFailure(@NonNull final Throwable throwable) {
+                    public void onFailure(final Throwable throwable) {
                         closeTransactionChain();
                     }
                 }, MoreExecutors.directExecutor());
@@ -166,7 +168,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     @GuardedBy("txLock")
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public boolean submitTransaction(boolean doSync) {
+    public boolean submitTransaction(final boolean doSync) {
         synchronized (txLock) {
             if (!submitIsEnabled) {
                 LOG.trace("transaction not committed - submit block issued");
@@ -178,7 +180,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             }
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
                     "we have here Uncompleted Transaction for node {} and we are not MASTER",
-                    this.nodeId);
+                    nodeId);
             final FluentFuture<? extends CommitInfo> submitFuture = writeTx.commit();
             lastSubmittedFuture = submitFuture;
             writeTx = null;
@@ -206,13 +208,11 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
                 public void onFailure(final Throwable throwable) {
                     if (throwable instanceof InterruptedException || throwable instanceof ExecutionException) {
                         LOG.error("Transaction commit failed. ", throwable);
+                    } else if (throwable instanceof CancellationException) {
+                        LOG.warn("Submit task was canceled");
+                        LOG.trace("Submit exception: ", throwable);
                     } else {
-                        if (throwable instanceof CancellationException) {
-                            LOG.warn("Submit task was canceled");
-                            LOG.trace("Submit exception: ", throwable);
-                        } else {
-                            LOG.error("Exception during transaction submitting. ", throwable);
-                        }
+                        LOG.error("Exception during transaction submitting. ", throwable);
                     }
                 }
             }, MoreExecutors.directExecutor());
@@ -225,7 +225,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
-                LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", this.nodeId, path);
+                LOG.debug("WriteTx is null for node {}. Delete {} was not realized.", nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
@@ -240,7 +240,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
-                LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", this.nodeId, path);
+                LOG.debug("WriteTx is null for node {}. Write data for {} was not realized.", nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
@@ -259,7 +259,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
-                LOG.debug("WriteTx is null for node {}. Merge data for {} was not realized.", this.nodeId, path);
+                LOG.debug("WriteTx is null for node {}. Merge data for {} was not realized.", nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
@@ -276,7 +276,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
-                LOG.debug("WriteTx is null for node {}. Read data for {} was not realized.", this.nodeId, path);
+                LOG.debug("WriteTx is null for node {}. Read data for {} was not realized.", nodeId, path);
                 throw new TransactionChainClosedException(CANNOT_WRITE_INTO_TRANSACTION);
             }
 
@@ -284,23 +284,16 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
         }
     }
 
-    @Override
-    public void onTransactionChainFailed(final TransactionChain chain,
-                                         final Transaction transaction, final Throwable cause) {
+    private void onTransactionChainFailed(final TransactionChain chain, final Throwable cause) {
         synchronized (txLock) {
             if (TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
-                    && chain.equals(this.transactionChain)) {
+                    && chain.equals(transactionChain)) {
                 LOG.warn("Transaction chain failed, recreating chain due to ", cause);
                 closeTransactionChain();
                 createTxChain();
                 writeTx = null;
             }
         }
-    }
-
-    @Override
-    public void onTransactionChainSuccessful(final TransactionChain chain) {
-        // NOOP
     }
 
     @Holding("txLock")
@@ -320,10 +313,10 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
 
     public FluentFuture<?> shuttingDown() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("TxManager is going SHUTTING_DOWN for node {}", this.nodeId);
+            LOG.debug("TxManager is going SHUTTING_DOWN for node {}", nodeId);
         }
         synchronized (txLock) {
-            this.transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
+            transactionChainManagerStatus = TransactionChainManagerStatus.SHUTTING_DOWN;
             return txChainShuttingDown();
         }
     }
@@ -347,7 +340,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
             future = lastSubmittedFuture;
         } else {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Submitting all transactions for Node {}", this.nodeId);
+                LOG.debug("Submitting all transactions for Node {}", nodeId);
             }
             // hijack md-sal thread
             future = writeTx.commit();
@@ -360,7 +353,7 @@ public class TransactionChainManager implements TransactionChainListener, AutoCl
     @Override
     public void close() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Setting transactionChainManagerStatus to SHUTTING_DOWN for {}", this.nodeId);
+            LOG.debug("Setting transactionChainManagerStatus to SHUTTING_DOWN for {}", nodeId);
         }
         synchronized (txLock) {
             closeTransactionChain();
