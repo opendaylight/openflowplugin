@@ -12,7 +12,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
@@ -57,19 +56,15 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
         LOG.info("getGenerationIdFromDevice called for device: {}", getDeviceInfo().getNodeId().getValue());
 
         // send a dummy no-change role request to get the generation-id of the switch
-        final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
-        roleRequestInputBuilder.setRole(toOFJavaRole(OfpRole.NOCHANGE));
-        roleRequestInputBuilder.setVersion(version);
-        roleRequestInputBuilder.setGenerationId(Uint64.ZERO);
-
-        final SettableFuture<Uint64> finalFuture = SettableFuture.create();
-        final ListenableFuture<RpcResult<RoleRequestOutput>> genIdListenableFuture =
-                handleServiceCall(roleRequestInputBuilder);
-        Futures.addCallback(genIdListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
+        final var finalFuture = SettableFuture.<Uint64>create();
+        Futures.addCallback(handleServiceCall(new RoleRequestInputBuilder()
+            .setRole(ControllerRole.OFPCRROLENOCHANGE)
+            .setVersion(version)
+            .setGenerationId(Uint64.ZERO)), new FutureCallback<>() {
             @Override
             public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
                 if (roleRequestOutputRpcResult.isSuccessful()) {
-                    final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();
+                    final var roleRequestOutput = roleRequestOutputRpcResult.getResult();
                     if (roleRequestOutput != null) {
                         LOG.debug("roleRequestOutput.getGenerationId()={}", roleRequestOutput.getGenerationId());
                         finalFuture.set(roleRequestOutput.getGenerationId());
@@ -78,12 +73,10 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                         finalFuture.setException(new RoleChangeException("Exception in getting generationId for device:"
                                 + getDeviceInfo().getNodeId().getValue()));
                     }
-
                 } else {
-                    LOG.error("getGenerationIdFromDevice RPC error {}",
-                            roleRequestOutputRpcResult.getErrors().iterator().next().getInfo());
-                    finalFuture.setException(new RoleChangeException(ErrorUtil
-                            .errorsToString(roleRequestOutputRpcResult.getErrors())));
+                    final var errors = roleRequestOutputRpcResult.getErrors();
+                    LOG.error("getGenerationIdFromDevice RPC error {}", errors.iterator().next().getInfo());
+                    finalFuture.setException(new RoleChangeException(ErrorUtil.errorsToString(errors)));
                 }
             }
 
@@ -99,30 +92,24 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
 
     public ListenableFuture<RpcResult<SetRoleOutput>> submitRoleChange(final OfpRole ofpRole, final Uint8 version,
                                                                        final Uint64 generationId) {
-        LOG.info("submitRoleChange called for device:{}, role:{}",
-                getDeviceInfo().getNodeId(), ofpRole);
-        final RoleRequestInputBuilder roleRequestInputBuilder = new RoleRequestInputBuilder();
-        roleRequestInputBuilder.setRole(toOFJavaRole(ofpRole));
-        roleRequestInputBuilder.setVersion(version);
-        roleRequestInputBuilder.setGenerationId(generationId);
-
-        final ListenableFuture<RpcResult<RoleRequestOutput>> roleListenableFuture =
-                handleServiceCall(roleRequestInputBuilder);
-
-        final SettableFuture<RpcResult<SetRoleOutput>> finalFuture = SettableFuture.create();
-        Futures.addCallback(roleListenableFuture, new FutureCallback<RpcResult<RoleRequestOutput>>() {
+        LOG.info("submitRoleChange called for device:{}, role:{}", getDeviceInfo().getNodeId(), ofpRole);
+        final var finalFuture = SettableFuture.<RpcResult<SetRoleOutput>>create();
+        Futures.addCallback(handleServiceCall(new RoleRequestInputBuilder()
+            .setRole(toOFJavaRole(ofpRole))
+            .setVersion(version)
+            .setGenerationId(generationId)), new FutureCallback<>() {
             @Override
             public void onSuccess(final RpcResult<RoleRequestOutput> roleRequestOutputRpcResult) {
                 LOG.info("submitRoleChange onSuccess for device:{}, role:{}",
                         getDeviceInfo().getNodeId(), ofpRole);
-                final RoleRequestOutput roleRequestOutput = roleRequestOutputRpcResult.getResult();
-                final Collection<RpcError> rpcErrors = roleRequestOutputRpcResult.getErrors();
+                final var roleRequestOutput = roleRequestOutputRpcResult.getResult();
+                final var rpcErrors = roleRequestOutputRpcResult.getErrors();
                 if (roleRequestOutput != null) {
-                    final SetRoleOutputBuilder setRoleOutputBuilder = new SetRoleOutputBuilder();
-                    setRoleOutputBuilder
-                            .setTransactionId(new TransactionId(Uint64.valueOf(roleRequestOutput.getXid())));
                     finalFuture.set(RpcResultBuilder.<SetRoleOutput>success()
-                            .withResult(setRoleOutputBuilder.build()).build());
+                            .withResult(new SetRoleOutputBuilder()
+                                .setTransactionId(new TransactionId(Uint64.valueOf(roleRequestOutput.getXid())))
+                                .build())
+                            .build());
 
                 } else if (rpcErrors != null) {
                     LOG.trace("roleRequestOutput is null , rpcErrors={}", rpcErrors);
@@ -130,15 +117,14 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
                         LOG.warn("RpcError on submitRoleChange for {}: {}",
                                 deviceContext.getPrimaryConnectionContext().getNodeId(), rpcError.toString());
                     }
-
                     finalFuture.set(RpcResultBuilder.<SetRoleOutput>failed().withRpcErrors(rpcErrors).build());
                 }
             }
 
             @Override
             public void onFailure(final Throwable throwable) {
-                LOG.error("submitRoleChange onFailure for device:{}, role:{}",
-                        getDeviceInfo().getNodeId(), ofpRole, throwable);
+                LOG.error("submitRoleChange onFailure for device:{}, role:{}", getDeviceInfo().getNodeId(), ofpRole,
+                    throwable);
                 finalFuture.setException(throwable);
             }
         }, MoreExecutors.directExecutor());
@@ -146,22 +132,10 @@ public class RoleService extends AbstractSimpleService<RoleRequestInputBuilder, 
     }
 
     private static ControllerRole toOFJavaRole(final OfpRole role) {
-        ControllerRole ofJavaRole = null;
-        switch (role) {
-            case BECOMEMASTER:
-                ofJavaRole = ControllerRole.OFPCRROLEMASTER;
-                break;
-            case BECOMESLAVE:
-                ofJavaRole = ControllerRole.OFPCRROLESLAVE;
-                break;
-            case NOCHANGE:
-                ofJavaRole = ControllerRole.OFPCRROLENOCHANGE;
-                break;
-            default:
-                // no intention
-                LOG.warn("given role is not supported by protocol roles: {}", role);
-                break;
-        }
-        return ofJavaRole;
+        return switch (role) {
+            case BECOMEMASTER -> ControllerRole.OFPCRROLEMASTER;
+            case BECOMESLAVE -> ControllerRole.OFPCRROLESLAVE;
+            case NOCHANGE -> ControllerRole.OFPCRROLENOCHANGE;
+        };
     }
 }
