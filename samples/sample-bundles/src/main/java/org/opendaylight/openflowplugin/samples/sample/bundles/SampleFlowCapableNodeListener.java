@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.samples.sample.bundles;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +21,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
@@ -72,7 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -101,12 +100,12 @@ public final class SampleFlowCapableNodeListener
 
     private final ControlBundle controlBundle;
     private final AddBundleMessages addBundleMessages;
-    private final ListenerRegistration<?> listenerReg;
+    private final Registration listenerReg;
 
     @Inject
     @Activate
     public SampleFlowCapableNodeListener(@Reference final DataBroker dataBroker,
-            @Reference final RpcConsumerRegistry rpcService) {
+            @Reference final RpcService rpcService) {
         controlBundle = rpcService.getRpc(ControlBundle.class);
         addBundleMessages = rpcService.getRpc(AddBundleMessages.class);
         LOG.debug("inSessionInitialized() passing");
@@ -128,7 +127,7 @@ public final class SampleFlowCapableNodeListener
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 LOG.info("Node connected:  {}",

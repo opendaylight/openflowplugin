@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
+import java.util.List;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.FlowCapableNodeConnectorCommitter;
@@ -21,7 +21,7 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         implements FlowCapableNodeConnectorCommitter<T> {
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<T>> changes) {
+    public void onDataTreeChanged(final List<DataTreeModification<T>> changes) {
         requireNonNull(changes, "Changes may not be null!");
 
         for (DataTreeModification<T> change : changes) {

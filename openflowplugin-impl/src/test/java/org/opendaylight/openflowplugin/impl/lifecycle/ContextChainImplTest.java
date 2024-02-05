@@ -16,9 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -27,12 +26,12 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChain;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipWatcher;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext;
+import org.opendaylight.yangtools.concepts.Registration;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContextChainImplTest {
-
     private static final String TEST_NODE = "test node";
-    private static final ServiceGroupIdentifier SERVICE_GROUP_IDENTIFIER = ServiceGroupIdentifier.create(TEST_NODE);
+    private static final ServiceGroupIdentifier SERVICE_GROUP_IDENTIFIER = new ServiceGroupIdentifier(TEST_NODE);
 
     @Mock
     private StatisticsContext statisticsContext;
@@ -47,7 +46,7 @@ public class ContextChainImplTest {
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
-    private ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    private Registration clusterSingletonServiceRegistration;
     @Mock
     private ContextChainMastershipWatcher contextChainMastershipWatcher;
     @Mock
