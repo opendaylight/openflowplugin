@@ -7,31 +7,26 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.util.Collections;
-import java.util.concurrent.Future;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescriptionOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.GroupCapabilities;
@@ -57,32 +52,39 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
-/**
- * Test for {@link OpendaylightGroupStatisticsServiceImpl}.
- */
+@Deprecated
 public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
-
     private static final org.opendaylight.yang.gen.v1.urn
             .opendaylight.openflow.common.types.rev130731.GroupId GROUP_ID = new org.opendaylight.yang.gen.v1.urn
                 .opendaylight.openflow.common.types.rev130731.GroupId(Uint32.valueOf(123));
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightGroupStatisticsServiceImpl groupStatisticsService;
+    private GetAllGroupStatisticsImpl getAllGroupStatistics;
+    private GetGroupStatisticsImpl getGroupStatistics;
+    private GetGroupDescriptionImpl getGroupDescription;
+    private GetGroupFeaturesImpl getGroupFeatures;
 
     @Override
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        groupStatisticsService = new OpendaylightGroupStatisticsServiceImpl(rqContextStack, deviceContext,
-                new AtomicLong(), notificationPublishService, convertorManager);
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final var xid = new AtomicLong();
+        getAllGroupStatistics = new GetAllGroupStatisticsImpl(rqContextStack, deviceContext, xid,
+            notificationPublishService, convertorManager);
+        getGroupStatistics = new GetGroupStatisticsImpl(rqContextStack, deviceContext, xid, notificationPublishService,
+            convertorManager);
+        getGroupDescription = new GetGroupDescriptionImpl(rqContextStack, deviceContext, xid,
+            notificationPublishService, convertorManager);
+        getGroupFeatures = new GetGroupFeaturesImpl(rqContextStack, deviceContext, xid, notificationPublishService,
+            convertorManager);
 
-        Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
+        doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
     }
 
     @After
     public void tearDown() {
-        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
+        verify(notificationPublishService).offerNotification(any());
     }
 
     @Test
@@ -92,13 +94,12 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildGroupStatsResponse();
 
-        final Future<RpcResult<GetAllGroupStatisticsOutput>> resultFuture
-                = groupStatisticsService.getAllGroupStatistics(input.build());
+        final var resultFuture = getAllGroupStatistics.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetAllGroupStatisticsOutput> rpcResultCompatible = resultFuture.get();
-        Assert.assertTrue(rpcResultCompatible.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPGROUP, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResultCompatible = resultFuture.get();
+        assertTrue(rpcResultCompatible.isSuccessful());
+        assertEquals(MultipartType.OFPMPGROUP, requestInput.getValue().getType());
     }
 
     @Test
@@ -106,32 +107,30 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
         GetGroupDescriptionInputBuilder input = new GetGroupDescriptionInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
 
-        rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
-                new MultipartReplyMessageBuilder()
-                        .setVersion(EncodeConstants.OF_VERSION_1_3)
-                        .setMultipartReplyBody(new MultipartReplyGroupDescCaseBuilder()
-                                .setMultipartReplyGroupDesc(new MultipartReplyGroupDescBuilder()
-                                        .setGroupDesc(Collections.singletonList(new GroupDescBuilder()
-                                                .setGroupId(GROUP_ID)
-                                                .setBucketsList(Collections.singletonList(new BucketsListBuilder()
-                                                        .setWatchGroup(Uint32.valueOf(51))
-                                                        .setWatchPort(new PortNumber(Uint32.valueOf(52)))
-                                                        .setWeight(Uint16.valueOf(53))
-                                                        .build()))
-                                                .setType(GroupType.OFPGTALL)
-                                                .build()))
-                                        .build())
-                                .build())
-                        .build()
+        rpcResult = RpcResultBuilder.<Object>success(List.of(new MultipartReplyMessageBuilder()
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
+            .setMultipartReplyBody(new MultipartReplyGroupDescCaseBuilder()
+                .setMultipartReplyGroupDesc(new MultipartReplyGroupDescBuilder()
+                    .setGroupDesc(List.of(new GroupDescBuilder()
+                        .setGroupId(GROUP_ID)
+                        .setBucketsList(List.of(new BucketsListBuilder()
+                            .setWatchGroup(Uint32.valueOf(51))
+                            .setWatchPort(new PortNumber(Uint32.valueOf(52)))
+                            .setWeight(Uint16.valueOf(53))
+                            .build()))
+                        .setType(GroupType.OFPGTALL)
+                        .build()))
+                    .build())
+                .build())
+            .build()
         )).build();
 
-        final Future<RpcResult<GetGroupDescriptionOutput>> resultFuture
-                = groupStatisticsService.getGroupDescription(input.build());
+        final var resultFuture = getGroupDescription.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetGroupDescriptionOutput> rpcResult = resultFuture.get();
-        Assert.assertTrue(rpcResult.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPGROUPDESC, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResult = resultFuture.get();
+        assertTrue(rpcResult.isSuccessful());
+        assertEquals(MultipartType.OFPMPGROUPDESC, requestInput.getValue().getType());
     }
 
     @Test
@@ -139,29 +138,26 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
         GetGroupFeaturesInputBuilder input = new GetGroupFeaturesInputBuilder()
                 .setNode(createNodeRef("unitProt:123"));
 
-        rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(
-                new MultipartReplyMessageBuilder()
-                        .setVersion(EncodeConstants.OF_VERSION_1_3)
-                        .setMultipartReplyBody(new MultipartReplyGroupFeaturesCaseBuilder()
-                                .setMultipartReplyGroupFeatures(new MultipartReplyGroupFeaturesBuilder()
-                                        .setActionsBitmap(Collections.singletonList(new ActionType(true,
-                                                false, false, false, false, false, false, false, false, false, false,
-                                                false, false, false, false, false, false)))
-                                        .setCapabilities(new GroupCapabilities(true, false, false, false))
-                                        .setTypes(new GroupTypes(true, false, false, false))
-                                        .setMaxGroups(Collections.singletonList(Uint32.valueOf(5L)))
-                                        .build())
-                                .build())
-                        .build()
+        rpcResult = RpcResultBuilder.<Object>success(List.of(new MultipartReplyMessageBuilder()
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
+            .setMultipartReplyBody(new MultipartReplyGroupFeaturesCaseBuilder()
+                .setMultipartReplyGroupFeatures(new MultipartReplyGroupFeaturesBuilder()
+                    .setActionsBitmap(List.of(new ActionType(true, false, false, false, false, false, false, false,
+                        false, false, false, false, false, false, false, false, false)))
+                    .setCapabilities(new GroupCapabilities(true, false, false, false))
+                    .setTypes(new GroupTypes(true, false, false, false))
+                    .setMaxGroups(List.of(Uint32.valueOf(5L)))
+                    .build())
+                .build())
+            .build()
         )).build();
 
-        final Future<RpcResult<GetGroupFeaturesOutput>> resultFuture
-                = groupStatisticsService.getGroupFeatures(input.build());
+        final var resultFuture = getGroupFeatures.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetGroupFeaturesOutput> rpcResult = resultFuture.get();
-        Assert.assertTrue(rpcResult.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPGROUPFEATURES, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResult = resultFuture.get();
+        assertTrue(rpcResult.isSuccessful());
+        assertEquals(MultipartType.OFPMPGROUPFEATURES, requestInput.getValue().getType());
     }
 
     @Test
@@ -172,36 +168,34 @@ public class OpendaylightGroupStatisticsServiceImplTest extends AbstractSingleSt
 
         rpcResult = buildGroupStatsResponse();
 
-        final Future<RpcResult<GetGroupStatisticsOutput>> resultFuture
-                = groupStatisticsService.getGroupStatistics(input.build());
+        final var resultFuture = getGroupStatistics.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetGroupStatisticsOutput> rpcResult = resultFuture.get();
-        Assert.assertTrue(rpcResult.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPGROUP, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResult = resultFuture.get();
+        assertTrue(rpcResult.isSuccessful());
+        assertEquals(MultipartType.OFPMPGROUP, requestInput.getValue().getType());
     }
 
     private static RpcResult<Object> buildGroupStatsResponse() {
-        return RpcResultBuilder.<Object>success(Collections.singletonList(
-                new MultipartReplyMessageBuilder()
-                        .setVersion(EncodeConstants.OF_VERSION_1_3)
-                        .setMultipartReplyBody(new MultipartReplyGroupCaseBuilder()
-                                .setMultipartReplyGroup(new MultipartReplyGroupBuilder()
-                                        .setGroupStats(Collections.singletonList(new GroupStatsBuilder()
-                                                .setByteCount(Uint64.valueOf(21))
-                                                .setPacketCount(Uint64.valueOf(22))
-                                                .setRefCount(Uint32.valueOf(23))
-                                                .setDurationSec(Uint32.valueOf(24))
-                                                .setDurationNsec(Uint32.valueOf(25))
-                                                .setGroupId(GROUP_ID)
-                                                .setBucketStats(Collections.singletonList(new BucketStatsBuilder()
-                                                        .setByteCount(Uint64.valueOf(26))
-                                                        .setPacketCount(Uint64.valueOf(27))
-                                                        .build()))
-                                                .build()))
-                                        .build())
-                                .build())
-                        .build()
+        return RpcResultBuilder.<Object>success(List.of(new MultipartReplyMessageBuilder()
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
+            .setMultipartReplyBody(new MultipartReplyGroupCaseBuilder()
+                .setMultipartReplyGroup(new MultipartReplyGroupBuilder()
+                    .setGroupStats(List.of(new GroupStatsBuilder()
+                        .setByteCount(Uint64.valueOf(21))
+                        .setPacketCount(Uint64.valueOf(22))
+                        .setRefCount(Uint32.valueOf(23))
+                        .setDurationSec(Uint32.valueOf(24))
+                        .setDurationNsec(Uint32.valueOf(25))
+                        .setGroupId(GROUP_ID)
+                        .setBucketStats(List.of(new BucketStatsBuilder()
+                            .setByteCount(Uint64.valueOf(26))
+                            .setPacketCount(Uint64.valueOf(27))
+                            .build()))
+                        .build()))
+                    .build())
+                .build())
+            .build()
         )).build();
     }
 }

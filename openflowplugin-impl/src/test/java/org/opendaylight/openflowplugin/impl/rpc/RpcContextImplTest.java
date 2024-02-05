@@ -7,18 +7,21 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ClassToInstanceMap;
 import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -37,6 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.binding.RpcService;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -63,6 +67,8 @@ public class RpcContextImplTest {
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Captor
+    private ArgumentCaptor<ClassToInstanceMap<Rpc<?, ?>>> captor;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private RpcContextImpl rpcContext;
@@ -153,12 +159,14 @@ public class RpcContextImplTest {
 
     @Test
     public void testInstantiateServiceInstance() {
-        when(rpcProviderRegistry.registerRpcImplementation(any(), any(RpcService.class),
+        when(rpcProviderRegistry.registerRpcImplementations(any(),
             eq(Set.of(nodeInstanceIdentifier)))).thenReturn(registration);
 
         rpcContext.instantiateServiceInstance();
 
-        verify(rpcProviderRegistry, times(21)).registerRpcImplementation(any(), any(RpcService.class),
-            eq(Set.of(nodeInstanceIdentifier)));
+        verify(rpcProviderRegistry).registerRpcImplementations(captor.capture(), eq(Set.of(nodeInstanceIdentifier)));
+
+        final var map = captor.getValue();
+        assertEquals(46, map.size());
     }
 }

@@ -5,23 +5,22 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.util.Collections;
-import java.util.concurrent.Future;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
-import org.mockito.Mockito;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -33,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatisticsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetNodeConnectorStatisticsOutput;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -42,50 +40,52 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 /**
  * Test for {@link OpendaylightPortStatisticsServiceImpl}.
  */
+@Deprecated
 public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleStatsServiceTest {
-
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightPortStatisticsServiceImpl portStatisticsService;
+    private GetAllNodeConnectorsStatisticsImpl getAllNodeConnectorsStatistics;
+    private GetNodeConnectorStatisticsImpl getNodeConnectorStatistics;
 
     @Override
     public void setUp() {
-        portStatisticsService = new OpendaylightPortStatisticsServiceImpl(rqContextStack, deviceContext,
-                new AtomicLong(), notificationPublishService);
+        final var xid = new AtomicLong();
+        getAllNodeConnectorsStatistics = new GetAllNodeConnectorsStatisticsImpl(rqContextStack, deviceContext, xid,
+            notificationPublishService);
+        getNodeConnectorStatistics = new GetNodeConnectorStatisticsImpl(rqContextStack, deviceContext, xid,
+            notificationPublishService);
 
-        Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
+        doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
     }
 
     @After
     public void tearDown() {
-        Mockito.verify(notificationPublishService).offerNotification(ArgumentMatchers.any());
+        verify(notificationPublishService).offerNotification(any());
     }
 
     @Test
     public void testGetAllNodeConnectorsStatistics() throws Exception {
-        GetAllNodeConnectorsStatisticsInputBuilder input = new GetAllNodeConnectorsStatisticsInputBuilder()
-                .setNode(createNodeRef("unitProt:123"));
+        var input = new GetAllNodeConnectorsStatisticsInputBuilder().setNode(createNodeRef("unitProt:123"));
 
         rpcResult = buildPortStatisticsReply();
 
-        final Future<RpcResult<GetAllNodeConnectorsStatisticsOutput>> resultFuture
-                = portStatisticsService.getAllNodeConnectorsStatistics(input.build());
+        final var resultFuture = getAllNodeConnectorsStatistics.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
+        assertTrue(resultFuture.isDone());
         final RpcResult<GetAllNodeConnectorsStatisticsOutput> rpcResult = resultFuture.get();
-        Assert.assertTrue(rpcResult.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPPORTSTATS, requestInput.getValue().getType());
+        assertTrue(rpcResult.isSuccessful());
+        assertEquals(MultipartType.OFPMPPORTSTATS, requestInput.getValue().getType());
     }
 
     private static RpcResult<Object> buildPortStatisticsReply() {
-        return RpcResultBuilder.<Object>success(Collections.singletonList(
+        return RpcResultBuilder.<Object>success(List.of(
                 new MultipartReplyMessageBuilder()
                         .setVersion(EncodeConstants.OF_VERSION_1_3)
                         .setMultipartReplyBody(new MultipartReplyPortStatsCaseBuilder()
                                 .setMultipartReplyPortStats(new MultipartReplyPortStatsBuilder()
-                                        .setPortStats(Collections.singletonList(new PortStatsBuilder()
+                                        .setPortStats(List.of(new PortStatsBuilder()
                                                 .setDurationSec(Uint32.valueOf(90))
                                                 .setDurationNsec(Uint32.valueOf(91))
                                                 .setCollisions(Uint64.valueOf(92))
@@ -110,18 +110,17 @@ public class OpendaylightPortStatisticsServiceImplTest extends AbstractSingleSta
 
     @Test
     public void testGetNodeConnectorStatistics() throws Exception {
-        GetNodeConnectorStatisticsInputBuilder input = new GetNodeConnectorStatisticsInputBuilder()
+        var input = new GetNodeConnectorStatisticsInputBuilder()
                 .setNode(createNodeRef("unitProt:123"))
                 .setNodeConnectorId(new NodeConnectorId("unitProt:123:321"));
 
         rpcResult = buildPortStatisticsReply();
 
-        final Future<RpcResult<GetNodeConnectorStatisticsOutput>> resultFuture
-                = portStatisticsService.getNodeConnectorStatistics(input.build());
+        final var resultFuture = getNodeConnectorStatistics.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetNodeConnectorStatisticsOutput> rpcResult = resultFuture.get();
-        Assert.assertTrue(rpcResult.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPPORTSTATS, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResult = resultFuture.get();
+        assertTrue(rpcResult.isSuccessful());
+        assertEquals(MultipartType.OFPMPPORTSTATS, requestInput.getValue().getType());
     }
 }

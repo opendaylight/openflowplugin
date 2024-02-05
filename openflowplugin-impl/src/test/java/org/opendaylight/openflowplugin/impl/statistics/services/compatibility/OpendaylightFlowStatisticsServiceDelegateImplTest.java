@@ -7,35 +7,32 @@
  */
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.FutureCallback;
-import java.util.Collections;
-import java.util.concurrent.Future;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.MessageTranslator;
 import org.opendaylight.openflowplugin.impl.statistics.services.AbstractSingleStatsServiceTest;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter32;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.Counter64;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTablesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.get.aggregate.flow.statistics.from.flow.table._for.given.match.output.AggregatedFlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.output.action._case.OutputActionBuilder;
@@ -66,33 +63,38 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceDelegateImpl}.
+ * Test for {@link GetFlowStatisticsFromFlowTableImpl}.
  * Skipping notification verification. This will be tested in tests of underlying single task oriented services.
  */
 public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractSingleStatsServiceTest {
-
     public static final int NOTIFICATION_WAIT_TIMEOUT_MS = 500;
+
+    @Mock
+    private MessageTranslator<Object, Object> translator;
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsServiceDelegate;
-    @Mock
-    private MessageTranslator<Object, Object> translator;
+    private GetFlowStatisticsFromFlowTableImpl getFlowStatisticsFromFlowTable;
+    private GetAllFlowStatisticsFromFlowTableImpl getAllFlowStatisticsFromFlowTable;
+    private GetAllFlowsStatisticsFromAllFlowTablesImpl getAllFlowsStatisticsFromAllFlowTables;
+    private GetAggregateFlowStatisticsFromFlowTableForAllFlowsImpl getAggregateFlowStatisticsFromFlowTableForAllFlows;
 
     @Override
     public void setUp() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsServiceDelegate = new OpendaylightFlowStatisticsServiceDelegateImpl(
-                rqContextStack, deviceContext, notificationPublishService, new AtomicLong(21), convertorManager);
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        final var xid = new AtomicLong(21);
+        getFlowStatisticsFromFlowTable = new GetFlowStatisticsFromFlowTableImpl(
+                rqContextStack, deviceContext, convertorManager, xid, notificationPublishService);
+        getAllFlowStatisticsFromFlowTable = new GetAllFlowStatisticsFromFlowTableImpl(
+            rqContextStack, deviceContext, convertorManager, xid, notificationPublishService);
+        getAllFlowsStatisticsFromAllFlowTables = new GetAllFlowsStatisticsFromAllFlowTablesImpl(
+            rqContextStack, deviceContext, convertorManager, xid, notificationPublishService);
+        getAggregateFlowStatisticsFromFlowTableForAllFlows = new GetAggregateFlowStatisticsFromFlowTableForAllFlowsImpl(
+            rqContextStack, deviceContext, convertorManager, xid, notificationPublishService);
 
-        Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
+        doAnswer(answerVoidToCallback).when(outboundQueueProvider)
                 .commitEntry(eq(Uint32.valueOf(42)), requestInput.capture(), any(FutureCallback.class));
-        Mockito.when(translatorLibrary.lookupTranslator(ArgumentMatchers.any())).thenReturn(translator);
-    }
-
-    @Test(expected = IllegalAccessError.class)
-    public void testGetAggregateFlowStatisticsFromFlowTableForGivenMatch() {
-        flowStatisticsServiceDelegate.getAggregateFlowStatisticsFromFlowTableForGivenMatch(null);
+        when(translatorLibrary.lookupTranslator(any())).thenReturn(translator);
     }
 
     @Test
@@ -102,14 +104,14 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .setNode(createNodeRef("unitProt:123"))
                 .setTableId(new TableId(Uint8.ONE));
 
-        Mockito.when(translator.translate(any(MultipartReply.class), eq(deviceInfo),any()))
+        when(translator.translate(any(MultipartReply.class), eq(deviceInfo),any()))
                 .thenReturn(new AggregatedFlowStatisticsBuilder()
                         .setByteCount(new Counter64(Uint64.valueOf(50)))
                         .setPacketCount(new Counter64(Uint64.valueOf(51)))
                         .setFlowCount(new Counter32(Uint32.valueOf(52)))
                         .build());
 
-        rpcResult = RpcResultBuilder.<Object>success(Collections.singletonList(new MultipartReplyMessageBuilder()
+        rpcResult = RpcResultBuilder.<Object>success(List.of(new MultipartReplyMessageBuilder()
                 .setType(MultipartType.OFPMPAGGREGATE)
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setFlags(new MultipartRequestFlags(false))
@@ -123,16 +125,14 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                 .build()))
                 .build();
 
-        final Future<RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput>> resultFuture
-                = flowStatisticsServiceDelegate.getAggregateFlowStatisticsFromFlowTableForAllFlows(input.build());
+        final var resultFuture = getAggregateFlowStatisticsFromFlowTableForAllFlows.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput> rpcResultCompatible =
-                resultFuture.get();
-        Assert.assertTrue(rpcResultCompatible.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResultCompatible = resultFuture.get();
+        assertTrue(rpcResultCompatible.isSuccessful());
+        assertEquals(MultipartType.OFPMPAGGREGATE, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
+        verify(notificationPublishService, timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
                 .offerNotification(any(Notification.class));
     }
 
@@ -144,26 +144,25 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         rpcResult = buildFlowStatsReply();
 
-        final Future<RpcResult<GetAllFlowStatisticsFromFlowTableOutput>> resultFuture
-                = flowStatisticsServiceDelegate.getAllFlowStatisticsFromFlowTable(input.build());
+        final var resultFuture = getAllFlowStatisticsFromFlowTable.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetAllFlowStatisticsFromFlowTableOutput> rpcResultCompatible = resultFuture.get();
-        Assert.assertTrue(rpcResultCompatible.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResultCompatible = resultFuture.get();
+        assertTrue(rpcResultCompatible.isSuccessful());
+        assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
+        verify(notificationPublishService, timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
                 .offerNotification(any(Notification.class));
     }
 
     private static RpcResult<Object> buildFlowStatsReply() {
-        return RpcResultBuilder.<Object>success(Collections.singletonList(new MultipartReplyMessageBuilder()
+        return RpcResultBuilder.<Object>success(List.of(new MultipartReplyMessageBuilder()
                 .setType(MultipartType.OFPMPFLOW)
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setFlags(new MultipartRequestFlags(false))
                 .setMultipartReplyBody(new MultipartReplyFlowCaseBuilder()
                     .setMultipartReplyFlow(new MultipartReplyFlowBuilder()
-                        .setFlowStats(Collections.singletonList(new FlowStatsBuilder()
+                        .setFlowStats(List.of(new FlowStatsBuilder()
                             .setTableId(Uint8.valueOf(123))
                             .setDurationSec(Uint32.TEN)
                             .setDurationNsec(Uint32.valueOf(11))
@@ -171,14 +170,14 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                             .setPacketCount(Uint64.valueOf(13))
                             .setCookie(Uint64.ZERO)
                             .setPriority(Uint16.valueOf(14))
-                            .setMatch(new MatchBuilder().setMatchEntry(Collections.emptyList()).build())
+                            .setMatch(new MatchBuilder().setMatchEntry(List.of()).build())
                             .setHardTimeout(Uint16.valueOf(15))
                             .setIdleTimeout(Uint16.valueOf(16))
                             .setFlags(new FlowModFlags(true, false, false, false, false))
-                            .setInstruction(Collections.singletonList(new InstructionBuilder()
+                            .setInstruction(List.of(new InstructionBuilder()
                                 .setInstructionChoice(new ApplyActionsCaseBuilder()
                                     .setApplyActions(new ApplyActionsBuilder()
-                                        .setAction(Collections.singletonList(new ActionBuilder()
+                                        .setAction(List.of(new ActionBuilder()
                                             .setActionChoice(new OutputActionCaseBuilder()
                                                 .setOutputAction(new OutputActionBuilder()
                                                     .setMaxLength(Uint16.valueOf(17))
@@ -193,7 +192,7 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
                         .build())
                     .build())
                 .build()))
-                .build();
+            .build();
     }
 
     @Test
@@ -204,15 +203,14 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         rpcResult = buildFlowStatsReply();
 
-        final Future<RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput>> resultFuture
-                = flowStatisticsServiceDelegate.getAllFlowsStatisticsFromAllFlowTables(input.build());
+        final var resultFuture = getAllFlowsStatisticsFromAllFlowTables.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetAllFlowsStatisticsFromAllFlowTablesOutput> rpcResultCompatible = resultFuture.get();
-        Assert.assertTrue(rpcResultCompatible.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResultCompatible = resultFuture.get();
+        assertTrue(rpcResultCompatible.isSuccessful());
+        assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
+        verify(notificationPublishService, timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
                 .offerNotification(any(Notification.class));
     }
 
@@ -226,15 +224,14 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
 
         rpcResult = buildFlowStatsReply();
 
-        final Future<RpcResult<GetFlowStatisticsFromFlowTableOutput>> resultFuture
-                = flowStatisticsServiceDelegate.getFlowStatisticsFromFlowTable(input.build());
+        final var resultFuture = getFlowStatisticsFromFlowTable.invoke(input.build());
 
-        Assert.assertTrue(resultFuture.isDone());
-        final RpcResult<GetFlowStatisticsFromFlowTableOutput> rpcResultCompatible = resultFuture.get();
-        Assert.assertTrue(rpcResultCompatible.isSuccessful());
-        Assert.assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
+        assertTrue(resultFuture.isDone());
+        final var rpcResultCompatible = resultFuture.get();
+        assertTrue(rpcResultCompatible.isSuccessful());
+        assertEquals(MultipartType.OFPMPFLOW, requestInput.getValue().getType());
 
-        Mockito.verify(notificationPublishService, Mockito.timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
+        verify(notificationPublishService, timeout(NOTIFICATION_WAIT_TIMEOUT_MS))
                 .offerNotification(any(Notification.class));
     }
 }

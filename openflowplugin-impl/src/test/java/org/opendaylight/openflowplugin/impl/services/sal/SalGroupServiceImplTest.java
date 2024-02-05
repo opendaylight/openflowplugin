@@ -13,20 +13,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.impl.services.ServiceMocking;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManager;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.UpdatedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -39,22 +33,25 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class SalGroupServiceImplTest extends ServiceMocking {
-
     private static final Uint32 DUMMY_GROUP_ID = Uint32.valueOf(15);
-    private static final
-        KeyedInstanceIdentifier<Node, NodeKey> NODE_II = InstanceIdentifier.create(Nodes.class).child(Node.class,
-            new NodeKey(new NodeId(DUMMY_NODE_ID)));
-    NodeRef noderef = new NodeRef(NODE_II);
+    private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II =
+        InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
+
+    private final NodeRef noderef = new NodeRef(NODE_II);
 
     @Mock
-    DeviceGroupRegistry mockedDeviceGroupRegistry;
+    private DeviceGroupRegistry mockedDeviceGroupRegistry;
 
-    SalGroupServiceImpl salGroupService;
+    private AddGroupImpl addGroup;
+    private RemoveGroupImpl removeGroup;
+    private UpdateGroupImpl updateGroup;
 
     @Override
     protected void setup() {
-        final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        salGroupService = new SalGroupServiceImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
+        addGroup = new AddGroupImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        removeGroup = new RemoveGroupImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        updateGroup = new UpdateGroupImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
     }
 
     @Test
@@ -63,12 +60,12 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     }
 
     private void addGroup() {
-        final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
-        AddGroupInput addGroupInput = new AddGroupInputBuilder().setGroupId(dummyGroupId).setNode(noderef).build();
+        final var dummyGroupId = new GroupId(DUMMY_GROUP_ID);
+        final var addGroupInput = new AddGroupInputBuilder().setGroupId(dummyGroupId).setNode(noderef).build();
 
         this.<AddGroupOutput>mockSuccessfulFuture();
 
-        salGroupService.addGroup(addGroupInput);
+        addGroup.invoke(addGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
 
     }
@@ -84,13 +81,13 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     }
 
     private void updateGroup() {
-        final UpdatedGroup updatedGroup = new UpdatedGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
-        final OriginalGroup originalGroup = new OriginalGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
-        final UpdateGroupInput updateGroupInput =
+        final var updatedGroup = new UpdatedGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
+        final var originalGroup = new OriginalGroupBuilder().setGroupId(new GroupId(DUMMY_GROUP_ID)).build();
+        final var updateGroupInput =
                 new UpdateGroupInputBuilder().setUpdatedGroup(updatedGroup).setOriginalGroup(originalGroup).build();
 
         this.<UpdateGroupOutput>mockSuccessfulFuture();
-        salGroupService.updateGroup(updateGroupInput);
+        updateGroup.invoke(updateGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
 
     }
@@ -106,10 +103,10 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     }
 
     private void removeGroup() {
-        final GroupId dummyGroupId = new GroupId(DUMMY_GROUP_ID);
-        RemoveGroupInput removeGroupInput = new RemoveGroupInputBuilder().setGroupId(dummyGroupId).build();
+        final var dummyGroupId = new GroupId(DUMMY_GROUP_ID);
+        final var removeGroupInput = new RemoveGroupInputBuilder().setGroupId(dummyGroupId).build();
         this.<RemoveGroupOutput>mockSuccessfulFuture();
-        salGroupService.removeGroup(removeGroupInput);
+        removeGroup.invoke(removeGroupInput);
         verify(mockedRequestContextStack).createRequestContext();
 
     }

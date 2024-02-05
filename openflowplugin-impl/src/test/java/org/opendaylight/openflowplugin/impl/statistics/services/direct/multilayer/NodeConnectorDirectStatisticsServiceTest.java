@@ -38,14 +38,12 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 public class NodeConnectorDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
-    private PortDirectStatisticsService service;
+    private MultiGetNodeConnectorStatistics service;
 
     @Override
     public void setUp() {
-        service = new PortDirectStatisticsService(requestContextStack,
-                                                  deviceContext,
-                                                  convertorManager,
-                                                  multipartWriterProvider);
+        service = new MultiGetNodeConnectorStatistics(requestContextStack, deviceContext, convertorManager,
+            multipartWriterProvider);
     }
 
     @Override

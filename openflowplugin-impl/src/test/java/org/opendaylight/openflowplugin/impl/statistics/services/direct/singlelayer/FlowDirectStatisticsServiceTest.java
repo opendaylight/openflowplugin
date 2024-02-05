@@ -51,12 +51,12 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class FlowDirectStatisticsServiceTest extends AbstractDirectStatisticsServiceTest {
     static final Uint8 TABLE_NO = Uint8.ONE;
-    private FlowDirectStatisticsService service;
+    private SingleGetFlowStatistics service;
 
     @Override
     public void setUp() {
         final DeviceFlowRegistry registry = mock(DeviceFlowRegistry.class);
-        service = new FlowDirectStatisticsService(requestContextStack,
+        service = new SingleGetFlowStatistics(requestContextStack,
                                                   deviceContext,
                                                   convertorManager,
                                                   multipartWriterProvider);
