@@ -8,16 +8,14 @@
 package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 
 /**
  * Holder for {@link DataTreeChangeListener} registration.
  */
 public interface DataTreeChangeListenerRegistrationHolder {
-
     /**
      * Returns the DataTreeChangeListenerRegistration.
      */
-    ListenerRegistration<DataTreeChangeListener> getDataTreeChangeListenerRegistration();
-
+    Registration getDataTreeChangeListenerRegistration();
 }
