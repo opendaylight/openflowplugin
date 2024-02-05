@@ -22,8 +22,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -87,7 +87,7 @@ public final class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable,
 
     private volatile OperStatus operationalStatus = OperStatus.RUN;
 
-    public LLDPSpeaker(final DeviceOwnershipService deviceOwnershipService, final RpcConsumerRegistry rpcService,
+    public LLDPSpeaker(final DeviceOwnershipService deviceOwnershipService, final RpcService rpcService,
             final RpcProviderService rpcProviderService, final LldpSpeakerConfig config) {
         this(Executors.newSingleThreadScheduledExecutor(THREAD_FACTORY), deviceOwnershipService, rpcService,
             rpcProviderService, config.getAddressDestination());
@@ -95,7 +95,7 @@ public final class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable,
 
     @VisibleForTesting
     LLDPSpeaker(final ScheduledExecutorService scheduledExecutorService,
-            final DeviceOwnershipService deviceOwnershipService, final RpcConsumerRegistry rpcService,
+            final DeviceOwnershipService deviceOwnershipService, final RpcService rpcService,
             final RpcProviderService rpcProviderService, final MacAddress addressDestination) {
         this.scheduledExecutorService = requireNonNull(scheduledExecutorService);
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
