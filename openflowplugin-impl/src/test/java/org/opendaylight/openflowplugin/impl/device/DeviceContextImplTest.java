@@ -59,7 +59,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.api.openflow.registry.group.DeviceGroupRegistry;
 import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
-import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.openflowplugin.extension.api.ConvertorMessageFromOFJava;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
@@ -194,8 +193,7 @@ public class DeviceContextImplTest {
         Mockito.lenient().when(readTx.read(LogicalDatastoreType.OPERATIONAL, nodeKeyIdent))
                 .thenReturn(noExistNodeFuture);
         Mockito.when(dataBroker.newReadOnlyTransaction()).thenReturn(readTx);
-        Mockito.when(dataBroker.createTransactionChain(any(TransactionChainManager.class)))
-                .thenReturn(txChainFactory);
+        Mockito.when(dataBroker.createTransactionChain()).thenReturn(txChainFactory);
         Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeKeyIdent);
         Mockito.when(deviceInfo.getNodeId()).thenReturn(nodeId);
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(Uint64.ONE);

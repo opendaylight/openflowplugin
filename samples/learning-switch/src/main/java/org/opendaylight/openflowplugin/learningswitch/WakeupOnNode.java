@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
+import java.util.List;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
@@ -28,17 +28,17 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<Table>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<Table>> modifications) {
         Uint8 requiredTableId = Uint8.ZERO;
         // TODO add flow
 
         for (var modification : modifications) {
-            if (modification.getRootNode().getModificationType() == ModificationType.SUBTREE_MODIFIED) {
-                var table = modification.getRootNode().getDataAfter();
+            if (modification.getRootNode().modificationType() == ModificationType.SUBTREE_MODIFIED) {
+                var table = modification.getRootNode().dataAfter();
                 if (table != null) {
                     LOG.trace("table: {}", table);
                     if (requiredTableId.equals(table.getId())) {
-                        learningSwitchHandler.onSwitchAppeared(modification.getRootPath().getRootIdentifier());
+                        learningSwitchHandler.onSwitchAppeared(modification.getRootPath().path());
                     }
                 }
             }
