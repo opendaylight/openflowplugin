@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 import com.google.common.util.concurrent.Futures;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.Assert;
@@ -121,7 +121,7 @@ public class SimplifiedOperationalListenerTest {
     @Test
     public void testOnDataTreeChangedAddPhysical() {
         operationalAdd();
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
         Mockito.verify(deviceMastershipManager).onDeviceConnected(NODE_ID);
         Mockito.verifyNoMoreInteractions(reactor);
     }
@@ -131,7 +131,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(deviceMastershipManager).onDeviceDisconnected(NODE_ID);
         Mockito.verifyNoMoreInteractions(reactor);
@@ -145,7 +145,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNodeEmpty);
         Mockito.when(operationalNodeEmpty.getNodeConnector()).thenReturn(null);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(deviceMastershipManager).onDeviceDisconnected(NODE_ID);
         Mockito.verifyNoMoreInteractions(reactor);
@@ -156,7 +156,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(reconciliationRegistry.isRegistered(NODE_ID)).thenReturn(false);
         operationalUpdate();
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verifyNoMoreInteractions(reactor);
     }
@@ -167,7 +167,7 @@ public class SimplifiedOperationalListenerTest {
         operationalUpdate();
         Mockito.when(operationalNode.augmentation(FlowCapableStatisticsGatheringStatus.class)).thenReturn(null);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verifyNoMoreInteractions(reactor);
     }
@@ -180,7 +180,7 @@ public class SimplifiedOperationalListenerTest {
             .thenReturn(statisticsGatheringStatus);
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(null);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verifyNoMoreInteractions(reactor);
     }
@@ -194,7 +194,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(statisticsGatheringStatus.getSnapshotGatheringStatusEnd()).thenReturn(snapshotGatheringStatusEnd);
         Mockito.when(snapshotGatheringStatusEnd.getSucceeded()).thenReturn(false);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verifyNoMoreInteractions(reactor);
     }
@@ -205,7 +205,7 @@ public class SimplifiedOperationalListenerTest {
         operationalUpdate();
         prepareFreshOperational(false);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verifyNoMoreInteractions(reactor);
     }
@@ -218,7 +218,7 @@ public class SimplifiedOperationalListenerTest {
         final SyncupEntry syncupEntry = loadConfigDSAndPrepareSyncupEntry(
                 configNode, configDS, fcOperationalNode, operationalDS);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verify(roTx).close();
@@ -233,7 +233,7 @@ public class SimplifiedOperationalListenerTest {
         final SyncupEntry syncupEntry = loadConfigDSAndPrepareSyncupEntry(
                 configNode, configDS, fcOperationalNode, operationalDS);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verify(roTx).close();
@@ -249,7 +249,7 @@ public class SimplifiedOperationalListenerTest {
         Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(roTx)
             .read(LogicalDatastoreType.CONFIGURATION, fcNodePath);
 
-        nodeListenerOperational.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
         Mockito.verify(reconciliationRegistry).unregisterIfRegistered(NODE_ID);
         Mockito.verifyNoMoreInteractions(reactor);

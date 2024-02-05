@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import javax.annotation.PreDestroy;
@@ -51,9 +51,9 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNodeConnector>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNodeConnector>> modifications) {
         for (DataTreeModification<FlowCapableNodeConnector> modification : modifications) {
-            switch (modification.getRootNode().getModificationType()) {
+            switch (modification.getRootNode().modificationType()) {
                 case WRITE:
                     processAddedTerminationPoints(modification);
                     break;
@@ -65,7 +65,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
                     break;
                 default:
                     throw new IllegalArgumentException(
-                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
+                            "Unhandled modification type: {}" + modification.getRootNode().modificationType());
             }
         }
     }
@@ -78,7 +78,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processRemovedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final InstanceIdentifier<FlowCapableNodeConnector> removedNode = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNodeConnector> removedNode = modification.getRootPath().path();
         final TpId terminationPointId = provideTopologyTerminationPointId(removedNode);
         final InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
                 terminationPointId, removedNode);
@@ -116,15 +116,14 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processAddedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory = modification.getRootPath()
-                .getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory = modification.getRootPath().path();
         TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null) {
             InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
                     terminationPointIdInTopology, iiToNodeInInventory);
             TerminationPoint point = prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory);
             sendToTransactionChain(point, iiToTopologyTerminationPoint);
-            removeLinks(modification.getRootNode().getDataAfter(), point);
+            removeLinks(modification.getRootNode().dataAfter(), point);
         } else {
             LOG.debug("Inventory node connector key is null. Data can't be written to topology termination point");
         }

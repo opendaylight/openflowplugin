@@ -11,12 +11,12 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
-import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 // Needed only for BluePrint coexistence
 public interface ListenerRegistrationHelper {
 
-    <T extends DataObject> @NonNull ListenableFuture<ObjectRegistration<?>> checkedRegisterListener(
-        DataTreeIdentifier<T> treeId, ClusteredDataTreeChangeListener<T> listener);
+    <T extends DataObject> @NonNull ListenableFuture<Registration> checkedRegisterListener(DataTreeIdentifier<T> treeId,
+        ClusteredDataTreeChangeListener<T> listener);
 }

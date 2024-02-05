@@ -9,12 +9,12 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.clustering;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceRegistration;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +26,14 @@ public final class DeviceMastership implements ClusterSingletonService, AutoClos
     private final NodeId nodeId;
     private final ServiceGroupIdentifier identifier;
     private final ReconciliationRegistry reconciliationRegistry;
-    private final ClusterSingletonServiceRegistration clusterSingletonServiceRegistration;
+    private final Registration clusterSingletonServiceRegistration;
     private boolean deviceMastered;
 
     public DeviceMastership(final NodeId nodeId,
                             final ReconciliationRegistry reconciliationRegistry,
                             final ClusterSingletonServiceProvider clusterSingletonService) {
         this.nodeId = nodeId;
-        identifier = ServiceGroupIdentifier.create(nodeId.getValue());
+        identifier = new ServiceGroupIdentifier(nodeId.getValue());
         this.reconciliationRegistry = reconciliationRegistry;
         deviceMastered = false;
         clusterSingletonServiceRegistration = clusterSingletonService.registerClusterSingletonService(this);

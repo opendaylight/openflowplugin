@@ -13,7 +13,7 @@ import static java.util.Objects.requireNonNullElse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueue;
 import org.opendaylight.openflowjava.protocol.api.connection.OutboundQueueHandlerRegistration;
@@ -313,7 +313,7 @@ public class ConnectionContextImpl implements ConnectionContext {
             this.version = requireNonNull(version);
             this.datapathId = datapathId;
             this.outboundQueueProvider = outboundQueueProvider;
-            serviceGroupIdentifier = ServiceGroupIdentifier.create(this.nodeId.getValue());
+            serviceGroupIdentifier = new ServiceGroupIdentifier(this.nodeId.getValue());
         }
 
         @Override
