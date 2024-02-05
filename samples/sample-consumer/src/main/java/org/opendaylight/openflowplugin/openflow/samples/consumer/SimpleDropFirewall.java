@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.osgi.service.component.annotations.Activate;
@@ -26,7 +26,7 @@ public final class SimpleDropFirewall {
 
     @Inject
     @Activate
-    public SimpleDropFirewall(@Reference final RpcConsumerRegistry rpcService) {
+    public SimpleDropFirewall(@Reference final RpcService rpcService) {
         addFlow = rpcService.getRpc(AddFlow.class);
     }
 

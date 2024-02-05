@@ -17,9 +17,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -65,17 +65,17 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     private final DataTreeIdentifier<FlowCapableNode> nodeConfigDataTreePath;
     private final DataTreeIdentifier<Node> nodeOperationalDataTreePath;
 
-    private ListenerRegistration<?> dataTreeConfigChangeListener;
-    private ListenerRegistration<?> dataTreeOperationalChangeListener;
+    private Registration dataTreeConfigChangeListener;
+    private Registration dataTreeOperationalChangeListener;
 
     private final ExecutorService syncThreadPool;
 
     @Inject
     @Activate
     public ForwardingRulesSyncProvider(@Reference final DataBroker dataBroker,
-            @Reference final RpcConsumerRegistry rpcRegistry,
+            @Reference final RpcService rpcRegistry,
             @Reference final ClusterSingletonServiceProvider clusterSingletonService) {
-        requireNonNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
+        requireNonNull(rpcRegistry, "RpcService can not be null!");
         dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonService = requireNonNull(clusterSingletonService,
                 "ClusterSingletonServiceProvider can not be null!");

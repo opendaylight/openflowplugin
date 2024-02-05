@@ -11,7 +11,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
@@ -37,11 +37,11 @@ import org.slf4j.LoggerFactory;
 public final class LearningSwitchManagerSimpleImpl implements DataTreeChangeListenerRegistrationHolder, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LearningSwitchManagerSimpleImpl.class);
 
-    private final ListenerRegistration<DataTreeChangeListener> dataTreeChangeListenerRegistration;
+    private final Registration dataTreeChangeListenerRegistration;
     private final Registration packetInRegistration;
 
     public LearningSwitchManagerSimpleImpl(final DataBroker dataBroker, final NotificationService notificationService,
-            final RpcConsumerRegistry rpcService) {
+            final RpcService rpcService) {
         LOG.debug("start() -->");
         final var dataStoreAccessor = new FlowCommitWrapperImpl(dataBroker);
 

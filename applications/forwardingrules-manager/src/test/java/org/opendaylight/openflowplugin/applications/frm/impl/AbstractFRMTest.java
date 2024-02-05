@@ -14,7 +14,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.mockito.Mock;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.binding.dom.adapter.test.AbstractDataBrokerTest;
@@ -54,7 +54,7 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
     private ForwardingRulesManagerImpl forwardingRulesManager;
 
     @Mock
-    private RpcConsumerRegistry rpcConsumerRegistry;
+    private RpcService rpcConsumerRegistry;
     @Mock
     private RpcProviderService rpcProviderService;
     @Mock
