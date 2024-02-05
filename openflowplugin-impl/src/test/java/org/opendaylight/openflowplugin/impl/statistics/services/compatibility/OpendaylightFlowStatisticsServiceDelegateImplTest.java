@@ -66,7 +66,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Test for {@link OpendaylightFlowStatisticsServiceDelegateImpl}.
+ * Test for {@link GetFlowStatisticsFromFlowTableImpl}.
  * Skipping notification verification. This will be tested in tests of underlying single task oriented services.
  */
 public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractSingleStatsServiceTest {
@@ -75,14 +75,14 @@ public class OpendaylightFlowStatisticsServiceDelegateImplTest extends AbstractS
     @Captor
     private ArgumentCaptor<MultipartRequestInput> requestInput;
 
-    private OpendaylightFlowStatisticsServiceDelegateImpl flowStatisticsServiceDelegate;
+    private GetFlowStatisticsFromFlowTableImpl flowStatisticsServiceDelegate;
     @Mock
     private MessageTranslator<Object, Object> translator;
 
     @Override
     public void setUp() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
-        flowStatisticsServiceDelegate = new OpendaylightFlowStatisticsServiceDelegateImpl(
+        flowStatisticsServiceDelegate = new GetFlowStatisticsFromFlowTableImpl(
                 rqContextStack, deviceContext, notificationPublishService, new AtomicLong(21), convertorManager);
 
         Mockito.doAnswer(answerVoidToCallback).when(outboundQueueProvider)
