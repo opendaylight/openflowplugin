@@ -19,7 +19,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -70,7 +70,7 @@ public class MeterForwarderTest {
     private final InstanceIdentifier<Meter> meterPath = flowCapableNodePath.child(Meter.class, meterKey);
 
     @Mock
-    private RpcConsumerRegistry rpcRegistry;
+    private RpcService rpcRegistry;
     @Mock
     private AddMeter addMeter;
     @Mock

@@ -7,9 +7,11 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
+import static java.util.Objects.requireNonNull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
-import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.binding.spi.ForwardingDataBroker;
 
 /**
@@ -20,11 +22,10 @@ import org.opendaylight.mdsal.binding.spi.ForwardingDataBroker;
  */
 // FIXME: this should not be necessary
 public class ForwardingPingPongDataBroker extends ForwardingDataBroker implements PingPongDataBroker {
+    private final @NonNull DataBroker delegate;
 
-    private final DataBroker delegate;
-
-    public ForwardingPingPongDataBroker(DataBroker delegate) {
-        this.delegate = delegate;
+    public ForwardingPingPongDataBroker(final DataBroker delegate) {
+        this.delegate = requireNonNull(delegate);
     }
 
     @Override
@@ -33,7 +34,7 @@ public class ForwardingPingPongDataBroker extends ForwardingDataBroker implement
     }
 
     @Override
-    public TransactionChain createTransactionChain(final TransactionChainListener listener) {
-        return delegate().createMergingTransactionChain(listener);
+    public TransactionChain createTransactionChain() {
+        return delegate().createMergingTransactionChain();
     }
 }
