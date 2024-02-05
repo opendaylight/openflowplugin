@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 
 import static java.util.Objects.requireNonNull;
 
-import java.util.Collection;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -19,7 +19,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -74,7 +74,7 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDat
     @Activate
     public LLDPPacketPuntEnforcer(@Reference final DataBroker dataBroker,
             @Reference final DeviceOwnershipService deviceOwnershipService,
-            @Reference final RpcConsumerRegistry rpcService) {
+            @Reference final RpcService rpcService) {
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
         addFlow = rpcService.getRpc(AddFlow.class);
         listenerRegistration = dataBroker.registerDataTreeChangeListener(
@@ -91,15 +91,13 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDat
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
-            if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                final var nodeId = modification.getRootPath().getRootIdentifier()
-                        .firstKeyOf(Node.class).getId().getValue();
+            if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
+                final var nodeId = modification.getRootPath().path().firstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     LoggingFutures.addErrorLogging(addFlow.invoke(new AddFlowInputBuilder(createFlow())
-                        .setNode(new NodeRef(modification.getRootPath()
-                            .getRootIdentifier().firstIdentifierOf(Node.class)))
+                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)))
                         .build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);

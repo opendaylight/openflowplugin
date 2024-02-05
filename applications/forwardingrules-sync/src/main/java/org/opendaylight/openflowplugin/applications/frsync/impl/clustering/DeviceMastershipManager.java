@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.applications.frsync.impl.clustering;
 
 import com.google.common.annotations.VisibleForTesting;
 import java.util.concurrent.ConcurrentHashMap;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconciliationRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.slf4j.Logger;
