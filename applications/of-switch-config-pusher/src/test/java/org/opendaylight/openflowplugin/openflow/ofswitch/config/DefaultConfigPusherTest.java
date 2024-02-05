@@ -28,7 +28,7 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -40,7 +40,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -55,7 +55,7 @@ public class DefaultConfigPusherTest {
     @Mock
     private DataBroker dataBroker;
     @Mock
-    private RpcConsumerRegistry rpcService;
+    private RpcService rpcService;
     @Mock
     private SetConfig setConfig;
     @Mock
@@ -67,21 +67,21 @@ public class DefaultConfigPusherTest {
     @Mock
     private DeviceOwnershipService deviceOwnershipService;
     @Mock
-    private  ListenerRegistration<?> reg;
+    private Registration reg;
     @Captor
     private ArgumentCaptor<SetConfigInput> setConfigInputCaptor;
 
     @Before
     public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(setConfig).invoke(any());
-        doReturn(reg).when(dataBroker).registerDataTreeChangeListener(any(), any());
+        doReturn(reg).when(dataBroker).registerTreeChangeListener(any(), any());
         doReturn(setConfig).when(rpcService).getRpc(any());
         defaultConfigPusher = new DefaultConfigPusher(dataBroker, rpcService, deviceOwnershipService);
-        final var identifier = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        final var identifier = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
             NODE_IID.augmentation(FlowCapableNode.class));
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataTreeModification.getRootNode().getModificationType()).thenReturn(ModificationType.WRITE);
+        when(dataTreeModification.getRootNode().modificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
     }
 

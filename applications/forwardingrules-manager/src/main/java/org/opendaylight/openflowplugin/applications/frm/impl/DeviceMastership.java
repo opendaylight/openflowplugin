@@ -12,8 +12,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonService;
-import org.opendaylight.mdsal.singleton.common.api.ServiceGroupIdentifier;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonService;
+import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -42,7 +42,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
 
     public DeviceMastership(final NodeId nodeId) {
         this.nodeId = nodeId;
-        identifier = ServiceGroupIdentifier.create(nodeId.getValue());
+        identifier = new ServiceGroupIdentifier(nodeId.getValue());
         fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId))
                 .augmentation(FlowCapableNode.class);
         path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
