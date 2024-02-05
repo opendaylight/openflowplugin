@@ -40,25 +40,13 @@ public final class AggregateFlowsInTableService extends
         AbstractCompatibleStatService<GetAggregateFlowStatisticsFromFlowTableForAllFlowsInput,
                                       GetAggregateFlowStatisticsFromFlowTableForAllFlowsOutput,
                                       AggregateFlowStatisticsUpdate> {
-
-    final TranslatorLibrary translatorLibrary;
-
-    public static AggregateFlowsInTableService createWithOook(final RequestContextStack requestContextStack,
-                                                              final DeviceContext deviceContext,
-                                                              final AtomicLong compatibilityXidSeed) {
-        return new AggregateFlowsInTableService(requestContextStack,
-                                                deviceContext,
-                                                compatibilityXidSeed,
-                                                deviceContext.oook());
-    }
+    private final TranslatorLibrary translatorLibrary;
 
     public AggregateFlowsInTableService(final RequestContextStack requestContextStack,
                                         final DeviceContext deviceContext,
-                                        final AtomicLong compatibilityXidSeed,
-                                        final TranslatorLibrary translatorLibrary) {
+                                        final AtomicLong compatibilityXidSeed) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
-
-        this.translatorLibrary = translatorLibrary;
+        translatorLibrary = deviceContext.oook();
     }
 
     @Override

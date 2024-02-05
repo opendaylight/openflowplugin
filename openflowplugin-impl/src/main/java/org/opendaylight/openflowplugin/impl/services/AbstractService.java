@@ -55,9 +55,9 @@ public abstract class AbstractService<I, O> {
 
         this.requestContextStack = requestContextStack;
         this.deviceContext = deviceContext;
-        this.datapathId = deviceInfo.getDatapathId();
-        this.version = deviceInfo.getVersion();
-        this.messageSpy = deviceContext.getMessageSpy();
+        datapathId = deviceInfo.getDatapathId();
+        version = deviceInfo.getVersion();
+        messageSpy = deviceContext.getMessageSpy();
     }
 
     public boolean canUseSingleLayerSerialization() {
@@ -109,11 +109,11 @@ public abstract class AbstractService<I, O> {
 
     protected abstract FutureCallback<OfHeader> createCallback(RequestContext<O> context, Class<?> requestType);
 
-    public ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input) {
+    public @NonNull ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input) {
         return handleServiceCall(input, null);
     }
 
-    public ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input,
+    public @NonNull ListenableFuture<RpcResult<O>> handleServiceCall(@NonNull final I input,
             @Nullable final Function<OfHeader, Boolean> isComplete) {
         requireNonNull(input);
 
