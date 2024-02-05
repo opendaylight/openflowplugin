@@ -36,8 +36,8 @@ import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.bulk.flow.service.rev150608.AddFlowsDs;
@@ -117,7 +117,7 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
 
     @Inject
     @Activate
-    public SalBulkFlowRpcs(@Reference final DataBroker dataBroker, @Reference final RpcConsumerRegistry rpcService,
+    public SalBulkFlowRpcs(@Reference final DataBroker dataBroker, @Reference final RpcService rpcService,
             @Reference final RpcProviderService rpcProviderService) {
         this.dataBroker = requireNonNull(dataBroker);
         addFlow = rpcService.getRpc(AddFlow.class);

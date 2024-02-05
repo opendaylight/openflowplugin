@@ -14,7 +14,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.time.LocalDateTime;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -194,7 +194,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         }
 
         @Override
-        public void onDataTreeChanged(@NonNull final Collection<DataTreeModification<Node>> changes) {
+        public void onDataTreeChanged(final List<DataTreeModification<Node>> changes) {
             requireNonNull(changes, "Changes must not be null!");
             for (DataTreeModification<Node> change : changes) {
                 final DataObjectModification<Node> mod = change.getRootNode();

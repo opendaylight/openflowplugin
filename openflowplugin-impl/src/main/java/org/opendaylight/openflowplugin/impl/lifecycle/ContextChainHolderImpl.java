@@ -31,11 +31,9 @@ import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
-import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
-import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListenerRegistration;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
+import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.OFPManager;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionStatus;
@@ -61,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -77,7 +76,7 @@ public final class ContextChainHolderImpl implements ContextChainHolder, MasterC
     private static final String SEPARATOR = ":";
     private final ConcurrentMap<DeviceInfo, ContextChain> contextChainMap = new ConcurrentHashMap<>();
     private final ConcurrentMap<DeviceInfo, ? super ConnectionContext> connectingDevices = new ConcurrentHashMap<>();
-    private final EntityOwnershipListenerRegistration eosListenerRegistration;
+    private final Registration eosListenerRegistration;
     private final ClusterSingletonServiceProvider singletonServiceProvider;
     private final Executor executor;
     private final OwnershipChangeListener ownershipChangeListener;
@@ -342,7 +341,7 @@ public final class ContextChainHolderImpl implements ContextChainHolder, MasterC
                         LOG.info("Try to remove device {} from operational DS", entityName);
                         ListenableFuture<?> future =
                                 deviceManager.removeDeviceFromOperationalDS(nodeInstanceIdentifier);
-                        Futures.addCallback(future, new FutureCallback<Object>() {
+                        Futures.addCallback(future, new FutureCallback<>() {
                             @Override
                             public void onSuccess(final Object result) {
                                 LOG.debug("Node removed from Oper DS, Node: {}", dpnId);
