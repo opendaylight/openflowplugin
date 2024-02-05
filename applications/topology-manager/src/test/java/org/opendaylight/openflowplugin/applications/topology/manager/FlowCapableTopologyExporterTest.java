@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -37,7 +36,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
-import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemovedBuilder;
@@ -66,8 +64,7 @@ public class FlowCapableTopologyExporterTest {
 
     @Before
     public void setUp() {
-        doReturn(mockTxChain).when(mockDataBroker)
-                .createTransactionChain(any(TransactionChainListener.class));
+        doReturn(mockTxChain).when(mockDataBroker).createTransactionChain();
 
         processor = new OperationProcessor(mockDataBroker);
 
