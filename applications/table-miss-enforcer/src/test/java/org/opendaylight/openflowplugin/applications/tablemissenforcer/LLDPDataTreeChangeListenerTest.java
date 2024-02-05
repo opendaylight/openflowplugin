@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
@@ -32,7 +32,7 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
@@ -66,7 +66,7 @@ public class LLDPDataTreeChangeListenerTest {
     @Mock
     private ListenerRegistration<?> reg;
     @Mock
-    private RpcConsumerRegistry rpcService;
+    private RpcService rpcService;
     @Mock
     private AddFlow addFlow;
     @Mock
@@ -99,7 +99,7 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Test
     public void testOnDataTreeChanged() {
-        lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        lldpPacketPuntEnforcer.onDataTreeChanged(List.of(dataTreeModification));
         verify(addFlow).invoke(addFlowInputCaptor.capture());
         AddFlowInput captured = addFlowInputCaptor.getValue();
         assertEquals(NODE_IID, captured.getNode().getValue());

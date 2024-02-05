@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.FlowCapableTransactionService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInputBuilder;
@@ -64,7 +63,7 @@ public final class BarrierUtil {
      * Creates barrier input.
      *
      * @param nodeRef rpc routing context
-     * @return input for {@link FlowCapableTransactionService#sendBarrier(SendBarrierInput)}
+     * @return input for {@link SendBarrier#invoke(SendBarrierInput)}
      */
     @VisibleForTesting
     static SendBarrierInput createSendBarrierInput(final NodeRef nodeRef) {

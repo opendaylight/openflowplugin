@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
-import java.util.Collection;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -38,9 +38,9 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (DataTreeModification<FlowCapableNode> modification : modifications) {
-            switch (modification.getRootNode().getModificationType()) {
+            switch (modification.getRootNode().modificationType()) {
                 case WRITE:
                     processAddedNode(modification);
                     break;
@@ -52,7 +52,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
                     break;
                 default:
                     throw new IllegalArgumentException(
-                            "Unhandled modification type: {}" + modification.getRootNode().getModificationType());
+                            "Unhandled modification type: {}" + modification.getRootNode().modificationType());
             }
         }
     }
@@ -64,7 +64,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     }
 
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().path();
         final NodeId nodeId = provideTopologyNodeId(iiToNodeInInventory);
         final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
                 .rev131021.network.topology.topology.Node>
@@ -80,7 +80,7 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
     }
 
     private void processAddedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().path();
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
             final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
