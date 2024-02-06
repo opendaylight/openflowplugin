@@ -7,9 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import static java.util.Objects.requireNonNull;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Locale;
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.IpConversionUtil;
@@ -24,39 +27,50 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DottedQuad;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
-import org.opendaylight.yangtools.yang.common.Uint32;
-import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Utility class used for converting OpenFlow port numbers, Ipv4 and Ipv6 addresses to normalized format.
  */
-public final class AddressNormalizationUtil {
+public enum AddressNormalizationUtil {
+    VERSION_1_0(OpenflowVersion.OF10),
+    VERSION_1_3(OpenflowVersion.OF13),
+    UNSUPPORTED(OpenflowVersion.UNSUPPORTED);
+
     private static final Logger LOG = LoggerFactory.getLogger(AddressNormalizationUtil.class);
 
     private static final String NO_ETH_MASK = "ff:ff:ff:ff:ff:ff";
     private static final String PREFIX_SEPARATOR = "/";
 
-    private AddressNormalizationUtil() {
+    private final OpenflowVersion version;
+
+    AddressNormalizationUtil(final OpenflowVersion version) {
+        this.version = requireNonNull(version);
+    }
+
+    public static @NonNull AddressNormalizationUtil ofVersion(final OpenflowVersion version) {
+        return switch (version) {
+            case OF10 -> VERSION_1_0;
+            case OF13 -> VERSION_1_3;
+            case UNSUPPORTED -> UNSUPPORTED;
+        };
     }
 
     /**
      * Extract port number from URI and convert it to OpenFlow specific textual representation.
      *
      * @param port            the OpenFlow port
-     * @param protocolVersion the OpenFLow protocol version
      * @return normalized uri
      */
-    public static @Nullable Uri normalizeProtocolAgnosticPort(@Nullable final Uri port, final Uint8 protocolVersion) {
-        if (port == null) {
-            return null;
+    public @Nullable Uri normalizeProtocolAgnosticPort(final @Nullable Uri port) {
+        if (port != null) {
+            final var portValue = InventoryDataServiceUtil.portNumberfromNodeConnectorId(version, port.getValue());
+            if (portValue != null) {
+                return OpenflowPortsUtil.getProtocolAgnosticPortUri(version.getVersion(), portValue);
+            }
         }
-
-        Uint32 portValue = InventoryDataServiceUtil
-                .portNumberfromNodeConnectorId(OpenflowVersion.get(protocolVersion), port.getValue());
-
-        return portValue == null ? null : OpenflowPortsUtil.getProtocolAgnosticPortUri(protocolVersion, portValue);
+        return null;
     }
 
     /**

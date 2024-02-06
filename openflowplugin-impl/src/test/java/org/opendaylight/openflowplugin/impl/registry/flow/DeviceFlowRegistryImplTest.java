@@ -85,7 +85,7 @@ public class DeviceFlowRegistryImplTest {
         deviceFlowRegistry = new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier,
             history);
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
-        key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
+        key = FlowRegistryKeyFactory.VERSION_1_3.create(flowStats);
         descriptor = FlowDescriptorFactory.create(Uint8.valueOf(key.getTableId()), new FlowId("ut:1"));
 
         Assert.assertEquals(0, deviceFlowRegistry.getAllFlowDescriptors().size());
@@ -114,7 +114,7 @@ public class DeviceFlowRegistryImplTest {
                 .build();
 
         final Map<FlowRegistryKey, FlowDescriptor> allFlowDescriptors = fillRegistry(path, flowCapableNode);
-        key = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flow);
+        key = FlowRegistryKeyFactory.VERSION_1_3.create(flow);
 
         InOrder order = inOrder(dataBroker, readOnlyTransaction);
         order.verify(dataBroker).newReadOnlyTransaction();
@@ -189,7 +189,7 @@ public class DeviceFlowRegistryImplTest {
 
         // store new key with old value
         final FlowAndStatisticsMapList flowStats = TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build();
-        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3, flowStats);
+        final FlowRegistryKey key2 = FlowRegistryKeyFactory.VERSION_1_3.create(flowStats);
         deviceFlowRegistry.storeDescriptor(key2, descriptor);
         Assert.assertEquals(2, deviceFlowRegistry.getAllFlowDescriptors().size());
         Assert.assertEquals("ut:1", deviceFlowRegistry.retrieveDescriptor(key2).getFlowId().getValue());
@@ -209,7 +209,7 @@ public class DeviceFlowRegistryImplTest {
 
         //store new key
         final String alienPrefix = "#UF$TABLE*2-";
-        final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(OFConstants.OFP_VERSION_1_3,
+        final FlowRegistryKey key2 = FlowRegistryKeyFactory.VERSION_1_3.create(
                 TestFlowHelper.createFlowAndStatisticsMapListBuilder(2).build());
         deviceFlowRegistry.store(key2);
         newFlowId = deviceFlowRegistry.retrieveDescriptor(key2).getFlowId();
