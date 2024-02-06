@@ -39,7 +39,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKe
 import org.opendaylight.openflowplugin.impl.device.history.FlowGroupInfoHistoryAppender;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
@@ -59,7 +58,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
     private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
     private final FlowGroupInfoHistoryAppender history;
-    private final Consumer<Flow> flowConsumer;
+    private final FlowRegistryKeyFactory keyFactory;
     private final DataBroker dataBroker;
 
     public DeviceFlowRegistryImpl(final Uint8 version, final DataBroker dataBroker,
@@ -68,16 +67,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
         this.dataBroker = requireNonNull(dataBroker);
         this.instanceIdentifier = requireNonNull(instanceIdentifier);
         this.history = requireNonNull(history);
+        keyFactory = FlowRegistryKeyFactory.ofVersion(version);
+    }
 
-        // Specifies what to do with flow read from data store
-        flowConsumer = flow -> {
-            final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(version, flow);
-
-            if (getExistingKey(flowRegistryKey) == null) {
-                // Now, we will update the registry
-                storeDescriptor(flowRegistryKey, FlowDescriptorFactory.create(flow.getTableId(), flow.getId()));
-            }
-        };
+    @Override
+    public FlowRegistryKey createKey(
+        final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow flow) {
+        return keyFactory.create(flow);
     }
 
     @Override
@@ -126,7 +122,14 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
                     .flatMap(table -> table.nonnullFlow().values().stream())
                     .filter(Objects::nonNull)
                     .filter(flow -> flow.getId() != null)
-                    .forEach(flowConsumer);
+                    .forEach(flow -> {
+                        final var flowRegistryKey = createKey(flow);
+                        if (getExistingKey(flowRegistryKey) == null) {
+                            // Now, we will update the registry
+                            storeDescriptor(flowRegistryKey, FlowDescriptorFactory.create(flow.getTableId(),
+                                flow.getId()));
+                        }
+                    });
                 });
             }
 

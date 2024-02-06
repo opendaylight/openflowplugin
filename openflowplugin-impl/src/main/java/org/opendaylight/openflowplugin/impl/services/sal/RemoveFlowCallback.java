@@ -13,7 +13,6 @@ import static java.util.Objects.requireNonNull;
 import com.google.common.util.concurrent.FutureCallback;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.util.ErrorUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -31,12 +30,10 @@ final class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOut
 
     private final RemoveFlowInput input;
     private final DeviceFlowRegistry flowRegistry;
-    private final Uint8 version;
 
-    RemoveFlowCallback(final RemoveFlowInput input, final DeviceFlowRegistry flowRegistry, final Uint8 version) {
+    RemoveFlowCallback(final RemoveFlowInput input, final DeviceFlowRegistry flowRegistry) {
         this.input = requireNonNull(input);
         this.flowRegistry = requireNonNull(flowRegistry);
-        this.version = requireNonNull(version);
     }
 
     @Override
@@ -46,7 +43,7 @@ final class RemoveFlowCallback implements FutureCallback<RpcResult<RemoveFlowOut
                 LOG.debug("Flow remove finished without error for flow={}", input);
             }
             if (input.getTableId() != null && !input.getTableId().equals(OFPTT_ALL)) {
-                var flowRegistryKey = FlowRegistryKeyFactory.create(version, input);
+                var flowRegistryKey = flowRegistry.createKey(input);
                 flowRegistry.addMark(flowRegistryKey);
 
                 final FlowRef flowRef = input.getFlowRef();

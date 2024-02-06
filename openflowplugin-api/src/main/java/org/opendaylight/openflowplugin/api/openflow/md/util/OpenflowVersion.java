@@ -9,9 +9,8 @@ package org.opendaylight.openflowplugin.api.openflow.md.util;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
-import java.util.Arrays;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -21,24 +20,33 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Note: If you add a version here, make sure to update
  *       org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
  */
-// FIXME: enum in api is not something what we would like to see in case it is evolving.
+// FIXME: enum in api is not something what we would like to see in case it is evolving. On the other hand we have
+//        static constants for well-known versions, so this is not *that* bad.
+@NonNullByDefault
 public enum OpenflowVersion {
-    OF10(Uint8.ONE),
-    OF13(Uint8.valueOf(4)),
+    OF10(OFConstants.OFP_VERSION_1_0),
+    OF13(OFConstants.OFP_VERSION_1_3),
     UNSUPPORTED(Uint8.ZERO);
 
-    private static final ImmutableMap<Uint8, OpenflowVersion> VERSIONS = Maps.uniqueIndex(Arrays.asList(values()),
-        OpenflowVersion::getVersion);
-
-    private Uint8 version;
+    private final Uint8 version;
 
     OpenflowVersion(final Uint8 version) {
         this.version = requireNonNull(version);
     }
 
+    @Deprecated
     public static OpenflowVersion get(final Uint8 version) {
-        final OpenflowVersion ver = VERSIONS.get(version);
-        return ver != null ? ver : UNSUPPORTED;
+        return ofVersion(version);
+    }
+
+    public static OpenflowVersion ofVersion(final Uint8 version) {
+        if (OFConstants.OFP_VERSION_1_3.equals(version)) {
+            return OF13;
+        } else if (OFConstants.OFP_VERSION_1_0.equals(version)) {
+            return OF10;
+        } else {
+            return UNSUPPORTED;
+        }
     }
 
     /**
