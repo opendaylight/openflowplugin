@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.statistics.services.direct;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -50,17 +49,15 @@ public abstract class AbstractGetFlowStatistics<T extends OfHeader>
      * @return generated flow ID
      */
     protected FlowId generateFlowId(final FlowAndStatisticsMapList flowStatistics) {
-        final FlowStatisticsDataBuilder flowStatisticsDataBld = new FlowStatisticsDataBuilder()
-                .setFlowStatistics(new FlowStatisticsBuilder(flowStatistics).build());
-
-        final FlowBuilder flowBuilder = new FlowBuilder(flowStatistics)
+        final var flowRegistry = getDeviceRegistry().getDeviceFlowRegistry();
+        final var flowRegistryKey = flowRegistry.createKey(new FlowBuilder(flowStatistics)
             .withKey(FlowRegistryKeyFactory.DUMMY_FLOW_KEY)
-            .addAugmentation(flowStatisticsDataBld.build());
-
-        final FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(getVersion(), flowBuilder.build());
-
-        getDeviceRegistry().getDeviceFlowRegistry().store(flowRegistryKey);
-        return getDeviceRegistry().getDeviceFlowRegistry().retrieveDescriptor(flowRegistryKey).getFlowId();
+            .addAugmentation(new FlowStatisticsDataBuilder()
+                .setFlowStatistics(new FlowStatisticsBuilder(flowStatistics).build())
+                .build())
+            .build());
+        flowRegistry.store(flowRegistryKey);
+        return flowRegistry.retrieveDescriptor(flowRegistryKey).getFlowId();
     }
 
 }
