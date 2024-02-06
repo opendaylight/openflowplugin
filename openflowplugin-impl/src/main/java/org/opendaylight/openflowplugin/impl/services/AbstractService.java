@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractService<I, O> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractService.class);
 
-    private final Uint8 version;
+    private final @NonNull Uint8 version;
     private final Uint64 datapathId;
     private final RequestContextStack requestContextStack;
     private final DeviceContext deviceContext;
@@ -72,7 +72,7 @@ public abstract class AbstractService<I, O> {
         this.eventIdentifier = eventIdentifier;
     }
 
-    public final Uint8 getVersion() {
+    public final @NonNull Uint8 getVersion() {
         return version;
     }
 
