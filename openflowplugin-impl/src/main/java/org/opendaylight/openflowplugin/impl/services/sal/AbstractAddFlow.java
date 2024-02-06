@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiAddFlow;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleAddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
@@ -29,9 +28,10 @@ public abstract sealed class AbstractAddFlow extends AbstractFlowRpc implements 
 
     @Override
     public final ListenableFuture<RpcResult<AddFlowOutput>> invoke(final AddFlowInput input) {
-        final var flowRegistryKey = FlowRegistryKeyFactory.create(version(), input);
+        final var flowRegistry = flowRegistry();
+        final var flowRegistryKey = flowRegistry.createKey(input);
         final var future = invokeImpl(input);
-        Futures.addCallback(future, new AddFlowCallback(input, flowRegistry(), flowRegistryKey),
+        Futures.addCallback(future, new AddFlowCallback(input, flowRegistry, flowRegistryKey),
             MoreExecutors.directExecutor());
         return future;
     }

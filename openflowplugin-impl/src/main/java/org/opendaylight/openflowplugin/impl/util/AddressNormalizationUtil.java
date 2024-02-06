@@ -39,6 +39,7 @@ public final class AddressNormalizationUtil {
     private static final String PREFIX_SEPARATOR = "/";
 
     private AddressNormalizationUtil() {
+        // FIXME: turn this into a proper class, capturing OpenflowVersion/Uint8
     }
 
     /**

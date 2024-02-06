@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2017 Pantheon Technologies s.r.o. and others.  All rights reserved.
+ * Copyright (c) 2024 PANTHEON.tech, s.r.o.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,6 +8,7 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.openflowplugin.impl.util.AddressNormalizationUtil.normalizeIpv4Arbitrary;
 import static org.opendaylight.openflowplugin.impl.util.AddressNormalizationUtil.normalizeIpv4Prefix;
 import static org.opendaylight.openflowplugin.impl.util.AddressNormalizationUtil.normalizeIpv6AddressWithoutMask;
@@ -20,10 +22,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import java.util.function.Function;
-import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
@@ -49,62 +47,55 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * Utility class for match normalization.
  */
+// FIXME: rename to MatchNormalizer, move to FlowRegistryKeyFactory's package and hide
 public final class MatchNormalizationUtil {
-    // Cache normalizers for common OpenFlow versions
-    private static final ImmutableMap<Uint8, ImmutableSet<Function<MatchBuilder, MatchBuilder>>> COMMON_NORMALIZERS =
-        ImmutableMap.<Uint8, ImmutableSet<Function<MatchBuilder, MatchBuilder>>>builder()
-            .put(OFConstants.OFP_VERSION_1_0,
-                createNormalizers(OFConstants.OFP_VERSION_1_0).collect(ImmutableSet.toImmutableSet()))
-            .put(OFConstants.OFP_VERSION_1_3,
-                createNormalizers(OFConstants.OFP_VERSION_1_3).collect(ImmutableSet.toImmutableSet()))
-            .build();
-    private static final LoadingCache<Uint8, ImmutableSet<Function<MatchBuilder, MatchBuilder>>> UNCOMMON_NORMALIZERS =
-        CacheBuilder.newBuilder().weakValues().build(new CacheLoader<>() {
+    private static final @NonNull MatchNormalizationUtil VERSION_1_0 =
+        new MatchNormalizationUtil(OFConstants.OFP_VERSION_1_0);
+    private static final @NonNull MatchNormalizationUtil VERSION_1_3 =
+        new MatchNormalizationUtil(OFConstants.OFP_VERSION_1_3);
+    private static final LoadingCache<Uint8, @NonNull MatchNormalizationUtil> CACHE = CacheBuilder.newBuilder()
+        .weakValues().build(new CacheLoader<>() {
             @Override
-            public ImmutableSet<Function<MatchBuilder, MatchBuilder>> load(final Uint8 key) {
-                return createNormalizers(key).collect(ImmutableSet.toImmutableSet());
+            public MatchNormalizationUtil load(final Uint8 key) {
+                return new MatchNormalizationUtil(key);
             }
         });
 
-    private MatchNormalizationUtil() {
-        // Hidden on purpose
+    private final Uint8 version;
+
+    private MatchNormalizationUtil(final Uint8 version) {
+        this.version = requireNonNull(version);
+    }
+
+    public static @NonNull MatchNormalizationUtil ofVersion(final Uint8 version) {
+        if (OFConstants.OFP_VERSION_1_3.equals(version)) {
+            return VERSION_1_3;
+        } else if (OFConstants.OFP_VERSION_1_0.equals(version)) {
+            return VERSION_1_0;
+        } else {
+            return CACHE.getUnchecked(version);
+        }
     }
 
     /**
      * Normalize match.
      *
      * @param match   the OpenFlow match
-     * @param version the OpenFlow version
      * @return normalized OpenFlow match
      */
-    public static @NonNull Match normalizeMatch(@NonNull final Match match, final Uint8 version) {
-        final var matchBuilder = new MatchBuilder(match);
-
-        var normalizers = COMMON_NORMALIZERS.get(version);
-        if (normalizers == null) {
-            normalizers = UNCOMMON_NORMALIZERS.getUnchecked(version);
-        }
-        normalizers.forEach(normalizer -> normalizer.apply(matchBuilder));
-
-        return matchBuilder.build();
-    }
-
-    private static @NonNull Stream<Function<MatchBuilder, MatchBuilder>> createNormalizers(final Uint8 version) {
-        return Stream.of(
-            MatchNormalizationUtil::normalizeExtensionMatch,
-            MatchNormalizationUtil::normalizeEthernetMatch,
-            MatchNormalizationUtil::normalizeArpMatch,
-            MatchNormalizationUtil::normalizeTunnelIpv4Match,
-            MatchNormalizationUtil::normalizeIpv4Match,
-            MatchNormalizationUtil::normalizeIpv4MatchArbitraryBitMask,
-            MatchNormalizationUtil::normalizeIpv6Match,
-            MatchNormalizationUtil::normalizeIpv6MatchArbitraryBitMask,
-            match -> normalizeInPortMatch(match, version),
-            match -> normalizeInPhyPortMatch(match, version));
-    }
-
-    private static @NonNull MatchBuilder normalizeExtensionMatch(@NonNull final MatchBuilder match) {
-        return new MatchBuilder(MatchUtil.transformMatch(match.build(), Match.class));
+    public @NonNull Match normalizeMatch(@NonNull final Match match) {
+        var builder = new MatchBuilder(match);
+        builder = normalizeExtensionMatch(builder);
+        builder = normalizeEthernetMatch(builder);
+        builder = normalizeArpMatch(builder);
+        builder = normalizeTunnelIpv4Match(builder);
+        builder = normalizeIpv4Match(builder);
+        builder = normalizeIpv4MatchArbitraryBitMask(builder);
+        builder = normalizeIpv6Match(builder);
+        builder = normalizeIpv6MatchArbitraryBitMask(builder);
+        builder = normalizeInPortMatch(builder, version);
+        builder = normalizeInPhyPortMatch(builder, version);
+        return builder.build();
     }
 
     @VisibleForTesting
@@ -246,5 +237,9 @@ public final class MatchNormalizationUtil {
             match.setEthernetMatch(builder.build());
         }
         return match;
+    }
+
+    private static @NonNull MatchBuilder normalizeExtensionMatch(@NonNull final MatchBuilder match) {
+        return new MatchBuilder(MatchUtil.transformMatch(match.build(), Match.class));
     }
 }
