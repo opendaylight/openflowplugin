@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
@@ -22,16 +20,12 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.opendaylight.ipv6.arbitrary.bitmask.fields.rev160224.Ipv6ArbitraryMask;
 
 public class AddressNormalizationUtilTest {
-
     @Test
     public void normalizeProtocolAgnosticPortOF10() {
         final Uri left = new Uri("openflow:1:INPORT");
         final Uri right = new Uri("IN_PORT");
 
-        assertEquals(
-                right,
-                AddressNormalizationUtil.normalizeProtocolAgnosticPort(left, OFConstants.OFP_VERSION_1_0)
-        );
+        assertEquals(right, AddressNormalizationUtil.VERSION_1_0.normalizeProtocolAgnosticPort(left));
     }
 
     @Test
@@ -39,10 +33,7 @@ public class AddressNormalizationUtilTest {
         final Uri left = new Uri("openflow:1:ANY");
         final Uri right = new Uri("ANY");
 
-        assertEquals(
-                right,
-                AddressNormalizationUtil.normalizeProtocolAgnosticPort(left, OFConstants.OFP_VERSION_1_3)
-        );
+        assertEquals(right, AddressNormalizationUtil.VERSION_1_3.normalizeProtocolAgnosticPort(left));
     }
 
     @Test

@@ -16,7 +16,6 @@ import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegi
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowDescriptor;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.impl.registry.flow.FlowDescriptorFactory;
-import org.opendaylight.openflowplugin.impl.registry.flow.FlowRegistryKeyFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
@@ -34,20 +33,18 @@ final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOut
 
     private final UpdateFlowInput input;
     private final DeviceFlowRegistry flowRegistry;
-    private final Uint8 version;
 
-    UpdateFlowCallback(final UpdateFlowInput input, final DeviceFlowRegistry flowRegistry, final Uint8 version) {
+    UpdateFlowCallback(final UpdateFlowInput input, final DeviceFlowRegistry flowRegistry) {
         this.input = requireNonNull(input);
         this.flowRegistry = requireNonNull(flowRegistry);
-        this.version = requireNonNull(version);
     }
 
     @Override
     public void onSuccess(final RpcResult<UpdateFlowOutput> updateFlowOutputRpcResult) {
         final UpdatedFlow updated = input.getUpdatedFlow();
         final OriginalFlow original = input.getOriginalFlow();
-        final FlowRegistryKey origFlowRegistryKey = FlowRegistryKeyFactory.create(version, original);
-        final FlowRegistryKey updatedFlowRegistryKey = FlowRegistryKeyFactory.create(version, updated);
+        final FlowRegistryKey origFlowRegistryKey = flowRegistry.createKey(original);
+        final FlowRegistryKey updatedFlowRegistryKey = flowRegistry.createKey(updated);
         final FlowDescriptor origFlowDescriptor = flowRegistry.retrieveDescriptor(origFlowRegistryKey);
 
         final boolean isUpdate = origFlowDescriptor != null;
