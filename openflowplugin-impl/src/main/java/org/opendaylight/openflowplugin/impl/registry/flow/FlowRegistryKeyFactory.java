@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -35,8 +34,7 @@ public final class FlowRegistryKeyFactory {
         // Hide implicit constructor
     }
 
-    @NonNull
-    public static FlowRegistryKey create(final Uint8 version, @NonNull final Flow flow) {
+    public static @NonNull FlowRegistryKey create(final Uint8 version, final @NonNull Flow flow) {
         //TODO: mandatory flow input values (or default values) should be specified via yang model
         final Uint8 tableId = requireNonNull(flow.getTableId(), "flow tableId must not be null");
         final Uint16 priority = requireNonNullElse(flow.getPriority(), OFConstants.DEFAULT_FLOW_PRIORITY);
@@ -52,10 +50,8 @@ public final class FlowRegistryKeyFactory {
         private final Uint64 cookie;
         private final Match match;
 
-        private FlowRegistryKeyDto(final short tableId,
-                                   final int priority,
-                                   @NonNull final Uint64 cookie,
-                                   @NonNull final Match match) {
+        private FlowRegistryKeyDto(final short tableId, final int priority, final @NonNull Uint64 cookie,
+                                   final @NonNull Match match) {
             this.tableId = tableId;
             this.priority = priority;
             this.cookie = cookie;
@@ -63,19 +59,10 @@ public final class FlowRegistryKeyFactory {
         }
 
         @Override
-        public boolean equals(final Object object) {
-            if (this == object) {
-                return true;
-            }
-
-            if (object == null || !(object instanceof FlowRegistryKey that)) {
-                return false;
-            }
-
-            return getPriority() == that.getPriority()
-                    && getTableId() == that.getTableId()
-                    && getCookie().equals(that.getCookie())
-                    && equalMatch(that.getMatch());
+        public boolean equals(final Object obj) {
+            return this == obj || obj instanceof FlowRegistryKey that
+                && priority == that.getPriority() && tableId == that.getTableId() && cookie.equals(that.getCookie())
+                && equalMatch(that.getMatch());
         }
 
         private boolean equalMatch(final Match input) {
@@ -125,7 +112,7 @@ public final class FlowRegistryKeyFactory {
                     if (!Objects.equals(match.getVlanMatch(), input.getVlanMatch())) {
                         return false;
                     }
-                    for (ExtensionList inputExtensionList : inputAug.nonnullExtensionList().values()) {
+                    for (var inputExtensionList : inputAug.nonnullExtensionList().values()) {
                         if (!thisAug.nonnullExtensionList().containsValue(inputExtensionList)) {
                             return false;
                         }
