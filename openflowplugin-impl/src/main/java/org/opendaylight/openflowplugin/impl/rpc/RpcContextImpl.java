@@ -27,8 +27,8 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.services.SendEchoImpl;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiAddFlow;
 import org.opendaylight.openflowplugin.impl.services.sal.AddBundleMessagesImpl;
-import org.opendaylight.openflowplugin.impl.services.sal.AddFlowImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.AddFlowsBatchImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.AddGroupImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.AddGroupsBatchImpl;
@@ -57,6 +57,7 @@ import org.opendaylight.openflowplugin.impl.services.sal.UpdatePortImpl;
 import org.opendaylight.openflowplugin.impl.services.sal.UpdateTableImpl;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.GetAsyncImpl;
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SetAsyncImpl;
+import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleAddFlow;
 import org.opendaylight.openflowplugin.impl.statistics.services.GetAggregateFlowStatisticsFromFlowTableForGivenMatchImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.GetAllGroupStatisticsImpl;
 import org.opendaylight.openflowplugin.impl.statistics.services.GetAllMeterConfigStatisticsImpl;
@@ -237,6 +238,8 @@ final class RpcContextImpl implements RpcContext {
 
     @Override
     public void instantiateServiceInstance() {
+        final var singleLayer = deviceContext.canUseSingleLayerSerialization();
+
         // flow-capable-transaction.yang
         final var sendBarrier = new SendBarrierImpl(this, deviceContext);
 
@@ -244,7 +247,8 @@ final class RpcContextImpl implements RpcContext {
         final var sendExperimenter = new SendExperimenterImpl(this, deviceContext, extensionConverterProvider);
 
         // sal-flow.yang
-        final var addFlow = new AddFlowImpl(this, deviceContext, convertorExecutor);
+        final var addFlow = singleLayer ? new SingleAddFlow(this, deviceContext, convertorExecutor)
+            : new MultiAddFlow(this, deviceContext, convertorExecutor);
         final var removeFlow = new RemoveFlowImpl(this, deviceContext, convertorExecutor);
         final var updateFlow = new UpdateFlowImpl(this, deviceContext, convertorExecutor);
 
@@ -260,8 +264,6 @@ final class RpcContextImpl implements RpcContext {
 
         // FIXME: Use multipart writer provider from device context
         final var multipartWriterProvider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);
-
-        final var singleLayer = deviceContext.canUseSingleLayerSerialization();
 
         final var builder = ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
             .put(SendBarrier.class, sendBarrier)
