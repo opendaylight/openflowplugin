@@ -39,7 +39,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
         extends AbstractMultipartService<I, T> {
 
     private final MultipartType multipartType;
-    private final OpenflowVersion ofVersion = OpenflowVersion.get(getVersion());
+    private final OpenflowVersion ofVersion = OpenflowVersion.ofVersion(getVersion());
     private final ConvertorExecutor convertorExecutor;
     private final MultipartWriterProvider multipartWriterProvider;
 
