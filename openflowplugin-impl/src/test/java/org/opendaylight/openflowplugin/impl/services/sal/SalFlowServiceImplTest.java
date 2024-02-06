@@ -10,13 +10,13 @@ package org.opendaylight.openflowplugin.impl.services.sal;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.concurrent.ExecutionException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.FlowRegistryKey;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiAddFlow;
 import org.opendaylight.openflowplugin.impl.services.multilayer.MultiRemoveFlow;
@@ -116,6 +117,8 @@ public class SalFlowServiceImplTest {
     @Mock
     private DeviceFlowRegistry deviceFlowRegistry;
     @Mock
+    private FlowRegistryKey flowKey;
+    @Mock
     private GetFeaturesOutput mockedFeaturesOutput;
 
     @Before
@@ -165,6 +168,7 @@ public class SalFlowServiceImplTest {
 
     @Test
     public void testAddFlow() throws Exception {
+        when(deviceFlowRegistry.createKey(any())).thenReturn(flowKey);
         addFlow(OFConstants.OFP_VERSION_1_0);
         addFlow(OFConstants.OFP_VERSION_1_3);
     }
@@ -179,7 +183,7 @@ public class SalFlowServiceImplTest {
         addFlowFailCallback(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlowFailCallback(final Uint8 version) throws InterruptedException, ExecutionException {
+    private void addFlowFailCallback(final Uint8 version) throws Exception {
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId(Uint8.ONE)
@@ -188,6 +192,7 @@ public class SalFlowServiceImplTest {
 
         doReturn(Futures.<RequestContext<Object>>immediateFailedFuture(new Exception("ut-failed-response")))
                 .when(requestContext).getFuture();
+        when(deviceFlowRegistry.createKey(any())).thenReturn(flowKey);
 
         final var rpcResultFuture = mockAddFlow(version).invoke(mockedAddFlowInput);
 
@@ -207,7 +212,7 @@ public class SalFlowServiceImplTest {
         removeFlowFailCallback(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void removeFlowFailCallback(final Uint8 version) throws InterruptedException, ExecutionException {
+    private void removeFlowFailCallback(final Uint8 version) throws Exception {
         RemoveFlowInput mockedRemoveFlowInput = new RemoveFlowInputBuilder()
                 .setTableId(Uint8.ONE)
                 .setMatch(match)
@@ -227,11 +232,13 @@ public class SalFlowServiceImplTest {
 
     @Test
     public void testAddFlowWithItemLifecycle() throws Exception {
+        when(deviceFlowRegistry.createKey(any())).thenReturn(flowKey);
         addFlow(OFConstants.OFP_VERSION_1_0);
         addFlow(OFConstants.OFP_VERSION_1_3);
     }
 
-    private void addFlow(final Uint8 version) throws ExecutionException, InterruptedException {
+    private void addFlow(final Uint8 version) throws Exception {
+
         AddFlowInput mockedAddFlowInput = new AddFlowInputBuilder()
                 .setMatch(match)
                 .setTableId(Uint8.ONE)
@@ -321,7 +328,7 @@ public class SalFlowServiceImplTest {
     }
 
     private static <T extends DataObject> void verifyOutput(final ListenableFuture<RpcResult<T>> rpcResultFuture)
-            throws ExecutionException, InterruptedException {
+            throws Exception {
         assertNotNull(rpcResultFuture);
         final var addFlowOutputRpcResult = rpcResultFuture.get();
         assertNotNull(addFlowOutputRpcResult);

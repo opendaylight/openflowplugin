@@ -26,8 +26,7 @@ public abstract non-sealed class AbstractUpdateFlow extends AbstractFlowRpc impl
     @Override
     public final ListenableFuture<RpcResult<UpdateFlowOutput>> invoke(final UpdateFlowInput input) {
         final var future = invokeImpl(input);
-        Futures.addCallback(future, new UpdateFlowCallback(input, flowRegistry(), version()),
-            MoreExecutors.directExecutor());
+        Futures.addCallback(future, new UpdateFlowCallback(input, flowRegistry()), MoreExecutors.directExecutor());
         return future;
     }
 

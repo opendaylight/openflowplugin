@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
-import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv6Address;
@@ -43,8 +42,8 @@ public class MatchNormalizationUtilTest {
     public void normalizeInPortMatch() {
         final long port = 10;
 
-        final MatchBuilder matchBuilder = MatchNormalizationUtil.normalizeInPortMatch(new MatchBuilder()
-                .setInPort(new NodeConnectorId("openflow:1:" + port)), EncodeConstants.OF_VERSION_1_3);
+        final MatchBuilder matchBuilder = MatchNormalizationUtil.VERSION_1_3.normalizeInPortMatch(new MatchBuilder()
+                .setInPort(new NodeConnectorId("openflow:1:" + port)));
 
         assertEquals(String.valueOf(port), matchBuilder.getInPort().getValue());
     }
@@ -53,8 +52,8 @@ public class MatchNormalizationUtilTest {
     public void normalizeInPhyPortMatch() {
         final long port = 10;
 
-        final MatchBuilder matchBuilder = MatchNormalizationUtil.normalizeInPhyPortMatch(new MatchBuilder()
-                .setInPhyPort(new NodeConnectorId("openflow:1:" + port)), EncodeConstants.OF_VERSION_1_3);
+        final MatchBuilder matchBuilder = MatchNormalizationUtil.VERSION_1_3.normalizeInPhyPortMatch(new MatchBuilder()
+                .setInPhyPort(new NodeConnectorId("openflow:1:" + port)));
 
         assertEquals(String.valueOf(port), matchBuilder.getInPhyPort().getValue());
     }

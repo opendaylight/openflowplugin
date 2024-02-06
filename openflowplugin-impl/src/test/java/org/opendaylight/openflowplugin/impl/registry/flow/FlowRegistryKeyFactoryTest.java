@@ -9,17 +9,19 @@
 package org.opendaylight.openflowplugin.impl.registry.flow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
-import org.junit.Assert;
+import java.util.NoSuchElementException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -44,10 +46,7 @@ import org.slf4j.LoggerFactory;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowRegistryKeyFactoryTest {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowRegistryKeyFactoryTest.class);
-
-
     private static final FlowsStatisticsUpdateBuilder FLOWS_STATISTICS_UPDATE_BUILDER =
             new FlowsStatisticsUpdateBuilder();
     @Mock
@@ -57,15 +56,13 @@ public class FlowRegistryKeyFactoryTest {
     @Mock
     private DeviceInfo deviceInfo;
 
-
     @Before
     public void setup() {
-        List<FlowAndStatisticsMapList> flowAndStatisticsMapListList = new ArrayList<>();
+        var flowAndStatisticsMapListList = new ArrayList<FlowAndStatisticsMapList>();
         for (int i = 1; i < 4; i++) {
             flowAndStatisticsMapListList.add(TestFlowHelper.createFlowAndStatisticsMapListBuilder(i).build());
         }
         FLOWS_STATISTICS_UPDATE_BUILDER.setFlowAndStatisticsMapList(flowAndStatisticsMapListList);
-        Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
     }
 
     @Test
@@ -74,8 +71,8 @@ public class FlowRegistryKeyFactoryTest {
 
         HashSet<FlowRegistryKey> flowRegistryKeys = new HashSet<>();
         for (FlowAndStatisticsMapList item : flowStats.nonnullFlowAndStatisticsMapList()) {
-            final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), item);
-            final FlowRegistryKey key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), item);
+            final FlowRegistryKey key1 = FlowRegistryKeyFactory.VERSION_1_3.create(item);
+            final FlowRegistryKey key2 = FlowRegistryKeyFactory.VERSION_1_3.create(item);
             flowRegistryKeys.add(key1);
             flowRegistryKeys.add(key1);
             flowRegistryKeys.add(key2);
@@ -85,9 +82,11 @@ public class FlowRegistryKeyFactoryTest {
 
     @Test
     public void testEqualsNegative() {
+        final var keyFactory = FlowRegistryKeyFactory.VERSION_1_3;
+
         final FlowAndStatisticsMapList flowStatisticsMapList1 =
                 TestFlowHelper.createFlowAndStatisticsMapListBuilder(1).build();
-        final FlowRegistryKey key1 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapList1);
+        final FlowRegistryKey key1 = keyFactory.create(flowStatisticsMapList1);
 
         FlowRegistryKey key2;
         FlowAndStatisticsMapListBuilder flowStatisticsMapListBld2;
@@ -95,22 +94,22 @@ public class FlowRegistryKeyFactoryTest {
         // different priority
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
         flowStatisticsMapListBld2.setPriority(Uint16.valueOf(flowStatisticsMapListBld2.getPriority().toJava() + 1));
-        key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
-        Assert.assertFalse(key1.equals(key2));
+        key2 = keyFactory.create(flowStatisticsMapListBld2.build());
+        assertFalse(key1.equals(key2));
 
         // different match
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
         flowStatisticsMapListBld2.setMatch(new MatchBuilder().build());
-        key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
-        Assert.assertFalse(key1.equals(key2));
+        key2 = keyFactory.create(flowStatisticsMapListBld2.build());
+        assertFalse(key1.equals(key2));
 
         // different tableId
         flowStatisticsMapListBld2 = new FlowAndStatisticsMapListBuilder(flowStatisticsMapList1);
         flowStatisticsMapListBld2.setTableId(Uint8.valueOf(flowStatisticsMapListBld2.getTableId().toJava() + 1));
-        key2 = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowStatisticsMapListBld2.build());
-        Assert.assertFalse(key1.equals(key2));
+        key2 = keyFactory.create(flowStatisticsMapListBld2.build());
+        assertFalse(key1.equals(key2));
 
-        Assert.assertFalse(key1.equals(null));
+        assertFalse(key1.equals(null));
     }
 
     @Test
@@ -124,7 +123,7 @@ public class FlowRegistryKeyFactoryTest {
                 .setPriority(Uint16.TWO)
                 .setTableId(Uint8.ZERO);
 
-        FlowRegistryKey flow1Hash = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flow1Builder.build());
+        FlowRegistryKey flow1Hash = FlowRegistryKeyFactory.VERSION_1_3.create(flow1Builder.build());
         LOG.info("flowHash1: {}", flow1Hash.hashCode());
 
 
@@ -134,10 +133,10 @@ public class FlowRegistryKeyFactoryTest {
                 .setCookie(new FlowCookie(Uint64.valueOf(148)))
                 .setMatch(match2Builder.build());
 
-        FlowRegistryKey flow2Hash = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flow2Builder.build());
+        FlowRegistryKey flow2Hash = FlowRegistryKeyFactory.VERSION_1_3.create(flow2Builder.build());
         LOG.info("flowHash2: {}", flow2Hash.hashCode());
 
-        Assert.assertNotSame(flow1Hash, flow2Hash);
+        assertNotSame(flow1Hash, flow2Hash);
     }
 
     @Test
@@ -153,28 +152,21 @@ public class FlowRegistryKeyFactoryTest {
 
         FlowBuilder fb1 = new FlowBuilder(flow1Builder.build());
         fb1.setTableId((Uint8) null);
-        try {
-            FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb1.build());
-            Assert.fail("hash creation should have failed because of NPE");
-        } catch (NullPointerException e) {
-            // expected
-            Assert.assertEquals("flow tableId must not be null", e.getMessage());
-        }
+
+        var ex = assertThrows(NoSuchElementException.class,
+            () -> FlowRegistryKeyFactory.VERSION_1_3.create(fb1.build()));
+        assertEquals("Value of tableid is not present", ex.getMessage());
 
         FlowBuilder fb2 = new FlowBuilder(flow1Builder.build());
         fb2.setPriority((Uint16) null);
-        try {
-            FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb2.build());
-        } catch (NullPointerException e) {
-            // not expected
-            Assert.fail("no exception was expected while hash was creating.");
-        }
+
+        assertNotNull(FlowRegistryKeyFactory.VERSION_1_3.create(fb2.build()));
 
         FlowBuilder fb3 = new FlowBuilder(flow1Builder.build());
         fb3.setCookie(null);
-        FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), fb3.build());
-        Assert.assertNotNull(flowRegistryKey.getCookie());
-        Assert.assertEquals(OFConstants.DEFAULT_COOKIE, flowRegistryKey.getCookie());
+        FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.VERSION_1_3.create(fb3.build());
+        assertNotNull(flowRegistryKey.getCookie());
+        assertEquals(OFConstants.DEFAULT_COOKIE, flowRegistryKey.getCookie());
     }
 
     @Test
@@ -182,7 +174,7 @@ public class FlowRegistryKeyFactoryTest {
         FlowsStatisticsUpdate flowStats = FLOWS_STATISTICS_UPDATE_BUILDER.build();
 
         for (FlowAndStatisticsMapList item : flowStats.nonnullFlowAndStatisticsMapList()) {
-            FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.create(deviceInfo.getVersion(), item);
+            FlowRegistryKey flowRegistryKey = FlowRegistryKeyFactory.VERSION_1_3.create(item);
             FlowRegistryKey lastHash = null;
             if (null != lastHash) {
                 assertNotEquals(lastHash, flowRegistryKey);
