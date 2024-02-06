@@ -34,6 +34,9 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiAddFlow;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiRemoveFlow;
+import org.opendaylight.openflowplugin.impl.services.multilayer.MultiUpdateFlow;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -41,10 +44,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
@@ -130,31 +136,31 @@ public class SalFlowServiceImplTest {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
     }
 
-    private AddFlowImpl mockAddFlow(final Uint8 version) {
+    private AddFlow mockAddFlow(final Uint8 version) {
         when(mockedFeatures.getVersion()).thenReturn(version);
         when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
-        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new AddFlowImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new MultiAddFlow(mockedRequestContextStack, mockedDeviceContext,
+            ConvertorManagerFactory.createDefaultManager());
     }
 
-    private RemoveFlowImpl mockRemoveFlow(final Uint8 version) {
+    private RemoveFlow mockRemoveFlow(final Uint8 version) {
         when(mockedFeatures.getVersion()).thenReturn(version);
         when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
-        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new RemoveFlowImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new MultiRemoveFlow(mockedRequestContextStack, mockedDeviceContext,
+            ConvertorManagerFactory.createDefaultManager());
     }
 
-    private UpdateFlowImpl mockUpdateFlow(final Uint8 version) {
+    private UpdateFlow mockUpdateFlow(final Uint8 version) {
         when(mockedFeatures.getVersion()).thenReturn(version);
         when(mockedFeaturesOutput.getVersion()).thenReturn(version);
         when(mockedDeviceInfo.getVersion()).thenReturn(version);
 
-        final var convertorManager = ConvertorManagerFactory.createDefaultManager();
-        return new UpdateFlowImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
+        return new MultiUpdateFlow(mockedRequestContextStack, mockedDeviceContext,
+            ConvertorManagerFactory.createDefaultManager());
     }
 
     @Test

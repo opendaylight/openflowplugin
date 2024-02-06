@@ -30,6 +30,7 @@ import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceState;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -67,6 +68,8 @@ public class RpcContextImplTest {
     private ExtensionConverterProvider extensionConverterProvider;
     @Mock
     private ConvertorExecutor convertorExecutor;
+    @Mock
+    private DeviceFlowRegistry flowRegistry;
     @Captor
     private ArgumentCaptor<ClassToInstanceMap<Rpc<?, ?>>> captor;
 
@@ -161,6 +164,7 @@ public class RpcContextImplTest {
     public void testInstantiateServiceInstance() {
         when(rpcProviderRegistry.registerRpcImplementations(any(),
             eq(Set.of(nodeInstanceIdentifier)))).thenReturn(registration);
+        when(deviceContext.getDeviceFlowRegistry()).thenReturn(flowRegistry);
 
         rpcContext.instantiateServiceInstance();
 

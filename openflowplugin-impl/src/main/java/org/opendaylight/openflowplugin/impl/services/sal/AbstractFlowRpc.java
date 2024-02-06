@@ -7,22 +7,28 @@
  */
 package org.opendaylight.openflowplugin.impl.services.sal;
 
-import org.eclipse.jdt.annotation.NonNull;
+import static java.util.Objects.requireNonNull;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
-import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
-import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerFlowService;
-import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerFlowService;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yangtools.yang.binding.RpcOutput;
+import org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry;
+import org.opendaylight.yangtools.yang.common.Uint8;
 
-abstract class AbstractFlowRpc<O extends RpcOutput> extends AbstractDeviceRpc {
-    final @NonNull MultiLayerFlowService<O> multi;
-    final @NonNull SingleLayerFlowService<O> single;
+@NonNullByDefault
+abstract sealed class AbstractFlowRpc permits AbstractAddFlow, AbstractRemoveFlow, AbstractUpdateFlow {
+    private final DeviceFlowRegistry flowRegistry;
+    private final Uint8 version;
 
-    AbstractFlowRpc(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
-            final ConvertorExecutor convertorExecutor, final Class<O> output) {
-        super(deviceContext);
-        multi = new MultiLayerFlowService<>(requestContextStack, deviceContext, output, convertorExecutor);
-        single = new SingleLayerFlowService<>(requestContextStack, deviceContext, output);
+    AbstractFlowRpc(final DeviceContext deviceContext) {
+        flowRegistry = requireNonNull(deviceContext.getDeviceFlowRegistry());
+        version = deviceContext.getDeviceInfo().getVersion();
+    }
+
+    protected final DeviceFlowRegistry flowRegistry() {
+        return flowRegistry;
+    }
+
+    protected final Uint8 version() {
+        return version;
     }
 }
