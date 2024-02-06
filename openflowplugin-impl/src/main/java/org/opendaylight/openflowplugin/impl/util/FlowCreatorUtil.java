@@ -38,7 +38,7 @@ public final class FlowCreatorUtil {
             FlowConvertor.DEFAULT_OFPFF_FLOW_REM);
 
     private FlowCreatorUtil() {
-        // Hidden on purpose
+        // FIXME: turn this into a full class with Uint8 version captured
     }
 
     public static void setWildcardedFlowMatch(final Uint8 version, final MultipartRequestFlowBuilder flowBuilder) {

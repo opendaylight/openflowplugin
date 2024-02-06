@@ -155,6 +155,8 @@ public class StatisticsGatheringUtilsTest {
     @Mock
     private FlowDescriptor flowDescriptor;
     @Mock
+    private FlowRegistryKey flowRegistryKey;
+    @Mock
     private FlowId flowId;
     @Mock
     private GetFeaturesOutput features;
@@ -175,7 +177,8 @@ public class StatisticsGatheringUtilsTest {
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);
         when(deviceContext.getDeviceGroupRegistry()).thenReturn(deviceGroupRegistry);
         when(deviceContext.getDeviceMeterRegistry()).thenReturn(deviceMeterRegistry);
-        when(deviceFlowRegistry.retrieveDescriptor(any(FlowRegistryKey.class))).thenReturn(flowDescriptor);
+        when(deviceFlowRegistry.createKey(any())).thenReturn(flowRegistryKey);
+        when(deviceFlowRegistry.retrieveDescriptor(any())).thenReturn(flowDescriptor);
         when(flowDescriptor.getFlowId()).thenReturn(new FlowId("MOCK_FLOW"));
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
         when(deviceContext.getReadTransaction()).thenReturn(readTx);
@@ -208,7 +211,7 @@ public class StatisticsGatheringUtilsTest {
         Assert.assertEquals(42, flow.getValue().getTableId().intValue());
     }
 
-    private static Iterable<FlowsStatisticsUpdate> prepareFlowStatisticsData() {
+    private static List<FlowsStatisticsUpdate> prepareFlowStatisticsData() {
         final FlowAndStatisticsMapListBuilder flowAndStatsMapListBld = new FlowAndStatisticsMapListBuilder();
         flowAndStatsMapListBld.setTableId(Uint8.valueOf(42));
         flowAndStatsMapListBld.setMatch(new MatchBuilder().build());

@@ -244,7 +244,7 @@ public class DeviceContextImplTest {
                 FlowRemoved.class.getName())))).thenReturn(messageTranslatorFlowRemoved);
 
         final java.util.Optional<AbstractDeviceInitializer> deviceInitializer = java.util.Optional
-                .of(this.abstractDeviceInitializer);
+                .of(abstractDeviceInitializer);
 
         Mockito.lenient().when(deviceInitializerProvider.lookup(OFConstants.OFP_VERSION_1_3))
                 .thenReturn(deviceInitializer);
@@ -274,7 +274,7 @@ public class DeviceContextImplTest {
     public void testGetReadTransaction() {
         readTx = deviceContext.getReadTransaction();
         assertNotNull(readTx);
-        assertEquals(this.readTx, readTx);
+        assertEquals(readTx, readTx);
     }
 
     @Test
@@ -443,8 +443,7 @@ public class DeviceContextImplTest {
                 .thenReturn(flowRemovedMdsalBld.build());
 
         // insert flow+flowId into local registry
-        final FlowRegistryKey flowRegKey =
-                FlowRegistryKeyFactory.create(deviceInfo.getVersion(), flowRemovedMdsalBld.build());
+        final FlowRegistryKey flowRegKey = FlowRegistryKeyFactory.VERSION_1_3.create(flowRemovedMdsalBld.build());
         final FlowDescriptor flowDescriptor = FlowDescriptorFactory.create(Uint8.ZERO, new FlowId("ut-ofp:f456"));
         deviceContext.getDeviceFlowRegistry().storeDescriptor(flowRegKey, flowDescriptor);
 

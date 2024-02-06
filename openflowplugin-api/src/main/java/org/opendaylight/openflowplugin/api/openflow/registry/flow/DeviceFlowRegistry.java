@@ -17,6 +17,7 @@ import org.opendaylight.openflowplugin.api.openflow.FlowGroupStatus;
 import org.opendaylight.openflowplugin.api.openflow.registry.CommonDeviceRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -25,12 +26,13 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 public interface DeviceFlowRegistry extends CommonDeviceRegistry<FlowRegistryKey> {
 
+    @NonNull FlowRegistryKey createKey(@NonNull Flow flow);
+
     ListenableFuture<List<Optional<FlowCapableNode>>> fill();
 
     void storeDescriptor(@NonNull FlowRegistryKey flowRegistryKey, @NonNull FlowDescriptor flowDescriptor);
 
-    @Nullable
-    FlowDescriptor retrieveDescriptor(@NonNull FlowRegistryKey flowRegistryKey);
+    @Nullable FlowDescriptor retrieveDescriptor(@NonNull FlowRegistryKey flowRegistryKey);
 
     void clearFlowRegistry();
 
