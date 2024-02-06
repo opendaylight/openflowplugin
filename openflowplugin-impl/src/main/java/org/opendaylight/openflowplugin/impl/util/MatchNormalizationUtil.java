@@ -17,12 +17,12 @@ import static org.opendaylight.openflowplugin.impl.util.AddressNormalizationUtil
 import static org.opendaylight.openflowplugin.impl.util.AddressNormalizationUtil.normalizeProtocolAgnosticPort;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import com.google.common.collect.ImmutableSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -51,13 +51,20 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 public final class MatchNormalizationUtil {
     // Cache normalizers for common OpenFlow versions
-    private static final Map<Uint8, Set<Function<MatchBuilder, MatchBuilder>>> NORMALIZERS = ImmutableMap
-            .<Uint8, Set<Function<MatchBuilder, MatchBuilder>>>builder()
-            .put(OFConstants.OFP_VERSION_1_0, createNormalizers(OFConstants.OFP_VERSION_1_0)
-                    .collect(Collectors.toSet()))
-            .put(OFConstants.OFP_VERSION_1_3, createNormalizers(OFConstants.OFP_VERSION_1_3)
-                    .collect(Collectors.toSet()))
+    private static final ImmutableMap<Uint8, ImmutableSet<Function<MatchBuilder, MatchBuilder>>> COMMON_NORMALIZERS =
+        ImmutableMap.<Uint8, ImmutableSet<Function<MatchBuilder, MatchBuilder>>>builder()
+            .put(OFConstants.OFP_VERSION_1_0,
+                createNormalizers(OFConstants.OFP_VERSION_1_0).collect(ImmutableSet.toImmutableSet()))
+            .put(OFConstants.OFP_VERSION_1_3,
+                createNormalizers(OFConstants.OFP_VERSION_1_3).collect(ImmutableSet.toImmutableSet()))
             .build();
+    private static final LoadingCache<Uint8, ImmutableSet<Function<MatchBuilder, MatchBuilder>>> UNCOMMON_NORMALIZERS =
+        CacheBuilder.newBuilder().weakValues().build(new CacheLoader<>() {
+            @Override
+            public ImmutableSet<Function<MatchBuilder, MatchBuilder>> load(final Uint8 key) {
+                return createNormalizers(key).collect(ImmutableSet.toImmutableSet());
+            }
+        });
 
     private MatchNormalizationUtil() {
         // Hidden on purpose
@@ -70,19 +77,19 @@ public final class MatchNormalizationUtil {
      * @param version the OpenFlow version
      * @return normalized OpenFlow match
      */
-    @NonNull
-    public static Match normalizeMatch(@NonNull final Match match, final Uint8 version) {
-        final MatchBuilder matchBuilder = new MatchBuilder(match);
+    public static @NonNull Match normalizeMatch(@NonNull final Match match, final Uint8 version) {
+        final var matchBuilder = new MatchBuilder(match);
 
-        Optional.ofNullable(NORMALIZERS.get(version))
-                .orElseGet(() -> createNormalizers(version).collect(Collectors.toSet()))
-                .forEach(normalizer -> normalizer.apply(matchBuilder));
+        var normalizers = COMMON_NORMALIZERS.get(version);
+        if (normalizers == null) {
+            normalizers = UNCOMMON_NORMALIZERS.getUnchecked(version);
+        }
+        normalizers.forEach(normalizer -> normalizer.apply(matchBuilder));
 
         return matchBuilder.build();
     }
 
-    @NonNull
-    private static Stream<Function<MatchBuilder, MatchBuilder>> createNormalizers(final Uint8 version) {
+    private static @NonNull Stream<Function<MatchBuilder, MatchBuilder>> createNormalizers(final Uint8 version) {
         return Stream.of(
             MatchNormalizationUtil::normalizeExtensionMatch,
             MatchNormalizationUtil::normalizeEthernetMatch,
@@ -96,165 +103,148 @@ public final class MatchNormalizationUtil {
             match -> normalizeInPhyPortMatch(match, version));
     }
 
-    @NonNull
-    private static MatchBuilder normalizeExtensionMatch(@NonNull final MatchBuilder match) {
+    private static @NonNull MatchBuilder normalizeExtensionMatch(@NonNull final MatchBuilder match) {
         return new MatchBuilder(MatchUtil.transformMatch(match.build(), Match.class));
     }
 
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeInPortMatch(@NonNull final MatchBuilder match, final Uint8 version) {
-        return Optional
-                .ofNullable(match.getInPort())
-                .flatMap(inPort -> Optional.ofNullable(normalizeProtocolAgnosticPort(inPort, version)))
-                .map(inPortUri -> match.setInPort(new NodeConnectorId(inPortUri)))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeInPortMatch(final @NonNull MatchBuilder match, final Uint8 version) {
+        final var inPort = match.getInPort();
+        if (inPort != null) {
+            final var inPortUri = normalizeProtocolAgnosticPort(inPort, version);
+            if (inPortUri != null) {
+                match.setInPort(new NodeConnectorId(inPortUri));
+            }
+        }
+        return match;
     }
 
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeInPhyPortMatch(final @NonNull MatchBuilder match, final Uint8 version) {
-        return Optional
-                .ofNullable(match.getInPhyPort())
-                .flatMap(inPhyPort -> Optional.ofNullable(normalizeProtocolAgnosticPort(inPhyPort, version)))
-                .map(inPhyPortUri -> match.setInPhyPort(new NodeConnectorId(inPhyPortUri)))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeInPhyPortMatch(final @NonNull MatchBuilder match, final Uint8 version) {
+        final var inPhyPort = match.getInPhyPort();
+        if (inPhyPort != null) {
+            final var inPhyPortUri = normalizeProtocolAgnosticPort(inPhyPort, version);
+            if (inPhyPortUri != null) {
+                match.setInPhyPort(new NodeConnectorId(inPhyPortUri));
+            }
+        }
+        return match;
     }
 
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeArpMatch(final @NonNull MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getLayer3Match())
-                .filter(ArpMatch.class::isInstance)
-                .map(ArpMatch.class::cast)
-                .map(arp -> match.setLayer3Match(new ArpMatchBuilder(arp)
-                        .setArpSourceHardwareAddress(Optional
-                                .ofNullable(arp.getArpSourceHardwareAddress())
-                                .map(arpSource -> new ArpSourceHardwareAddressBuilder(arpSource)
-                                        .setAddress(normalizeMacAddress(arpSource.getAddress()))
-                                        .setMask(normalizeMacAddress(arpSource.getMask()))
-                                        .build())
-                                .orElse(arp.getArpSourceHardwareAddress()))
-                        .setArpTargetHardwareAddress(Optional
-                                .ofNullable(arp.getArpTargetHardwareAddress())
-                                .map(arpTarget -> new ArpTargetHardwareAddressBuilder(arpTarget)
-                                        .setAddress(normalizeMacAddress(arpTarget.getAddress()))
-                                        .setMask(normalizeMacAddress(arpTarget.getMask()))
-                                        .build())
-                                .orElse(arp.getArpTargetHardwareAddress()))
-                        .setArpSourceTransportAddress(normalizeIpv4Prefix(arp.getArpSourceTransportAddress()))
-                        .setArpTargetTransportAddress(normalizeIpv4Prefix(arp.getArpTargetTransportAddress()))
-                        .build())
-                )
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeArpMatch(final @NonNull MatchBuilder match) {
+        if (match.getLayer3Match() instanceof ArpMatch arp) {
+            final var builder = new ArpMatchBuilder(arp)
+                .setArpSourceTransportAddress(normalizeIpv4Prefix(arp.getArpSourceTransportAddress()))
+                .setArpTargetTransportAddress(normalizeIpv4Prefix(arp.getArpTargetTransportAddress()));
+
+            final var arpSource = arp.getArpSourceHardwareAddress();
+            if (arpSource != null) {
+                builder.setArpSourceHardwareAddress(new ArpSourceHardwareAddressBuilder(arpSource)
+                    .setAddress(normalizeMacAddress(arpSource.getAddress()))
+                    .setMask(normalizeMacAddress(arpSource.getMask()))
+                    .build());
+            }
+            final var arpTarget = arp.getArpTargetHardwareAddress();
+            if (arpTarget != null) {
+                builder.setArpTargetHardwareAddress(new ArpTargetHardwareAddressBuilder(arpTarget)
+                    .setAddress(normalizeMacAddress(arpTarget.getAddress()))
+                    .setMask(normalizeMacAddress(arpTarget.getMask()))
+                    .build());
+            }
+            match.setLayer3Match(builder.build());
+        }
+        return match;
     }
 
-
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeTunnelIpv4Match(@NonNull final MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getLayer3Match())
-                .filter(TunnelIpv4Match.class::isInstance)
-                .map(TunnelIpv4Match.class::cast)
-                .map(tunnelIpv4 -> match.setLayer3Match(new TunnelIpv4MatchBuilder(tunnelIpv4)
-                        .setTunnelIpv4Source(normalizeIpv4Prefix(tunnelIpv4.getTunnelIpv4Source()))
-                        .setTunnelIpv4Destination(normalizeIpv4Prefix(tunnelIpv4.getTunnelIpv4Destination()))
-                        .build()))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeTunnelIpv4Match(final @NonNull MatchBuilder match) {
+        if (match.getLayer3Match() instanceof TunnelIpv4Match tunnelIpv4) {
+            match.setLayer3Match(new TunnelIpv4MatchBuilder(tunnelIpv4)
+                .setTunnelIpv4Source(normalizeIpv4Prefix(tunnelIpv4.getTunnelIpv4Source()))
+                .setTunnelIpv4Destination(normalizeIpv4Prefix(tunnelIpv4.getTunnelIpv4Destination()))
+                .build());
+        }
+        return match;
     }
 
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv4Match(@NonNull final MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getLayer3Match())
-                .filter(Ipv4Match.class::isInstance)
-                .map(Ipv4Match.class::cast)
-                .map(ipv4 -> match.setLayer3Match(new Ipv4MatchBuilder(ipv4)
-                        .setIpv4Source(normalizeIpv4Prefix(ipv4.getIpv4Source()))
-                        .setIpv4Destination(normalizeIpv4Prefix(ipv4.getIpv4Destination()))
-                        .build()))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeIpv4Match(final @NonNull MatchBuilder match) {
+        if (match.getLayer3Match() instanceof Ipv4Match ipv4) {
+            match.setLayer3Match(new Ipv4MatchBuilder(ipv4)
+                .setIpv4Source(normalizeIpv4Prefix(ipv4.getIpv4Source()))
+                .setIpv4Destination(normalizeIpv4Prefix(ipv4.getIpv4Destination()))
+                .build());
+        }
+        return match;
     }
 
     @NonNull
     @VisibleForTesting
     static MatchBuilder normalizeIpv4MatchArbitraryBitMask(final @NonNull MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getLayer3Match())
-                .filter(Ipv4MatchArbitraryBitMask.class::isInstance)
-                .map(Ipv4MatchArbitraryBitMask.class::cast)
-                .map(ipv4arbitrary -> match.setLayer3Match(new Ipv4MatchBuilder()
-                        .setIpv4Source(normalizeIpv4Arbitrary(
-                                ipv4arbitrary.getIpv4SourceAddressNoMask(),
-                                ipv4arbitrary.getIpv4SourceArbitraryBitmask()))
-                        .setIpv4Destination(normalizeIpv4Arbitrary(
-                                ipv4arbitrary.getIpv4DestinationAddressNoMask(),
-                                ipv4arbitrary.getIpv4DestinationArbitraryBitmask()))
-                        .build()))
-                .orElse(match);
+        if (match.getLayer3Match() instanceof Ipv4MatchArbitraryBitMask ipv4arbitrary) {
+            match.setLayer3Match(new Ipv4MatchBuilder()
+                .setIpv4Source(normalizeIpv4Arbitrary(
+                    ipv4arbitrary.getIpv4SourceAddressNoMask(),
+                    ipv4arbitrary.getIpv4SourceArbitraryBitmask()))
+                .setIpv4Destination(normalizeIpv4Arbitrary(
+                    ipv4arbitrary.getIpv4DestinationAddressNoMask(),
+                    ipv4arbitrary.getIpv4DestinationArbitraryBitmask()))
+                .build());
+        }
+        return match;
     }
 
-
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv6Match(final @NonNull MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getLayer3Match())
-                .filter(Ipv6Match.class::isInstance)
-                .map(Ipv6Match.class::cast)
-                .map(ipv6 -> match.setLayer3Match(new Ipv6MatchBuilder(ipv6)
-                        .setIpv6NdSll(normalizeMacAddress(ipv6.getIpv6NdSll()))
-                        .setIpv6NdTll(normalizeMacAddress(ipv6.getIpv6NdTll()))
-                        .setIpv6NdTarget(normalizeIpv6AddressWithoutMask(ipv6.getIpv6NdTarget()))
-                        .setIpv6Source(normalizeIpv6Prefix(ipv6.getIpv6Source()))
-                        .setIpv6Destination(normalizeIpv6Prefix(ipv6.getIpv6Destination()))
-                        .build()))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeIpv6Match(final @NonNull MatchBuilder match) {
+        if (match.getLayer3Match() instanceof Ipv6Match ipv6) {
+            match.setLayer3Match(new Ipv6MatchBuilder(ipv6)
+                .setIpv6NdSll(normalizeMacAddress(ipv6.getIpv6NdSll()))
+                .setIpv6NdTll(normalizeMacAddress(ipv6.getIpv6NdTll()))
+                .setIpv6NdTarget(normalizeIpv6AddressWithoutMask(ipv6.getIpv6NdTarget()))
+                .setIpv6Source(normalizeIpv6Prefix(ipv6.getIpv6Source()))
+                .setIpv6Destination(normalizeIpv6Prefix(ipv6.getIpv6Destination()))
+                .build());
+        }
+        return match;
     }
 
-
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeIpv6MatchArbitraryBitMask(final @NonNull MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getLayer3Match())
-                .filter(Ipv6MatchArbitraryBitMask.class::isInstance)
-                .map(Ipv6MatchArbitraryBitMask.class::cast)
-                .map(ipv6Arbitrary -> match.setLayer3Match(new Ipv6MatchBuilder()
-                        .setIpv6Source(normalizeIpv6Arbitrary(
-                                ipv6Arbitrary.getIpv6SourceAddressNoMask(),
-                                ipv6Arbitrary.getIpv6SourceArbitraryBitmask()))
-                        .setIpv6Destination(normalizeIpv6Arbitrary(
-                                ipv6Arbitrary.getIpv6DestinationAddressNoMask(),
-                                ipv6Arbitrary.getIpv6DestinationArbitraryBitmask()))
-                        .build()))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeIpv6MatchArbitraryBitMask(final @NonNull MatchBuilder match) {
+        if (match.getLayer3Match() instanceof Ipv6MatchArbitraryBitMask ipv6Arbitrary) {
+            match.setLayer3Match(new Ipv6MatchBuilder()
+                .setIpv6Source(normalizeIpv6Arbitrary(
+                    ipv6Arbitrary.getIpv6SourceAddressNoMask(),
+                    ipv6Arbitrary.getIpv6SourceArbitraryBitmask()))
+                .setIpv6Destination(normalizeIpv6Arbitrary(
+                    ipv6Arbitrary.getIpv6DestinationAddressNoMask(),
+                    ipv6Arbitrary.getIpv6DestinationArbitraryBitmask()))
+                .build());
+        }
+        return match;
     }
 
-    @NonNull
     @VisibleForTesting
-    static MatchBuilder normalizeEthernetMatch(final @NonNull MatchBuilder match) {
-        return Optional
-                .ofNullable(match.getEthernetMatch())
-                .map(eth -> match.setEthernetMatch(new EthernetMatchBuilder(eth)
-                        .setEthernetSource(Optional
-                                .ofNullable(eth.getEthernetSource())
-                                .map(filter -> new EthernetSourceBuilder(filter)
-                                        .setAddress(normalizeMacAddress(filter.getAddress()))
-                                        .setMask(normalizeMacAddressMask(filter.getMask()))
-                                        .build())
-                                .orElse(eth.getEthernetSource()))
-                        .setEthernetDestination(Optional
-                                .ofNullable(eth.getEthernetDestination())
-                                .map(filter -> new EthernetDestinationBuilder(filter)
-                                        .setAddress(normalizeMacAddress(filter.getAddress()))
-                                        .setMask(normalizeMacAddressMask(filter.getMask()))
-                                        .build())
-                                .orElse(eth.getEthernetDestination()))
-                        .build()))
-                .orElse(match);
+    static @NonNull MatchBuilder normalizeEthernetMatch(final @NonNull MatchBuilder match) {
+        final var eth = match.getEthernetMatch();
+        if (eth != null) {
+            final var builder = new EthernetMatchBuilder(eth);
+            final var source = eth.getEthernetSource();
+            if (source != null) {
+                builder.setEthernetSource(new EthernetSourceBuilder(source)
+                    .setAddress(normalizeMacAddress(source.getAddress()))
+                    .setMask(normalizeMacAddressMask(source.getMask()))
+                    .build());
+            }
+            final var dest = eth.getEthernetDestination();
+            if (dest != null) {
+                builder.setEthernetDestination(new EthernetDestinationBuilder(dest)
+                    .setAddress(normalizeMacAddress(dest.getAddress()))
+                    .setMask(normalizeMacAddressMask(dest.getMask()))
+                    .build());
+            }
+            match.setEthernetMatch(builder.build());
+        }
+        return match;
     }
 }
