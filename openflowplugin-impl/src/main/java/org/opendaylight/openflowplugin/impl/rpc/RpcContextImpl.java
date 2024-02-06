@@ -334,7 +334,7 @@ final class RpcContextImpl implements RpcContext {
 
         // Support deprecated statistic related services for backward compatibility. The only exception from deprecation
         // is the aggregated flow statistic with match criteria input.
-        if (isStatisticsRpcEnabled && !deviceContext.canUseSingleLayerSerialization()) {
+        if (isStatisticsRpcEnabled && !singleLayer) {
             final var compatibilityXidSeed = new AtomicLong();
             // FIXME: why is this separate?
             final var statsCompatXidSeed = new AtomicLong();
