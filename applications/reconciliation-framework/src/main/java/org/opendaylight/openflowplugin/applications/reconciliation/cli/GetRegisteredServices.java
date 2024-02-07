@@ -7,13 +7,10 @@
  */
 package org.opendaylight.openflowplugin.applications.reconciliation.cli;
 
-import static java.util.Objects.requireNonNull;
-
-import java.util.List;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
-import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +24,8 @@ public class GetRegisteredServices extends OsgiCommandSupport {
     private static final Logger LOG = LoggerFactory.getLogger(GetRegisteredServices.class);
     private static final String CLI_FORMAT = "%d %-20s ";
 
-    private ReconciliationManager reconciliationManager = null;
-
-    public void setReconciliationManager(final ReconciliationManager reconciliationManager) {
-        this.reconciliationManager = requireNonNull(reconciliationManager, "ReconciliationManager can not be null!");
-    }
+    @Reference
+    ReconciliationManager reconciliationManager;
 
     @Override
     protected Object doExecute() {
@@ -39,14 +33,12 @@ public class GetRegisteredServices extends OsgiCommandSupport {
         if (reconciliationManager.getRegisteredServices().isEmpty()) {
             session.getConsole().println("No Services have registered to Reconciliation Framework");
         } else {
-            for (List<ReconciliationNotificationListener> services : reconciliationManager.getRegisteredServices()
-                    .values()) {
-                for (ReconciliationNotificationListener service : services) {
+            for (var services : reconciliationManager.getRegisteredServices() .values()) {
+                for (var service : services) {
                     session.getConsole().println(String.format(CLI_FORMAT, service.getPriority(), service.getName()));
                 }
             }
         }
-
         return null;
     }
 }
