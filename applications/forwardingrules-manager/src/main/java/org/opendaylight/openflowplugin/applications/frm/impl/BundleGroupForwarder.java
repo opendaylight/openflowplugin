@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.ArrayList;
 import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.openflowplugin.applications.frm.BundleMessagesCommiter;
@@ -25,13 +24,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.BundleInnerMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleAddGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleUpdateGroupCaseBuilder;
@@ -56,7 +52,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
 
     public BundleGroupForwarder(final ForwardingRulesManager forwardingRulesManager) {
         this.forwardingRulesManager = requireNonNull(forwardingRulesManager, "ForwardingRulesManager can not be null!");
-        this.nodeConfigurator = requireNonNull(forwardingRulesManager.getNodeConfigurator(),
+        nodeConfigurator = requireNonNull(forwardingRulesManager.getNodeConfigurator(),
                 "NodeConfigurator can not be null!");
     }
 
@@ -65,32 +61,27 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
-            final List<Message> messages = new ArrayList<>(1);
-            BundleInnerMessage bundleInnerMessage = new BundleRemoveGroupCaseBuilder()
-                    .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(group).build())
-                    .build();
-            Message message = new MessageBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleInnerMessage(bundleInnerMessage)
-                    .build();
-            messages.add(message);
-            AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleId(bundleId)
-                    .setFlags(BUNDLE_FLAGS)
-                    .setMessages(new MessagesBuilder().setMessage(messages).build())
-                    .build();
+            final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setBundleId(bundleId)
+                .setFlags(BUNDLE_FLAGS)
+                .setMessages(new MessagesBuilder()
+                    .setMessage(List.of(new MessageBuilder()
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
+                            .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(group).build())
+                            .build())
+                        .build()))
+                    .build())
+                .build();
             LOG.trace("Pushing group remove message {} to bundle {} for device {}", addBundleMessagesInput,
-                    bundleId.getValue(), nodeId);
-            final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                    .getSalBundleService().addBundleMessages(addBundleMessagesInput);
+                bundleId.getValue(), nodeId);
+            final var resultFuture = forwardingRulesManager.addBundleMessages().invoke(addBundleMessagesInput);
             Futures.addCallback(resultFuture,
-                    new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId),
-                    MoreExecutors.directExecutor());
-            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
-            return resultFuture;
+                new BundleRemoveGroupCallBack(group.getGroupId().getValue(), nodeId),
+                MoreExecutors.directExecutor());
+            return LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleGroup");
         });
-
     }
 
     @Override
@@ -101,70 +92,57 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                        final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
-            final List<Message> messages = new ArrayList<>(1);
-            BundleInnerMessage bundleInnerMessage = new BundleUpdateGroupCaseBuilder()
-                    .setUpdateGroupCaseData(new UpdateGroupCaseDataBuilder(updatedGroup).build())
-                    .build();
-            Message message = new MessageBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleInnerMessage(bundleInnerMessage)
-                    .build();
-            messages.add(message);
-            AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleId(bundleId)
-                    .setFlags(BUNDLE_FLAGS)
-                    .setMessages(new MessagesBuilder().setMessage(messages).build())
-                    .build();
+            final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setBundleId(bundleId)
+                .setFlags(BUNDLE_FLAGS)
+                .setMessages(new MessagesBuilder()
+                    .setMessage(List.of(new MessageBuilder()
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setBundleInnerMessage(new BundleUpdateGroupCaseBuilder()
+                            .setUpdateGroupCaseData(new UpdateGroupCaseDataBuilder(updatedGroup).build())
+                            .build())
+                        .build()))
+                    .build())
+                .build();
             LOG.trace("Pushing group update message {} to bundle {} for device {}", addBundleMessagesInput,
-                    bundleId.getValue(), nodeId);
-            final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                    .getSalBundleService()
-                    .addBundleMessages(addBundleMessagesInput);
+                bundleId.getValue(), nodeId);
+            final var resultFuture = forwardingRulesManager.addBundleMessages().invoke(addBundleMessagesInput);
             Futures.addCallback(resultFuture,
-                    new BundleUpdateGroupCallBack(originalGroup.getGroupId().getValue(), nodeId),
-                    MoreExecutors.directExecutor());
-            LoggingFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
-            return resultFuture;
+                new BundleUpdateGroupCallBack(originalGroup.getGroupId().getValue(), nodeId),
+                MoreExecutors.directExecutor());
+            return LoggingFutures.addErrorLogging(resultFuture, LOG, "updateBundleGroup");
         });
     }
 
     @Override
     public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Group> identifier,
-                                                                    final Group group,
-                                                                    final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                    final BundleId bundleId) {
-        final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-        final Uint32 groupId = group.getGroupId().getValue();
+            final Group group, final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+        final var nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        final var groupId = group.getGroupId().getValue();
         return nodeConfigurator.enqueueJob(nodeId, () -> {
             if (isGroupExistsOnDevice(nodeIdent, groupId, forwardingRulesManager)) {
                 LOG.debug("Group {} already exists in the device. Ignoring the add DTCN", groupId);
-                return Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>success().build());
+                return RpcResultBuilder.<AddBundleMessagesOutput>success().buildFuture();
             }
-            final List<Message> messages = new ArrayList<>(1);
-            BundleInnerMessage bundleInnerMessage = new BundleAddGroupCaseBuilder()
-                    .setAddGroupCaseData(new AddGroupCaseDataBuilder(group).build())
-                    .build();
-            Message message = new MessageBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleInnerMessage(bundleInnerMessage)
-                    .build();
-            messages.add(message);
-            AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleId(bundleId)
-                    .setFlags(BUNDLE_FLAGS)
-                    .setMessages(new MessagesBuilder()
-                            .setMessage(messages).build())
-                    .build();
+            final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setBundleId(bundleId)
+                .setFlags(BUNDLE_FLAGS)
+                .setMessages(new MessagesBuilder()
+                    .setMessage(List.of(new MessageBuilder()
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setBundleInnerMessage(new BundleAddGroupCaseBuilder()
+                            .setAddGroupCaseData(new AddGroupCaseDataBuilder(group).build())
+                            .build())
+                        .build()))
+                    .build())
+                .build();
             LOG.trace("Pushing group add message {} to bundle {} for device {}", addBundleMessagesInput,
                     bundleId.getValue(), nodeId);
-            ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                    .getSalBundleService()
-                    .addBundleMessages(addBundleMessagesInput);
-            Futures.addCallback(resultFuture,
-                    new BundleAddGroupCallBack(groupId, nodeId),
-                    MoreExecutors.directExecutor());
+            final var resultFuture = forwardingRulesManager.addBundleMessages().invoke(addBundleMessagesInput);
+            Futures.addCallback(resultFuture, new BundleAddGroupCallBack(groupId, nodeId),
+                MoreExecutors.directExecutor());
             return resultFuture;
         });
     }
