@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationService;
@@ -36,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * Provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
  * device using dataStore strategy (FRM involved).
  */
-public class DropTestCommiter extends AbstractDropTest {
+public final class DropTestCommiter extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestCommiter.class);
     private static final TableKey ZERO_TABLE = new TableKey(Uint8.ZERO);
     private static final AtomicLong ID_COUNTER = new AtomicLong();
@@ -53,19 +55,32 @@ public class DropTestCommiter extends AbstractDropTest {
             .setFlags(new FlowModFlags(false, false, false, false, false));
     });
 
-    private NotificationService notificationService = null;
+    private final DataBroker dataBroker;
+    private final NotificationService notificationService;
+
     private Registration notificationRegistration = null;
-    private DataBroker dataService = null;
+
+    public DropTestCommiter(final DataBroker dataBroker, final NotificationService notificationService) {
+        this.dataBroker = requireNonNull(dataBroker);
+        this.notificationService = requireNonNull(notificationService);
+    }
 
     /**
      * start listening on packetIn.
      */
     public void start() {
-        notificationRegistration = notificationService.registerListener(PacketReceived.class, this);
+        if (notificationRegistration == null) {
+            notificationRegistration = notificationService.registerListener(PacketReceived.class, this);
+            LOG.debug("DropTestProvider started");
+        }
     }
 
-    public void setDataService(final DataBroker dataService) {
-        this.dataService = dataService;
+    public void stop() {
+        if (notificationRegistration != null) {
+            notificationRegistration.close();
+            notificationRegistration = null;
+            LOG.debug("DropTestProvider stopped");
+        }
     }
 
     @Override
@@ -89,7 +104,7 @@ public class DropTestCommiter extends AbstractDropTest {
                 .build();
 
         final Flow flow = fb.build();
-        final ReadWriteTransaction transaction = dataService.newReadWriteTransaction();
+        final ReadWriteTransaction transaction = dataBroker.newReadWriteTransaction();
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("onPacketReceived - About to write flow {}", flow);
@@ -101,14 +116,8 @@ public class DropTestCommiter extends AbstractDropTest {
 
     @Override
     public void close() {
+        stop();
         super.close();
-        LOG.debug("DropTestProvider stopped.");
-        if (notificationRegistration != null) {
-            notificationRegistration.close();
-        }
-    }
-
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
+        LOG.debug("DropTestProvider terminated");
     }
 }

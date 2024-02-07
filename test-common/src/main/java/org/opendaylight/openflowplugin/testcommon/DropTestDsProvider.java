@@ -18,10 +18,13 @@ import org.slf4j.LoggerFactory;
 public class DropTestDsProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestDsProvider.class);
 
-    private DataBroker dataService;
-    private NotificationService notificationService;
-    private final DropTestCommiter commiter = new DropTestCommiter();
+    private final DropTestCommiter commiter;
+
     private boolean active = false;
+
+    public DropTestDsProvider(final DataBroker dataBroker, final NotificationService notificationService) {
+        commiter = new DropTestCommiter(dataBroker, notificationService);
+    }
 
     /**
      * Returns the message counts.
@@ -37,32 +40,26 @@ public class DropTestDsProvider implements AutoCloseable {
         commiter.clearStats();
     }
 
-    public void setDataService(final DataBroker dataService) {
-        this.dataService = dataService;
-    }
-
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
     /**
      * Activates the drop responder.
      */
     public void start() {
-        commiter.setDataService(dataService);
-        commiter.setNotificationService(notificationService);
         commiter.start();
         active = true;
-        LOG.debug("DropTestProvider Started.");
+        LOG.debug("DropTestProvider Started");
+    }
+
+    public void stop() {
+        commiter.stop();
+        active = false;
+        LOG.debug("DropTestProvider stopped");
+
     }
 
     @Override
     public void close() {
-        LOG.debug("DropTestProvider stopped.");
-        if (commiter != null) {
-            commiter.close();
-            active = false;
-        }
+        LOG.debug("DropTestProvider terminated");
+        commiter.close();
     }
 
     /**
