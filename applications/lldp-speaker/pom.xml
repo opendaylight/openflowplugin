@@ -41,12 +41,10 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>device-ownership-service</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
           <groupId>org.opendaylight.infrautils</groupId>
           <artifactId>infrautils-util</artifactId>
         </dependency>
     </dependencies>
-
 </project>

@@ -41,8 +41,6 @@
       <dependency>
           <groupId>org.opendaylight.openflowplugin.applications</groupId>
           <artifactId>device-ownership-service</artifactId>
-          <version>${project.version}</version>
       </dependency>
   </dependencies>
-
 </project>

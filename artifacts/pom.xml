@@ -169,6 +169,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}.applications</groupId>
+                <artifactId>device-ownership-service</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.applications</groupId>
                 <artifactId>forwardingrules-manager</artifactId>
                 <version>${project.version}</version>
             </dependency>
