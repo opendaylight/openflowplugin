@@ -9,9 +9,9 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import org.opendaylight.openflowplugin.applications.frsync.SemaphoreKeeper;
 import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
@@ -24,18 +24,17 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  * Enriches {@link SyncReactorFutureDecorator} with state compression.
  */
 public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
-
     private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
     private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper =
             new SemaphoreKeeperGuavaImpl<>(1, true);
 
-    public SyncReactorFutureZipDecorator(final SyncReactor delegate, final ListeningExecutorService executorService) {
-        super(delegate, executorService);
+    public SyncReactorFutureZipDecorator(final SyncReactor delegate, final Executor executor) {
+        super(delegate, executor);
     }
 
     @Override
     public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final SyncupEntry syncupEntry) {
+            final SyncupEntry syncupEntry) {
         Semaphore guard = null;
         try {
             guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);
@@ -54,9 +53,8 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
 
     @Override
     protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                                         final SyncupEntry syncupEntry) {
-        final SyncupEntry lastCompressionState = removeLastCompressionState(flowcapableNodePath);
-
+            final SyncupEntry syncupEntry) {
+        final var lastCompressionState = removeLastCompressionState(flowcapableNodePath);
         if (lastCompressionState == null) {
             return Futures.immediateFuture(Boolean.TRUE);
         } else {
@@ -70,9 +68,8 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
      * entry (config vs. operational is coming) in queue otherwise.
      */
     private boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                           final SyncupEntry syncupEntry) {
-        final SyncupEntry previousEntry = compressionQueue.get(flowcapableNodePath);
-
+            final SyncupEntry syncupEntry) {
+        final var previousEntry = compressionQueue.get(flowcapableNodePath);
         if (previousEntry != null && syncupEntry.isOptimizedConfigDelta()) {
             updateOptimizedConfigDelta(flowcapableNodePath, syncupEntry, previousEntry);
         } else {
@@ -82,11 +79,9 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     private void updateOptimizedConfigDelta(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-                                            final SyncupEntry actual,
-                                            final SyncupEntry previous) {
-        final SyncupEntry updatedEntry = new SyncupEntry(actual.getAfter(), actual.getDsTypeAfter(),
-                                                         previous.getBefore(), previous.getDsTypeBefore());
-        compressionQueue.put(flowcapableNodePath, updatedEntry);
+            final SyncupEntry actual, final SyncupEntry previous) {
+        compressionQueue.put(flowcapableNodePath, new SyncupEntry(actual.getAfter(), actual.getDsTypeAfter(),
+            previous.getBefore(), previous.getDsTypeBefore()));
     }
 
     private SyncupEntry removeLastCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
