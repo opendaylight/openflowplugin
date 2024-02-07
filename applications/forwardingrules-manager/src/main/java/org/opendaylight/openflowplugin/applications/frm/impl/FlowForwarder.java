@@ -20,12 +20,9 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.ReadTransaction;
-import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -50,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
@@ -105,8 +101,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                     // into remove-flow input so that only a flow entry associated with
                     // a given flow object is removed.
                     builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-                    final ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture =
-                            provider.getSalFlowService().removeFlow(builder.build());
+                    final var resultFuture = provider.removeFlow().invoke(builder.build());
                     LoggingFutures.addErrorLogging(resultFuture, LOG, "removeFlow");
                     return resultFuture;
                 });
@@ -119,8 +114,6 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     @Override
     public ListenableFuture<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
             final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        ListenableFuture<RpcResult<RemoveFlowOutput>> resultFuture = SettableFuture.create();
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
@@ -133,10 +126,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             // into remove-flow input so that only a flow entry associated with
             // a given flow object is removed.
             builder.setTransactionUri(new Uri(provider.getNewTransactionId())).setStrict(Boolean.TRUE);
-            resultFuture = provider.getSalFlowService().removeFlow(builder.build());
+            return provider.removeFlow().invoke(builder.build());
         }
-
-        return resultFuture;
+        // FIXME: this future never completes!
+        return SettableFuture.create();
     }
 
     @Override
@@ -170,7 +163,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                         if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                             LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
                                     getFlowId(identifier));
-                            return provider.getSalFlowService().updateFlow(builder.build());
+                            return provider.updateFlow().invoke(builder.build());
                         } else {
                             LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
                             ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
@@ -185,7 +178,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
                     LOG.trace("The flow {} is not dependent on any group. Updating the flow",
                             getFlowId(identifier));
-                    return provider.getSalFlowService().updateFlow(builder.build());
+                    return provider.updateFlow().invoke(builder.build());
                 });
             }
         }
@@ -217,7 +210,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                     LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
                         getFlowId(new FlowRef(identifier)));
-                    return provider.getSalFlowService().addFlow(builder.build());
+                    return provider.addFlow().invoke(builder.build());
                 }
 
                 LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
@@ -230,7 +223,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
             LOG.trace("The flow {} is not dependent on any group. Adding the flow",
                 getFlowId(new FlowRef(identifier)));
-            return provider.getSalFlowService().addFlow(builder.build());
+            return provider.addFlow().invoke(builder.build());
         });
     }
 
@@ -266,10 +259,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private void persistStaleFlow(final StaleFlow staleFlow, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent),
-                staleFlow);
-
+        final var writeTransaction = dataBroker.newWriteOnlyTransaction();
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, nodeIdent
+            .child(Table.class, new TableKey(staleFlow.getTableId()))
+            .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
+                new StaleFlowKey(new FlowId(staleFlow.getId()))), staleFlow);
         writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo result) {
@@ -283,14 +277,6 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         }, MoreExecutors.directExecutor());
     }
 
-    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
-        .flow.inventory.rev130819.tables.table.StaleFlow> getStaleFlowInstanceIdentifier(
-            final StaleFlow staleFlow, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(Table.class, new TableKey(staleFlow.getTableId())).child(
-                org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
-                new StaleFlowKey(new FlowId(staleFlow.getId())));
-    }
-
     private ListenableFuture<RpcResult<AddGroupOutput>> pushDependentGroup(
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
 
@@ -299,29 +285,25 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         //till we receive the dependent group DTCN and then push it.
 
         InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
-        ListenableFuture<RpcResult<AddGroupOutput>> resultFuture;
         LOG.info("Reading the group from config inventory: {}", groupId);
-        try (ReadTransaction readTransaction = provider.getReadTransaction()) {
-            Optional<Group> group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
+        try (var readTransaction = provider.getReadTransaction()) {
+            final var group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
             if (group.isPresent()) {
-                final AddGroupInputBuilder builder = new AddGroupInputBuilder(group.orElseThrow());
-                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                builder.setGroupRef(new GroupRef(nodeIdent));
-                builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-                AddGroupInput addGroupInput = builder.build();
-                resultFuture = provider.getSalGroupService().addGroup(addGroupInput);
-            } else {
-                resultFuture = RpcResultBuilder.<AddGroupOutput>failed()
-                        .withError(ErrorType.APPLICATION,
-                                "Group " + groupId + " not present in the config inventory").buildFuture();
+                return provider.addGroup().invoke(new AddGroupInputBuilder(group.orElseThrow())
+                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                    .setGroupRef(new GroupRef(nodeIdent))
+                    .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                    .build());
             }
+            return RpcResultBuilder.<AddGroupOutput>failed()
+                .withError(ErrorType.APPLICATION, "Group " + groupId + " not present in the config inventory")
+                .buildFuture();
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Error while reading group from config datastore for the group ID {}", groupId, e);
-            resultFuture = RpcResultBuilder.<AddGroupOutput>failed()
-                    .withError(ErrorType.APPLICATION,
-                            "Error while reading group " + groupId + " from inventory").buildFuture();
+            return RpcResultBuilder.<AddGroupOutput>failed()
+                .withError(ErrorType.APPLICATION, "Error while reading group " + groupId + " from inventory")
+                .buildFuture();
         }
-        return resultFuture;
     }
 
     private final class AddFlowCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
@@ -343,7 +325,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (rpcResult.isSuccessful() || rpcResult.getErrors().size() == 1
                     && rpcResult.getErrors().iterator().next().getMessage().contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                Futures.addCallback(provider.getSalFlowService().addFlow(addFlowInput),
+                Futures.addCallback(provider.addFlow().invoke(addFlowInput),
                     new FutureCallback<RpcResult<AddFlowOutput>>() {
                         @Override
                         public void onSuccess(final RpcResult<AddFlowOutput> result) {
@@ -393,7 +375,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             if (rpcResult.isSuccessful() || rpcResult.getErrors().size() == 1
                     && rpcResult.getErrors().iterator().next().getMessage().contains(GROUP_EXISTS_IN_DEVICE_ERROR)) {
                 provider.getDevicesGroupRegistry().storeGroup(nodeId, groupId);
-                Futures.addCallback(provider.getSalFlowService().updateFlow(updateFlowInput),
+                Futures.addCallback(provider.updateFlow().invoke(updateFlowInput),
                     new FutureCallback<RpcResult<UpdateFlowOutput>>() {
                         @Override
                         public void onSuccess(final RpcResult<UpdateFlowOutput> result) {

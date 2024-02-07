@@ -11,8 +11,6 @@
              interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
   <reference id="mastershipChangeServiceManager"
              interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
-  <reference id="clusterSingletonServiceProvider"
-             interface="org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider"/>
   <reference id="configurationService"
              interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
   <reference id="reconciliationManager"
@@ -35,7 +33,6 @@
     <argument ref="rpcProviderService"/>
     <argument ref="forwardingRulesManagerConfig"/>
     <argument ref="mastershipChangeServiceManager"/>
-    <argument ref="clusterSingletonServiceProvider"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationManager"/>
     <argument ref="openflowServiceRecoveryHandler"/>

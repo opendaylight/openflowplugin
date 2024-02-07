@@ -63,19 +63,17 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     @Override
     public void remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LoggingFutures.addErrorLogging(provider.getSalMeterService()
-            .removeMeter(new RemoveMeterInputBuilder(removeDataObj)
+        LoggingFutures.addErrorLogging(provider.removeMeter().invoke(new RemoveMeterInputBuilder(removeDataObj)
                 .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
                 .setMeterRef(new MeterRef(identifier))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
-                .build()),
-            LOG, "removeMeter");
+                .build()), LOG, "removeMeter");
     }
 
     @Override
     public ListenableFuture<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
             final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return provider.getSalMeterService().removeMeter(new RemoveMeterInputBuilder(removeDataObj)
+        return provider.removeMeter().invoke(new RemoveMeterInputBuilder(removeDataObj)
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setMeterRef(new MeterRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
@@ -85,7 +83,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     @Override
     public void update(final InstanceIdentifier<Meter> identifier, final Meter original, final Meter update,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        LoggingFutures.addErrorLogging(provider.getSalMeterService().updateMeter(new UpdateMeterInputBuilder()
+        LoggingFutures.addErrorLogging(provider.updateMeter().invoke(new UpdateMeterInputBuilder()
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setMeterRef(new MeterRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
@@ -97,7 +95,7 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     @Override
     public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
             final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return provider.getSalMeterService().addMeter(new AddMeterInputBuilder(addDataObj)
+        return provider.addMeter().invoke(new AddMeterInputBuilder(addDataObj)
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setMeterRef(new MeterRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))

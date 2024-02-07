@@ -19,30 +19,33 @@ import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.binding.dom.adapter.test.AbstractDataBrokerTest;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
-import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
-import org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelperImpl;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfigBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -54,8 +57,6 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
     private RpcConsumerRegistry rpcConsumerRegistry;
     @Mock
     private RpcProviderService rpcProviderService;
-    @Mock
-    private ClusterSingletonServiceProvider clusterSingletonService;
     @Mock
     private DeviceMastershipManager deviceMastershipManager;
     @Mock
@@ -69,25 +70,40 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
     @Mock
     private FlowGroupCacheManager flowGroupCacheManager;
 
+    final CapturingAddFlow addFlow = new CapturingAddFlow();
+    final CapturingRemoveFlow removeFlow = new CapturingRemoveFlow();
+    final CapturingUpdateFlow updateFlow = new CapturingUpdateFlow();
+    final CapturingAddGroup addGroup = new CapturingAddGroup();
+    final CapturingRemoveGroup removeGroup = new CapturingRemoveGroup();
+    final CapturingUpdateGroup updateGroup = new CapturingUpdateGroup();
+    final CapturingAddMeter addMeter = new CapturingAddMeter();
+    final CapturingRemoveMeter removeMeter = new CapturingRemoveMeter();
+    final CapturingUpdateMeter updateMeter = new CapturingUpdateMeter();
+    final CapturingUpdateTable updateTable = new CapturingUpdateTable();
+    final CapturingControlBundle controlBundle = new CapturingControlBundle();
+    final CapturingAddBundleMessages addBundleMessages = new CapturingAddBundleMessages();
+    final CapturingGetActiveBundle getActiveBundle = new CapturingGetActiveBundle();
+
     protected void setUpForwardingRulesManager() {
-        when(rpcConsumerRegistry.getRpcService(SalFlowService.class))
-                .thenReturn(new SalFlowServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalGroupService.class))
-                .thenReturn(new SalGroupServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalMeterService.class))
-                .thenReturn(new SalMeterServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalTableService.class))
-                .thenReturn(new SalTableServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalBundleService.class))
-                .thenReturn(new SalBundleServiceMock());
-        when(rpcConsumerRegistry.getRpcService(ArbitratorReconcileService.class))
-                .thenReturn(new ArbitratorReconcileServiceMock());
+        when(rpcConsumerRegistry.getRpc(AddFlow.class)).thenReturn(addFlow);
+        when(rpcConsumerRegistry.getRpc(RemoveFlow.class)).thenReturn(removeFlow);
+        when(rpcConsumerRegistry.getRpc(UpdateFlow.class)).thenReturn(updateFlow);
+        when(rpcConsumerRegistry.getRpc(AddGroup.class)).thenReturn(addGroup);
+        when(rpcConsumerRegistry.getRpc(RemoveGroup.class)).thenReturn(removeGroup);
+        when(rpcConsumerRegistry.getRpc(UpdateGroup.class)).thenReturn(updateGroup);
+        when(rpcConsumerRegistry.getRpc(AddMeter.class)).thenReturn(addMeter);
+        when(rpcConsumerRegistry.getRpc(RemoveMeter.class)).thenReturn(removeMeter);
+        when(rpcConsumerRegistry.getRpc(UpdateMeter.class)).thenReturn(updateMeter);
+        when(rpcConsumerRegistry.getRpc(UpdateTable.class)).thenReturn(updateTable);
+        when(rpcConsumerRegistry.getRpc(ControlBundle.class)).thenReturn(controlBundle);
+        when(rpcConsumerRegistry.getRpc(AddBundleMessages.class)).thenReturn(addBundleMessages);
+        when(rpcConsumerRegistry.getRpc(GetActiveBundle.class)).thenReturn(getActiveBundle);
 
         final var dataBroker = getDataBroker();
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcConsumerRegistry,
-                rpcProviderService, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
-                getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry, flowGroupCacheManager, new ListenerRegistrationHelperImpl(dataBroker));
+                rpcProviderService, getConfig(), mastershipChangeServiceManager, getConfigurationService(),
+                reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry, flowGroupCacheManager,
+                new ListenerRegistrationHelperImpl(dataBroker));
     }
 
     protected void setDeviceMastership(final NodeId nodeId) {
