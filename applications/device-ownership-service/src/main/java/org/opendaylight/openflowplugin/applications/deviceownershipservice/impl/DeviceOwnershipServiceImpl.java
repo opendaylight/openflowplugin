@@ -7,13 +7,14 @@
  */
 package org.opendaylight.openflowplugin.applications.deviceownershipservice.impl;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import static java.util.Objects.requireNonNull;
+
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.regex.Pattern;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipChange;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipListener;
@@ -21,30 +22,39 @@ import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.eos.common.api.EntityOwnershipState;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
+import org.opendaylight.yangtools.concepts.Registration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, EntityOwnershipListener {
+@Component(service = DeviceOwnershipService.class)
+public final class DeviceOwnershipServiceImpl
+        implements DeviceOwnershipService, EntityOwnershipListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceOwnershipServiceImpl.class);
     private static final String SERVICE_ENTITY_TYPE = "org.opendaylight.mdsal.ServiceEntityType";
     private static final Pattern NODE_ID_PATTERN = Pattern.compile("^openflow:\\d+");
 
-    private final EntityOwnershipService eos;
     private final ConcurrentMap<String, EntityOwnershipState> ownershipStateCache = new ConcurrentHashMap<>();
+    private final EntityOwnershipService entityOwnershipService;
+    private final Registration registration;
 
-    public DeviceOwnershipServiceImpl(final EntityOwnershipService entityOwnershipService) {
-        this.eos = entityOwnershipService;
-    }
-
-    @PostConstruct
-    public void start() {
-        registerEntityOwnershipListener();
+    @Inject
+    @Activate
+    public DeviceOwnershipServiceImpl(@Reference final EntityOwnershipService entityOwnershipService) {
+        this.entityOwnershipService = requireNonNull(entityOwnershipService);
+        registration = entityOwnershipService.registerListener(SERVICE_ENTITY_TYPE, this);
         LOG.info("DeviceOwnershipService started");
     }
 
     @PreDestroy
+    @Deactivate
+    @Override
     public void close() {
+        registration.close();
         LOG.info("DeviceOwnershipService closed");
     }
 
@@ -65,7 +75,6 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
     }
 
     @Override
-    @SuppressFBWarnings("BC_UNCONFIRMED_CAST_OF_RETURN_VALUE")
     public void ownershipChanged(final EntityOwnershipChange ownershipChange) {
         final String entityName = ownershipChange.getEntity().getIdentifier().firstKeyOf(Entity.class).getName();
         if (entityName != null && isOpenFlowEntity(entityName)) {
@@ -85,10 +94,10 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
 
     private Optional<EntityOwnershipState> getCurrentOwnershipStatus(final String nodeId) {
         org.opendaylight.mdsal.eos.binding.api.Entity entity = createNodeEntity(nodeId);
-        Optional<EntityOwnershipState> ownershipStatus = eos.getOwnershipState(entity);
-        if (ownershipStatus.isPresent()) {
-            LOG.trace("Fetched ownership status for node {} is {}", nodeId, ownershipStatus.orElseThrow());
-        }
+        final var ownershipStatus = entityOwnershipService.getOwnershipState(entity);
+        ownershipStatus.ifPresent(status -> {
+            LOG.trace("Fetched ownership status for node {} is {}", nodeId, status);
+        });
         return ownershipStatus;
     }
 
@@ -96,11 +105,7 @@ public class DeviceOwnershipServiceImpl implements DeviceOwnershipService, Entit
         return new org.opendaylight.mdsal.eos.binding.api.Entity(SERVICE_ENTITY_TYPE, nodeId);
     }
 
-    private void registerEntityOwnershipListener() {
-        this.eos.registerListener(SERVICE_ENTITY_TYPE, this);
-    }
-
-    private boolean isOpenFlowEntity(String entity) {
+    private boolean isOpenFlowEntity(final String entity) {
         return NODE_ID_PATTERN.matcher(entity).matches();
     }
 }
