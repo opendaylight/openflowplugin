@@ -16,7 +16,7 @@
     <argument ref="notificationPublishService"/>
     <argument ref="clusterSingletonServiceProvider"/>
     <argument ref="entityOwnershipService"/>
-    <argument ref="mastershipChangeServiceManagerImpl"/>
+    <argument ref="mastershipChangeServiceManager"/>
     <argument ref="diagStatusProvider"/>
     <argument ref="systemReadyMonitor"/>
   </bean>
@@ -60,11 +60,6 @@
   <reference id="ppDB"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-  <bean id="mastershipChangeServiceManagerImpl"
-        class="org.opendaylight.openflowplugin.impl.mastership.MastershipChangeServiceManagerImpl"/>
-  <service ref="mastershipChangeServiceManagerImpl"
-           interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
-
   <reference id="switchConnectionProviderList"
              interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList"
              ext:proxy-method="classes"/>
@@ -80,6 +75,8 @@
              interface="org.opendaylight.openflowplugin.impl.DiagStatusProvider"/>
   <reference id="systemReadyMonitor"
              interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
+  <reference id="mastershipChangeServiceManager"
+             interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
 
   <odl:action-provider interface="org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService"/>
 </blueprint>
