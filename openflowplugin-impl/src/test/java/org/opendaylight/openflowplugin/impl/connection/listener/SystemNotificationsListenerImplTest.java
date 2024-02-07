@@ -25,6 +25,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.SystemListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.DeviceConnectionStatusProvider;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionContextImpl;
@@ -36,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEventBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEventBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -63,7 +63,7 @@ public class SystemNotificationsListenerImplTest {
 
     private ConnectionContext connectionContext;
     private ConnectionContextImpl connectionContextGolem;
-    private SystemNotificationsListenerImpl systemNotificationsListener;
+    private SystemListener systemNotificationsListener;
 
     private static final NodeId NODE_ID =
             new NodeId("OFP:TEST");
@@ -100,7 +100,7 @@ public class SystemNotificationsListenerImplTest {
     public void testOnDisconnectEvent1() {
 
         DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
-        systemNotificationsListener.onDisconnectEvent(disconnectNotification);
+        systemNotificationsListener.onDisconnect(disconnectNotification);
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
@@ -114,8 +114,7 @@ public class SystemNotificationsListenerImplTest {
     @Test
     public void testOnDisconnectEvent2() {
 
-        DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
-        systemNotificationsListener.onDisconnectEvent(disconnectNotification);
+        systemNotificationsListener.onDisconnect(new DisconnectEventBuilder().setInfo("testing disconnect").build());
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
@@ -130,8 +129,7 @@ public class SystemNotificationsListenerImplTest {
     public void testOnDisconnectEvent3() {
         connectionContextGolem.changeStateToTimeouting();
 
-        DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
-        systemNotificationsListener.onDisconnectEvent(disconnectNotification);
+        systemNotificationsListener.onDisconnect(new DisconnectEventBuilder().setInfo("testing disconnect").build());
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
@@ -146,8 +144,7 @@ public class SystemNotificationsListenerImplTest {
     public void testOnDisconnectEvent4() {
         Mockito.when(connectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.RIP);
 
-        DisconnectEvent disconnectNotification = new DisconnectEventBuilder().setInfo("testing disconnect").build();
-        systemNotificationsListener.onDisconnectEvent(disconnectNotification);
+        systemNotificationsListener.onDisconnect( new DisconnectEventBuilder().setInfo("testing disconnect").build());
 
         verifyCommonInvocationsSubSet();
         Mockito.verify(connectionContext).onConnectionClosed();
@@ -165,8 +162,8 @@ public class SystemNotificationsListenerImplTest {
 
         Mockito.when(connectionAdapter.echo(any(EchoInput.class))).thenReturn(echoReply);
 
-        SwitchIdleEvent notification = new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build();
-        systemNotificationsListener.onSwitchIdleEvent(notification);
+        systemNotificationsListener.onSwitchIdle(
+            new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build());
 
         // make sure that the idle notification processing thread started
         Thread.sleep(SAFE_TIMEOUT);
@@ -189,8 +186,8 @@ public class SystemNotificationsListenerImplTest {
         Mockito.when(connectionAdapter.disconnect())
                 .thenReturn(Futures.immediateFailedFuture(new Exception("unit exception")));
 
-        SwitchIdleEvent notification = new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build();
-        systemNotificationsListener.onSwitchIdleEvent(notification);
+        systemNotificationsListener.onSwitchIdle(
+            new SwitchIdleEventBuilder().setInfo("wake up, device sleeps").build());
 
         Thread.sleep(SystemNotificationsListenerImpl.MAX_ECHO_REPLY_TIMEOUT + SAFE_TIMEOUT);
 

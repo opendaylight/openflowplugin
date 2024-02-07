@@ -48,7 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.D
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionErrorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927._switch.certificate.IssuerBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927._switch.certificate.SubjectBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.ssl.connection.error.SwitchCertificate;
@@ -68,7 +67,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
 
     private ConnectionReadyListener connectionReadyListener;
     private OpenflowProtocolListener messageListener;
-    private SystemNotificationsListener systemListener;
+    private SystemListener systemListener;
     private AlienMessageListener alienMessageListener;
     private AbstractOutboundQueueManager<?, ?> outputManager;
     private OFVersionDetector versionDetector;
@@ -102,7 +101,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     @Override
-    public void setSystemListener(final SystemNotificationsListener systemListener) {
+    public void setSystemListener(final SystemListener systemListener) {
         this.systemListener = systemListener;
     }
 
@@ -120,65 +119,63 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
             return;
         }
         if (message instanceof Notification) {
-
             // System events
-            if (message instanceof DisconnectEvent) {
-                systemListener.onDisconnectEvent((DisconnectEvent) message);
+            if (message instanceof DisconnectEvent disconnect) {
+                systemListener.onDisconnect(disconnect);
                 responseCache.invalidateAll();
                 disconnectOccured = true;
-            } else if (message instanceof SwitchIdleEvent) {
-                systemListener.onSwitchIdleEvent((SwitchIdleEvent) message);
-            } else if (message instanceof SslConnectionError) {
+            } else if (message instanceof SwitchIdleEvent switchIdle) {
+                systemListener.onSwitchIdle(switchIdle);
+            } else if (message instanceof SslConnectionError sslError) {
                 systemListener.onSslConnectionError(new SslConnectionErrorBuilder()
-                        .setInfo(((SslConnectionError) message).getInfo())
-                        .setSwitchCertificate(buildSwitchCertificate())
-                        .build());
+                    .setInfo(sslError.getInfo())
+                    .setSwitchCertificate(buildSwitchCertificate())
+                    .build());
             // OpenFlow messages
-            } else if (message instanceof EchoRequestMessage) {
+            } else if (message instanceof EchoRequestMessage echoRequest) {
                 if (outputManager != null) {
-                    outputManager.onEchoRequest((EchoRequestMessage) message, datapathId);
+                    outputManager.onEchoRequest(echoRequest, datapathId);
                 } else {
-                    messageListener.onEchoRequestMessage((EchoRequestMessage) message);
+                    messageListener.onEchoRequestMessage(echoRequest);
                 }
-            } else if (message instanceof ErrorMessage) {
+            } else if (message instanceof ErrorMessage error) {
                 // Send only unmatched errors
-                if (outputManager == null || !outputManager.onMessage((OfHeader) message)) {
-                    messageListener.onErrorMessage((ErrorMessage) message);
+                if (outputManager == null || !outputManager.onMessage(error)) {
+                    messageListener.onErrorMessage(error);
                 }
-            } else if (message instanceof ExperimenterMessage) {
+            } else if (message instanceof ExperimenterMessage experimenter) {
                 if (outputManager != null) {
-                    outputManager.onMessage((OfHeader) message);
+                    outputManager.onMessage(experimenter);
                 }
-                messageListener.onExperimenterMessage((ExperimenterMessage) message);
-            } else if (message instanceof FlowRemovedMessage) {
-                messageListener.onFlowRemovedMessage((FlowRemovedMessage) message);
-            } else if (message instanceof HelloMessage) {
+                messageListener.onExperimenterMessage(experimenter);
+            } else if (message instanceof FlowRemovedMessage flowRemoved) {
+                messageListener.onFlowRemovedMessage(flowRemoved);
+            } else if (message instanceof HelloMessage hello) {
                 LOG.info("Hello received");
-                messageListener.onHelloMessage((HelloMessage) message);
-            } else if (message instanceof MultipartReplyMessage) {
+                messageListener.onHelloMessage(hello);
+            } else if (message instanceof MultipartReplyMessage multipartReply) {
                 if (outputManager != null) {
-                    outputManager.onMessage((OfHeader) message);
+                    outputManager.onMessage(multipartReply);
                 }
-                messageListener.onMultipartReplyMessage((MultipartReplyMessage) message);
-            } else if (message instanceof PacketInMessage) {
-                messageListener.onPacketInMessage((PacketInMessage) message);
-            } else if (message instanceof PortStatusMessage) {
-                messageListener.onPortStatusMessage((PortStatusMessage) message);
+                messageListener.onMultipartReplyMessage(multipartReply);
+            } else if (message instanceof PacketInMessage packetIn) {
+                messageListener.onPacketInMessage(packetIn);
+            } else if (message instanceof PortStatusMessage portStatus) {
+                messageListener.onPortStatusMessage(portStatus);
             } else {
                 LOG.warn("message listening not supported for type: {}", message.getClass());
             }
-        } else if (message instanceof OfHeader) {
+        } else if (message instanceof OfHeader header) {
             LOG.debug("OF header msg received");
 
-            if (alienMessageListener != null && alienMessageListener.onAlienMessage((OfHeader) message)) {
-                LOG.debug("Alien message {} received", message.implementedInterface());
-            } else if (outputManager == null || !outputManager.onMessage((OfHeader) message)
-                    || message instanceof EchoOutput) {
-                final RpcResponseKey key = createRpcResponseKey((OfHeader) message);
+            if (alienMessageListener != null && alienMessageListener.onAlienMessage(header)) {
+                LOG.debug("Alien message {} received", header.implementedInterface());
+            } else if (outputManager == null || !outputManager.onMessage(header) || header instanceof EchoOutput) {
+                final RpcResponseKey key = createRpcResponseKey(header);
                 final ResponseExpectedRpcListener<?> listener = findRpcResponse(key);
                 if (listener != null) {
                     LOG.debug("Corresponding rpcFuture found");
-                    listener.completed((OfHeader) message);
+                    listener.completed(header);
                     LOG.debug("After setting rpcFuture");
                     responseCache.invalidate(key);
                 }
