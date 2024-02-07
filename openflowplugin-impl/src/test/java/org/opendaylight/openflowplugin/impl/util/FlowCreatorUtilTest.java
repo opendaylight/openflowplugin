@@ -49,12 +49,12 @@ public class FlowCreatorUtilTest {
     @Test
     public void testSetWildcardedFlowMatch_1_0() {
         MultipartRequestFlowBuilder multipartRequestFlowBuilder = new MultipartRequestFlowBuilder();
-        FlowCreatorUtil.setWildcardedFlowMatch(OFConstants.OFP_VERSION_1_0, multipartRequestFlowBuilder);
+        FlowCreatorUtil.VERSION_1_0.setWildcardedFlowMatch(multipartRequestFlowBuilder);
         MultipartRequestFlow multipartRequestFlow = multipartRequestFlowBuilder.build();
         assertMatch(multipartRequestFlow.getMatchV10());
 
         multipartRequestFlowBuilder = new MultipartRequestFlowBuilder();
-        FlowCreatorUtil.setWildcardedFlowMatch(OFConstants.OFP_VERSION_1_3, multipartRequestFlowBuilder);
+        FlowCreatorUtil.VERSION_1_3.setWildcardedFlowMatch(multipartRequestFlowBuilder);
         multipartRequestFlow = multipartRequestFlowBuilder.build();
         assertMatch(multipartRequestFlow.getMatch());
     }
@@ -66,12 +66,12 @@ public class FlowCreatorUtilTest {
     @Test
     public void testSetWildcardedFlowMatch_() {
         MultipartRequestAggregateBuilder multipartRequestAggregateBuilder = new MultipartRequestAggregateBuilder();
-        FlowCreatorUtil.setWildcardedFlowMatch(OFConstants.OFP_VERSION_1_0, multipartRequestAggregateBuilder);
+        FlowCreatorUtil.VERSION_1_0.setWildcardedFlowMatch(multipartRequestAggregateBuilder);
         MultipartRequestAggregate multipartRequestAggregate = multipartRequestAggregateBuilder.build();
         assertMatch(multipartRequestAggregate.getMatchV10());
 
         multipartRequestAggregateBuilder = new MultipartRequestAggregateBuilder();
-        FlowCreatorUtil.setWildcardedFlowMatch(OFConstants.OFP_VERSION_1_3, multipartRequestAggregateBuilder);
+        FlowCreatorUtil.VERSION_1_3.setWildcardedFlowMatch(multipartRequestAggregateBuilder);
         multipartRequestAggregate = multipartRequestAggregateBuilder.build();
         assertMatch(multipartRequestAggregate.getMatch());
 
@@ -84,8 +84,8 @@ public class FlowCreatorUtilTest {
      */
     @Test
     public void testCanModifyFlow() {
-        final Uint8[] versions = {null, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3};
-        final Boolean[] bools = {null, Boolean.TRUE, Boolean.FALSE};
+        final Uint8[] versions = { null, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3 };
+        final Boolean[] bools = { null, Boolean.TRUE, Boolean.FALSE };
 
         final Uint16 defPri = Uint16.valueOf(0x8000);
         final Uint16 defIdle = Uint16.ZERO;
@@ -98,33 +98,34 @@ public class FlowCreatorUtilTest {
         final FlowCookie cookieMask = new FlowCookie(Uint64.valueOf(0xffff00));
 
         for (final Uint8 ver : versions) {
+            final var util = FlowCreatorUtil.forVersion(ver);
             final OriginalFlowBuilder originalBuilder = new OriginalFlowBuilder();
             final UpdatedFlowBuilder updatedBuilder = new UpdatedFlowBuilder();
-            canModifyFlowTest(true, originalBuilder, updatedBuilder, ver);
+            canModifyFlowTest(true, util, originalBuilder, updatedBuilder);
 
             // Default value tests.
-            canModifyFlowTest(true, new OriginalFlowBuilder().setPriority(defPri), updatedBuilder, ver);
-            canModifyFlowTest(true, originalBuilder, new UpdatedFlowBuilder().setPriority(defPri), ver);
-            canModifyFlowTest(true, new OriginalFlowBuilder().setIdleTimeout(defIdle), updatedBuilder, ver);
-            canModifyFlowTest(true, originalBuilder, new UpdatedFlowBuilder().setIdleTimeout(defIdle), ver);
-            canModifyFlowTest(true, new OriginalFlowBuilder().setHardTimeout(defHard), updatedBuilder, ver);
-            canModifyFlowTest(true, originalBuilder, new UpdatedFlowBuilder().setHardTimeout(defHard), ver);
-            canModifyFlowTest(false, new OriginalFlowBuilder().setFlags(defFlags), updatedBuilder, ver);
-            canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder().setFlags(defFlags), ver);
-            canModifyFlowTest(true, new OriginalFlowBuilder().setCookie(defCookie), updatedBuilder, ver);
-            canModifyFlowTest(true, originalBuilder, new UpdatedFlowBuilder().setCookie(defCookie), ver);
+            canModifyFlowTest(true, util, new OriginalFlowBuilder().setPriority(defPri), updatedBuilder);
+            canModifyFlowTest(true, util, originalBuilder, new UpdatedFlowBuilder().setPriority(defPri));
+            canModifyFlowTest(true, util, new OriginalFlowBuilder().setIdleTimeout(defIdle), updatedBuilder);
+            canModifyFlowTest(true, util, originalBuilder, new UpdatedFlowBuilder().setIdleTimeout(defIdle));
+            canModifyFlowTest(true, util, new OriginalFlowBuilder().setHardTimeout(defHard), updatedBuilder);
+            canModifyFlowTest(true, util, originalBuilder, new UpdatedFlowBuilder().setHardTimeout(defHard));
+            canModifyFlowTest(false, util, new OriginalFlowBuilder().setFlags(defFlags), updatedBuilder);
+            canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder().setFlags(defFlags));
+            canModifyFlowTest(true, util, new OriginalFlowBuilder().setCookie(defCookie), updatedBuilder);
+            canModifyFlowTest(true, util, originalBuilder, new UpdatedFlowBuilder().setCookie(defCookie));
 
             // Set non-default values.
-            canModifyFlowTest(true, originalBuilder.setMatch(createMatch(0x800L)),
-                              updatedBuilder.setMatch(createMatch(0x800L)), ver);
-            canModifyFlowTest(true, originalBuilder.setIdleTimeout(Uint16.valueOf(600)),
-                updatedBuilder.setIdleTimeout(Uint16.valueOf(600)), ver);
-            canModifyFlowTest(true, originalBuilder.setHardTimeout(Uint16.valueOf(1200)),
-                updatedBuilder.setHardTimeout(Uint16.valueOf(1200)), ver);
-            canModifyFlowTest(true, originalBuilder.setPriority(Uint16.valueOf(100)),
-                updatedBuilder.setPriority(Uint16.valueOf(100)), ver);
-            canModifyFlowTest(true, originalBuilder.setFlags(flags), updatedBuilder.setFlags(flags), ver);
-            canModifyFlowTest(true, originalBuilder.setCookie(cookie), updatedBuilder.setCookie(cookie), ver);
+            canModifyFlowTest(true, util, originalBuilder.setMatch(createMatch(0x800L)),
+                updatedBuilder.setMatch(createMatch(0x800L)));
+            canModifyFlowTest(true, util, originalBuilder.setIdleTimeout(Uint16.valueOf(600)),
+                updatedBuilder.setIdleTimeout(Uint16.valueOf(600)));
+            canModifyFlowTest(true, util, originalBuilder.setHardTimeout(Uint16.valueOf(1200)),
+                updatedBuilder.setHardTimeout(Uint16.valueOf(1200)));
+            canModifyFlowTest(true, util, originalBuilder.setPriority(Uint16.valueOf(100)),
+                updatedBuilder.setPriority(Uint16.valueOf(100)));
+            canModifyFlowTest(true, util, originalBuilder.setFlags(flags), updatedBuilder.setFlags(flags));
+            canModifyFlowTest(true, util, originalBuilder.setCookie(cookie), updatedBuilder.setCookie(cookie));
 
             final OriginalFlow org = originalBuilder.build();
             final UpdatedFlow upd = updatedBuilder.build();
@@ -133,36 +134,36 @@ public class FlowCreatorUtilTest {
             final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match[] matches
                     = {null, createMatch(0x86ddL)};
             for (final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match m : matches) {
-                canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setMatch(m), ver);
-                canModifyFlowTest(false, new OriginalFlowBuilder(org).setMatch(m), updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder(upd).setMatch(m));
+                canModifyFlowTest(false, util, new OriginalFlowBuilder(org).setMatch(m), updatedBuilder);
             }
 
             // Set different idle-timeout, hard-timeout, priority.
             final Integer[] integers = {null, 3600};
             for (final Integer i : integers) {
                 final Uint16 uint = i == null ? null : Uint16.valueOf(i);
-                canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setIdleTimeout(uint), ver);
-                canModifyFlowTest(false, new OriginalFlowBuilder(org).setIdleTimeout(uint), updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder(upd).setIdleTimeout(uint));
+                canModifyFlowTest(false, util, new OriginalFlowBuilder(org).setIdleTimeout(uint), updatedBuilder);
 
-                canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setHardTimeout(uint), ver);
-                canModifyFlowTest(false, new OriginalFlowBuilder(org).setHardTimeout(uint), updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder(upd).setHardTimeout(uint));
+                canModifyFlowTest(false, util, new OriginalFlowBuilder(org).setHardTimeout(uint), updatedBuilder);
 
-                canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setPriority(uint), ver);
-                canModifyFlowTest(false, new OriginalFlowBuilder(org).setPriority(uint), updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder(upd).setPriority(uint));
+                canModifyFlowTest(false, util, new OriginalFlowBuilder(org).setPriority(uint), updatedBuilder);
             }
 
             // Set different FLOW_MOD flags.
             final FlowModFlags[] flowModFlags = {null, defFlags, new FlowModFlags(true, true, true, true, true),};
             for (final FlowModFlags f : flowModFlags) {
-                canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setFlags(f), ver);
-                canModifyFlowTest(false, new OriginalFlowBuilder(org).setFlags(f), updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder(upd).setFlags(f));
+                canModifyFlowTest(false, util, new OriginalFlowBuilder(org).setFlags(f), updatedBuilder);
             }
 
             // Set different cookie.
             final FlowCookie[] cookies = {null, defCookie, new FlowCookie(Uint64.valueOf(0x123456L)),};
             for (final FlowCookie c : cookies) {
-                canModifyFlowTest(false, originalBuilder, new UpdatedFlowBuilder(upd).setCookie(c), ver);
-                canModifyFlowTest(false, new OriginalFlowBuilder(org).setCookie(c), updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, new UpdatedFlowBuilder(upd).setCookie(c));
+                canModifyFlowTest(false, util, new OriginalFlowBuilder(org).setCookie(c), updatedBuilder);
             }
 
             // Cookie mask test.
@@ -170,14 +171,14 @@ public class FlowCreatorUtilTest {
             updatedBuilder.setCookie(cookie1);
             for (final Boolean strict : bools) {
                 updatedBuilder.setCookieMask(null).setStrict(strict);
-                canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, updatedBuilder);
 
                 updatedBuilder.setCookieMask(defCookie);
-                canModifyFlowTest(false, originalBuilder, updatedBuilder, ver);
+                canModifyFlowTest(false, util, originalBuilder, updatedBuilder);
 
                 updatedBuilder.setCookieMask(cookieMask);
                 final boolean expected = OFConstants.OFP_VERSION_1_3.equals(ver) && !Boolean.TRUE.equals(strict);
-                canModifyFlowTest(expected, originalBuilder, updatedBuilder, ver);
+                canModifyFlowTest(expected, util, originalBuilder, updatedBuilder);
             }
         }
     }
@@ -266,12 +267,12 @@ public class FlowCreatorUtilTest {
         // Integer
         final Integer[] integers = {-1000, 0, 1000,};
         for (final Integer def : integers) {
-            final Integer same = Integer.valueOf(def);
+            final Integer same = def;
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(same, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, same, def));
 
-            final Integer diff = Integer.valueOf(def.intValue() + 1);
+            final Integer diff = def.intValue() + 1;
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, diff, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(diff, null, def));
         }
@@ -325,10 +326,9 @@ public class FlowCreatorUtilTest {
      * @param upd      An updated flow builder that contains updated flow to be tested.
      * @param version  OpenFlow protocol version.
      */
-    private static void canModifyFlowTest(final boolean expected, final OriginalFlowBuilder org,
-                                          final UpdatedFlowBuilder upd, final Uint8 version) {
-        final boolean result = FlowCreatorUtil.canModifyFlow(org.build(), upd.build(), version);
-        assertEquals(expected, result);
+    private static void canModifyFlowTest(final boolean expected, final FlowCreatorUtil util,
+            final OriginalFlowBuilder org, final UpdatedFlowBuilder upd) {
+        assertEquals(expected, util.canModifyFlow(org.build(), upd.build()));
     }
 
     /**

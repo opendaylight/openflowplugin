@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.sal.AbstractUpdateFlow;
-import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
@@ -33,14 +33,13 @@ public final class MultiUpdateFlow extends AbstractUpdateFlow {
     }
 
     @Override
-    protected ListenableFuture<RpcResult<UpdateFlowOutput>> invokeImpl(final UpdateFlowInput input) {
-        final var updated = input.getUpdatedFlow();
-        final var original = input.getOriginalFlow();
+    protected ListenableFuture<RpcResult<UpdateFlowOutput>> modify(final UpdatedFlow updated) {
+        return service.processFlowModInputBuilders(service.toFlowModInputs(updated));
+    }
 
-        if (FlowCreatorUtil.canModifyFlow(original, updated, version())) {
-            return service.processFlowModInputBuilders(service.toFlowModInputs(updated));
-        }
-
+    @Override
+    protected ListenableFuture<RpcResult<UpdateFlowOutput>> update(final OriginalFlow original,
+            final UpdatedFlow updated) {
         final var allFlowMods = new ArrayList<FlowModInputBuilder>();
         // We would need to remove original and add updated.
         // remove flow should be the first

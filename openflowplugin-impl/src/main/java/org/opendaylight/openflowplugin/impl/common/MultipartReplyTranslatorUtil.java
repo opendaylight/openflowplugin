@@ -131,9 +131,8 @@ public final class MultipartReplyTranslatorUtil {
     public static Optional<? extends MultipartReplyBody> translate(final OfHeader message, final DeviceInfo deviceInfo,
             final @Nullable ConvertorExecutor convertorExecutor, final @Nullable TranslatorLibrary translatorLibrary) {
 
-        if (message instanceof MultipartReply) {
-            final MultipartReply msg = (MultipartReply) message;
-            final OpenflowVersion ofVersion = OpenflowVersion.get(deviceInfo.getVersion());
+        if (message instanceof final MultipartReply msg) {
+            final OpenflowVersion ofVersion = OpenflowVersion.ofVersion(deviceInfo.getVersion());
             final VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(deviceInfo.getVersion());
             data.setDatapathId(deviceInfo.getDatapathId());
 
@@ -170,10 +169,9 @@ public final class MultipartReplyTranslatorUtil {
                     // TODO: log something?
                     break;
             }
-        } else if (message instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
-            .MultipartReply) {
-            return Optional.of(((org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112
-                .MultipartReply) message).getMultipartReplyBody());
+        } else if (message
+                instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.MultipartReply msg) {
+            return Optional.of(msg.getMultipartReplyBody());
         }
 
         LOG.debug("Failed to translate {} for node {}.", message.implementedInterface(), deviceInfo);
