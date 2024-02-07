@@ -25,7 +25,7 @@ import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationS
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.DeviceMastershipManager;
 import org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl;
-import org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper;
+import org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelperImpl;
 import org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
@@ -83,10 +83,11 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
         when(rpcConsumerRegistry.getRpcService(ArbitratorReconcileService.class))
                 .thenReturn(new ArbitratorReconcileServiceMock());
 
+        final var dataBroker = getDataBroker();
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcConsumerRegistry,
                 rpcProviderService, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
                 getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
-                serviceRecoveryRegistry, flowGroupCacheManager, getRegistrationHelper());
+                serviceRecoveryRegistry, flowGroupCacheManager, new ListenerRegistrationHelperImpl(dataBroker));
         forwardingRulesManager.start();
     }
 
@@ -146,9 +147,5 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
                 any())).thenReturn(config.getBundleBasedReconciliationEnabled());
 
         return configurationService;
-    }
-
-    private ListenerRegistrationHelper getRegistrationHelper() {
-        return new ListenerRegistrationHelper(getDataBroker());
     }
 }

@@ -24,7 +24,8 @@ import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yangtools.concepts.ListenerRegistration;
+import org.opendaylight.yangtools.concepts.ObjectRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -42,7 +43,8 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     NodeConfigurator nodeConfigurator;
     protected final DataBroker dataBroker;
     private final ListenerRegistrationHelper registrationHelper;
-    private ListenerRegistration<AbstractListeningCommiter> listenerRegistration;
+
+    private Registration listenerRegistration;
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "See FIXME below")
     protected AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
@@ -84,26 +86,22 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
                             }
                             break;
                         default:
-                            throw new
-                                    IllegalArgumentException("Unhandled modification type "
-                                    + mod.getModificationType());
+                            throw new IllegalArgumentException(
+                                "Unhandled modification type " + mod.getModificationType());
                     }
                 } else if (provider.isStaleMarkingEnabled()) {
-                    LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities",
-                            nodeIdent.toString());
+                    LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities", nodeIdent);
                     // Switch is NOT connected
                     switch (mod.getModificationType()) {
                         case DELETE:
                             createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
                             break;
                         case SUBTREE_MODIFIED:
-                            break;
                         case WRITE:
                             break;
                         default:
-                            throw new
-                                    IllegalArgumentException("Unhandled modification type "
-                                    + mod.getModificationType());
+                            throw new IllegalArgumentException(
+                                "Unhandled modification type " + mod.getModificationType());
                     }
                 }
             } catch (RuntimeException e) {
@@ -116,9 +114,9 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     public final void registerListener() {
         Futures.addCallback(registrationHelper.checkedRegisterListener(
             DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, getWildCardPath()), this),
-            new FutureCallback<ListenerRegistration<AbstractListeningCommiter>>() {
+            new FutureCallback<>() {
                 @Override
-                public void onSuccess(final ListenerRegistration<AbstractListeningCommiter> flowListenerRegistration) {
+                public void onSuccess(final ObjectRegistration<?> flowListenerRegistration) {
                     LOG.info("{} registered successfully", flowListenerRegistration.getInstance());
                     listenerRegistration = flowListenerRegistration;
                 }

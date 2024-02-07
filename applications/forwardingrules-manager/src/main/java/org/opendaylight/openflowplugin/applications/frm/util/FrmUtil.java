@@ -8,9 +8,9 @@
 package org.opendaylight.openflowplugin.applications.frm.util;
 
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -163,7 +163,7 @@ public final class FrmUtil {
     public static String getInventoryConfigDataStoreStatus() {
         boolean statusResult = true;
         try {
-            ArrayList listOfShards = getAttributeJMXCommand(JMX_OBJ_NAME_LIST_OF_SHRDS, "LocalShards");
+            final var listOfShards = getAttributeJMXCommand(JMX_OBJ_NAME_LIST_OF_SHRDS, "LocalShards");
             if (listOfShards != null) {
                 for (Object listOfShard : listOfShards) {
                     LOG.info("Listofshard is  {} ",listOfShard);
@@ -191,21 +191,20 @@ public final class FrmUtil {
         }
     }
 
-    private static ArrayList getAttributeJMXCommand(String objectName, String attributeName) {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-        ArrayList listOfShards = new ArrayList();
+    private static List<?> getAttributeJMXCommand(final String objectName, final String attributeName) {
+        final var mbs = ManagementFactory.getPlatformMBeanServer();
         if (mbs != null) {
             try {
-                listOfShards = (ArrayList) mbs.getAttribute(new ObjectName(objectName), attributeName);
+                return (List<?>) mbs.getAttribute(new ObjectName(objectName), attributeName);
             } catch (MBeanException | AttributeNotFoundException | InstanceNotFoundException
                     | MalformedObjectNameException | ReflectionException e) {
                 LOG.error("Exception while reading list of shards ", e);
             }
         }
-        return listOfShards;
+        return List.of();
     }
 
-    private static String getLeaderJMX(String objectName, String atrName) {
+    private static String getLeaderJMX(final String objectName, final String atrName) {
         MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
         String leader = "";
         if (mbs != null) {

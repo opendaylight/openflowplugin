@@ -126,8 +126,8 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
         isBundleBasedReconciliationEnabled = config.getBundleBasedReconciliationEnabled();
         configurationServiceRegistration = configurationService.registerListener(this);
-        this.registrationHelper = requireNonNull(registrationHelper, "RegistrationHelper cannot be null");
         dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
+        this.registrationHelper = requireNonNull(registrationHelper, "RegistrationHelper cannot be null");
         clusterSingletonServiceProvider = requireNonNull(clusterSingletonService,
                 "ClusterSingletonService provider can not be null");
         this.reconciliationManager = reconciliationManager;
