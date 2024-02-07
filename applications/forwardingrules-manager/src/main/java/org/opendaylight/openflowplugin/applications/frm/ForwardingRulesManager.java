@@ -32,10 +32,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
-public interface ForwardingRulesManager extends ConfigurationListener, AutoCloseable {
-
-    void start();
-
+public interface ForwardingRulesManager extends ConfigurationListener {
     /**
      * Method returns information : "is Node with send InstanceIdentifier
      * connected"?.

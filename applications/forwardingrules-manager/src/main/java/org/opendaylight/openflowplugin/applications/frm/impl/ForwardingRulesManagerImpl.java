@@ -15,7 +15,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -68,7 +67,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Singleton
-public final class ForwardingRulesManagerImpl implements ForwardingRulesManager {
+public final class ForwardingRulesManagerImpl implements ForwardingRulesManager, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
 
     private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.reconciliation.priority", 1);
@@ -89,15 +88,15 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
-    private BundleMessagesCommiter<Flow> bundleFlowListener;
-    private BundleMessagesCommiter<Group> bundleGroupListener;
+    private final BundleMessagesCommiter<Flow> bundleFlowListener;
+    private final BundleMessagesCommiter<Group> bundleGroupListener;
     private FlowNodeReconciliation nodeListener;
     private NotificationRegistration reconciliationNotificationRegistration;
-    private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
+    private final FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
     private final ReconciliationManager reconciliationManager;
-    private DevicesGroupRegistry devicesGroupRegistry;
-    private NodeConfigurator nodeConfigurator;
+    private final DevicesGroupRegistry devicesGroupRegistry = new DevicesGroupRegistry();
+    private final NodeConfigurator nodeConfigurator = new NodeConfiguratorImpl();
     private final ArbitratorReconcileService arbitratorReconciliationManager;
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -154,13 +153,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         arbitratorReconciliationManager =
                 requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
                         "ArbitratorReconciliationManager can not be null!");
-    }
 
-    @Override
-    @PostConstruct
-    public void start() {
-        nodeConfigurator = new NodeConfiguratorImpl();
-        devicesGroupRegistry = new DevicesGroupRegistry();
         nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING, flowGroupCacheManager);
         if (isReconciliationDisabled()) {
