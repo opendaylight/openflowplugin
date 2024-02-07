@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.droptestkaraf;
 
 import java.io.PrintStream;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
@@ -17,6 +17,8 @@ import org.opendaylight.openflowplugin.testcommon.DropTestRpcProvider;
 @Command(scope = "drop-test", name = "dropAllPacketsRpc",
          description = "drop packet responder involving SalFlowService")
 public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {
+    @Reference
+    DropTestProviderImpl provider;
 
     @Argument(index = 0, name = "on-off",
             description = "target state of drop responder",
@@ -26,18 +28,18 @@ public class DropAllPacketsRpcCommandProvider extends OsgiCommandSupport {
     @Override
     protected Object doExecute() {
         PrintStream out = session.getConsole();
-        final DropTestRpcProvider provider = DropTestProviderImpl.getDropRpcProvider();
+        final DropTestRpcProvider rpcProvider = provider.getDropRpcProvider();
 
         if ("on".equalsIgnoreCase(targetStateArg)) {
-            if (! provider.isActive()) {
-                provider.start();
+            if (!rpcProvider.isActive()) {
+                rpcProvider.start();
                 out.println("DropAllFlows transitions to on");
             } else {
                 out.println("DropAllFlows is already on");
             }
         } else if ("off".equalsIgnoreCase(targetStateArg)) {
-            if (provider.isActive()) {
-                provider.close();
+            if (rpcProvider.isActive()) {
+                rpcProvider.stop();
                 out.println("DropAllFlows transitions to off");
             } else {
                 out.println("DropAllFlows is already off");

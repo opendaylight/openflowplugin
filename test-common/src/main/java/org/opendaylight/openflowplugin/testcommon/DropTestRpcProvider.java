@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.testcommon;
 
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,35 +18,32 @@ import org.slf4j.LoggerFactory;
 public class DropTestRpcProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcProvider.class);
 
-    private SalFlowService flowService;
-    private NotificationService notificationService;
-    private final DropTestRpcSender commiter = new DropTestRpcSender();
+    private final DropTestRpcSender commiter;
+
     private boolean active = false;
 
-    public void setFlowService(final SalFlowService flowService) {
-        this.flowService = flowService;
+    public DropTestRpcProvider(final NotificationService notificationService, final AddFlow addFlow) {
+        commiter = new DropTestRpcSender(notificationService, addFlow);
     }
 
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
-    /**
-     * Activates drop responder.
-     */
     public void start() {
-        commiter.setFlowService(flowService);
-        commiter.setNotificationService(notificationService);
         commiter.start();
         active = true;
-        LOG.debug("DropTestProvider Started.");
+        LOG.debug("DropTestProvider started");
     }
+
+    public void stop() {
+        commiter.stop();
+        active = true;
+        LOG.debug("DropTestProvider stopped");
+    }
+
 
     /**
      * Returns the message counts.
      */
     public DropTestStats getStats() {
-        if (this.commiter != null) {
+        if (commiter != null) {
             return commiter.getStats();
         } else {
             return new DropTestStats("Not initialized yet.");
@@ -64,11 +61,8 @@ public class DropTestRpcProvider implements AutoCloseable {
 
     @Override
     public void close() {
-        LOG.debug("DropTestProvider stopped.");
-        if (commiter != null) {
-            commiter.close();
-            active = false;
-        }
+        commiter.close();
+        LOG.debug("DropTestProvider terminated");
     }
 
     /**
