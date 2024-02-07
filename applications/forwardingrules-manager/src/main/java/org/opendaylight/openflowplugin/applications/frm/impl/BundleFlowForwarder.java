@@ -83,28 +83,25 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                        final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
-            final List<Message> messages = new ArrayList<>(1);
             String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
-            BundleInnerMessage bundleInnerMessage = new BundleRemoveFlowCaseBuilder()
-                .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flow).build()).build();
-            Message message = new MessageBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setBundleInnerMessage(bundleInnerMessage)
-                .build();
-            messages.add(message);
-            AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+            final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                 .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
                 .setBundleId(bundleId)
-                .setFlags(BUNDLE_FLAGS).setMessages(new MessagesBuilder()
-                        .setMessage(messages)
-                        .build())
+                .setFlags(BUNDLE_FLAGS)
+                .setMessages(new MessagesBuilder()
+                    .setMessage(List.of(new MessageBuilder()
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
+                            .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flow).build())
+                            .build())
+                        .build()))
+                    .build())
                 .build();
-            final ListenableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = forwardingRulesManager
-                .getSalBundleService().addBundleMessages(addBundleMessagesInput);
             LOG.trace("Pushing flow remove message {} to bundle {} for device {}", addBundleMessagesInput,
                 bundleId.getValue(), node);
-            LoggingFutures.addErrorLogging(resultFuture, LOG, "removeBundleFlow");
-            return resultFuture;
+            return LoggingFutures.addErrorLogging(
+                forwardingRulesManager.addBundleMessages().invoke(addBundleMessagesInput),
+                LOG, "removeBundleFlow");
         });
     }
 
@@ -189,9 +186,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                                 .build();
                         LOG.trace("Pushing flow update message {} to bundle {} for device {}", addBundleMessagesInput,
                                 bundleId.getValue(), getNodeIdValueFromNodeIdentifier(nodeIdent));
-                        resultFuture = forwardingRulesManager
-                                .getSalBundleService()
-                                .addBundleMessages(addBundleMessagesInput);
+                        resultFuture = forwardingRulesManager.addBundleMessages().invoke(addBundleMessagesInput);
                         Futures.transformAsync(resultFuture, rpcResult -> {
                             if (rpcResult.isSuccessful()) {
                                 forwardingRulesManager.getDevicesGroupRegistry()
@@ -255,8 +250,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                 LOG.trace("Pushing flow add message {} to bundle {} for device {}", addBundleMessagesInput,
                         bundleId.getValue(), nodeId);
 
-                final ListenableFuture<RpcResult<AddBundleMessagesOutput>> addFuture =
-                        forwardingRulesManager.getSalBundleService().addBundleMessages(addBundleMessagesInput);
+                final var addFuture = forwardingRulesManager.addBundleMessages().invoke(addBundleMessagesInput);
                 Futures.addCallback(addFuture, new FutureCallback<RpcResult<AddBundleMessagesOutput>>() {
                     @Override
                     public void onSuccess(final RpcResult<AddBundleMessagesOutput> result) {
@@ -265,7 +259,6 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                             LOG.error("Flow add with flowId {} and tableId {} failed for node {} with error: {}",
                                     flowId, tableId, nodeId, result.getErrors().toString());
                         }
-
                     }
 
                     @Override

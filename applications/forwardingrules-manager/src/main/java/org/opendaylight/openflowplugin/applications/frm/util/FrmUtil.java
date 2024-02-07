@@ -43,9 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutput;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -140,8 +138,8 @@ public final class FrmUtil {
         final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class));
         GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder().setNodeId(dpId).setNode(nodeRef);
         try {
-            RpcResult<GetActiveBundleOutput> result = provider.getArbitratorReconciliationManager()
-                    .getActiveBundle(input.build()).get(RPC_RESULT_TIMEOUT, TimeUnit.MILLISECONDS);
+            final var result = provider.getActiveBundle().invoke(input.build())
+                .get(RPC_RESULT_TIMEOUT, TimeUnit.MILLISECONDS);
             if (!result.isSuccessful()) {
                 LOG.trace("Error while retrieving active bundle present for node {}", dpId);
             } else {

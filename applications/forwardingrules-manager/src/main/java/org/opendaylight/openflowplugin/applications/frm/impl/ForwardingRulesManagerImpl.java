@@ -10,8 +10,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PreDestroy;
@@ -23,7 +21,6 @@ import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -42,28 +39,30 @@ import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * forwardingrules-manager org.opendaylight.openflowplugin.applications.frm.impl
- *
- * <p>
- * Manager and middle point for whole module. It contains ActiveNodeHolder and
- * provide all RPC services.
- *
+ * Manager and middle point for whole module. It contains ActiveNodeHolder and provide all RPC services.
  */
 @Singleton
 public final class ForwardingRulesManagerImpl implements ForwardingRulesManager, AutoCloseable {
@@ -75,19 +74,12 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     private final FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private final DevicesGroupRegistry devicesGroupRegistry = new DevicesGroupRegistry();
     private final NodeConfigurator nodeConfigurator = new NodeConfiguratorImpl();
-    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
-    private final ArbitratorReconcileService arbitratorReconciliationManager;
     private final BundleMessagesCommiter<Group> bundleGroupListener;
     private final BundleMessagesCommiter<Flow> bundleFlowListener;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
     private final AtomicLong txNum = new AtomicLong();
     private final DataBroker dataService;
-    private final SalFlowService salFlowService;
-    private final SalGroupService salGroupService;
-    private final SalMeterService salMeterService;
-    private final SalTableService salTableService;
-    private final SalBundleService salBundleService;
 
     private final AutoCloseable configurationServiceRegistration;
     private ForwardingRulesCommiter<Flow> flowListener;
@@ -102,13 +94,26 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     private int reconciliationRetryCount;
     private boolean isBundleBasedReconciliationEnabled;
 
+    private final @NonNull AddFlow addFlow;
+    private final @NonNull RemoveFlow removeFlow;
+    private final @NonNull UpdateFlow updateFlow;
+    private final @NonNull AddGroup addGroup;
+    private final @NonNull RemoveGroup removeGroup;
+    private final @NonNull UpdateGroup updateGroup;
+    private final @NonNull AddMeter addMeter;
+    private final @NonNull RemoveMeter removeMeter;
+    private final @NonNull UpdateMeter updateMeter;
+    private final @NonNull UpdateTable updateTable;
+    private final @NonNull ControlBundle controlBundle;
+    private final @NonNull AddBundleMessages addBundleMessages;
+    private final @NonNull GetActiveBundle getActiveBundle;
+
     @Inject
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
                                       final RpcConsumerRegistry rpcRegistry,
                                       final RpcProviderService rpcProviderService,
                                       final ForwardingRulesManagerConfig config,
                                       final MastershipChangeServiceManager mastershipChangeServiceManager,
-                                      final ClusterSingletonServiceProvider clusterSingletonService,
                                       final ConfigurationService configurationService,
                                       final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
@@ -121,25 +126,22 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
         isBundleBasedReconciliationEnabled = config.getBundleBasedReconciliationEnabled();
         configurationServiceRegistration = configurationService.registerListener(this);
         dataService = requireNonNull(dataBroker);
-        clusterSingletonServiceProvider = requireNonNull(clusterSingletonService);
+        this.openflowServiceRecoveryHandler = requireNonNull(openflowServiceRecoveryHandler);
+        this.serviceRecoveryRegistry = requireNonNull(serviceRecoveryRegistry);
 
-        salFlowService = requireNonNull(rpcRegistry.getRpcService(SalFlowService.class),
-                "RPC SalFlowService not found.");
-        salGroupService = requireNonNull(rpcRegistry.getRpcService(SalGroupService.class),
-                "RPC SalGroupService not found.");
-        salMeterService = requireNonNull(rpcRegistry.getRpcService(SalMeterService.class),
-                "RPC SalMeterService not found.");
-        salTableService = requireNonNull(rpcRegistry.getRpcService(SalTableService.class),
-                "RPC SalTableService not found.");
-        salBundleService = requireNonNull(rpcRegistry.getRpcService(SalBundleService.class),
-                "RPC SalBundlService not found.");
-        this.openflowServiceRecoveryHandler = requireNonNull(openflowServiceRecoveryHandler,
-                "Openflow service recovery handler cannot be null");
-        this.serviceRecoveryRegistry = requireNonNull(serviceRecoveryRegistry,
-                "Service recovery registry cannot be null");
-        arbitratorReconciliationManager =
-                requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
-                        "ArbitratorReconciliationManager can not be null!");
+        addFlow = rpcRegistry.getRpc(AddFlow.class);
+        removeFlow = rpcRegistry.getRpc(RemoveFlow.class);
+        updateFlow = rpcRegistry.getRpc(UpdateFlow.class);
+        addGroup = rpcRegistry.getRpc(AddGroup.class);
+        removeGroup = rpcRegistry.getRpc(RemoveGroup.class);
+        updateGroup = rpcRegistry.getRpc(UpdateGroup.class);
+        addMeter = rpcRegistry.getRpc(AddMeter.class);
+        removeMeter = rpcRegistry.getRpc(RemoveMeter.class);
+        updateMeter = rpcRegistry.getRpc(UpdateMeter.class);
+        controlBundle = rpcRegistry.getRpc(ControlBundle.class);
+        addBundleMessages = rpcRegistry.getRpc(AddBundleMessages.class);
+        updateTable = rpcRegistry.getRpc(UpdateTable.class);
+        getActiveBundle = rpcRegistry.getRpc(GetActiveBundle.class);
 
         flowNodeReconciliation = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME,
                 FRM_RECONCILIATION_PRIORITY, ResultState.DONOTHING, flowGroupCacheManager);
@@ -215,11 +217,9 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     public boolean checkNodeInOperationalDataStore(final InstanceIdentifier<FlowCapableNode> ident) {
         boolean result = false;
         InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
-        try (ReadTransaction transaction = dataService.newReadOnlyTransaction()) {
-            ListenableFuture<Optional<Node>> future = transaction
-                .read(LogicalDatastoreType.OPERATIONAL, nodeIid);
-            Optional<Node> optionalDataObject = future.get();
-            if (optionalDataObject.isPresent()) {
+        try (var transaction = dataService.newReadOnlyTransaction()) {
+            var future = transaction.exists(LogicalDatastoreType.OPERATIONAL, nodeIid);
+            if (future.get()) {
                 result = true;
             } else {
                 LOG.debug("{}: Failed to read {}", Thread.currentThread().getStackTrace()[1], nodeIid);
@@ -232,33 +232,73 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     }
 
     @Override
-    public SalFlowService getSalFlowService() {
-        return salFlowService;
+    public AddFlow addFlow() {
+        return addFlow;
     }
 
     @Override
-    public SalGroupService getSalGroupService() {
-        return salGroupService;
+    public RemoveFlow removeFlow() {
+        return removeFlow;
     }
 
     @Override
-    public SalMeterService getSalMeterService() {
-        return salMeterService;
+    public @NonNull UpdateFlow updateFlow() {
+        return updateFlow;
     }
 
     @Override
-    public SalTableService getSalTableService() {
-        return salTableService;
+    public AddGroup addGroup() {
+        return addGroup;
+    }
+
+    @Override
+    public RemoveGroup removeGroup() {
+        return removeGroup;
+    }
+
+    @Override
+    public UpdateGroup updateGroup() {
+        return updateGroup;
+    }
+
+    @Override
+    public AddMeter addMeter() {
+        return addMeter;
+    }
+
+    @Override
+    public RemoveMeter removeMeter() {
+        return removeMeter;
+    }
+
+    @Override
+    public UpdateMeter updateMeter() {
+        return updateMeter;
+    }
+
+    @Override
+    public UpdateTable updateTable() {
+        return updateTable;
+    }
+
+    @Override
+    public ControlBundle controlBundle() {
+        return controlBundle;
+    }
+
+    @Override
+    public AddBundleMessages addBundleMessages() {
+        return addBundleMessages;
+    }
+
+    @Override
+    public GetActiveBundle getActiveBundle() {
+        return getActiveBundle;
     }
 
     @Override
     public DevicesGroupRegistry getDevicesGroupRegistry() {
         return devicesGroupRegistry;
-    }
-
-    @Override
-    public SalBundleService getSalBundleService() {
-        return salBundleService;
     }
 
     @Override
@@ -289,11 +329,6 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     @Override
     public BundleMessagesCommiter<Group> getBundleGroupListener() {
         return bundleGroupListener;
-    }
-
-    @Override
-    public ArbitratorReconcileService getArbitratorReconciliationManager() {
-        return arbitratorReconciliationManager;
     }
 
     @Override

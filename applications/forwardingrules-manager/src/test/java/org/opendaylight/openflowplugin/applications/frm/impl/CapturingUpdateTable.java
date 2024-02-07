@@ -10,23 +10,19 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
 import java.util.List;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
-public class SalTableServiceMock implements SalTableService {
-    private final List<UpdateTableInput> updateTableInput = new ArrayList<>();
-
-    public List<UpdateTableInput> getUpdateTableInput() {
-        return updateTableInput;
-    }
+final class CapturingUpdateTable implements UpdateTable {
+    final List<UpdateTableInput> calls = new ArrayList<>();
 
     @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> updateTable(UpdateTableInput input) {
-        updateTableInput.add(input);
+    public ListenableFuture<RpcResult<UpdateTableOutput>> invoke(final UpdateTableInput input) {
+        calls.add(input);
         return RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture();
     }
 }

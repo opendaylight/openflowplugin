@@ -11,7 +11,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
@@ -65,10 +63,8 @@ public class TableFeaturesListenerTest extends AbstractFRMTest {
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.commit());
 
-        SalTableServiceMock salTableServiceMock =
-                (SalTableServiceMock) getForwardingRulesManager().getSalTableService();
-        await().atMost(10, SECONDS).until(() -> salTableServiceMock.getUpdateTableInput().size() == 1);
-        List<UpdateTableInput> updateTableInputs = salTableServiceMock.getUpdateTableInput();
+        await().atMost(10, SECONDS).until(() -> updateTable.calls.size() == 1);
+        final var updateTableInputs = updateTable.calls;
         assertEquals(1, updateTableInputs.size());
         assertEquals("DOM-0", updateTableInputs.get(0).getTransactionUri().getValue());
     }

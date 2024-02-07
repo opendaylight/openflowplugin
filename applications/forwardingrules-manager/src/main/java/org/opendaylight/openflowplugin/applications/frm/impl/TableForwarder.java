@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import java.util.Collections;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
@@ -24,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,20 +72,16 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
         builder.setUpdatedTable(new UpdatedTableBuilder()
-            .setTableFeatures(Collections.singletonMap(updatedTableFeatures.key(), updatedTableFeatures))
+            .setTableFeatures(BindingMap.of(updatedTableFeatures))
             .build());
 
         builder.setOriginalTable(new OriginalTableBuilder()
-            .setTableFeatures(Collections.singletonMap(originalTableFeatures.key(), originalTableFeatures))
+            .setTableFeatures(BindingMap.of(originalTableFeatures))
             .build());
-        LOG.debug("Invoking SalTableService ");
 
-        if (provider.getSalTableService() != null) {
-            LOG.debug(" Handle to SalTableServices {}", provider.getSalTableService());
-        }
-
-        LoggingFutures.addErrorLogging(provider.getSalTableService().updateTable(builder.build()), LOG,
-            "updateTable");
+        final var updateTable = provider.updateTable();
+        LOG.debug("Invoking SalTableService on {}", updateTable);
+        LoggingFutures.addErrorLogging(provider.updateTable().invoke(builder.build()), LOG, "updateTable");
     }
 
     @Override
