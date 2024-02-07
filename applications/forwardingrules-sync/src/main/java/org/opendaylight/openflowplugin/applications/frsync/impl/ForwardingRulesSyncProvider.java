@@ -9,21 +9,19 @@ package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.applications.frsync.NodeListener;
-import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
-import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeCachedDao;
-import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeOdlDao;
 import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSnapshotDao;
 import org.opendaylight.openflowplugin.applications.frsync.impl.clustering.DeviceMastershipManager;
@@ -36,14 +34,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Top provider of forwarding rules synchronization functionality.
  */
+@Singleton
+@Component(service = { })
 public class ForwardingRulesSyncProvider implements AutoCloseable {
-
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesSyncProvider.class);
     private static final String FRS_EXECUTOR_PREFIX = "FRS-executor-";
 
@@ -65,11 +68,13 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     private ListenerRegistration<?> dataTreeConfigChangeListener;
     private ListenerRegistration<?> dataTreeOperationalChangeListener;
 
-    private final ListeningExecutorService syncThreadPool;
+    private final ExecutorService syncThreadPool;
 
-    public ForwardingRulesSyncProvider(final DataBroker dataBroker,
-                                       final RpcConsumerRegistry rpcRegistry,
-                                       final ClusterSingletonServiceProvider clusterSingletonService) {
+    @Inject
+    @Activate
+    public ForwardingRulesSyncProvider(@Reference final DataBroker dataBroker,
+            @Reference final RpcConsumerRegistry rpcRegistry,
+            @Reference final ClusterSingletonServiceProvider clusterSingletonService) {
         requireNonNull(rpcRegistry, "RpcConsumerRegistry can not be null!");
         dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
         this.clusterSingletonService = requireNonNull(clusterSingletonService,
@@ -83,33 +88,30 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                 FLOW_CAPABLE_NODE_WC_PATH);
         nodeOperationalDataTreePath = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
-        final ExecutorService executorService = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
-                .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
-                .setDaemon(false)
-                .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
-                .build());
-        syncThreadPool = MoreExecutors.listeningDecorator(executorService);
-    }
+        syncThreadPool = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+            .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
+            .setDaemon(false)
+            .setUncaughtExceptionHandler((thread, ex) -> LOG.error("Uncaught exception {}", thread, ex))
+            .build());
 
-    public void init() {
-        final SyncPlanPushStrategy syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl(processFlatBatch);
+        final var syncPlanPushStrategy = new SyncPlanPushStrategyFlatBatchImpl(processFlatBatch);
 
-        final ReconciliationRegistry reconciliationRegistry = new ReconciliationRegistry();
-        final DeviceMastershipManager deviceMastershipManager =
-                new DeviceMastershipManager(clusterSingletonService, reconciliationRegistry);
+        final var reconciliationRegistry = new ReconciliationRegistry();
+        final var deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService,
+            reconciliationRegistry);
 
-        final SyncReactor syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
-        final SyncReactor syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
-        final SyncReactor syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry);
-        final SyncReactor syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
+        final var syncReactorImpl = new SyncReactorImpl(syncPlanPushStrategy);
+        final var syncReactorRetry = new SyncReactorRetryDecorator(syncReactorImpl, reconciliationRegistry);
+        final var syncReactorGuard = new SyncReactorGuardDecorator(syncReactorRetry);
+        final var syncReactorFutureZip = new SyncReactorFutureZipDecorator(syncReactorGuard, syncThreadPool);
 
-        final SyncReactor reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
+        final var reactor = new SyncReactorClusterDecorator(syncReactorFutureZip, deviceMastershipManager);
 
-        final FlowCapableNodeSnapshotDao configSnapshot = new FlowCapableNodeSnapshotDao();
-        final FlowCapableNodeSnapshotDao operationalSnapshot = new FlowCapableNodeSnapshotDao();
-        final FlowCapableNodeDao configDao = new FlowCapableNodeCachedDao(configSnapshot,
+        final var configSnapshot = new FlowCapableNodeSnapshotDao();
+        final var operationalSnapshot = new FlowCapableNodeSnapshotDao();
+        final var configDao = new FlowCapableNodeCachedDao(configSnapshot,
                 new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.CONFIGURATION));
-        final FlowCapableNodeDao operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
+        final var operationalDao = new FlowCapableNodeCachedDao(operationalSnapshot,
                 new FlowCapableNodeOdlDao(dataService, LogicalDatastoreType.OPERATIONAL));
 
         final NodeListener<FlowCapableNode> nodeListenerConfig =
@@ -121,10 +123,11 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                 dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
         dataTreeOperationalChangeListener =
                 dataService.registerDataTreeChangeListener(nodeOperationalDataTreePath, nodeListenerOperational);
-
-        LOG.info("ForwardingRulesSync has started.");
+        LOG.info("ForwardingRulesSync started");
     }
 
+    @PreDestroy
+    @Deactivate
     @Override
     public void close() {
         if (dataTreeConfigChangeListener != null) {
@@ -138,5 +141,6 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
         }
 
         syncThreadPool.shutdown();
+        LOG.info("ForwardingRulesSync stopped");
     }
 }

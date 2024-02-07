@@ -7,28 +7,27 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
-import org.junit.After;
-import org.junit.Before;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 
 /**
  * Test for {@link ForwardingRulesSyncProvider}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ForwardingRulesSyncProviderTest {
-
-    private ForwardingRulesSyncProvider provider;
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -36,31 +35,14 @@ public class ForwardingRulesSyncProviderTest {
     @Mock
     private ClusterSingletonServiceProvider clusterSingletonService;
 
-    @Before
-    public void setUp() {
-        Mockito.when(rpcRegistry.getRpc(ArgumentMatchers.<Class<? extends Rpc>>any()))
-                .thenAnswer(invocation -> {
-                    Class<? extends Rpc> serviceType =
-                            (Class<? extends Rpc>) invocation.getArguments()[0];
-                    return Mockito.mock(serviceType);
-                });
-
-        provider = new ForwardingRulesSyncProvider(dataBroker, rpcRegistry, clusterSingletonService);
-        Mockito.verify(rpcRegistry).getRpc(UpdateTable.class);
-        Mockito.verify(rpcRegistry).getRpc(ProcessFlatBatch.class);
-    }
-
     @Test
     public void testInit() {
-        provider.init();
+        when(rpcRegistry.getRpc(any())).thenAnswer(invocation -> mock(invocation.<Class<?>>getArgument(0)));
 
-        Mockito.verify(dataBroker, Mockito.times(2)).registerDataTreeChangeListener(
-                ArgumentMatchers.any(), ArgumentMatchers.any());
+        try (var provider = new ForwardingRulesSyncProvider(dataBroker, rpcRegistry, clusterSingletonService)) {
+            verify(rpcRegistry).getRpc(UpdateTable.class);
+            verify(rpcRegistry).getRpc(ProcessFlatBatch.class);
+            verify(dataBroker, times(2)).registerDataTreeChangeListener(any(), any());
+        }
     }
-
-    @After
-    public void tearDown() {
-        provider.close();
-    }
-
 }
