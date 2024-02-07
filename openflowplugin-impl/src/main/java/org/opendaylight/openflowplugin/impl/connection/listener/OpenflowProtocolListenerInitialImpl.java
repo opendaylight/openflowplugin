@@ -47,12 +47,10 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
         if (LOG.isDebugEnabled()) {
             LOG.debug("echo request received: {}", echoRequestMessage.getXid());
         }
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-        builder.setVersion(echoRequestMessage.getVersion());
-        builder.setXid(echoRequestMessage.getXid());
-        builder.setData(echoRequestMessage.getData());
-
-        connectionContext.getConnectionAdapter().echoReply(builder.build());
+        connectionContext.getConnectionAdapter().echoReply(new EchoReplyInputBuilder()
+            .setXid(echoRequestMessage.getXid())
+            .setData(echoRequestMessage.getData())
+            .build());
     }
 
     @Override

@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.SystemListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
@@ -59,7 +60,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetAsyncInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.TableModInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -77,31 +77,56 @@ public class ConnectionAdapterImplStatisticsTest {
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
         notification -> notification.getValue().discard();
 
-    @Mock SystemNotificationsListener systemListener;
-    @Mock ConnectionReadyListener readyListener;
-    @Mock ChannelFuture channelFuture;
-    @Mock OpenflowProtocolListener messageListener;
-    @Mock SocketChannel channel;
-    @Mock ChannelPipeline pipeline;
-    @Mock EchoInput echoInput;
-    @Mock BarrierInput barrierInput;
-    @Mock EchoReplyInput echoReplyInput;
-    @Mock ExperimenterInput experimenterInput;
-    @Mock FlowModInput flowModInput;
-    @Mock GetConfigInput getConfigInput;
-    @Mock GetFeaturesInput getFeaturesInput;
-    @Mock GetQueueConfigInput getQueueConfigInput;
-    @Mock GroupModInput groupModInput;
-    @Mock HelloInput helloInput;
-    @Mock MeterModInput meterModInput;
-    @Mock PacketOutInput packetOutInput;
-    @Mock MultipartRequestInput multipartRequestInput;
-    @Mock PortModInput portModInput;
-    @Mock RoleRequestInput roleRequestInput;
-    @Mock SetConfigInput setConfigInput;
-    @Mock TableModInput tableModInput;
-    @Mock GetAsyncInput getAsyncInput;
-    @Mock SetAsyncInput setAsyncInput;
+    @Mock
+    private SystemListener systemListener;
+    @Mock
+    private ConnectionReadyListener readyListener;
+    @Mock
+    private ChannelFuture channelFuture;
+    @Mock
+    private OpenflowProtocolListener messageListener;
+    @Mock
+    private SocketChannel channel;
+    @Mock
+    private ChannelPipeline pipeline;
+    @Mock
+    private EchoInput echoInput;
+    @Mock
+    private BarrierInput barrierInput;
+    @Mock
+    private EchoReplyInput echoReplyInput;
+    @Mock
+    private ExperimenterInput experimenterInput;
+    @Mock
+    private FlowModInput flowModInput;
+    @Mock
+    private GetConfigInput getConfigInput;
+    @Mock
+    private GetFeaturesInput getFeaturesInput;
+    @Mock
+    private GetQueueConfigInput getQueueConfigInput;
+    @Mock
+    private GroupModInput groupModInput;
+    @Mock
+    private HelloInput helloInput;
+    @Mock
+    private MeterModInput meterModInput;
+    @Mock
+    private PacketOutInput packetOutInput;
+    @Mock
+    private MultipartRequestInput multipartRequestInput;
+    @Mock
+    private PortModInput portModInput;
+    @Mock
+    private RoleRequestInput roleRequestInput;
+    @Mock
+    private SetConfigInput setConfigInput;
+    @Mock
+    private TableModInput tableModInput;
+    @Mock
+    private GetAsyncInput getAsyncInput;
+    @Mock
+    private SetAsyncInput setAsyncInput;
 
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;

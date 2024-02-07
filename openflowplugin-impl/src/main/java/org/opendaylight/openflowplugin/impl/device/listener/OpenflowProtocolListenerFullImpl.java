@@ -48,12 +48,10 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
         if (LOG.isDebugEnabled()) {
             LOG.debug("echo request received: {}", echoRequestMessage.getXid());
         }
-        final EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-        builder.setVersion(echoRequestMessage.getVersion());
-        builder.setXid(echoRequestMessage.getXid());
-        builder.setData(echoRequestMessage.getData());
-
-        connectionAdapter.echoReply(builder.build());
+        connectionAdapter.echoReply(new EchoReplyInputBuilder()
+            .setVersion(echoRequestMessage.getVersion())
+            .setXid(echoRequestMessage.getXid())
+            .setData(echoRequestMessage.getData()).build());
     }
 
     @Override
