@@ -11,7 +11,6 @@
 
   <bean id="forwardingRulesManagerImpl"
         class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
-        init-method="start"
         destroy-method="close">
     <argument ref="dataBroker"/>
     <argument ref="rpcConsumerRegistry"/>

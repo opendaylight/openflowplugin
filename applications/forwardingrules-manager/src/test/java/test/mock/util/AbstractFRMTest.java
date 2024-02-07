@@ -88,7 +88,6 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
                 rpcProviderService, getConfig(), mastershipChangeServiceManager, clusterSingletonService,
                 getConfigurationService(), reconciliationManager, openflowServiceRecoveryHandler,
                 serviceRecoveryRegistry, flowGroupCacheManager, new ListenerRegistrationHelperImpl(dataBroker));
-        forwardingRulesManager.start();
     }
 
     protected void setDeviceMastership(final NodeId nodeId) {
