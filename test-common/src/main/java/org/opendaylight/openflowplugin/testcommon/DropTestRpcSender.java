@@ -7,12 +7,17 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.NotificationService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
@@ -27,6 +32,10 @@ import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +43,9 @@ import org.slf4j.LoggerFactory;
  * Provides cbench responder behavior: upon packetIn arrival addFlow action is sent out to
  * device using {@link SalFlowService} strategy.
  */
-public class DropTestRpcSender extends AbstractDropTest {
+@Singleton
+@Component(service = DropTestRpcSender.class, immediate = true)
+public final class DropTestRpcSender extends AbstractDropTest {
     private static final Logger LOG = LoggerFactory.getLogger(DropTestRpcSender.class);
     private static final ThreadLocal<AddFlowInputBuilder> BUILDER = ThreadLocal.withInitial(() -> {
         final var cookie = new FlowCookie(Uint64.TEN);
@@ -49,19 +60,45 @@ public class DropTestRpcSender extends AbstractDropTest {
             .setFlags(new FlowModFlags(false, false, false, false, false));
     });
 
-    private NotificationService notificationService = null;
-    private Registration notificationRegistration = null;
-    private SalFlowService flowService = null;
+    private final NotificationService notificationService;
+    private final AddFlow addFlow;
 
-    public void setFlowService(final SalFlowService flowService) {
-        this.flowService = flowService;
+    private Registration reg = null;
+
+    @Inject
+    @Activate
+    public DropTestRpcSender(@Reference final NotificationService notificationService,
+            @Reference final RpcConsumerRegistry rpcService) {
+        this.notificationService = requireNonNull(notificationService);
+        addFlow = rpcService.getRpc(AddFlow.class);
     }
 
-    /**
-     * Start listening on packetIn.
-     */
-    public void start() {
-        notificationRegistration = notificationService.registerListener(PacketReceived.class, this);
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        stop();
+        super.close();
+        LOG.debug("DropTestProvider terminated");
+    }
+
+    public synchronized boolean start() {
+        if (reg != null) {
+            return false;
+        }
+        reg = notificationService.registerListener(PacketReceived.class, this);
+        LOG.debug("DropTestProvider started");
+        return true;
+    }
+
+    public synchronized boolean stop() {
+        if (reg == null) {
+            return false;
+        }
+        reg.close();
+        reg = null;
+        LOG.debug("DropTestProvider stopped");
+        return true;
     }
 
     @Override
@@ -78,10 +115,9 @@ public class DropTestRpcSender extends AbstractDropTest {
         fb.setNode(new NodeRef(node));
 
         // Add flow
-        final AddFlowInput flow = fb.build();
+        final var flow = fb.build();
         LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
-        ListenableFuture<RpcResult<AddFlowOutput>> result = flowService.addFlow(flow);
-        Futures.addCallback(result, new FutureCallback<RpcResult<AddFlowOutput>>() {
+        Futures.addCallback(addFlow.invoke(flow), new FutureCallback<RpcResult<AddFlowOutput>>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> result) {
                 countFutureSuccess();
@@ -92,18 +128,5 @@ public class DropTestRpcSender extends AbstractDropTest {
                 countFutureError();
             }
         }, MoreExecutors.directExecutor());
-    }
-
-    public void setNotificationService(final NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        LOG.debug("DropTestProvider stopped.");
-        if (notificationRegistration != null) {
-            notificationRegistration.close();
-        }
     }
 }
