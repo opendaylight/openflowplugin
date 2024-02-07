@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.Future;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -66,7 +67,7 @@ public interface ForwardingRulesCommiter<D extends DataObject>
      * @return A future associated with RPC task. {@code null} is set to the future
      *         if this method does not invoke RPC.
      */
-    Future<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
+    ListenableFuture<? extends RpcResult<?>> add(InstanceIdentifier<D> identifier, D add,
             InstanceIdentifier<FlowCapableNode> nodeIdent);
 
     /**

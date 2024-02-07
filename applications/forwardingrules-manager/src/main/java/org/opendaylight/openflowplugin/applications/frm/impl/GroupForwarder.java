@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getActiveBundle;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getNodeIdValueFromNodeIdentifier;
 
-import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -18,18 +17,15 @@ import com.google.common.util.concurrent.MoreExecutors;
 import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.group.update.OriginalGroupBuilder;
@@ -82,16 +78,13 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         } else {
             final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
             nodeConfigurator.enqueueJob(nodeId, () -> {
-                final Group group = removeDataObj;
-                final RemoveGroupInput removeGroup = new RemoveGroupInputBuilder(group)
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                        .setGroupRef(new GroupRef(identifier))
-                        .setTransactionUri(new Uri(provider.getNewTransactionId()))
-                        .build();
+                final var removeGroup = new RemoveGroupInputBuilder(removeDataObj)
+                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                    .setGroupRef(new GroupRef(identifier))
+                    .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                    .build();
 
-                final ListenableFuture<RpcResult<RemoveGroupOutput>> resultFuture =
-                    provider.getSalGroupService()
-                            .removeGroup(removeGroup);
+                final var resultFuture = provider.removeGroup().invoke(removeGroup);
                 Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
@@ -105,69 +98,60 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     @Override
     public Future<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final Group group = removeDataObj;
-        final RemoveGroupInputBuilder builder = new RemoveGroupInputBuilder(group);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setGroupRef(new GroupRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return provider.getSalGroupService().removeGroup(builder.build());
+        return provider.removeGroup().invoke(new RemoveGroupInputBuilder(removeDataObj)
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
+            .setTransactionUri(new Uri(provider.getNewTransactionId()))
+            .build());
     }
 
     @Override
     public void update(final InstanceIdentifier<Group> identifier, final Group original, final Group update,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        BundleId bundleId = getActiveBundle(nodeIdent, provider);
+        final var bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             provider.getBundleGroupListener().update(identifier, original, update, nodeIdent, bundleId);
-        } else {
-            final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-            nodeConfigurator.enqueueJob(nodeId, () -> {
-                final Group originalGroup = original;
-                final Group updatedGroup = update;
-                final UpdateGroupInputBuilder builder = new UpdateGroupInputBuilder();
-                builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                builder.setGroupRef(new GroupRef(identifier));
-                builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-                builder.setUpdatedGroup(new UpdatedGroupBuilder(updatedGroup).build());
-                builder.setOriginalGroup(new OriginalGroupBuilder(originalGroup).build());
-                UpdateGroupInput updateGroupInput = builder.build();
-                final ListenableFuture<RpcResult<UpdateGroupOutput>> resultFuture = provider.getSalGroupService()
-                        .updateGroup(updateGroupInput);
-                LoggingFutures.addErrorLogging(resultFuture, LOG, "updateGroup");
-                Futures.addCallback(resultFuture,
-                        new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
-                        MoreExecutors.directExecutor());
-                return resultFuture;
-            });
+            return;
         }
+
+        final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        nodeConfigurator.enqueueJob(nodeId, () -> {
+            final var updateGroupInput = new UpdateGroupInputBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setGroupRef(new GroupRef(identifier))
+                .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
+                .setOriginalGroup(new OriginalGroupBuilder(original).build())
+                .build();
+            final var resultFuture = LoggingFutures.addErrorLogging(provider.updateGroup().invoke(updateGroupInput),
+                LOG, "updateGroup");
+            Futures.addCallback(resultFuture,
+                new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
+                MoreExecutors.directExecutor());
+            return resultFuture;
+        });
     }
 
     @Override
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier, final Group addDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        BundleId bundleId = getActiveBundle(nodeIdent, provider);
+    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier,
+            final Group addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        final var bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             return provider.getBundleGroupListener().add(identifier, addDataObj, nodeIdent, bundleId);
-        } else {
-            final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-            return nodeConfigurator
-                    .enqueueJob(nodeId, () -> {
-                        final Group group = addDataObj;
-                        final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
-                        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                        builder.setGroupRef(new GroupRef(identifier));
-                        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-                        AddGroupInput addGroupInput = builder.build();
-                        final ListenableFuture<RpcResult<AddGroupOutput>> resultFuture;
-                        resultFuture = provider.getSalGroupService().addGroup(addGroupInput);
-                        Futures.addCallback(resultFuture,
-                                new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
-                                MoreExecutors.directExecutor());
-                        return resultFuture;
-                    });
         }
+
+        final var nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        return nodeConfigurator.enqueueJob(nodeId, () -> {
+            final var addGroupInput = new AddGroupInputBuilder(addDataObj)
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setGroupRef(new GroupRef(identifier))
+                .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                .build();
+            final var resultFuture = provider.addGroup().invoke(addGroupInput);
+            Futures.addCallback(resultFuture, new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
+                MoreExecutors.directExecutor());
+            return resultFuture;
+        });
     }
 
     @Override
@@ -186,18 +170,12 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     private void persistStaleGroup(final StaleGroup staleGroup, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleGroupInstanceIdentifier(staleGroup, nodeIdent),
-                staleGroup);
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleGroupResultFuture(submitFuture);
-    }
-
-    private static void handleStaleGroupResultFuture(final FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
+        final var writeTransaction = dataBroker.newWriteOnlyTransaction();
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION,
+            nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId()))), staleGroup);
+        writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(final Object result) {
+            public void onSuccess(final CommitInfo result) {
                 LOG.debug("Stale Group creation success");
             }
 
@@ -206,12 +184,6 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 LOG.error("Stale Group creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
-    }
-
-    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
-        .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
-            final StaleGroup staleGroup, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
     private final class AddGroupCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {

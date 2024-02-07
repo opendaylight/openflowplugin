@@ -31,7 +31,9 @@ import org.opendaylight.openflowplugin.applications.reconciliation.Reconciliatio
 import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
@@ -68,12 +70,19 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
     private MastershipChangeServiceManager mastershipChangeServiceManager;
     @Mock
     private FlowGroupCacheManager flowGroupCacheManager;
+    @Mock
+    protected AddGroup addGroup;
+    @Mock
+    protected RemoveGroup removeGroup;
+    @Mock
+    protected UpdateGroup updateGroup;
 
     protected void setUpForwardingRulesManager() {
         when(rpcConsumerRegistry.getRpcService(SalFlowService.class))
                 .thenReturn(new SalFlowServiceMock());
-        when(rpcConsumerRegistry.getRpcService(SalGroupService.class))
-                .thenReturn(new SalGroupServiceMock());
+        when(rpcConsumerRegistry.getRpc(AddGroup.class)).thenReturn(addGroup);
+        when(rpcConsumerRegistry.getRpc(RemoveGroup.class)).thenReturn(removeGroup);
+        when(rpcConsumerRegistry.getRpc(UpdateGroup.class)).thenReturn(updateGroup);
         when(rpcConsumerRegistry.getRpcService(SalMeterService.class))
                 .thenReturn(new SalMeterServiceMock());
         when(rpcConsumerRegistry.getRpcService(SalTableService.class))
