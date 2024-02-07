@@ -16,11 +16,16 @@ import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.SalGroupService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.SalMeterService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.ArbitratorReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.SalTableService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
@@ -69,17 +74,19 @@ public interface ForwardingRulesManager extends ConfigurationListener {
      */
     ReadTransaction getReadTransaction();
 
-    /**
-     * Flow RPC service.
-     *
-     */
-    SalFlowService getSalFlowService();
+    // Flow RPC services
+    @NonNull AddFlow addFlow();
 
-    /**
-     * Group RPC service.
-     *
-     */
-    SalGroupService getSalGroupService();
+    @NonNull RemoveFlow removeFlow();
+
+    @NonNull UpdateFlow updateFlow();
+
+    //  Group RPC services
+    @NonNull AddGroup addGroup();
+
+    @NonNull RemoveGroup removeGroup();
+
+    @NonNull UpdateGroup updateGroup();
 
     /**
      * Meter RPC service.
@@ -100,12 +107,10 @@ public interface ForwardingRulesManager extends ConfigurationListener {
      */
     DevicesGroupRegistry getDevicesGroupRegistry();
 
-    /**
-     * Bundle RPC service.
-     *
-     * @return salBundleService
-     */
-    SalBundleService getSalBundleService();
+    // Bundle RPC services
+    @NonNull ControlBundle controlBundle();
+
+    @NonNull AddBundleMessages addBundleMessages();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil.

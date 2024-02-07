@@ -11,7 +11,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +19,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
@@ -60,10 +56,9 @@ public class GroupListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        final SalGroupServiceMock salGroupService =
-                (SalGroupServiceMock) getForwardingRulesManager().getSalGroupService();
-        await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 1);
-        List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
+
+        await().atMost(10, SECONDS).until(() ->  addGroup.calls.size() == 1);
+        var addGroupCalls = addGroup.calls;
         assertEquals(1, addGroupCalls.size());
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
@@ -74,8 +69,8 @@ public class GroupListenerTest extends AbstractFRMTest {
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 2);
-        addGroupCalls = salGroupService.getAddGroupCalls();
+        await().atMost(10, SECONDS).until(() -> addGroup.calls.size() == 2);
+        addGroupCalls = addGroup.calls;
         assertEquals(2, addGroupCalls.size());
         assertEquals("DOM-1", addGroupCalls.get(1).getTransactionUri().getValue());
     }
@@ -92,10 +87,9 @@ public class GroupListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        final SalGroupServiceMock salGroupService =
-                (SalGroupServiceMock) getForwardingRulesManager().getSalGroupService();
-        await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 1);
-        List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
+
+        await().atMost(10, SECONDS).until(() -> addGroup.calls.size() == 1);
+        final var addGroupCalls = addGroup.calls;
         assertEquals(1, addGroupCalls.size());
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
@@ -103,8 +97,9 @@ public class GroupListenerTest extends AbstractFRMTest {
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        await().atMost(10, SECONDS).until(() -> salGroupService.getUpdateGroupCalls().size() == 1);
-        List<UpdateGroupInput> updateGroupCalls = salGroupService.getUpdateGroupCalls();
+
+        await().atMost(10, SECONDS).until(() -> updateGroup.calls.size() == 1);
+        final var updateGroupCalls = updateGroup.calls;
         assertEquals(1, updateGroupCalls.size());
         assertEquals("DOM-1", updateGroupCalls.get(0).getTransactionUri().getValue());
     }
@@ -121,17 +116,18 @@ public class GroupListenerTest extends AbstractFRMTest {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
         assertCommit(writeTx.commit());
-        SalGroupServiceMock salGroupService = (SalGroupServiceMock) getForwardingRulesManager().getSalGroupService();
-        await().atMost(10, SECONDS).until(() -> salGroupService.getAddGroupCalls().size() == 1);
-        List<AddGroupInput> addGroupCalls = salGroupService.getAddGroupCalls();
+
+        await().atMost(10, SECONDS).until(() -> addGroup.calls.size() == 1);
+        final var addGroupCalls = addGroup.calls;
         assertEquals(1, addGroupCalls.size());
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.CONFIGURATION, groupII);
         assertCommit(writeTx.commit());
-        await().atMost(10, SECONDS).until(() -> salGroupService.getRemoveGroupCalls().size() == 1);
-        List<RemoveGroupInput> removeGroupCalls = salGroupService.getRemoveGroupCalls();
+
+        await().atMost(10, SECONDS).until(() -> removeGroup.calls.size() == 1);
+        final var removeGroupCalls = removeGroup.calls;
         assertEquals(1, removeGroupCalls.size());
         assertEquals("DOM-1", removeGroupCalls.get(0).getTransactionUri().getValue());
     }
