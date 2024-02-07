@@ -10,12 +10,10 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -68,7 +66,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @Singleton
-public final class ForwardingRulesManagerImpl implements ForwardingRulesManager {
+public final class ForwardingRulesManagerImpl implements ForwardingRulesManager, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(ForwardingRulesManagerImpl.class);
 
     private static final int FRM_RECONCILIATION_PRIORITY = Integer.getInteger("frm.reconciliation.priority", 1);
@@ -83,21 +81,18 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
     private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     private final SalBundleService salBundleService;
     private final AutoCloseable configurationServiceRegistration;
-    private final MastershipChangeServiceManager mastershipChangeServiceManager;
-    private final RpcProviderService rpcProviderService;
     private ForwardingRulesCommiter<Flow> flowListener;
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
-    private BundleMessagesCommiter<Flow> bundleFlowListener;
-    private BundleMessagesCommiter<Group> bundleGroupListener;
+    private final BundleMessagesCommiter<Flow> bundleFlowListener;
+    private final BundleMessagesCommiter<Group> bundleGroupListener;
     private FlowNodeReconciliation nodeListener;
     private NotificationRegistration reconciliationNotificationRegistration;
-    private FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
+    private final FlowNodeConnectorInventoryTranslatorImpl flowNodeConnectorInventoryTranslatorImpl;
     private DeviceMastershipManager deviceMastershipManager;
-    private final ReconciliationManager reconciliationManager;
-    private DevicesGroupRegistry devicesGroupRegistry;
-    private NodeConfigurator nodeConfigurator;
+    private final DevicesGroupRegistry devicesGroupRegistry = new DevicesGroupRegistry();
+    private final NodeConfigurator nodeConfigurator = new NodeConfiguratorImpl();
     private final ArbitratorReconcileService arbitratorReconciliationManager;
     private boolean disableReconciliation;
     private boolean staleMarkingEnabled;
@@ -105,8 +100,6 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
     private boolean isBundleBasedReconciliationEnabled;
     private final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler;
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
-    private final FlowGroupCacheManager flowGroupCacheManager;
-    private final ListenerRegistrationHelper registrationHelper;
 
     @Inject
     public ForwardingRulesManagerImpl(final DataBroker dataBroker,
@@ -126,16 +119,8 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
         isBundleBasedReconciliationEnabled = config.getBundleBasedReconciliationEnabled();
         configurationServiceRegistration = configurationService.registerListener(this);
-        dataService = requireNonNull(dataBroker, "DataBroker can not be null!");
-        this.registrationHelper = requireNonNull(registrationHelper, "RegistrationHelper cannot be null");
-        clusterSingletonServiceProvider = requireNonNull(clusterSingletonService,
-                "ClusterSingletonService provider can not be null");
-        this.reconciliationManager = reconciliationManager;
-        this.rpcProviderService = rpcProviderService;
-        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
-        this.flowGroupCacheManager = flowGroupCacheManager;
-
-        Preconditions.checkArgument(rpcRegistry != null, "RpcProviderRegistry can not be null !");
+        dataService = requireNonNull(dataBroker);
+        clusterSingletonServiceProvider = requireNonNull(clusterSingletonService);
 
         salFlowService = requireNonNull(rpcRegistry.getRpcService(SalFlowService.class),
                 "RPC SalFlowService not found.");
@@ -154,13 +139,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager 
         arbitratorReconciliationManager =
                 requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
                         "ArbitratorReconciliationManager can not be null!");
-    }
 
-    @Override
-    @PostConstruct
-    public void start() {
-        nodeConfigurator = new NodeConfiguratorImpl();
-        devicesGroupRegistry = new DevicesGroupRegistry();
         nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
                 ResultState.DONOTHING, flowGroupCacheManager);
         if (isReconciliationDisabled()) {
