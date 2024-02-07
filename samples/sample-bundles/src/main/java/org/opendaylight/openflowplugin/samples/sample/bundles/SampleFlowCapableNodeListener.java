@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.samples.sample.bundles;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -15,11 +14,15 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
@@ -55,14 +58,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.EtherTyp
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.Message;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
@@ -76,43 +75,40 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Sample DataTreeChangeListener.
  */
-public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
-
+@Singleton
+@Component(service = { })
+public final class SampleFlowCapableNodeListener
+        implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SampleFlowCapableNodeListener.class);
 
     private static final BundleId BUNDLE_ID = new BundleId(Uint32.ONE);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor();
 
-    private final DataBroker dataBroker;
-    private final SalBundleService bundleService;
-    private ListenerRegistration<?> listenerReg;
+    private final ControlBundle controlBundle;
+    private final AddBundleMessages addBundleMessages;
+    private final ListenerRegistration<?> listenerReg;
 
-    public SampleFlowCapableNodeListener(final DataBroker dataBroker, final SalBundleService bundleService) {
-        this.dataBroker = dataBroker;
-        this.bundleService = bundleService;
-    }
-
-    @Override
-    public void close() {
-        LOG.debug("close() passing");
-        if (listenerReg != null) {
-            listenerReg.close();
-        }
-    }
-
-    public void init() {
+    @Inject
+    @Activate
+    public SampleFlowCapableNodeListener(@Reference final DataBroker dataBroker,
+            @Reference final RpcConsumerRegistry rpcService) {
+        controlBundle = rpcService.getRpc(ControlBundle.class);
+        addBundleMessages = rpcService.getRpc(AddBundleMessages.class);
         LOG.debug("inSessionInitialized() passing");
 
         final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
@@ -123,56 +119,56 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
         listenerReg = dataBroker.registerDataTreeChangeListener(identifier, SampleFlowCapableNodeListener.this);
     }
 
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        LOG.debug("close() passing");
+        listenerReg.close();
+    }
+
     @Override
     public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification<FlowCapableNode> modification : modifications) {
+        for (var modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
                 LOG.info("Node connected:  {}",
                         modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
 
-                final NodeRef nodeRef =
+                final var nodeRef =
                         new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
 
-                final ControlBundleInput openBundleInput = new ControlBundleInputBuilder()
+                final var openBundleInput = new ControlBundleInputBuilder()
                         .setNode(nodeRef)
                         .setBundleId(BUNDLE_ID)
                         .setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTOPENREQUEST)
                         .build();
 
-                final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder()
+                final var commitBundleInput = new ControlBundleInputBuilder()
                         .setNode(nodeRef)
                         .setBundleId(BUNDLE_ID)
                         .setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTCOMMITREQUEST)
                         .build();
 
-                final List<Message> innerMessages = createMessages(nodeRef);
-                final Messages messages = new MessagesBuilder().setMessage(innerMessages).build();
-                final AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
+                final var innerMessages = createMessages(nodeRef);
+                final var messages = new MessagesBuilder().setMessage(innerMessages).build();
+                final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                         .setNode(nodeRef)
                         .setBundleId(BUNDLE_ID)
                         .setFlags(BUNDLE_FLAGS)
                         .setMessages(messages)
                         .build();
 
-                makeCompletableFuture(bundleService.controlBundle(openBundleInput))
+                makeCompletableFuture(controlBundle.invoke(openBundleInput))
                     .thenComposeAsync(voidRpcResult -> {
                         LOG.debug("Open successful: {}, msg: {}", voidRpcResult.isSuccessful(),
                                 voidRpcResult.getErrors());
-
-                        final CompletableFuture<RpcResult<AddBundleMessagesOutput>> addFuture =
-                                makeCompletableFuture(bundleService.addBundleMessages(addBundleMessagesInput));
-
-                        return addFuture;
+                        return makeCompletableFuture(addBundleMessages.invoke(addBundleMessagesInput));
                     }).thenComposeAsync(voidRpcResult -> {
                         LOG.debug("AddBundleMessages successful: {}, msg: {}", voidRpcResult.isSuccessful(),
                                 voidRpcResult.getErrors());
-
-                        final CompletableFuture<RpcResult<ControlBundleOutput>> controlCommitFuture =
-                                makeCompletableFuture(bundleService.controlBundle(commitBundleInput));
-
-                        return controlCommitFuture;
+                        return makeCompletableFuture(controlBundle.invoke(commitBundleInput));
                     }).thenAccept(voidRpcResult -> LOG.debug("Commit successful: {}, msg: {}",
                         voidRpcResult.isSuccessful(), voidRpcResult.getErrors()));
             }
@@ -190,30 +186,26 @@ public class SampleFlowCapableNodeListener implements ClusteredDataTreeChangeLis
     }
 
     private static List<Message> createMessages(final NodeRef nodeRef) {
-        List<Message> messages  = new ArrayList<>();
-
-
-        messages.add(new MessageBuilder()
-            .setNode(nodeRef)
-            .setBundleInnerMessage(new BundleAddGroupCaseBuilder()
-                .setAddGroupCaseData(new AddGroupCaseDataBuilder(createGroup(Uint32.ONE)).build()).build())
-            .build());
-
-        messages.add(new MessageBuilder()
-            .setNode(nodeRef)
-            .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
-                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("42", Uint32.ONE, Uint16.ONE, Uint8.ONE))
+        final var messages = List.of(
+            new MessageBuilder()
+                .setNode(nodeRef)
+                .setBundleInnerMessage(new BundleAddGroupCaseBuilder()
+                    .setAddGroupCaseData(new AddGroupCaseDataBuilder(createGroup(Uint32.ONE)).build()).build())
+                .build(),
+            new MessageBuilder()
+                .setNode(nodeRef)
+                .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
+                    .setAddFlowCaseData(
+                        new AddFlowCaseDataBuilder(createFlow("42", Uint32.ONE, Uint16.ONE, Uint8.ONE)).build())
                     .build())
-                .build())
-            .build());
-
-        messages.add(new MessageBuilder()
-            .setNode(nodeRef)
-            .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
-                .setAddFlowCaseData(new AddFlowCaseDataBuilder(createFlow("43", Uint32.ONE, Uint16.TWO, Uint8.TWO))
+                .build(),
+            new MessageBuilder()
+                .setNode(nodeRef)
+                .setBundleInnerMessage(new BundleAddFlowCaseBuilder()
+                    .setAddFlowCaseData(
+                        new AddFlowCaseDataBuilder(createFlow("43", Uint32.ONE, Uint16.TWO, Uint8.TWO)).build())
                     .build())
-                .build())
-            .build());
+                .build());
 
         LOG.debug("createMessages() passing {}", messages);
 
