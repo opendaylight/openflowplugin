@@ -49,11 +49,6 @@
   <service ref="openflowServiceRecoveryHandlerImpl"
            interface="org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler"/>
 
-  <bean id="listenerRegistrationHelper"
-        class="org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper">
-    <argument ref="dataBroker"/>
-  </bean>
-
   <bean id="reconciliationJMXService"
         class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
     <argument ref="flowGroupCacheManager"/>
@@ -77,4 +72,6 @@
              interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
   <reference id="serviceRecoveryRegistry"
              interface="org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry"/>
+  <reference id="listenerRegistrationHelper"
+             interface="org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper"/>
 </blueprint>
