@@ -32,14 +32,15 @@ import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
@@ -48,6 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -57,11 +59,16 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPDataTreeChangeListenerTest {
-    private LLDPPacketPuntEnforcer lldpPacketPuntEnforcer;
     private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("testnode:1")));
     @Mock
-    private SalFlowService flowService;
+    private DataBroker dataBroker;
+    @Mock
+    private ListenerRegistration<?> reg;
+    @Mock
+    private RpcConsumerRegistry rpcService;
+    @Mock
+    private AddFlow addFlow;
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
@@ -69,11 +76,14 @@ public class LLDPDataTreeChangeListenerTest {
     @Captor
     private ArgumentCaptor<AddFlowInput> addFlowInputCaptor;
 
+    private LLDPPacketPuntEnforcer lldpPacketPuntEnforcer;
+
     @Before
     public void setUp() {
-        doReturn(RpcResultBuilder.success().buildFuture()).when(flowService).addFlow(any());
-        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(flowService, mock(DataBroker.class),
-                deviceOwnershipService);
+        doReturn(reg).when(dataBroker).registerDataTreeChangeListener(any(), any());
+        doReturn(RpcResultBuilder.success().buildFuture()).when(addFlow).invoke(any());
+        doReturn(addFlow).when(rpcService).getRpc(any());
+        lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(dataBroker, deviceOwnershipService, rpcService);
         final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
                 LogicalDatastoreType.OPERATIONAL, NODE_IID.augmentation(FlowCapableNode.class));
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
@@ -90,7 +100,7 @@ public class LLDPDataTreeChangeListenerTest {
     @Test
     public void testOnDataTreeChanged() {
         lldpPacketPuntEnforcer.onDataTreeChanged(Collections.singleton(dataTreeModification));
-        verify(flowService).addFlow(addFlowInputCaptor.capture());
+        verify(addFlow).invoke(addFlowInputCaptor.capture());
         AddFlowInput captured = addFlowInputCaptor.getValue();
         assertEquals(NODE_IID, captured.getNode().getValue());
     }

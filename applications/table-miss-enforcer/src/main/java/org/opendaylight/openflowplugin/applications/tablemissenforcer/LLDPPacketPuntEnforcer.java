@@ -10,12 +10,16 @@ package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -28,8 +32,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
@@ -47,52 +51,56 @@ import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
+@Singleton
+@Component(service = { })
+public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
     private static final Uint8 TABLE_ID = Uint8.ZERO;
     private static final String LLDP_PUNT_WHOLE_PACKET_FLOW = "LLDP_PUNT_WHOLE_PACKET_FLOW";
     private static final String DEFAULT_FLOW_ID = "42";
 
-    private final SalFlowService flowService;
-    private final DataBroker dataBroker;
     private final DeviceOwnershipService deviceOwnershipService;
-    private Registration listenerRegistration;
+    private final Registration listenerRegistration;
+    private final AddFlow addFlow;
 
-    public LLDPPacketPuntEnforcer(final SalFlowService flowService, final DataBroker dataBroker,
-            final DeviceOwnershipService deviceOwnershipService) {
-        this.flowService = flowService;
-        this.dataBroker = dataBroker;
-        this.deviceOwnershipService = requireNonNull(deviceOwnershipService, "DeviceOwnershipService can not be null");
-    }
-
-    public void start() {
+    @Inject
+    @Activate
+    public LLDPPacketPuntEnforcer(@Reference final DataBroker dataBroker,
+            @Reference final DeviceOwnershipService deviceOwnershipService,
+            @Reference final RpcConsumerRegistry rpcService) {
+        this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
+        addFlow = rpcService.getRpc(AddFlow.class);
         listenerRegistration = dataBroker.registerDataTreeChangeListener(
             DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)),
             this);
     }
 
+    @PreDestroy
+    @Deactivate
     @Override
     public void close() {
-        if (listenerRegistration != null) {
-            listenerRegistration.close();
-        }
+        listenerRegistration.close();
     }
 
     @Override
     public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification<FlowCapableNode> modification : modifications) {
+        for (var modification : modifications) {
             if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                String nodeId = modification.getRootPath().getRootIdentifier()
+                final var nodeId = modification.getRootPath().getRootIdentifier()
                         .firstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
-                    AddFlowInputBuilder addFlowInput = new AddFlowInputBuilder(createFlow());
-                    addFlowInput.setNode(new NodeRef(modification.getRootPath()
-                            .getRootIdentifier().firstIdentifierOf(Node.class)));
-                    LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput.build()), LOG, "addFlow");
+                    LoggingFutures.addErrorLogging(addFlow.invoke(new AddFlowInputBuilder(createFlow())
+                        .setNode(new NodeRef(modification.getRootPath()
+                            .getRootIdentifier().firstIdentifierOf(Node.class)))
+                        .build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);
                 }
