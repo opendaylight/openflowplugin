@@ -18,9 +18,9 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.impl.services.sal.AbstractUpdateFlow;
-import org.opendaylight.openflowplugin.impl.util.FlowCreatorUtil;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -35,18 +35,17 @@ public final class SingleUpdateFlow extends AbstractUpdateFlow {
     }
 
     @Override
-    protected ListenableFuture<RpcResult<UpdateFlowOutput>> invokeImpl(final UpdateFlowInput input) {
-        final var updated = input.getUpdatedFlow();
-        final var original = input.getOriginalFlow();
+    protected ListenableFuture<RpcResult<UpdateFlowOutput>> modify(final UpdatedFlow updated) {
+        return service.handleServiceCall(updated);
+    }
 
-        if (FlowCreatorUtil.canModifyFlow(original, updated, version())) {
-            return service.handleServiceCall(updated);
-        }
-
+    @Override
+    protected ListenableFuture<RpcResult<UpdateFlowOutput>> update(final OriginalFlow original,
+            final UpdatedFlow updated) {
         final var objectSettableFuture = SettableFuture.<RpcResult<UpdateFlowOutput>>create();
         final var listListenableFuture = Futures.successfulAsList(
-            service.handleServiceCall(input.getOriginalFlow()),
-            service.handleServiceCall(input.getUpdatedFlow()));
+            service.handleServiceCall(original),
+            service.handleServiceCall(updated));
 
         Futures.addCallback(listListenableFuture, new FutureCallback<>() {
             @Override

@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.impl.util;
 
 import java.util.Objects;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.FlowConvertor;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -28,7 +29,41 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
-public final class FlowCreatorUtil {
+public enum FlowCreatorUtil {
+    VERSION_1_0 {
+        @Override
+        public void setWildcardedFlowMatch(final MultipartRequestFlowBuilder flowBuilder) {
+            flowBuilder.setMatchV10(createWildcardedMatchV10());
+        }
+
+        @Override
+        public void setWildcardedFlowMatch(final MultipartRequestAggregateBuilder aggregateBuilder) {
+            aggregateBuilder.setMatchV10(createWildcardedMatchV10());
+        }
+    },
+    VERSION_1_3 {
+        @Override
+        public void setWildcardedFlowMatch(final MultipartRequestFlowBuilder flowBuilder) {
+            flowBuilder.setMatch(createWildcardedMatch());
+        }
+
+        @Override
+        public void setWildcardedFlowMatch(final MultipartRequestAggregateBuilder aggregateBuilder) {
+            aggregateBuilder.setMatch(createWildcardedMatch());
+        }
+    },
+    NOOP {
+        @Override
+        public void setWildcardedFlowMatch(final MultipartRequestFlowBuilder flowBuilder) {
+            // Noop
+        }
+
+        @Override
+        public void setWildcardedFlowMatch(final MultipartRequestAggregateBuilder aggregateBuilder) {
+            // Noop
+        }
+    };
+
     /**
      * Default FLOW_MOD flags.
      */
@@ -37,28 +72,19 @@ public final class FlowCreatorUtil {
             FlowConvertor.DEFAULT_OFPFF_NO_PKT_COUNTS, FlowConvertor.DEFAULT_OFPFF_RESET_COUNTS,
             FlowConvertor.DEFAULT_OFPFF_FLOW_REM);
 
-    private FlowCreatorUtil() {
-        // FIXME: turn this into a full class with Uint8 version captured
-    }
-
-    public static void setWildcardedFlowMatch(final Uint8 version, final MultipartRequestFlowBuilder flowBuilder) {
-        if (OFConstants.OFP_VERSION_1_0.equals(version)) {
-            flowBuilder.setMatchV10(createWildcardedMatchV10());
-        }
+    public static @NonNull FlowCreatorUtil forVersion(final Uint8 version) {
         if (OFConstants.OFP_VERSION_1_3.equals(version)) {
-            flowBuilder.setMatch(createWildcardedMatch());
+            return VERSION_1_3;
+        } else if (OFConstants.OFP_VERSION_1_0.equals(version)) {
+            return VERSION_1_0;
+        } else {
+            return NOOP;
         }
     }
 
-    public static void setWildcardedFlowMatch(final Uint8 version,
-            final MultipartRequestAggregateBuilder aggregateBuilder) {
-        if (OFConstants.OFP_VERSION_1_0.equals(version)) {
-            aggregateBuilder.setMatchV10(createWildcardedMatchV10());
-        }
-        if (OFConstants.OFP_VERSION_1_3.equals(version)) {
-            aggregateBuilder.setMatch(createWildcardedMatch());
-        }
-    }
+    public abstract void setWildcardedFlowMatch(MultipartRequestFlowBuilder flowBuilder);
+
+    public abstract void setWildcardedFlowMatch(MultipartRequestAggregateBuilder aggregateBuilder);
 
     /**
      * Method creates openflow 1.0 format match, that can match all the flow entries.
@@ -95,10 +121,9 @@ public final class FlowCreatorUtil {
      *
      * @param original An original flow entry.
      * @param updated  An updated flow entry.
-     * @param version  Protocol version.
      * @return {@code true} only if a flow entry can be modified.
      */
-    public static boolean canModifyFlow(final OriginalFlow original, final UpdatedFlow updated, final Uint8 version) {
+    public final boolean canModifyFlow(final OriginalFlow original, final UpdatedFlow updated) {
         // FLOW_MOD does not change match, priority, idle_timeout, hard_timeout,
         // flags, and cookie.
         if (!Objects.equals(original.getMatch(), updated.getMatch()) || !equalsWithDefault(original.getPriority(),
@@ -112,8 +137,7 @@ public final class FlowCreatorUtil {
             return false;
         }
 
-        if (!Boolean.TRUE.equals(updated.getStrict()) && version != null
-                && !OFConstants.OFP_VERSION_1_0.equals(version)) {
+        if (!Boolean.TRUE.equals(updated.getStrict()) && this != VERSION_1_0) {
             FlowCookie cookieMask = updated.getCookieMask();
             if (cookieMask != null) {
                 Uint64 mask = cookieMask.getValue();

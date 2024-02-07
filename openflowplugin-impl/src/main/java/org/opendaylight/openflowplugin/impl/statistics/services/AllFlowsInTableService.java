@@ -25,63 +25,50 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.multipart.request.flow._case.MultipartRequestFlowBuilder;
-import org.opendaylight.yangtools.yang.common.Uint8;
 
 public class AllFlowsInTableService extends AbstractCompatibleStatService<GetAllFlowStatisticsFromFlowTableInput,
         GetAllFlowStatisticsFromFlowTableOutput, FlowsStatisticsUpdate> {
-
     private final ConvertorExecutor convertorExecutor;
 
-    public AllFlowsInTableService(final RequestContextStack requestContextStack,
-                                  final DeviceContext deviceContext,
-                                  final AtomicLong compatibilityXidSeed,
-                                  final ConvertorExecutor convertorExecutor) {
+    public AllFlowsInTableService(final RequestContextStack requestContextStack, final DeviceContext deviceContext,
+            final AtomicLong compatibilityXidSeed, final ConvertorExecutor convertorExecutor) {
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetAllFlowStatisticsFromFlowTableInput input) {
-        final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-        mprFlowRequestBuilder.setTableId(input.getTableId().getValue());
-        mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+    protected OfHeader buildRequest(final Xid xid, final GetAllFlowStatisticsFromFlowTableInput input) {
+        final var mprFlowRequestBuilder = new MultipartRequestFlowBuilder()
+            .setTableId(input.getTableId().getValue())
+            .setOutPort(OFConstants.OFPP_ANY)
+            .setOutGroup(OFConstants.OFPG_ANY)
+            .setCookie(OFConstants.DEFAULT_COOKIE)
+            .setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
 
-        final Uint8 version = getVersion();
-        FlowCreatorUtil.setWildcardedFlowMatch(version, mprFlowRequestBuilder);
+        final var version = getVersion();
+        FlowCreatorUtil.forVersion(version).setWildcardedFlowMatch(mprFlowRequestBuilder);
 
-        final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-
-        final MultipartRequestInputBuilder mprInput = RequestInputUtils.createMultipartHeader(
-                MultipartType.OFPMPFLOW, xid.getValue(), version);
-
-        mprInput.setMultipartRequestBody(multipartRequestFlowCaseBuilder.build());
-
-        return mprInput.build();
+        return RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), version)
+            .setMultipartRequestBody(new MultipartRequestFlowCaseBuilder()
+                .setMultipartRequestFlow(mprFlowRequestBuilder.build())
+                .build())
+            .build();
     }
 
     @Override
     public GetAllFlowStatisticsFromFlowTableOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetAllFlowStatisticsFromFlowTableOutputBuilder()
-                .setTransactionId(emulatedTxId)
-                .build();
+            .setTransactionId(emulatedTxId)
+            .build();
     }
 
     @Override
     public FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> mpResult,
             final TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult,
-                                                                               getDeviceInfo(),
-                                                                               getOfVersion(),
-                                                                               emulatedTxId,
-                                                                               convertorExecutor);
+        return FlowStatisticsToNotificationTransformer.transformToNotification(mpResult, getDeviceInfo(),
+            getOfVersion(), emulatedTxId, convertorExecutor);
     }
 }

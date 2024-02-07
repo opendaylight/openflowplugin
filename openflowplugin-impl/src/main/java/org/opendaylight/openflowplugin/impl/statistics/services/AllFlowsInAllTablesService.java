@@ -26,7 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.G
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartRequestInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.request.multipart.request.body.MultipartRequestFlowCaseBuilder;
@@ -44,37 +43,34 @@ public final class AllFlowsInAllTablesService extends
         super(requestContextStack, deviceContext, compatibilityXidSeed);
         this.convertorExecutor = convertorExecutor;
 
-        final MultipartRequestFlowCaseBuilder multipartRequestFlowCaseBuilder = new MultipartRequestFlowCaseBuilder();
-        final MultipartRequestFlowBuilder mprFlowRequestBuilder = new MultipartRequestFlowBuilder();
-        mprFlowRequestBuilder.setTableId(OFConstants.OFPTT_ALL);
-        mprFlowRequestBuilder.setOutPort(OFConstants.OFPP_ANY);
-        mprFlowRequestBuilder.setOutGroup(OFConstants.OFPG_ANY);
-        mprFlowRequestBuilder.setCookie(OFConstants.DEFAULT_COOKIE);
-        mprFlowRequestBuilder.setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
-        FlowCreatorUtil.setWildcardedFlowMatch(getVersion(), mprFlowRequestBuilder);
-        multipartRequestFlowCaseBuilder.setMultipartRequestFlow(mprFlowRequestBuilder.build());
-
-        flowCase = multipartRequestFlowCaseBuilder.build();
+        final var mprFlowRequestBuilder = new MultipartRequestFlowBuilder()
+            .setTableId(OFConstants.OFPTT_ALL)
+            .setOutPort(OFConstants.OFPP_ANY)
+            .setOutGroup(OFConstants.OFPG_ANY)
+            .setCookie(OFConstants.DEFAULT_COOKIE)
+            .setCookieMask(OFConstants.DEFAULT_COOKIE_MASK);
+        FlowCreatorUtil.forVersion(getVersion()).setWildcardedFlowMatch(mprFlowRequestBuilder);
+        flowCase = new MultipartRequestFlowCaseBuilder()
+            .setMultipartRequestFlow(mprFlowRequestBuilder.build())
+            .build();
     }
 
     @Override
-    protected OfHeader buildRequest(final Xid xid,
-                                    final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
-        final MultipartRequestInputBuilder mprInput = RequestInputUtils
-                .createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), getVersion());
-        mprInput.setMultipartRequestBody(flowCase);
-
-        return mprInput.build();
+    protected OfHeader buildRequest(final Xid xid, final GetAllFlowsStatisticsFromAllFlowTablesInput input) {
+        return RequestInputUtils.createMultipartHeader(MultipartType.OFPMPFLOW, xid.getValue(), getVersion())
+            .setMultipartRequestBody(flowCase)
+            .build();
     }
 
     @Override
-    public GetAllFlowsStatisticsFromAllFlowTablesOutput buildTxCapableResult(TransactionId emulatedTxId) {
+    public GetAllFlowsStatisticsFromAllFlowTablesOutput buildTxCapableResult(final TransactionId emulatedTxId) {
         return new GetAllFlowsStatisticsFromAllFlowTablesOutputBuilder().setTransactionId(emulatedTxId).build();
     }
 
     @Override
-    public FlowsStatisticsUpdate transformToNotification(List<MultipartReply> result, TransactionId emulatedTxId) {
-        return FlowStatisticsToNotificationTransformer
-                .transformToNotification(result, getDeviceInfo(), getOfVersion(), emulatedTxId, convertorExecutor);
+    public FlowsStatisticsUpdate transformToNotification(final List<MultipartReply> result,
+            final TransactionId emulatedTxId) {
+        return FlowStatisticsToNotificationTransformer.transformToNotification(result, getDeviceInfo(), getOfVersion(),
+            emulatedTxId, convertorExecutor);
     }
 }
