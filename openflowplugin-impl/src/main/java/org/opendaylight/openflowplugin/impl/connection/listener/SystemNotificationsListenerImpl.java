@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.SystemListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.IetfInetUtil;
@@ -32,7 +33,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -40,8 +40,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SystemNotificationsListenerImpl implements SystemNotificationsListener {
-
+public class SystemNotificationsListenerImpl implements SystemListener {
     private static final Logger LOG = LoggerFactory.getLogger(SystemNotificationsListenerImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
     private static final Xid ECHO_XID = new Xid(Uint32.ZERO);
@@ -54,26 +53,37 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
     private final NotificationPublishService notificationPublishService;
 
     public SystemNotificationsListenerImpl(@NonNull final ConnectionContext connectionContext,
-                                           final long echoReplyTimeout,
-                                           @NonNull final Executor executor,
-                                           @NonNull final NotificationPublishService notificationPublishService) {
-        this.executor = requireNonNull(executor);
+            final long echoReplyTimeout, final @NonNull Executor executor,
+            @NonNull final NotificationPublishService notificationPublishService) {
         this.connectionContext = requireNonNull(connectionContext);
         this.echoReplyTimeout = echoReplyTimeout;
-        this.notificationPublishService = notificationPublishService;
+        this.executor = requireNonNull(executor);
+        this.notificationPublishService = requireNonNull(notificationPublishService);
     }
 
     @Override
-    public void onDisconnectEvent(final DisconnectEvent notification) {
+    public void onSslConnectionError(final SslConnectionError sslConnectionError) {
+        final var switchCert = sslConnectionError.getSwitchCertificate();
+        notificationPublishService.offerNotification(new SslErrorBuilder()
+            .setType(SslErrorType.SslConFailed)
+            .setCode(Uint16.valueOf(SslErrorType.SslConFailed.getIntValue()))
+            .setNodeIpAddress(remoteAddress())
+            .setData(sslConnectionError.getInfo())
+            .setSwitchCertificate(switchCert == null ? null : new SwitchCertificateBuilder(switchCert).build())
+            .build());
+    }
+
+    @Override
+    public void onSwitchIdle(final SwitchIdleEvent switchIdle) {
+        executor.execute(this::executeOnSwitchIdleEvent);
+    }
+
+    @Override
+    public void onDisconnect(final DisconnectEvent notification) {
         OF_EVENT_LOG.debug("Disconnect, Node: {}", connectionContext.getSafeNodeIdForLOG());
         LOG.info("ConnectionEvent: Connection closed by device, Device:{}, NodeId:{}",
                 connectionContext.getConnectionAdapter().getRemoteAddress(), connectionContext.getSafeNodeIdForLOG());
         connectionContext.onConnectionClosed();
-    }
-
-    @Override
-    public void onSwitchIdleEvent(final SwitchIdleEvent notification) {
-        executor.execute(this::executeOnSwitchIdleEvent);
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -139,19 +149,6 @@ public class SystemNotificationsListenerImpl implements SystemNotificationsListe
                 LOG.trace("Received EchoReply from [{}] in TIMEOUTING state", remoteAddress, cause);
             }
         }
-    }
-
-    @Override
-    public void onSslConnectionError(final SslConnectionError notification) {
-        final var switchCert = notification.getSwitchCertificate();
-
-        notificationPublishService.offerNotification(new SslErrorBuilder()
-            .setType(SslErrorType.SslConFailed)
-            .setCode(Uint16.valueOf(SslErrorType.SslConFailed.getIntValue()))
-            .setNodeIpAddress(remoteAddress())
-            .setData(notification.getInfo())
-            .setSwitchCertificate(switchCert == null ? null : new SwitchCertificateBuilder(switchCert).build())
-            .build());
     }
 
     private @Nullable IpAddress remoteAddress() {

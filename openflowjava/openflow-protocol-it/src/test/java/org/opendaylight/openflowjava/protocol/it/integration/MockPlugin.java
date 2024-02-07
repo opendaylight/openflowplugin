@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.SystemListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl;
@@ -37,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -50,16 +50,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author michal.polkorab
  */
-public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHandler,
-        SystemNotificationsListener, ConnectionReadyListener {
-
+public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHandler, SystemListener,
+        ConnectionReadyListener {
     protected static final Logger LOGGER = LoggerFactory.getLogger(MockPlugin.class);
-    protected volatile ConnectionAdapter adapter;
+
     private final SettableFuture<Void> finishedFuture;
-    private int idleCounter = 0;
     private final ExecutorService executorService;
 
-    public MockPlugin(ExecutorService executorService) {
+    private int idleCounter = 0;
+
+    protected volatile ConnectionAdapter adapter;
+
+    public MockPlugin(final ExecutorService executorService) {
         LOGGER.trace("Creating MockPlugin");
         finishedFuture = SettableFuture.create();
         this.executorService = executorService;
@@ -67,9 +69,9 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     }
 
     @Override
-    public void onSwitchConnected(ConnectionAdapter connection) {
+    public void onSwitchConnected(final ConnectionAdapter connection) {
         LOGGER.debug("onSwitchConnected: {}", connection);
-        this.adapter = connection;
+        adapter = connection;
         connection.setMessageListener(this);
         connection.setSystemListener(this);
         connection.setConnectionReadyListener(this);
@@ -77,10 +79,25 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     }
 
     @Override
-    public boolean accept(InetAddress switchAddress) {
+    public boolean accept(final InetAddress switchAddress) {
         LOGGER.debug("MockPlugin.accept(): {}", switchAddress.toString());
-
         return true;
+    }
+
+    @Override
+    public void onDisconnect(final DisconnectEvent disconnect) {
+        LOGGER.debug("disconnection occured: {}", disconnect.getInfo());
+    }
+
+    @Override
+    public void onSslConnectionError(final SslConnectionError sslConnectionError) {
+        LOGGER.debug("Ssl error occured: {}", sslConnectionError.getInfo());
+    }
+
+    @Override
+    public void onSwitchIdle(final SwitchIdleEvent switchIdle) {
+        LOGGER.debug("MockPlugin.onSwitchIdleEvent() switch status: {}", switchIdle.getInfo());
+        idleCounter++;
     }
 
     @Override
@@ -99,25 +116,22 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     }
 
     @Override
-    public void onErrorMessage(ErrorMessage notification) {
+    public void onErrorMessage(final ErrorMessage notification) {
         LOGGER.debug("Error message received");
-
     }
 
     @Override
-    public void onExperimenterMessage(ExperimenterMessage notification) {
+    public void onExperimenterMessage(final ExperimenterMessage notification) {
         LOGGER.debug("Experimenter message received");
-
     }
 
     @Override
-    public void onFlowRemovedMessage(FlowRemovedMessage notification) {
+    public void onFlowRemovedMessage(final FlowRemovedMessage notification) {
         LOGGER.debug("FlowRemoved message received");
-
     }
 
     @Override
-    public void onHelloMessage(HelloMessage notification) {
+    public void onHelloMessage(final HelloMessage notification) {
         new Thread(() -> {
             LOGGER.debug("MockPlugin.onHelloMessage().run() Hello message received");
             HelloInputBuilder hib = new HelloInputBuilder();
@@ -128,7 +142,6 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
             LOGGER.debug("hello msg sent");
             new Thread(this::getSwitchFeatures).start();
         }).start();
-
     }
 
     protected void getSwitchFeatures() {
@@ -164,13 +177,12 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     }
 
     @Override
-    public void onMultipartReplyMessage(MultipartReplyMessage notification) {
+    public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
         LOGGER.debug("MultipartReply message received");
-
     }
 
     @Override
-    public void onPacketInMessage(PacketInMessage notification) {
+    public void onPacketInMessage(final PacketInMessage notification) {
         LOGGER.debug("PacketIn message received");
         LOGGER.debug("BufferId: {}", notification.getBufferId());
         LOGGER.debug("TotalLength: {}", notification.getTotalLen());
@@ -183,24 +195,12 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
     }
 
     @Override
-    public void onPortStatusMessage(PortStatusMessage notification) {
+    public void onPortStatusMessage(final PortStatusMessage notification) {
         LOGGER.debug("MockPlugin.onPortStatusMessage() message received");
-
-    }
-
-    @Override
-    public void onDisconnectEvent(DisconnectEvent notification) {
-        LOGGER.debug("disconnection occured: {}", notification.getInfo());
     }
 
     public SettableFuture<Void> getFinishedFuture() {
         return finishedFuture;
-    }
-
-    @Override
-    public void onSwitchIdleEvent(SwitchIdleEvent notification) {
-        LOGGER.debug("MockPlugin.onSwitchIdleEvent() switch status: {}", notification.getInfo());
-        idleCounter++;
     }
 
     /**
@@ -222,14 +222,9 @@ public class MockPlugin implements OpenflowProtocolListener, SwitchConnectionHan
      * @param host                     - host IP
      * @param port                     - port number
      */
-    public void initiateConnection(SwitchConnectionProviderImpl switchConnectionProvider, String host, int port) {
+    public void initiateConnection(final SwitchConnectionProviderImpl switchConnectionProvider, final String host,
+            final int port) {
         LOGGER.trace("MockPlugin().initiateConnection()");
         switchConnectionProvider.initiateConnection(host, port);
-    }
-
-    @Override
-    public void onSslConnectionError(SslConnectionError notification) {
-        LOGGER.debug("Ssl error occured: {}", notification.getInfo());
-
     }
 }
