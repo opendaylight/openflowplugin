@@ -5,27 +5,34 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm;
 
-import java.util.HashMap;
+import static java.util.Objects.requireNonNull;
+
+import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
-public class ReconciliationJMXService implements ReconciliationJMXServiceMBean {
-    private FlowGroupCacheManager flowGroupCacheManager;
+@Singleton
+@Component
+public final class ReconciliationJMXService implements ReconciliationJMXServiceMBean {
+    private final FlowGroupCacheManager flowGroupCacheManager;
 
     @Inject
-    public ReconciliationJMXService(final FlowGroupCacheManager floGroupCacheManager) {
-        this.flowGroupCacheManager = floGroupCacheManager;
+    @Activate
+    public ReconciliationJMXService(@Reference final FlowGroupCacheManager floGroupCacheManager) {
+        flowGroupCacheManager = requireNonNull(floGroupCacheManager);
     }
 
     @Override
     public Map<String, String> acquireReconciliationStates() {
-        Map<String, String> reconciliationStatesMap = new HashMap<>();
-        flowGroupCacheManager.getReconciliationStates().forEach((datapathId, reconciliationState) ->
-                reconciliationStatesMap.put(datapathId, reconciliationState.toString()));
-        return reconciliationStatesMap;
+        return Map.copyOf(Maps.transformValues(flowGroupCacheManager.getReconciliationStates(),
+            ReconciliationState::toString));
     }
 }
