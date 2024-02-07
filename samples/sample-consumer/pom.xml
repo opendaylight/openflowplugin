@@ -13,6 +13,27 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>yang-binding</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991-ietf-inet-types</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-base</artifactId>
         </dependency>
@@ -25,8 +46,12 @@
             <artifactId>model-inventory</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>yang-binding</artifactId>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
     </dependencies>
 </project>
