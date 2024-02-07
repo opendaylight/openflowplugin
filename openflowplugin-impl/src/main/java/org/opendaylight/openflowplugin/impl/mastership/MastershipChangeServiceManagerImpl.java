@@ -14,6 +14,8 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
@@ -25,23 +27,38 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeS
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
+@Component(immediate = true)
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
-
     private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);
 
     private final List<MastershipChangeService> serviceGroup = new CopyOnWriteArrayList<>();
-    private ReconciliationFrameworkEvent rfService = null;
-    private MasterChecker masterChecker;
 
-    @NonNull
+    private ReconciliationFrameworkEvent rfService = null;
+    private MasterChecker masterChecker = null;
+
+    @Inject
+    @Activate
+    public MastershipChangeServiceManagerImpl() {
+        // for DI only
+    }
+
+    @PreDestroy
+    @Deactivate
     @Override
-    public MastershipChangeRegistration register(@NonNull MastershipChangeService service) {
-        final MastershipServiceDelegate registration =
-                new MastershipServiceDelegate(service, () -> serviceGroup.remove(service));
+    public void close() {
+        serviceGroup.clear();
+    }
+
+    @Override
+    public MastershipChangeRegistration register(final MastershipChangeService service) {
+        final var registration = new MastershipServiceDelegate(service, () -> serviceGroup.remove(service));
         serviceGroup.add(service);
         if (masterChecker != null && masterChecker.isAnyDeviceMastered()) {
             masterChecker.listOfMasteredDevices().forEach(service::onBecomeOwner);
@@ -51,18 +68,12 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
 
     @Override
     public ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
-            @NonNull ReconciliationFrameworkEvent reconciliationFrameworkEvent) throws MastershipChangeException {
+            final ReconciliationFrameworkEvent reconciliationFrameworkEvent) throws MastershipChangeException {
         if (rfService != null) {
             throw new MastershipChangeException("Reconciliation framework already registered.");
-        } else {
-            rfService = reconciliationFrameworkEvent;
-            return new ReconciliationFrameworkServiceDelegate(reconciliationFrameworkEvent, () -> rfService = null);
         }
-    }
-
-    @Override
-    public void close() {
-        serviceGroup.clear();
+        rfService = reconciliationFrameworkEvent;
+        return new ReconciliationFrameworkServiceDelegate(reconciliationFrameworkEvent, () -> rfService = null);
     }
 
     @Override
@@ -73,7 +84,7 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     @Override
     public void becomeSlaveOrDisconnect(@NonNull final DeviceInfo deviceInfo) {
         if (rfService != null) {
-            ListenableFuture<Void> future = rfService.onDeviceDisconnected(deviceInfo);
+            final var future = rfService.onDeviceDisconnected(deviceInfo);
             // TODO This null future check here should ideally not be required, but some tests currently rely on it
             if (future != null) {
                 addErrorLogging(future, LOG, "onDeviceDisconnected() failed");
@@ -83,9 +94,9 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(@NonNull DeviceInfo deviceInfo) {
-        return rfService == null ? Futures.immediateFuture(ResultState.DONOTHING) :
-                rfService.onDevicePrepared(deviceInfo);
+    public ListenableFuture<ResultState> becomeMasterBeforeSubmittedDS(final DeviceInfo deviceInfo) {
+        return rfService == null ? Futures.immediateFuture(ResultState.DONOTHING)
+            : rfService.onDevicePrepared(deviceInfo);
     }
 
     @Override
