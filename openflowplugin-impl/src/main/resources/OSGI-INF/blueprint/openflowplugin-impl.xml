@@ -28,11 +28,6 @@
     </interfaces>
   </service>
 
-  <bean id="flowGroupCacheManagerImpl"
-        class="org.opendaylight.openflowplugin.impl.services.cache.FlowGroupCacheManagerImpl"/>
-  <service ref="flowGroupCacheManagerImpl"
-           interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
-
   <bean id="configurationService"
         factory-ref="configurationServiceFactory"
         factory-method="newInstance"

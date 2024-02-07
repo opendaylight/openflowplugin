@@ -9,13 +9,24 @@ package org.opendaylight.openflowplugin.impl.services.cache;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
 @Singleton
+@Component
 public class FlowGroupCacheManagerImpl implements FlowGroupCacheManager {
-    private final Map<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, ReconciliationState> reconciliationStates = new ConcurrentHashMap<>();
+
+    @Inject
+    @Activate
+    public FlowGroupCacheManagerImpl() {
+        // Exposed for DI
+    }
 
     @Override
     public Map<String, ReconciliationState> getReconciliationStates() {

@@ -9,18 +9,6 @@
   <service ref="frmReconciliationServiceImpl"
            interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
 
-  <bean id="reconciliationJMXServiceMBean"
-        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
-    <argument ref="flowGroupCacheManager"/>
-  </bean>
-  <service ref="reconciliationJMXServiceMBean"
-           interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"/>
-
-  <bean id="reconciliationJMXAgent"
-        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXAgent">
-    <argument ref="reconciliationJMXService"/>
-  </bean>
-
   <bean id="forwardingRulesManagerImpl"
         class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
         init-method="start"
@@ -33,7 +21,7 @@
     <argument ref="clusterSingletonServiceProvider"/>
     <argument ref="configurationService"/>
     <argument ref="reconciliationManager"/>
-    <argument ref="openflowServiceRecoveryHandlerImpl"/>
+    <argument ref="openflowServiceRecoveryHandler"/>
     <argument ref="serviceRecoveryRegistry"/>
     <argument ref="flowGroupCacheManager"/>
     <argument ref="listenerRegistrationHelper"/>
@@ -41,18 +29,6 @@
 
   <odl:clustered-app-config id="forwardingRulesManagerConfig"
                             binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
-
-  <bean id="openflowServiceRecoveryHandlerImpl"
-        class="org.opendaylight.openflowplugin.applications.frm.recovery.impl.OpenflowServiceRecoveryHandlerImpl">
-    <argument ref="serviceRecoveryRegistry"/>
-  </bean>
-  <service ref="openflowServiceRecoveryHandlerImpl"
-           interface="org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler"/>
-
-  <bean id="reconciliationJMXService"
-        class="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXService">
-    <argument ref="flowGroupCacheManager"/>
-  </bean>
 
   <reference id="flowGroupCacheManager"
              interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
@@ -74,4 +50,6 @@
              interface="org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry"/>
   <reference id="listenerRegistrationHelper"
              interface="org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper"/>
+  <reference id="openflowServiceRecoveryHandler"
+             interface="org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler"/>
 </blueprint>
