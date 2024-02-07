@@ -78,12 +78,12 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
             nodeConfigurator.enqueueJob(nodeId, () -> {
                 final var removeGroup = new RemoveGroupInputBuilder(removeDataObj)
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                        .setGroupRef(new GroupRef(identifier))
-                        .setTransactionUri(new Uri(provider.getNewTransactionId()))
-                        .build();
+                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                    .setGroupRef(new GroupRef(identifier))
+                    .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                    .build();
 
-                final var resultFuture = provider.getSalGroupService() .removeGroup(removeGroup);
+                final var resultFuture = provider.removeGroup().invoke(removeGroup);
                 Futures.addCallback(resultFuture,
                     new RemoveGroupCallBack(removeDataObj.getGroupId().getValue(), nodeId),
                     MoreExecutors.directExecutor());
@@ -96,7 +96,7 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     @Override
     public ListenableFuture<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return provider.getSalGroupService().removeGroup(new RemoveGroupInputBuilder(removeDataObj)
+        return provider.removeGroup().invoke(new RemoveGroupInputBuilder(removeDataObj)
             .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
             .setGroupRef(new GroupRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
@@ -106,27 +106,28 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     @Override
     public void update(final InstanceIdentifier<Group> identifier, final Group original, final Group update,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        BundleId bundleId = getActiveBundle(nodeIdent, provider);
+        final var bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             provider.getBundleGroupListener().update(identifier, original, update, nodeIdent, bundleId);
-        } else {
-            final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-            nodeConfigurator.enqueueJob(nodeId, () -> {
-                final var updateGroupInput = new UpdateGroupInputBuilder()
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setGroupRef(new GroupRef(identifier))
-                    .setTransactionUri(new Uri(provider.getNewTransactionId()))
-                    .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
-                    .setOriginalGroup(new OriginalGroupBuilder(original).build())
-                    .build();
-                final var resultFuture = LoggingFutures.addErrorLogging(
-                    provider.getSalGroupService().updateGroup(updateGroupInput), LOG, "updateGroup");
-                Futures.addCallback(resultFuture,
-                        new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
-                        MoreExecutors.directExecutor());
-                return resultFuture;
-            });
+            return;
         }
+
+        final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        nodeConfigurator.enqueueJob(nodeId, () -> {
+            final var updateGroupInput = new UpdateGroupInputBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setGroupRef(new GroupRef(identifier))
+                .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
+                .setOriginalGroup(new OriginalGroupBuilder(original).build())
+                .build();
+            final var resultFuture = LoggingFutures.addErrorLogging(provider.updateGroup().invoke(updateGroupInput),
+                LOG, "updateGroup");
+            Futures.addCallback(resultFuture,
+                new UpdateGroupCallBack(updateGroupInput.getOriginalGroup().getGroupId().getValue(), nodeId),
+                MoreExecutors.directExecutor());
+            return resultFuture;
+        });
     }
 
     @Override
@@ -137,16 +138,15 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             return provider.getBundleGroupListener().add(identifier, addDataObj, nodeIdent, bundleId);
         }
 
-        final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        final var nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addGroupInput = new AddGroupInputBuilder(addDataObj)
                 .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
                 .setGroupRef(new GroupRef(identifier))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .build();
-            final var resultFuture = provider.getSalGroupService().addGroup(addGroupInput);
-            Futures.addCallback(resultFuture,
-                new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
+            final var resultFuture = provider.addGroup().invoke(addGroupInput);
+            Futures.addCallback(resultFuture, new AddGroupCallBack(addGroupInput.getGroupId().getValue(), nodeId),
                 MoreExecutors.directExecutor());
             return resultFuture;
         });
@@ -158,8 +158,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent, del);
         final var staleGroup = new StaleGroupBuilder(del).setGroupId(del.getGroupId()).build();
         final var writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleGroupInstanceIdentifier(staleGroup, nodeIdent),
-                staleGroup);
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION,
+            nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId()))), staleGroup);
         writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo result) {
@@ -171,12 +171,6 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
                 LOG.error("Stale Group creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
-    }
-
-    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.group
-        .types.rev131018.groups.StaleGroup> getStaleGroupInstanceIdentifier(
-            final StaleGroup staleGroup, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())));
     }
 
     private final class AddGroupCallBack implements FutureCallback<RpcResult<AddGroupOutput>> {
