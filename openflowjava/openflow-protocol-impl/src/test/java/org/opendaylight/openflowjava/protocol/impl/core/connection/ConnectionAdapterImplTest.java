@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.SystemListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierInput;
@@ -55,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.D
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEventBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEventBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -73,13 +73,20 @@ public class ConnectionAdapterImplTest {
     private static final RemovalListener<RpcResponseKey, ResponseExpectedRpcListener<?>> REMOVAL_LISTENER =
         notification -> notification.getValue().discard();
 
-    @Mock SocketChannel channel;
-    @Mock ChannelPipeline pipeline;
-    @Mock OpenflowProtocolListener messageListener;
-    @Mock SystemNotificationsListener systemListener;
-    @Mock ConnectionReadyListener readyListener;
-    @Mock Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> mockCache;
-    @Mock ChannelFuture channelFuture;
+    @Mock
+    private SocketChannel channel;
+    @Mock
+    ChannelPipeline pipeline;
+    @Mock
+    private OpenflowProtocolListener messageListener;
+    @Mock
+    private SystemListener systemListener;
+    @Mock
+    private ConnectionReadyListener readyListener;
+    @Mock
+    private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> mockCache;
+    @Mock
+    private ChannelFuture channelFuture;
 
     private ConnectionAdapterImpl adapter;
     private Cache<RpcResponseKey, ResponseExpectedRpcListener<?>> cache;
@@ -132,10 +139,10 @@ public class ConnectionAdapterImplTest {
         verify(messageListener, times(1)).onPortStatusMessage((PortStatusMessage) message);
         message = new SwitchIdleEventBuilder().build();
         adapter.consume(message);
-        verify(systemListener, times(1)).onSwitchIdleEvent((SwitchIdleEvent) message);
+        verify(systemListener, times(1)).onSwitchIdle((SwitchIdleEvent) message);
         message = new DisconnectEventBuilder().build();
         adapter.consume(message);
-        verify(systemListener, times(1)).onDisconnectEvent((DisconnectEvent) message);
+        verify(systemListener, times(1)).onDisconnect((DisconnectEvent) message);
         message = new EchoRequestMessageBuilder().build();
         adapter.consume(message);
         verify(messageListener, times(1)).onEchoRequestMessage((EchoRequestMessage) message);

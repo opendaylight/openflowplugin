@@ -7,13 +7,17 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
-import org.junit.Assert;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.google.common.util.concurrent.Futures;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -29,7 +33,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OpenflowProtocolListenerInitialImplTest {
-
     @Mock
     private ConnectionContext connectionContext;
     @Mock
@@ -43,23 +46,26 @@ public class OpenflowProtocolListenerInitialImplTest {
 
     @Before
     public void setUp() {
-        Mockito.when(connectionAdapter.isAlive()).thenReturn(true);
-        Mockito.when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
-        Mockito.when(connectionContext.getConnectionState())
+        when(connectionAdapter.isAlive()).thenReturn(true);
+        when(connectionContext.getConnectionAdapter()).thenReturn(connectionAdapter);
+        when(connectionContext.getConnectionState())
                 .thenReturn(null, ConnectionContext.CONNECTION_STATE.HANDSHAKING);
-        Mockito.when(handshakeContext.getHandshakeManager()).thenReturn(handshakeManager);
+        when(handshakeContext.getHandshakeManager()).thenReturn(handshakeManager);
 
         openflowProtocolListenerInitial = new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
     }
 
     @Test
     public void testOnEchoRequestMessage() {
-        EchoRequestMessageBuilder echoRequestMessageBld = new EchoRequestMessageBuilder()
-                .setXid(Uint32.valueOf(42))
-                .setVersion(EncodeConstants.OF_VERSION_1_3);
-        openflowProtocolListenerInitial.onEchoRequestMessage(echoRequestMessageBld.build());
+        when(connectionAdapter.echoReply(any())).thenReturn(Futures.immediateFuture(null));
 
-        Mockito.verify(connectionAdapter).echoReply(ArgumentMatchers.any());
+        openflowProtocolListenerInitial.onEchoRequestMessage(
+            new EchoRequestMessageBuilder()
+                .setXid(Uint32.valueOf(42))
+                .setVersion(EncodeConstants.OF_VERSION_1_3)
+                .build());
+
+        verify(connectionAdapter).echoReply(any());
     }
 
     @Test
@@ -69,12 +75,12 @@ public class OpenflowProtocolListenerInitialImplTest {
                 .setVersion(EncodeConstants.OF_VERSION_1_3);
         openflowProtocolListenerInitial.onHelloMessage(helloMessageBld.build());
 
-        Mockito.verify(handshakeManager).shake(ArgumentMatchers.any());
+        verify(handshakeManager).shake(any());
     }
 
     @Test
     public void testCheckState() {
-        Assert.assertFalse(openflowProtocolListenerInitial.checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING));
-        Assert.assertTrue(openflowProtocolListenerInitial.checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING));
+        assertFalse(openflowProtocolListenerInitial.checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING));
+        assertTrue(openflowProtocolListenerInitial.checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING));
     }
 }
