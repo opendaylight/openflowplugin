@@ -34,49 +34,49 @@ public final class OFConstants {
     /** openflow protocol 1.3 - version identifier. */
     public static final @NonNull Uint8 OFP_VERSION_1_3 = Uint8.valueOf(0x04);
 
-    public static final String OF_URI_PREFIX = "openflow:";
+    public static final @NonNull String OF_URI_PREFIX = "openflow:";
 
     /** enum ofp_table: Table numbering, wildcard table used for table config, flow stats and flow deletes. */
-    public static final Uint8 OFPTT_ALL = Uint8.MAX_VALUE;
-    public static final Uint32 ANY = Uint32.MAX_VALUE;
+    public static final @NonNull Uint8 OFPTT_ALL = Uint8.MAX_VALUE;
+    public static final @NonNull Uint32 ANY = Uint32.MAX_VALUE;
     /** Wildcard port used only for flow mod (delete) and flow stats requests. Selects
      *  all flows regardless of output port (including flows with no output port).*/
-    public static final Uint32 OFPP_ANY = ANY;
+    public static final @NonNull Uint32 OFPP_ANY = ANY;
     /** enum ofp_group: For OFPFC_DELETE* commands, require matching entries to include this as an
      *  output group. A value of OFPG_ANY indicates no restriction. */
-    public static final Uint32 OFPG_ANY = ANY;
+    public static final @NonNull Uint32 OFPG_ANY = ANY;
     /** enum ofp_group: Represents all groups for group delete commands. */
-    public static final Uint32 OFPG_ALL = Uint32.valueOf(0xfffffffcL).intern();
+    public static final @NonNull Uint32 OFPG_ALL = Uint32.valueOf(0xfffffffcL).intern();
     /** Refers to all queues conﬁgured at the speciﬁed port. */
-    public static final Uint32 OFPQ_ALL = ANY;
+    public static final @NonNull Uint32 OFPQ_ALL = ANY;
     /** Represents all meters for stat requests commands. */
-    public static final Uint32 OFPM_ALL = ANY;
+    public static final @NonNull Uint32 OFPM_ALL = ANY;
     /** Default cookie. */
-    public static final Uint64 DEFAULT_COOKIE = Uint64.ZERO;
-    public static final Uint64 DEFAULT_COOKIE_MASK = Uint64.ZERO;
-    public static final FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
-    public static final Uint16 DEFAULT_FLOW_PRIORITY = Uint16.valueOf(0x8000).intern();
+    public static final @NonNull Uint64 DEFAULT_COOKIE = Uint64.ZERO;
+    public static final @NonNull Uint64 DEFAULT_COOKIE_MASK = Uint64.ZERO;
+    public static final @NonNull FlowCookie DEFAULT_FLOW_COOKIE = new FlowCookie(DEFAULT_COOKIE);
+    public static final @NonNull Uint16 DEFAULT_FLOW_PRIORITY = Uint16.valueOf(0x8000).intern();
     /** Empty flow match. */
-    public static final Match EMPTY_MATCH = new MatchBuilder().build();
+    public static final @NonNull Match EMPTY_MATCH = new MatchBuilder().build();
 
     /** indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */
-    public static final Uint32 OFP_NO_BUFFER = Uint32.valueOf(0xffffffffL).intern();
+    public static final @NonNull Uint32 OFP_NO_BUFFER = Uint32.valueOf(0xffffffffL).intern();
     /** enum ofp_controller_max_len: indicates that no buffering should be applied and the whole packet is to be
      *  sent to the controller. */
-    public static final Uint16 OFPCML_NO_BUFFER = Uint16.MAX_VALUE;
+    public static final @NonNull Uint16 OFPCML_NO_BUFFER = Uint16.MAX_VALUE;
 
     public static final int MAC_ADDRESS_LENGTH = 6;
     public static final int SIGNUM_UNSIGNED = 1;
 
     /** RpcError application tag. */
-    public static final ErrorTag APPLICATION_TAG = new ErrorTag("OPENFLOW_PLUGIN");
+    public static final @NonNull ErrorTag APPLICATION_TAG = new ErrorTag("OPENFLOW_PLUGIN");
 
     /** Persistent ID of OpenFlowPlugin configuration file. */
-    public static final String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";
+    public static final @NonNull String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";
 
     /** supported version ordered by height (highest version is at the beginning). */
-    public static final List<Uint8> VERSION_ORDER = List.of(OFP_VERSION_1_3, OFP_VERSION_1_0);
+    public static final @NonNull List<Uint8> VERSION_ORDER = List.of(OFP_VERSION_1_3, OFP_VERSION_1_0);
 
     private OFConstants() {
         // Hidden on purpose

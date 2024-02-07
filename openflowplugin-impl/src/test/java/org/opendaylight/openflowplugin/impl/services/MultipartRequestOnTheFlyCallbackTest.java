@@ -17,8 +17,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,7 +135,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
         final InstanceIdentifier<FlowCapableNode> nodePath =
                 mockedDeviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
-        flowNodeBuilder.setTable(Collections.emptyMap());
+        flowNodeBuilder.setTable(Map.of());
         final Optional<FlowCapableNode> flowNodeOpt = Optional.of(flowNodeBuilder.build());
         dummyRequestContext = new AbstractRequestContext<>(DUMMY_XID) {
 
@@ -160,7 +160,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     public void testOnSuccessWithNull() throws Exception {
         multipartRequestOnTheFlyCallback.onSuccess(null);
         final RpcResult<List<MultipartReply>> expectedRpcResult =
-                RpcResultBuilder.success(Collections.<MultipartReply>emptyList()).build();
+                RpcResultBuilder.success(List.<MultipartReply>of()).build();
         final RpcResult<List<MultipartReply>> actualResult = dummyRequestContext.getFuture().get();
         assertEquals(expectedRpcResult.getErrors(), actualResult.getErrors());
         assertEquals(expectedRpcResult.getResult(), actualResult.getResult());
@@ -199,7 +199,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
     @Test
     public void testOnSuccessWithValidMultipart1() {
         final MatchBuilder matchBuilder = new MatchBuilder()
-                .setMatchEntry(Collections.emptyList());
+                .setMatchEntry(List.of());
         final FlowStatsBuilder flowStatsBuilder = new FlowStatsBuilder()
                 .setTableId(tableId)
                 .setPriority(Uint16.TWO)
@@ -211,7 +211,7 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 .setMatch(matchBuilder.build())
                 .setFlags(new FlowModFlags(true, false, false, false, false));
         final MultipartReplyFlowBuilder multipartReplyFlowBuilder = new MultipartReplyFlowBuilder()
-                .setFlowStats(Collections.singletonList(flowStatsBuilder.build()));
+                .setFlowStats(List.of(flowStatsBuilder.build()));
         final MultipartReplyFlowCaseBuilder multipartReplyFlowCaseBuilder = new MultipartReplyFlowCaseBuilder()
                 .setMultipartReplyFlow(multipartReplyFlowBuilder.build());
         final MultipartReplyMessageBuilder mpReplyMessage = new MultipartReplyMessageBuilder()

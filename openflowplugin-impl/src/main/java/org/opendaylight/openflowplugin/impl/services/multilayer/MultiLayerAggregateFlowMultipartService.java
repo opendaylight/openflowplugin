@@ -99,7 +99,7 @@ public class MultiLayerAggregateFlowMultipartService extends AbstractAggregateFl
         final Optional<Object> conversionMatch = convertorExecutor.convert(input.getMatch(), data);
         MatchInjector.inject(conversionMatch, mprAggregateRequestBuilder, data.getVersion());
 
-        FlowCreatorUtil.setWildcardedFlowMatch(version, mprAggregateRequestBuilder);
+        FlowCreatorUtil.forVersion(version).setWildcardedFlowMatch(mprAggregateRequestBuilder);
 
         // Set request body to main multipart request
         multipartRequestAggregateCaseBuilder.setMultipartRequestAggregate(mprAggregateRequestBuilder.build());
