@@ -46,8 +46,6 @@ import org.opendaylight.openflowplugin.impl.connection.listener.OpenflowProtocol
 import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificationsListenerImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -111,13 +109,11 @@ public class ConnectionManagerImpl implements ConnectionManager {
                 connectionContext, handshakeContext);
         connectionAdapter.setConnectionReadyListener(connectionReadyListener);
 
-        final OpenflowProtocolListener ofMessageListener =
-                new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext);
-        connectionAdapter.setMessageListener(ofMessageListener);
+        connectionAdapter.setMessageListener(
+            new OpenflowProtocolListenerInitialImpl(connectionContext, handshakeContext));
 
-        final SystemNotificationsListener systemListener = new SystemNotificationsListenerImpl(connectionContext,
-                config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService);
-        connectionAdapter.setSystemListener(systemListener);
+        connectionAdapter.setSystemListener(new SystemNotificationsListenerImpl(connectionContext,
+                config.getEchoReplyTimeout().getValue().toJava(), executorService, notificationPublishService));
 
         LOG.trace("connection ballet finished");
     }

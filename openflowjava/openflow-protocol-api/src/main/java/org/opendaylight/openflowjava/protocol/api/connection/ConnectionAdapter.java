@@ -14,11 +14,14 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.openflowjava.protocol.api.extensibility.AlienMessageListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolService;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SystemNotificationsListener;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SslConnectionError;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.SwitchIdleEvent;
 
 /**
  * Manages a switch connection.
@@ -27,6 +30,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.S
  * @author michal.polkorab
  */
 public interface ConnectionAdapter extends OpenflowProtocolService {
+    @NonNullByDefault
+    interface SystemListener {
+        void onDisconnect(DisconnectEvent disconnect);
+
+        void onSwitchIdle(SwitchIdleEvent switchIdle);
+
+        void onSslConnectionError(SslConnectionError sslConnectionError);
+    }
 
     /**
      * Disconnect corresponding switch.
@@ -61,7 +72,7 @@ public interface ConnectionAdapter extends OpenflowProtocolService {
      *
      * @param systemListener here will be pushed all system messages from library
      */
-    void setSystemListener(SystemNotificationsListener systemListener);
+    void setSystemListener(SystemListener systemListener);
 
     /**
      * Set handler for alien messages received from device.

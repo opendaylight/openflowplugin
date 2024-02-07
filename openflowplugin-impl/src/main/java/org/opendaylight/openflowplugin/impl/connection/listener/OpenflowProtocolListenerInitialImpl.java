@@ -7,11 +7,15 @@
  */
 package org.opendaylight.openflowplugin.impl.connection.listener;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.impl.connection.HandshakeStepWrapper;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyInputBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoReplyOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
@@ -21,6 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
+import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,15 +49,23 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
 
     @Override
     public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("echo request received: {}", echoRequestMessage.getXid());
-        }
-        EchoReplyInputBuilder builder = new EchoReplyInputBuilder();
-        builder.setVersion(echoRequestMessage.getVersion());
-        builder.setXid(echoRequestMessage.getXid());
-        builder.setData(echoRequestMessage.getData());
+        final var xid = echoRequestMessage.getXid();
+        LOG.debug("echo request received: {}", xid);
+        Futures.addCallback(connectionContext.getConnectionAdapter().echoReply(new EchoReplyInputBuilder()
+            .setXid(xid)
+            .setData(echoRequestMessage.getData())
+            .build()),
+            new FutureCallback<>() {
+                @Override
+                public void onSuccess(final RpcResult<EchoReplyOutput> result) {
+                    LOG.debug("echo reply sent: {}", xid);
+                }
 
-        connectionContext.getConnectionAdapter().echoReply(builder.build());
+                @Override
+                public void onFailure(final Throwable cause) {
+                    LOG.debug("echo reply failed: {}", xid, cause);
+                }
+            }, MoreExecutors.directExecutor());
     }
 
     @Override
