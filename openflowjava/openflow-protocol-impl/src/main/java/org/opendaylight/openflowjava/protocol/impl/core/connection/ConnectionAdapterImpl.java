@@ -41,7 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEvent;
@@ -66,7 +65,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     private static final Logger LOG = LoggerFactory.getLogger(ConnectionAdapterImpl.class);
 
     private ConnectionReadyListener connectionReadyListener;
-    private OpenflowProtocolListener messageListener;
+    private MessageListener messageListener;
     private SystemListener systemListener;
     private AlienMessageListener alienMessageListener;
     private AbstractOutboundQueueManager<?, ?> outputManager;
@@ -91,7 +90,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
     }
 
     @Override
-    public void setMessageListener(final OpenflowProtocolListener messageListener) {
+    public void setMessageListener(final MessageListener messageListener) {
         this.messageListener = messageListener;
     }
 
@@ -136,32 +135,32 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
                 if (outputManager != null) {
                     outputManager.onEchoRequest(echoRequest, datapathId);
                 } else {
-                    messageListener.onEchoRequestMessage(echoRequest);
+                    messageListener.onEchoRequest(echoRequest);
                 }
             } else if (message instanceof ErrorMessage error) {
                 // Send only unmatched errors
                 if (outputManager == null || !outputManager.onMessage(error)) {
-                    messageListener.onErrorMessage(error);
+                    messageListener.onError(error);
                 }
             } else if (message instanceof ExperimenterMessage experimenter) {
                 if (outputManager != null) {
                     outputManager.onMessage(experimenter);
                 }
-                messageListener.onExperimenterMessage(experimenter);
+                messageListener.onExperimenter(experimenter);
             } else if (message instanceof FlowRemovedMessage flowRemoved) {
-                messageListener.onFlowRemovedMessage(flowRemoved);
+                messageListener.onFlowRemoved(flowRemoved);
             } else if (message instanceof HelloMessage hello) {
                 LOG.info("Hello received");
-                messageListener.onHelloMessage(hello);
+                messageListener.onHello(hello);
             } else if (message instanceof MultipartReplyMessage multipartReply) {
                 if (outputManager != null) {
                     outputManager.onMessage(multipartReply);
                 }
-                messageListener.onMultipartReplyMessage(multipartReply);
+                messageListener.onMultipartReply(multipartReply);
             } else if (message instanceof PacketInMessage packetIn) {
-                messageListener.onPacketInMessage(packetIn);
+                messageListener.onPacketIn(packetIn);
             } else if (message instanceof PortStatusMessage portStatus) {
-                messageListener.onPortStatusMessage(portStatus);
+                messageListener.onPortStatus(portStatus);
             } else {
                 LOG.warn("message listening not supported for type: {}", message.getClass());
             }

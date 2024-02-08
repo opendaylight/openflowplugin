@@ -59,7 +59,7 @@ public class OpenflowProtocolListenerInitialImplTest {
     public void testOnEchoRequestMessage() {
         when(connectionAdapter.echoReply(any())).thenReturn(Futures.immediateFuture(null));
 
-        openflowProtocolListenerInitial.onEchoRequestMessage(
+        openflowProtocolListenerInitial.onEchoRequest(
             new EchoRequestMessageBuilder()
                 .setXid(Uint32.valueOf(42))
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
@@ -70,10 +70,10 @@ public class OpenflowProtocolListenerInitialImplTest {
 
     @Test
     public void testOnHelloMessage() {
-        HelloMessageBuilder helloMessageBld = new HelloMessageBuilder()
-                .setXid(Uint32.valueOf(42))
-                .setVersion(EncodeConstants.OF_VERSION_1_3);
-        openflowProtocolListenerInitial.onHelloMessage(helloMessageBld.build());
+        openflowProtocolListenerInitial.onHello(new HelloMessageBuilder()
+            .setXid(Uint32.valueOf(42))
+            .setVersion(EncodeConstants.OF_VERSION_1_3)
+            .build());
 
         verify(handshakeManager).shake(any());
     }

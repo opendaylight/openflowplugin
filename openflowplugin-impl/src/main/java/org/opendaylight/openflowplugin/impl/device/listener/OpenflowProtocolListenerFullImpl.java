@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, OpenflowMessageListenerFacade {
-
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerFullImpl.class);
 
     private final ConnectionAdapter connectionAdapter;
@@ -49,7 +48,7 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
     }
 
     @Override
-    public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
+    public void onEchoRequest(final EchoRequestMessage echoRequestMessage) {
         final var xid = echoRequestMessage.getXid();
         LOG.debug("echo request received: {}", xid);
         Futures.addCallback(connectionAdapter.echoReply(
@@ -72,30 +71,30 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
     }
 
     @Override
-    public void onErrorMessage(final ErrorMessage notification) {
+    public void onError(final ErrorMessage notification) {
         deviceReplyProcessor.processReply(notification);
     }
 
     @Override
-    public void onExperimenterMessage(final ExperimenterMessage notification) {
+    public void onExperimenter(final ExperimenterMessage notification) {
         LOG.trace("Received experiementer message: {}", notification.getClass());
         deviceReplyProcessor.processExperimenterMessage(notification);
     }
 
     @Override
-    public void onFlowRemovedMessage(final FlowRemovedMessage notification) {
+    public void onFlowRemoved(final FlowRemovedMessage notification) {
         deviceReplyProcessor.processFlowRemovedMessage(notification);
     }
 
     @Override
-    public void onHelloMessage(final HelloMessage hello) {
+    public void onHello(final HelloMessage hello) {
         LOG.warn("hello message received outside handshake phase -> dropping connection {}",
                 connectionAdapter.getRemoteAddress());
         connectionAdapter.disconnect();
     }
 
     @Override
-    public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
+    public void onMultipartReply(final MultipartReplyMessage notification) {
         if (LOG.isTraceEnabled()) {
             LOG.trace("Multipart Reply with XID: {}", notification.getXid());
         }
@@ -103,12 +102,12 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
     }
 
     @Override
-    public void onPacketInMessage(final PacketInMessage notification) {
+    public void onPacketIn(final PacketInMessage notification) {
         deviceReplyProcessor.processPacketInMessage(notification);
     }
 
     @Override
-    public void onPortStatusMessage(final PortStatusMessage notification) {
+    public void onPortStatus(final PortStatusMessage notification) {
         deviceReplyProcessor.processPortStatusMessage(notification);
     }
 
@@ -116,5 +115,4 @@ public class OpenflowProtocolListenerFullImpl implements AlienMessageListener, O
     public boolean onAlienMessage(final OfHeader message) {
         return deviceReplyProcessor.processAlienMessage(message);
     }
-
 }
