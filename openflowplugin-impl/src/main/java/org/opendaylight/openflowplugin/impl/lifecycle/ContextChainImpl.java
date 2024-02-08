@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.impl.lifecycle;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -32,6 +33,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainStateL
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.DeviceInitializationContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.GuardedContext;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ReconciliationFrameworkStep;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,15 +53,14 @@ public class ContextChainImpl implements ContextChain {
     private final ConnectionContext primaryConnection;
     private final AtomicReference<ContextChainState> contextChainState =
             new AtomicReference<>(ContextChainState.UNDEFINED);
-    private AutoCloseable registration;
+    private Registration registration;
 
-    ContextChainImpl(@NonNull final ContextChainMastershipWatcher contextChainMastershipWatcher,
-                     @NonNull final ConnectionContext connectionContext,
-                     @NonNull final Executor executor) {
-        this.contextChainMastershipWatcher = contextChainMastershipWatcher;
-        this.primaryConnection = connectionContext;
-        this.deviceInfo = connectionContext.getDeviceInfo();
-        this.executor = executor;
+    ContextChainImpl(final @NonNull ContextChainMastershipWatcher contextChainMastershipWatcher,
+            final @NonNull ConnectionContext connectionContext, final @NonNull Executor executor) {
+        this.contextChainMastershipWatcher = requireNonNull(contextChainMastershipWatcher);
+        primaryConnection = requireNonNull(connectionContext);
+        this.executor = requireNonNull(executor);
+        deviceInfo = connectionContext.getDeviceInfo();
     }
 
     @Override
@@ -97,7 +98,6 @@ public class ContextChainImpl implements ContextChain {
         }, executor);
     }
 
-    @NonNull
     @Override
     public ServiceGroupIdentifier getIdentifier() {
         return deviceInfo.getServiceIdentifier();
@@ -120,15 +120,10 @@ public class ContextChainImpl implements ContextChain {
 
         // If we are still registered and we are not already closing, then close the registration
         if (registration != null) {
-            try {
-                registration.close();
-                registration = null;
-                LOG.info("Closed clustering services registration for node {}", deviceInfo);
-                OF_EVENT_LOG.debug("Closed clustering services registration for node {}", deviceInfo);
-            } catch (final Exception e) {
-                LOG.warn("Failed to close clustering services registration for node {} with exception: ",
-                        deviceInfo, e);
-            }
+            registration.close();
+            registration = null;
+            LOG.info("Closed clustering services registration for node {}", deviceInfo);
+            OF_EVENT_LOG.debug("Closed clustering services registration for node {}", deviceInfo);
         }
 
 
@@ -152,30 +147,29 @@ public class ContextChainImpl implements ContextChain {
 
     @Override
     public void registerServices(final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        registration = Objects.requireNonNull(clusterSingletonServiceProvider
-                .registerClusterSingletonService(this));
+        registration = clusterSingletonServiceProvider.registerClusterSingletonService(this);
         LOG.debug("Registered clustering services for node {}", deviceInfo);
         OF_EVENT_LOG.debug("Registered Clustering Services, Node: {}", deviceInfo);
     }
 
     @Override
-    public boolean isMastered(@NonNull final ContextChainMastershipState mastershipState,
-                              final boolean inReconciliationFrameworkStep) {
+    public boolean isMastered(final ContextChainMastershipState mastershipState,
+            final boolean inReconciliationFrameworkStep) {
         switch (mastershipState) {
             case INITIAL_SUBMIT:
                 LOG.debug("Device {}, initial submit OK.", deviceInfo);
                 OF_EVENT_LOG.debug("Device {}, initial submit OK.", deviceInfo);
-                this.initialSubmitting.set(true);
+                initialSubmitting.set(true);
                 break;
             case MASTER_ON_DEVICE:
                 LOG.debug("Device {}, master state OK.", deviceInfo);
                 OF_EVENT_LOG.debug("Device {}, master state OK.", deviceInfo);
-                this.masterStateOnDevice.set(true);
+                masterStateOnDevice.set(true);
                 break;
             case RPC_REGISTRATION:
                 LOG.debug("Device {}, RPC registration OK.", deviceInfo);
                 OF_EVENT_LOG.debug("Device {}, RPC registration OK.", deviceInfo);
-                this.rpcRegistration.set(true);
+                rpcRegistration.set(true);
                 break;
             case CHECK:
                 // no operation
@@ -237,12 +231,12 @@ public class ContextChainImpl implements ContextChain {
     }
 
     private void changeMastershipState(final ContextChainState newContextChainState) {
-        if (ContextChainState.CLOSED.equals(this.contextChainState.get())) {
+        if (ContextChainState.CLOSED.equals(contextChainState.get())) {
             return;
         }
 
-        boolean propagate = ContextChainState.UNDEFINED.equals(this.contextChainState.get());
-        this.contextChainState.set(newContextChainState);
+        boolean propagate = ContextChainState.UNDEFINED.equals(contextChainState.get());
+        contextChainState.set(newContextChainState);
 
         if (propagate) {
             contexts.forEach(context -> {
