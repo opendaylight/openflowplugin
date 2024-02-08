@@ -50,7 +50,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
@@ -216,15 +215,15 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return updated or original instruction
      */
     private static Instruction updateInstruction(final Instruction instruction, final Uint8 protocol) {
-        if (instruction instanceof ApplyActionsCase) {
-            final var actions = ((ApplyActionsCase) instruction).getApplyActions();
+        if (instruction instanceof ApplyActionsCase applyActionsCase) {
+            final var actions = applyActionsCase.getApplyActions();
             if (actions != null) {
                 return new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
                         .setAction(actions.nonnullAction().values().stream()
                             .filter(Objects::nonNull)
                             .map(a -> updateSetTpActions(a, protocol))
-                            .collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                            .collect(BindingMap.toOrderedMap()))
                         .build())
                     .build();
             }
@@ -240,28 +239,23 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return updated OpenFlow action
      */
     private static Action updateSetTpActions(final Action action, final Uint8 protocol) {
-        if (action.getAction() instanceof SetTpSrcActionCase) {
-            final SetTpSrcActionCase actionCase = (SetTpSrcActionCase) action.getAction();
-
+        if (action.getAction() instanceof SetTpSrcActionCase actionCase) {
             return new ActionBuilder(action)
-                    .setAction(new SetTpSrcActionCaseBuilder(actionCase)
-                            .setSetTpSrcAction(new SetTpSrcActionBuilder(
-                                    actionCase.getSetTpSrcAction())
-                                    .setIpProtocol(protocol)
-                                    .build())
-                            .build())
-                    .build();
-        } else if (action.getAction() instanceof SetTpDstActionCase) {
-            final SetTpDstActionCase actionCase = (SetTpDstActionCase) action.getAction();
-
+                .setAction(new SetTpSrcActionCaseBuilder(actionCase)
+                    .setSetTpSrcAction(new SetTpSrcActionBuilder(
+                        actionCase.getSetTpSrcAction())
+                        .setIpProtocol(protocol)
+                        .build())
+                    .build())
+                .build();
+        } else if (action.getAction() instanceof SetTpDstActionCase actionCase) {
             return new ActionBuilder(action)
-                    .setAction(new SetTpDstActionCaseBuilder(actionCase)
-                            .setSetTpDstAction(new SetTpDstActionBuilder(
-                                    actionCase.getSetTpDstAction())
-                                    .setIpProtocol(protocol)
-                                    .build())
-                            .build())
-                    .build();
+                .setAction(new SetTpDstActionCaseBuilder(actionCase)
+                    .setSetTpDstAction(new SetTpDstActionBuilder(actionCase.getSetTpDstAction())
+                        .setIpProtocol(protocol)
+                        .build())
+                    .build())
+                .build();
         }
 
         // Return original action if no modifications are needed
@@ -281,23 +275,18 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
                 updateSetVlanIdAction(final FlowMessage message) {
-        return message.getInstructions().nonnullInstruction().values()
-                .stream()
+        return message.getInstructions().nonnullInstruction().values().stream()
                 .map(FlowMessageSerializer::updateSetVlanIdAction)
-                .collect(BindingMap.<
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
-                        toOrderedMap());
+                .collect(BindingMap.toOrderedMap());
     }
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
             updateSetVlanIdAction(final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
                 .list.Instruction insn) {
-        final Instruction instruction = insn.getInstruction();
-        if (instruction instanceof ApplyActionsCase) {
-            final ApplyActions actions = ((ApplyActionsCase) instruction).getApplyActions();
+        if (insn.getInstruction() instanceof ApplyActionsCase applyActionsCase) {
+            final var actions = applyActionsCase.getApplyActions();
             if (actions != null) {
-                final int[] offset = {0};
+                final int[] offset = { 0 };
 
                 return Optional.of(actions)
                     .flatMap(as -> Optional.ofNullable(as.nonnullAction()))
@@ -307,16 +296,13 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                             final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
                                 .action.list.Action> actionList = new ArrayList<>();
 
-                            // If current action is SetVlanId, insert PushVlan action before it and
-                            // update order
-                            if (action.getAction() instanceof SetVlanIdActionCase) {
+                            // If current action is SetVlanId, insert PushVlan action before it and update order
+                            if (action.getAction() instanceof SetVlanIdActionCase setVlanIdActionCase) {
                                 actionList.add(new ActionBuilder()
                                     .setAction(new PushVlanActionCaseBuilder()
                                         .setPushVlanAction(new PushVlanActionBuilder()
                                             .setCfi(PUSH_CFI)
-                                            .setVlanId(((SetVlanIdActionCase) action
-                                                .getAction()).getSetVlanIdAction()
-                                                .getVlanId())
+                                            .setVlanId(setVlanIdActionCase.getSetVlanIdAction().getVlanId())
                                             .setEthernetType(PUSH_VLAN)
                                             .setTag(PUSH_TAG)
                                             .build())
@@ -324,7 +310,6 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                                     .withKey(action.key())
                                     .setOrder(action.getOrder() + offset[0])
                                     .build());
-
                                 offset[0]++;
                             }
 
@@ -340,12 +325,11 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                     .map(as -> new InstructionBuilder(insn)
                         .setInstruction(new ApplyActionsCaseBuilder()
                             .setApplyActions(new ApplyActionsBuilder()
-                                .setAction(as.collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                                .setAction(as.collect(BindingMap.toOrderedMap()))
                                 .build())
                             .build())
                         .build())
                     .orElse(insn);
-
             }
         }
         return insn;
