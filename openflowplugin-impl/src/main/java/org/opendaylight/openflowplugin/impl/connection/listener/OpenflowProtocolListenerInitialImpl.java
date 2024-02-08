@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.Objects;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.MessageListener;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
 import org.opendaylight.openflowplugin.api.openflow.connection.HandshakeContext;
 import org.opendaylight.openflowplugin.impl.connection.HandshakeStepWrapper;
@@ -22,14 +23,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolListener {
+public class OpenflowProtocolListenerInitialImpl implements MessageListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpenflowProtocolListenerInitialImpl.class);
 
     private final ConnectionContext connectionContext;
@@ -42,13 +42,13 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
      * @param handshakeContext - handshake context
      */
     public OpenflowProtocolListenerInitialImpl(final ConnectionContext connectionContext,
-                                               final HandshakeContext handshakeContext) {
+            final HandshakeContext handshakeContext) {
         this.connectionContext = connectionContext;
         this.handshakeContext = handshakeContext;
     }
 
     @Override
-    public void onEchoRequestMessage(final EchoRequestMessage echoRequestMessage) {
+    public void onEchoRequest(final EchoRequestMessage echoRequestMessage) {
         final var xid = echoRequestMessage.getXid();
         LOG.debug("echo request received: {}", xid);
         Futures.addCallback(connectionContext.getConnectionAdapter().echoReply(
@@ -67,22 +67,22 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
     }
 
     @Override
-    public void onErrorMessage(final ErrorMessage notification) {
+    public void onError(final ErrorMessage notification) {
         LOG.debug("NOOP: Error message received during handshake phase: {}", notification);
     }
 
     @Override
-    public void onExperimenterMessage(final ExperimenterMessage notification) {
+    public void onExperimenter(final ExperimenterMessage notification) {
         LOG.debug("NOOP: Experimenter message during handshake phase not supported: {}", notification);
     }
 
     @Override
-    public void onFlowRemovedMessage(final FlowRemovedMessage notification) {
+    public void onFlowRemoved(final FlowRemovedMessage notification) {
         LOG.debug("NOOP: Flow-removed message during handshake phase not supported: {}", notification);
     }
 
     @Override
-    public void onHelloMessage(final HelloMessage hello) {
+    public void onHello(final HelloMessage hello) {
         LOG.debug("processing HELLO.xid: {} from device {}", hello.getXid(),
                 connectionContext.getConnectionAdapter().getRemoteAddress());
         final ConnectionContext.CONNECTION_STATE connectionState = connectionContext.getConnectionState();
@@ -95,8 +95,8 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
                 }
 
                 if (checkState(ConnectionContext.CONNECTION_STATE.HANDSHAKING)) {
-                    final HandshakeStepWrapper handshakeStepWrapper = new HandshakeStepWrapper(
-                            hello, handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
+                    final var handshakeStepWrapper = new HandshakeStepWrapper(hello,
+                        handshakeContext.getHandshakeManager(), connectionContext.getConnectionAdapter());
                     // use up netty thread
                     handshakeStepWrapper.run();
                 } else {
@@ -113,17 +113,17 @@ public class OpenflowProtocolListenerInitialImpl implements OpenflowProtocolList
     }
 
     @Override
-    public void onMultipartReplyMessage(final MultipartReplyMessage notification) {
+    public void onMultipartReply(final MultipartReplyMessage notification) {
         LOG.debug("NOOP: Multipart-reply message during handshake phase not supported: {}", notification);
     }
 
     @Override
-    public void onPacketInMessage(final PacketInMessage notification) {
+    public void onPacketIn(final PacketInMessage notification) {
         LOG.debug("NOOP: Packet-in message during handshake phase not supported: {}", notification);
     }
 
     @Override
-    public void onPortStatusMessage(final PortStatusMessage notification) {
+    public void onPortStatus(final PortStatusMessage notification) {
         connectionContext.handlePortStatusMessage(notification);
     }
 

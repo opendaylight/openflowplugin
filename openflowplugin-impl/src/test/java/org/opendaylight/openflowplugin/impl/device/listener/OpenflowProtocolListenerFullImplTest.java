@@ -27,13 +27,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
@@ -65,7 +62,7 @@ public class OpenflowProtocolListenerFullImplTest {
         connectionAdapter.setMessageListener(ofProtocolListener);
         when(connectionAdapter.getRemoteAddress())
                 .thenReturn(InetSocketAddress.createUnresolved("ofp-junit.example.org", 6663));
-        verify(connectionAdapter).setMessageListener(any(OpenflowProtocolListener.class));
+        verify(connectionAdapter).setMessageListener(any());
     }
 
     @After
@@ -75,13 +72,13 @@ public class OpenflowProtocolListenerFullImplTest {
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onEchoRequestMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onEchoRequest(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.EchoRequestMessage)}.
      */
     @Test
     public void testOnEchoRequestMessage() {
         when(connectionAdapter.echoReply(any())).thenReturn(Futures.immediateFuture(null));
-        ofProtocolListener.onEchoRequestMessage(
+        ofProtocolListener.onEchoRequest(
             new EchoRequestMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(connectionAdapter).echoReply(any(EchoReplyInput.class));
@@ -89,56 +86,52 @@ public class OpenflowProtocolListenerFullImplTest {
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onErrorMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onError(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ErrorMessage)}.
      */
     @Test
     public void testOnErrorMessage() {
-        ErrorMessage errorMessage = new ErrorMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build();
-        ofProtocolListener.onErrorMessage(errorMessage);
+        ofProtocolListener.onError(
+            new ErrorMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(deviceReplyProcessor).processReply(any(ErrorMessage.class));
     }
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onExperimenterMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onExperimenter(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterMessage)}.
      */
     @Test
     public void testOnExperimenterMessage() {
-        ExperimenterMessage experimenterMessage = new ExperimenterMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build();
-        ofProtocolListener.onExperimenterMessage(experimenterMessage);
+        ofProtocolListener.onExperimenter(
+            new ExperimenterMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(deviceReplyProcessor).processExperimenterMessage(any());
     }
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onFlowRemovedMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onFlowRemoved(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessage)}.
      */
     @Test
     public void testOnFlowRemovedMessage() {
-        FlowRemovedMessage flowRemovedMessage = new FlowRemovedMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build();
-        ofProtocolListener.onFlowRemovedMessage(flowRemovedMessage);
+        ofProtocolListener.onFlowRemoved(
+            new FlowRemovedMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(deviceReplyProcessor).processFlowRemovedMessage(any(FlowRemovedMessage.class));
     }
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onHelloMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onHello(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage)}.
      */
     @Test
     public void testOnHelloMessage() {
-        HelloMessage helloMessage = new HelloMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build();
-        ofProtocolListener.onHelloMessage(helloMessage);
+        ofProtocolListener.onHello(
+            new HelloMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(connectionAdapter).getRemoteAddress();
         verify(connectionAdapter).disconnect();
@@ -146,28 +139,26 @@ public class OpenflowProtocolListenerFullImplTest {
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onPacketInMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onPacketIn(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage)}.
      */
     @Test
     public void testOnPacketInMessage() {
-        PacketInMessage packetInMessage = new PacketInMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build();
-        ofProtocolListener.onPacketInMessage(packetInMessage);
+        ofProtocolListener.onPacketIn(
+            new PacketInMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(deviceReplyProcessor).processPacketInMessage(any(PacketInMessage.class));
     }
 
     /**
      * Test method for
-     * {@link OpenflowProtocolListenerFullImpl#onPortStatusMessage(
+     * {@link OpenflowProtocolListenerFullImpl#onPortStatus(
      * org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage)}.
      */
     @Test
     public void testOnPortStatusMessage() {
-        PortStatusMessage portStatusMessage = new PortStatusMessageBuilder()
-                .setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build();
-        ofProtocolListener.onPortStatusMessage(portStatusMessage);
+        ofProtocolListener.onPortStatus(
+            new PortStatusMessageBuilder().setVersion(EncodeConstants.OF_VERSION_1_3).setXid(xid).build());
 
         verify(deviceReplyProcessor).processPortStatusMessage(any(PortStatusMessage.class));
     }

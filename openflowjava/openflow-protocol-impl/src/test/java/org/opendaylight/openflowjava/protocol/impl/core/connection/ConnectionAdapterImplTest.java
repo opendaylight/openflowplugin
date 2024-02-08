@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.MessageListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.SystemListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -47,7 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReplyMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketInMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
@@ -78,7 +78,7 @@ public class ConnectionAdapterImplTest {
     @Mock
     ChannelPipeline pipeline;
     @Mock
-    private OpenflowProtocolListener messageListener;
+    private MessageListener messageListener;
     @Mock
     private SystemListener systemListener;
     @Mock
@@ -115,28 +115,28 @@ public class ConnectionAdapterImplTest {
     public void testConsume() {
         DataObject message = new EchoRequestMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onEchoRequestMessage((EchoRequestMessage) message);
+        verify(messageListener, times(1)).onEchoRequest((EchoRequestMessage) message);
         message = new ErrorMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onErrorMessage((ErrorMessage) message);
+        verify(messageListener, times(1)).onError((ErrorMessage) message);
         message = new ExperimenterMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onExperimenterMessage((ExperimenterMessage) message);
+        verify(messageListener, times(1)).onExperimenter((ExperimenterMessage) message);
         message = new FlowRemovedMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onFlowRemovedMessage((FlowRemovedMessage) message);
+        verify(messageListener, times(1)).onFlowRemoved((FlowRemovedMessage) message);
         message = new HelloMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onHelloMessage((HelloMessage) message);
+        verify(messageListener, times(1)).onHello((HelloMessage) message);
         message = new MultipartReplyMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onMultipartReplyMessage((MultipartReplyMessage) message);
+        verify(messageListener, times(1)).onMultipartReply((MultipartReplyMessage) message);
         message = new PacketInMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onPacketInMessage((PacketInMessage) message);
+        verify(messageListener, times(1)).onPacketIn((PacketInMessage) message);
         message = new PortStatusMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onPortStatusMessage((PortStatusMessage) message);
+        verify(messageListener, times(1)).onPortStatus((PortStatusMessage) message);
         message = new SwitchIdleEventBuilder().build();
         adapter.consume(message);
         verify(systemListener, times(1)).onSwitchIdle((SwitchIdleEvent) message);
@@ -145,7 +145,7 @@ public class ConnectionAdapterImplTest {
         verify(systemListener, times(1)).onDisconnect((DisconnectEvent) message);
         message = new EchoRequestMessageBuilder().build();
         adapter.consume(message);
-        verify(messageListener, times(1)).onEchoRequestMessage((EchoRequestMessage) message);
+        verify(messageListener, times(1)).onEchoRequest((EchoRequestMessage) message);
     }
 
     /**
@@ -154,10 +154,7 @@ public class ConnectionAdapterImplTest {
     @Test
     public void testConsume2() {
         adapter.setResponseCache(mockCache);
-        final BarrierOutputBuilder barrierBuilder = new BarrierOutputBuilder();
-        barrierBuilder.setXid(Uint32.valueOf(42));
-        final BarrierOutput barrier = barrierBuilder.build();
-        adapter.consume(barrier);
+        adapter.consume(new BarrierOutputBuilder().setXid(Uint32.valueOf(42)).build());
         verify(mockCache, times(1)).getIfPresent(any(RpcResponseKey.class));
     }
 

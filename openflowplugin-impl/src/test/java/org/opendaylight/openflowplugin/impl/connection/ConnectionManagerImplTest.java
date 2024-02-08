@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
+import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter.MessageListener;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionReadyListener;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -41,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OpenflowProtocolListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -69,7 +69,7 @@ public class ConnectionManagerImplTest {
     @Captor
     private ArgumentCaptor<ConnectionReadyListener> connectionReadyListenerAC;
     @Captor
-    private ArgumentCaptor<OpenflowProtocolListener> ofpListenerAC;
+    private ArgumentCaptor<MessageListener> ofpListenerAC;
     @Mock
     DataBroker dataBroker;
 
@@ -148,7 +148,7 @@ public class ConnectionManagerImplTest {
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(Uint32.ONE)
                 .build();
-        ofpListenerAC.getValue().onHelloMessage(hello);
+        ofpListenerAC.getValue().onHello(hello);
 
         // deliver getFeature output
         Thread.sleep(100L);
@@ -202,7 +202,7 @@ public class ConnectionManagerImplTest {
                 .setVersion(EncodeConstants.OF_VERSION_1_3)
                 .setXid(Uint32.ONE)
                 .build();
-        ofpListenerAC.getValue().onHelloMessage(hello);
+        ofpListenerAC.getValue().onHello(hello);
 
         // notify about connection ready
         connectionReadyListenerAC.getValue().onConnectionReady();
