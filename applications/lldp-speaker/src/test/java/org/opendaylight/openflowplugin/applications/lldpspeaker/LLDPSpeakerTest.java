@@ -26,6 +26,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.opendaylight.mdsal.binding.api.RpcConsumerRegistry;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -37,10 +39,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.config.rev160512.LldpSpeakerConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -59,13 +60,17 @@ public class LLDPSpeakerTest {
     private TransmitPacketInput packetInput;
 
     @Mock
-    private PacketProcessingService packetProcessingService;
+    private TransmitPacket transmitPacket;
     @Mock
     private ScheduledExecutorService scheduledExecutorService;
     @Mock
     private ScheduledFuture scheduledSpeakerTask;
     @Mock
     private DeviceOwnershipService deviceOwnershipService;
+    @Mock
+    private RpcConsumerRegistry rpcService;
+    @Mock
+    private RpcProviderService rpcProviderService;
 
     private LLDPSpeaker lldpSpeaker;
 
@@ -76,14 +81,14 @@ public class LLDPSpeakerTest {
         packetInput = new TransmitPacketInputBuilder().setEgress(new NodeConnectorRef(ID))
                 .setNode(new NodeRef(ID.firstIdentifierOf(Node.class))).setPayload(lldpFrame).build();
 
-        when(scheduledExecutorService.scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(),
-                any(TimeUnit.class))).thenReturn(scheduledSpeakerTask);
-        lldpSpeaker = new LLDPSpeaker(packetProcessingService, scheduledExecutorService,
-                new LldpSpeakerConfigBuilder().setAddressDestination(null).build(), deviceOwnershipService);
+        doReturn(transmitPacket).when(rpcService).getRpc(TransmitPacket.class);
+        doReturn(scheduledSpeakerTask).when(scheduledExecutorService)
+            .scheduleAtFixedRate(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+        lldpSpeaker = new LLDPSpeaker(scheduledExecutorService, deviceOwnershipService, rpcService, rpcProviderService,
+                null);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
-        lldpSpeaker.setOperationalStatus(OperStatus.RUN);
 
-        doReturn(RpcResultBuilder.success().buildFuture()).when(packetProcessingService).transmitPacket(any());
+        doReturn(RpcResultBuilder.success().buildFuture()).when(transmitPacket).invoke(any());
     }
 
     /**
@@ -91,7 +96,7 @@ public class LLDPSpeakerTest {
      */
     @Test
     public void testStandBy() {
-        lldpSpeaker.setOperationalStatus(OperStatus.STANDBY);
+        lldpSpeaker.changeOperationalStatus(OperStatus.STANDBY);
         // Add node connector - LLDP packet should be transmitted through
         // packetProcessingService
         lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
@@ -101,8 +106,8 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -122,8 +127,8 @@ public class LLDPSpeakerTest {
         lldpSpeaker.run();
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -143,8 +148,8 @@ public class LLDPSpeakerTest {
 
         // Verify that LLDP frame sent only once (by nodeConnectorAdded),
         // e.g. no flood after removal
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -160,8 +165,8 @@ public class LLDPSpeakerTest {
         }
 
         // Check packet transmission
-        verify(packetProcessingService, times(1)).transmitPacket(packetInput);
-        verifyNoMoreInteractions(packetProcessingService);
+        verify(transmitPacket, times(1)).invoke(packetInput);
+        verifyNoMoreInteractions(transmitPacket);
     }
 
     /**
@@ -176,7 +181,6 @@ public class LLDPSpeakerTest {
         lldpSpeaker.nodeConnectorAdded(ID, fcnc);
 
         // Verify that nothing happened for local port
-        verify(packetProcessingService, never()).transmitPacket(
-                any(TransmitPacketInput.class));
+        verify(transmitPacket, never()).invoke(any(TransmitPacketInput.class));
     }
 }
