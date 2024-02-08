@@ -40,14 +40,13 @@ import org.slf4j.LoggerFactory;
 public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
         implements ClusteredDataTreeChangeListener<T>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NodeConnectorInventoryEventTranslator.class);
-
-    private static final InstanceIdentifier<State> II_TO_STATE = InstanceIdentifier.builder(Nodes.class)
-            .child(Node.class).child(NodeConnector.class).augmentation(FlowCapableNodeConnector.class)
-            .child(State.class).build();
-
-    private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR
-            = InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
-            .augmentation(FlowCapableNodeConnector.class).build();
+    private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR =
+        InstanceIdentifier.builder(Nodes.class)
+            .child(Node.class)
+            .child(NodeConnector.class)
+            .augmentation(FlowCapableNodeConnector.class)
+            .build();
+    private static final InstanceIdentifier<State> II_TO_STATE = II_TO_FLOW_CAPABLE_NODE_CONNECTOR.child(State.class);
 
     private final Registration listenerOnPortRegistration;
     private final Registration listenerOnPortStateRegistration;

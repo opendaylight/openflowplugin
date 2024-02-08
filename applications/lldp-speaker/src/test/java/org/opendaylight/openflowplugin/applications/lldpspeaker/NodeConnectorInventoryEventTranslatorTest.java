@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
 import static org.mockito.Mockito.mock;
@@ -16,8 +15,6 @@ import static org.opendaylight.mdsal.binding.api.DataObjectModification.Modifica
 import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.SUBTREE_MODIFIED;
 import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 
 /**
  * Tests for {@link NodeConnectorInventoryEventTranslator}.
@@ -69,7 +65,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     public void testNodeConnectorCreation() {
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, NODE_CONNECTOR_INSTANCE_IDENTIFIER,
                                                                         FLOW_CAPABLE_NODE_CONNECTOR);
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verify(eventsObserver).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
     }
 
@@ -80,7 +76,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     public void testNodeConnectorCreationLinkDown() {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, ID, fcnc);
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verifyNoInteractions(eventsObserver);
     }
 
@@ -91,7 +87,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
     public void testNodeConnectorCreationAdminDown() {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
         DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, ID, fcnc);
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verifyNoInteractions(eventsObserver);
     }
 
@@ -105,7 +101,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
         DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED,
                                                                         NODE_CONNECTOR_INSTANCE_IDENTIFIER, fcnc);
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verify(eventsObserver).nodeConnectorRemoved(ID);
     }
 
@@ -119,7 +115,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
         DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED,
                                                                         NODE_CONNECTOR_INSTANCE_IDENTIFIER, fcnc);
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verify(eventsObserver).nodeConnectorRemoved(ID);
     }
 
@@ -133,7 +129,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED,
                                                                         NODE_CONNECTOR_INSTANCE_IDENTIFIER,
                                                                         FLOW_CAPABLE_NODE_CONNECTOR);
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verify(eventsObserver).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
     }
 
@@ -147,7 +143,7 @@ public class NodeConnectorInventoryEventTranslatorTest {
         DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, NODE_CONNECTOR_INSTANCE_IDENTIFIER,
                                                                         null);
         // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataTreeChanged(Collections.singleton(dataTreeModification));
+        translator.onDataTreeChanged(List.of(dataTreeModification));
         verify(eventsObserver).nodeConnectorRemoved(ID);
     }
 
@@ -161,11 +157,10 @@ public class NodeConnectorInventoryEventTranslatorTest {
         // Create prerequisites
         InstanceIdentifier<NodeConnector> id2 = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:2");
         InstanceIdentifier<FlowCapableNodeConnector> iiToConnector2 = id2.augmentation(FlowCapableNodeConnector.class);
-        List<DataTreeModification> modifications = new ArrayList<>();
-        modifications.add(setupDataTreeChange(WRITE, NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR));
-        modifications.add(setupDataTreeChange(DELETE, iiToConnector2, null));
         // Invoke onDataTreeChanged and check that both observers notified
-        translator.onDataTreeChanged(modifications);
+        translator.onDataTreeChanged(List.of(
+            setupDataTreeChange(WRITE, NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR),
+            setupDataTreeChange(DELETE, iiToConnector2, null)));
         verify(eventsObserver).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
         verify(eventsObserver).nodeConnectorRemoved(id2);
         verify(eventsObserver2).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
@@ -177,9 +172,8 @@ public class NodeConnectorInventoryEventTranslatorTest {
         translator.close();
     }
 
-    private <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
-                                                                            final InstanceIdentifier<T> ii,
-                                                                            final FlowCapableNodeConnector connector) {
+    private static <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
+            final InstanceIdentifier<T> ii, final FlowCapableNodeConnector connector) {
         final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
         DataTreeIdentifier<T> identifier = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii);
@@ -187,6 +181,5 @@ public class NodeConnectorInventoryEventTranslatorTest {
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
         when(dataTreeModification.getRootNode().getDataAfter()).thenReturn(connector);
         return dataTreeModification;
-
     }
 }

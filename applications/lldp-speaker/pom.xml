@@ -14,8 +14,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>infrautils-util</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.libraries</groupId>
+            <artifactId>liblldp</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
@@ -26,25 +35,12 @@
             <artifactId>model-flow-service</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.libraries</groupId>
-            <artifactId>liblldp</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>topology-lldp-discovery</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>device-ownership-service</artifactId>
         </dependency>
         <dependency>
-          <groupId>org.opendaylight.infrautils</groupId>
-          <artifactId>infrautils-util</artifactId>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>topology-lldp-discovery</artifactId>
         </dependency>
     </dependencies>
 </project>
