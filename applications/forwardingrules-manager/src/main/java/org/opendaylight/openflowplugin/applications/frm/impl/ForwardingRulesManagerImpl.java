@@ -94,7 +94,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
-    private FlowNodeReconciliation nodeListener;
+    private FlowNodeReconciliationImpl nodeListener;
     private NotificationRegistration reconciliationNotificationRegistration;
     private DeviceMastershipManager deviceMastershipManager;
     private boolean disableReconciliation;
@@ -149,9 +149,8 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
             reconciliationNotificationRegistration = reconciliationManager.registerService(nodeListener);
             LOG.debug("Reconciliation is enabled by user and successfully registered to the reconciliation framework");
         }
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, nodeListener,
-                dataService, mastershipChangeServiceManager, rpcProviderService,
-                new FrmReconciliationServiceImpl(this));
+        deviceMastershipManager = new DeviceMastershipManager(nodeListener, dataService, mastershipChangeServiceManager,
+            rpcProviderService, nodeListener);
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         bundleFlowListener = new BundleFlowForwarder(this);

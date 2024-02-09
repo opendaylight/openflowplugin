@@ -17,6 +17,7 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -74,8 +75,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroup;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.StaleGroupKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
@@ -92,12 +96,18 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNode;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
+import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,8 +117,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
-public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
-
+public class FlowNodeReconciliationImpl implements FlowNodeReconciliation, ReconcileNode {
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
@@ -180,6 +189,38 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         // FIXME: BigInteger.toString() called here
         final var dpnId = getDpnIdFromNodeName(node);
         reconciliationStates.remove(dpnId.toString());
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReconcileNodeOutput>> invoke(final ReconcileNodeInput input) {
+        final var nodeId = input.requireNodeId();
+        LOG.debug("Triggering reconciliation for node: {}", nodeId);
+
+        final var nodeDpn = new NodeBuilder().setId(new NodeId("openflow:" + nodeId)).build();
+        final var connectedNode = InstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeDpn.key()).augmentation(FlowCapableNode.class)
+                .build();
+        final var rpcResult = SettableFuture.<RpcResult<ReconcileNodeOutput>>create();
+        Futures.addCallback(reconcileConfiguration(connectedNode), new FutureCallback<>() {
+            @Override
+            public void onSuccess(final Boolean result) {
+                rpcResult.set(result
+                    ? RpcResultBuilder.success(new ReconcileNodeOutputBuilder().setResult(result).build()).build()
+                        : RpcResultBuilder.<ReconcileNodeOutput>failed()
+                            .withError(ErrorType.APPLICATION, "Error while triggering reconciliation")
+                            .build());
+            }
+
+            @Override
+            public void onFailure(final Throwable error) {
+                LOG.error("initReconciliation failed", error);
+                rpcResult.set(RpcResultBuilder.<ReconcileNodeOutput>failed()
+                        .withError(ErrorType.RPC, "Error while calling RPC").build());
+            }
+        }, MoreExecutors.directExecutor());
+
+        LOG.debug("Completing reconciliation for node: {}", nodeId);
+        return rpcResult;
     }
 
     private class BundleBasedReconciliationTask implements Callable<Boolean> {

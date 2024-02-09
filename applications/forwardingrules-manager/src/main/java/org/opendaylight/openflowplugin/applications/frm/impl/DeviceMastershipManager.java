@@ -23,7 +23,6 @@ import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.mdsal.singleton.common.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
@@ -34,7 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNode;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -49,28 +48,25 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE = InstanceIdentifier
             .builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
 
-    private final ClusterSingletonServiceProvider clusterSingletonService;
-    private final FlowNodeReconciliation reconcliationAgent;
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
+    private final FlowNodeReconciliation reconcliationAgent;
     private final Object lockObj = new Object();
     private final RpcProviderService rpcProviderService;
-    private final FrmReconciliationService reconcliationService;
+    private final ReconcileNode reconcileNode;
 
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
     private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
     private MastershipChangeRegistration mastershipChangeServiceRegistration;
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "Non-final for mocking")
-    public DeviceMastershipManager(final ClusterSingletonServiceProvider clusterSingletonService,
-                                   final FlowNodeReconciliation reconcliationAgent,
+    public DeviceMastershipManager(final FlowNodeReconciliation reconcliationAgent,
                                    final DataBroker dataBroker,
                                    final MastershipChangeServiceManager mastershipChangeServiceManager,
                                    final RpcProviderService rpcProviderService,
-                                   final FrmReconciliationService reconciliationService) {
-        this.clusterSingletonService = clusterSingletonService;
+                                   final ReconcileNode reconcileNode) {
         this.reconcliationAgent = reconcliationAgent;
         this.rpcProviderService = rpcProviderService;
-        reconcliationService = reconciliationService;
+        this.reconcileNode = reconcileNode;
         listenerRegistration = dataBroker.registerDataTreeChangeListener(
             DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
@@ -193,14 +189,14 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
         DeviceMastership membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
             device -> new DeviceMastership(deviceInfo.getNodeId()));
         membership.reconcile();
-        membership.registerReconciliationRpc(rpcProviderService, reconcliationService);
+        membership.registerReconcileNode(rpcProviderService, reconcileNode);
     }
 
     @Override
     public void onLoseOwnership(@NonNull final DeviceInfo deviceInfo) {
         final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
         if (mastership != null) {
-            mastership.deregisterReconciliationRpc();
+            mastership.deregisterReconcileNode();
             mastership.close();
             LOG.debug("Unregistered deviceMastership for device : {}", deviceInfo.getNodeId());
         }
