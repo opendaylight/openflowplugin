@@ -14,9 +14,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.SalFlowService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 public class Test implements TestService {
     private static final Logger LOG = LoggerFactory.getLogger(Test.class);
 
-    private SalFlowService flowService;
+    private AddFlow addFlow;
 
     @Override
     public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(final TestFlowInput input) {
@@ -124,12 +124,12 @@ public class Test implements TestService {
     }
 
     private void pushFlowViaRpc(final AddFlowInput addFlowInput) {
-        if (flowService != null) {
-            LoggingFutures.addErrorLogging(flowService.addFlow(addFlowInput), LOG, "addFlow");
+        if (addFlow != null) {
+            LoggingFutures.addErrorLogging(addFlow.invoke(addFlowInput), LOG, "addFlow");
         }
     }
 
-    public void setFlowService(final SalFlowService flowService) {
-        this.flowService = flowService;
+    public void setAddFlow(final AddFlow addFlow) {
+        this.addFlow = addFlow;
     }
 }
