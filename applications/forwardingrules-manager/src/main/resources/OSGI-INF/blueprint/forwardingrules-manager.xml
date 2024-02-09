@@ -1,34 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
         odl:use-default-for-reference-types="true">
-  <bean id="frmReconciliationServiceImpl"
-        class="org.opendaylight.openflowplugin.applications.frm.impl.FrmReconciliationServiceImpl">
-    <argument ref="forwardingRulesManagerImpl"/>
-  </bean>
-  <service ref="frmReconciliationServiceImpl"
-           interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
-
-  <bean id="forwardingRulesManagerImpl"
-        class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
-        destroy-method="close">
-    <argument ref="dataBroker"/>
-    <argument ref="rpcConsumerRegistry"/>
-    <argument ref="rpcProviderService"/>
-    <argument ref="forwardingRulesManagerConfig"/>
-    <argument ref="mastershipChangeServiceManager"/>
-    <argument ref="clusterSingletonServiceProvider"/>
-    <argument ref="configurationService"/>
-    <argument ref="reconciliationManager"/>
-    <argument ref="openflowServiceRecoveryHandler"/>
-    <argument ref="serviceRecoveryRegistry"/>
-    <argument ref="flowGroupCacheManager"/>
-    <argument ref="listenerRegistrationHelper"/>
-  </bean>
-
-  <odl:clustered-app-config id="forwardingRulesManagerConfig"
-                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
-
   <reference id="flowGroupCacheManager"
              interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
   <reference id="dataBroker"
@@ -51,4 +23,27 @@
              interface="org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper"/>
   <reference id="openflowServiceRecoveryHandler"
              interface="org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler"/>
+
+  <odl:clustered-app-config id="forwardingRulesManagerConfig"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.forwardingrules.manager.config.rev160511.ForwardingRulesManagerConfig"/>
+
+  <bean id="forwardingRulesManagerImpl"
+        class="org.opendaylight.openflowplugin.applications.frm.impl.ForwardingRulesManagerImpl"
+        destroy-method="close">
+    <argument ref="dataBroker"/>
+    <argument ref="rpcConsumerRegistry"/>
+    <argument ref="rpcProviderService"/>
+    <argument ref="forwardingRulesManagerConfig"/>
+    <argument ref="mastershipChangeServiceManager"/>
+    <argument ref="clusterSingletonServiceProvider"/>
+    <argument ref="configurationService"/>
+    <argument ref="reconciliationManager"/>
+    <argument ref="openflowServiceRecoveryHandler"/>
+    <argument ref="serviceRecoveryRegistry"/>
+    <argument ref="flowGroupCacheManager"/>
+    <argument ref="listenerRegistrationHelper"/>
+  </bean>
+
+  <service ref="forwardingRulesManagerImpl"
+           interface="org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager"/>
 </blueprint>
