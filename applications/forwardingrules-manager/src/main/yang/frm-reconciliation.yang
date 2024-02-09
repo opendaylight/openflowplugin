@@ -1,9 +1,9 @@
 module frm-reconciliation {
-
     namespace "urn:opendaylight:params:xml:ns:yang:openflowplugin:app:frm-reconciliation:service";
     prefix frm-reconciliation;
 
-    import opendaylight-inventory {prefix inv; revision-date "2013-08-19";}
+    import ietf-yang-types { prefix yang; }
+    import opendaylight-inventory { prefix inv; }
 
     revision "2018-02-27" {
         description "Initial revision of trigger based frm reconciliation";
@@ -22,6 +22,23 @@ module frm-reconciliation {
             leaf result {
                 description "The result of reconciliation, for follow-up";
                 type boolean;
+            }
+        }
+    }
+
+    augment /inv:nodes/inv:node {
+        container frm-reconciliation {
+            leaf success-count {
+                type uint32;
+                default 0;
+            }
+            leaf failure-count {
+                type uint32;
+                default 0;
+            }
+            leaf last-request-time {
+                description "Timestamp when reconciliation was last requested";
+                type yang:date-and-time;
             }
         }
     }
