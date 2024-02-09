@@ -92,6 +92,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
@@ -107,8 +108,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
-public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
-
+public class FlowNodeReconciliationImpl implements FlowNodeReconciliation, ReconcileNode {
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
@@ -181,7 +181,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         final var dpnId = getDpnIdFromNodeName(node);
         reconciliationStates.remove(dpnId.toString());
     }
-
     private class BundleBasedReconciliationTask implements Callable<Boolean> {
         final InstanceIdentifier<FlowCapableNode> nodeIdentity;
 
