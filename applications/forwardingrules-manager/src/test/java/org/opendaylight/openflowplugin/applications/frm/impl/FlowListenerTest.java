@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package test.mock;
+package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
@@ -45,8 +45,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
-import test.mock.util.AbstractFRMTest;
-import test.mock.util.SalFlowServiceMock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowListenerTest extends AbstractFRMTest {
