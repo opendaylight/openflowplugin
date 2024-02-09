@@ -7,8 +7,11 @@
  */
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Formatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -17,10 +20,13 @@ import org.apache.karaf.shell.commands.Argument;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.commands.Option;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
+import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
+import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
+import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
+import org.opendaylight.openflowplugin.applications.southboundcli.NodeListener;
+import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
@@ -30,17 +36,26 @@ import org.slf4j.LoggerFactory;
 public class Reconciliation extends OsgiCommandSupport {
     private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
 
-    private ReconciliationService reconciliationService = null;
-
-    public void setReconciliationService(final ReconciliationService reconciliationService) {
-        this.reconciliationService = reconciliationService;
-    }
-
     @Argument(name = "nodeId", description = "The NODE Id", multiValued = true)
     List<Long> nodeIds;
 
     @Option(name = "-all", description = "Reconcile all operative NODEs")
     boolean reconcileAllNodes;
+
+    private final DataBroker broker;
+    private final AlarmAgent alarmAgent;
+    private final NodeListener nodeListener;
+    private final FlowNodeReconciliation flowNodeReconciliation;
+    private final Map<String, ReconciliationState> reconciliationStates;
+
+    public Reconciliation(final DataBroker broker, final ForwardingRulesManager frm, final AlarmAgent alarmAgent,
+            final NodeListener nodeListener, final FlowGroupCacheManager flowGroupCacheManager) {
+        this.broker = requireNonNull(broker);
+        flowNodeReconciliation = frm.getFlowNodeReconciliation();
+        this.alarmAgent = requireNonNull(alarmAgent);
+        this.nodeListener = requireNonNull(nodeListener);
+        reconciliationStates = flowGroupCacheManager.getReconciliationStates();
+    }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
