@@ -15,7 +15,6 @@ import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.R
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.JdkFutureAdapters;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -40,7 +39,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
-import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
@@ -78,12 +77,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.SalBundleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
@@ -173,19 +169,16 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                     connectedNode);
             reconciliationPreProcess(connectedNode);
         }
-        if (provider.isBundleBasedReconciliationEnabled()) {
-            BundleBasedReconciliationTask bundleBasedReconTask = new BundleBasedReconciliationTask(connectedNode);
-            return JdkFutureAdapters.listenInPoolThread(executor.submit(bundleBasedReconTask));
-        } else {
-            ReconciliationTask reconciliationTask = new ReconciliationTask(connectedNode);
-            return JdkFutureAdapters.listenInPoolThread(executor.submit(reconciliationTask));
-        }
+
+        return Futures.submit(provider.isBundleBasedReconciliationEnabled()
+            ? new BundleBasedReconciliationTask(connectedNode) : new ReconciliationTask(connectedNode), executor);
     }
 
     @Override
     public void flowNodeDisconnected(final InstanceIdentifier<FlowCapableNode> disconnectedNode) {
-        String node = disconnectedNode.firstKeyOf(Node.class).getId().getValue();
-        BigInteger dpnId = getDpnIdFromNodeName(node);
+        final var node = disconnectedNode.firstKeyOf(Node.class).getId().getValue();
+        // FIXME: BigInteger.toString() called here
+        final var dpnId = getDpnIdFromNodeName(node);
         reconciliationStates.remove(dpnId.toString());
     }
 
@@ -211,88 +204,82 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             }
 
             if (flowNode.isPresent()) {
-                ReconciliationState reconciliationState = new ReconciliationState(
-                        STARTED, LocalDateTime.now());
+                final var reconciliationState = new ReconciliationState(STARTED, LocalDateTime.now());
                 //put the dpn info into the map
                 reconciliationStates.put(dpnId.toString(), reconciliationState);
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
-                final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+                final var nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
 
-                final ControlBundleInput closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                final var closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTCLOSEREQUEST).build();
 
-                final ControlBundleInput openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                final var openBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTOPENREQUEST).build();
 
-                final ControlBundleInput commitBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
+                final var commitBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setType(BundleControlType.ONFBCTCOMMITREQUEST).build();
 
-                final AddBundleMessagesInput deleteAllFlowGroupsInput = new AddBundleMessagesInputBuilder()
+                final var deleteAllFlowGroupsInput = new AddBundleMessagesInputBuilder()
                         .setNode(nodeRef).setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)
                         .setMessages(createMessages(nodeRef)).build();
 
                 LOG.debug("Closing openflow bundle for device {}", dpnId);
                 /* Close previously opened bundle on the openflow switch if any */
-                ListenableFuture<RpcResult<ControlBundleOutput>> closeBundle
-                        = salBundleService.controlBundle(closeBundleInput);
+                final var closeBundle = salBundleService.controlBundle(closeBundleInput);
 
                 /* Open a new bundle on the switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> openBundle
-                        = Futures.transformAsync(closeBundle, rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
-                            }
-                            return salBundleService.controlBundle(openBundleInput);
-                        }, service);
+                final var openBundle = Futures.transformAsync(closeBundle, rpcResult -> {
+                    if (rpcResult.isSuccessful()) {
+                        LOG.debug("Existing bundle is successfully closed for device {}", dpnId);
+                    }
+                    return salBundleService.controlBundle(openBundleInput);
+                }, service);
 
-                    /* Push groups and flows via bundle add messages */
-                ListenableFuture<RpcResult<AddBundleMessagesOutput>> deleteAllFlowGroupsFuture
-                        = Futures.transformAsync(openBundle, rpcResult -> {
-                            if (rpcResult.isSuccessful()) {
-                                LOG.debug("Open bundle is successful for device {}", dpnId);
-                                return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
-                            }
-                            return Futures.immediateFuture(null);
-                        }, service);
+                /* Push groups and flows via bundle add messages */
+                final var deleteAllFlowGroupsFuture = Futures.transformAsync(openBundle, rpcResult -> {
+                    if (rpcResult.isSuccessful()) {
+                        LOG.debug("Open bundle is successful for device {}", dpnId);
+                        return salBundleService.addBundleMessages(deleteAllFlowGroupsInput);
+                    }
+                    return Futures.immediateFuture(null);
+                }, service);
 
                 /* Push flows and groups via bundle add messages */
-                Optional<FlowCapableNode> finalFlowNode = flowNode;
-                ListenableFuture<List<RpcResult<AddBundleMessagesOutput>>> addbundlesFuture =
-                    Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
-                        if (rpcResult.isSuccessful()) {
-                            LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
-                            return Futures.allAsList(addBundleMessages(finalFlowNode.orElseThrow(), bundleIdValue,
-                                nodeIdentity));
-                        }
-                        return Futures.immediateFuture(null);
-                    }, service);
+                final var finalFlowNode = flowNode;
+                final var addbundlesFuture = Futures.transformAsync(deleteAllFlowGroupsFuture, rpcResult -> {
+                    if (rpcResult.isSuccessful()) {
+                        LOG.debug("Adding delete all flow/group message is successful for device {}", dpnId);
+                        return Futures.allAsList(addBundleMessages(finalFlowNode.orElseThrow(), bundleIdValue,
+                            nodeIdentity));
+                    }
+                    return Futures.immediateFuture(null);
+                }, service);
 
-                    /* Commit the bundle on the openflow switch */
-                ListenableFuture<RpcResult<ControlBundleOutput>> commitBundleFuture =
-                    Futures.transformAsync(addbundlesFuture, rpcResult -> {
-                        LOG.debug("Adding bundle messages completed for device {}", dpnId);
-                        return salBundleService.controlBundle(commitBundleInput);
-                    }, service);
+                /* Commit the bundle on the openflow switch */
+                final var commitBundleFuture = Futures.transformAsync(addbundlesFuture, rpcResult -> {
+                    LOG.debug("Adding bundle messages completed for device {}", dpnId);
+                    return salBundleService.controlBundle(commitBundleInput);
+                }, service);
 
                 /* Bundles not supported for meters */
-                Collection<Meter> meters = finalFlowNode.orElseThrow().nonnullMeter().values();
+                final var meters = finalFlowNode.orElseThrow().nonnullMeter().values();
                 Futures.transformAsync(commitBundleFuture,
                     rpcResult -> {
                         if (rpcResult.isSuccessful()) {
-                            for (Meter meter : meters) {
-                                final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdentity
-                                        .child(Meter.class, meter.key());
-                                provider.getMeterCommiter().add(meterIdent, meter, nodeIdentity);
+                            for (var meter : meters) {
+                                provider.getMeterCommiter().add(nodeIdentity.child(Meter.class, meter.key()), meter,
+                                    nodeIdentity);
                             }
                         }
                         return Futures.immediateFuture(null);
                     }, service);
+
                 try {
-                    RpcResult<ControlBundleOutput> bundleFuture = commitBundleFuture.get();
+                    final var bundleFuture = commitBundleFuture.get();
                     if (bundleFuture != null && bundleFuture.isSuccessful()) {
                         reconciliationState.setState(COMPLETED, LocalDateTime.now());
                         LOG.debug("Completing bundle based reconciliation for device ID:{}", dpnId);
@@ -533,12 +520,11 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         private void addGroup(final Map<Uint32, ListenableFuture<?>> map, final Group group) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
             final Uint32 groupId = group.getGroupId().getValue();
-            ListenableFuture<?> future = JdkFutureAdapters
-                    .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
+            final var future = provider.getGroupCommiter().add(groupIdent, group, nodeIdentity);
 
-            Futures.addCallback(future, new FutureCallback<Object>() {
+            Futures.addCallback(future, new FutureCallback<RpcResult<?>>() {
                 @Override
-                public void onSuccess(final Object result) {
+                public void onSuccess(final RpcResult<?> result) {
                     if (LOG.isTraceEnabled()) {
                         LOG.trace("add-group RPC completed: node={}, id={}",
                                 nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
@@ -678,36 +664,27 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
     }
 
     private void deleteDSStaleFlows(final List<InstanceIdentifier<StaleFlow>> flowsForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-
-        for (InstanceIdentifier<StaleFlow> staleFlowIId : flowsForBulkDelete) {
+        final var writeTransaction = dataBroker.newWriteOnlyTransaction();
+        for (var staleFlowIId : flowsForBulkDelete) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
         }
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
+        handleStaleEntityDeletionResultFuture(writeTransaction.commit());
     }
 
     private void deleteDSStaleGroups(final List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-
-        for (InstanceIdentifier<StaleGroup> staleGroupIId : groupsForBulkDelete) {
+        final var writeTransaction = dataBroker.newWriteOnlyTransaction();
+        for (var staleGroupIId : groupsForBulkDelete) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
         }
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
+        handleStaleEntityDeletionResultFuture(writeTransaction.commit());
     }
 
     private void deleteDSStaleMeters(final List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-
-        for (InstanceIdentifier<StaleMeter> staleMeterIId : metersForBulkDelete) {
+        final var writeTransaction = dataBroker.newWriteOnlyTransaction();
+        for (var staleMeterIId : metersForBulkDelete) {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
         }
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
+        handleStaleEntityDeletionResultFuture(writeTransaction.commit());
     }
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
@@ -750,10 +727,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return futureList;
     }
 
-    private static void handleStaleEntityDeletionResultFuture(final FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
+    private static void handleStaleEntityDeletionResultFuture(final FluentFuture<? extends CommitInfo> submitFuture) {
+        submitFuture.addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(final Object result) {
+            public void onSuccess(final CommitInfo result) {
                 LOG.debug("Stale entity removal success");
             }
 

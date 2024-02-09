@@ -7,13 +7,12 @@
  */
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
-import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -64,83 +63,59 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     @Override
     public void remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final RemoveMeterInputBuilder builder = new RemoveMeterInputBuilder(removeDataObj);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-
-        LoggingFutures.addErrorLogging(provider.getSalMeterService().removeMeter(builder.build()), LOG,
-            "removeMeter");
+        LoggingFutures.addErrorLogging(provider.getSalMeterService()
+            .removeMeter(new RemoveMeterInputBuilder(removeDataObj)
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setMeterRef(new MeterRef(identifier))
+                .setTransactionUri(new Uri(provider.getNewTransactionId()))
+                .build()),
+            LOG, "removeMeter");
     }
 
     @Override
-    public Future<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
             final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final RemoveMeterInputBuilder builder = new RemoveMeterInputBuilder(removeDataObj);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return provider.getSalMeterService().removeMeter(builder.build());
+        return provider.getSalMeterService().removeMeter(new RemoveMeterInputBuilder(removeDataObj)
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
+            .setTransactionUri(new Uri(provider.getNewTransactionId()))
+            .build());
     }
 
     @Override
     public void update(final InstanceIdentifier<Meter> identifier, final Meter original, final Meter update,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final UpdateMeterInputBuilder builder = new UpdateMeterInputBuilder();
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        builder.setUpdatedMeter(new UpdatedMeterBuilder(update).build());
-        builder.setOriginalMeter(new OriginalMeterBuilder(original).build());
-
-        LoggingFutures.addErrorLogging(provider.getSalMeterService().updateMeter(builder.build()), LOG,
-            "updateMeter");
+        LoggingFutures.addErrorLogging(provider.getSalMeterService().updateMeter(new UpdateMeterInputBuilder()
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
+            .setTransactionUri(new Uri(provider.getNewTransactionId()))
+            .setUpdatedMeter(new UpdatedMeterBuilder(update).build())
+            .setOriginalMeter(new OriginalMeterBuilder(original).build())
+            .build()), LOG, "updateMeter");
     }
 
     @Override
-    public Future<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier, final Meter addDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final AddMeterInputBuilder builder = new AddMeterInputBuilder(addDataObj);
-
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-        builder.setMeterRef(new MeterRef(identifier));
-        builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-        return provider.getSalMeterService().addMeter(builder.build());
+    public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
+            final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        return provider.getSalMeterService().addMeter(new AddMeterInputBuilder(addDataObj)
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
+            .setTransactionUri(new Uri(provider.getNewTransactionId()))
+            .build());
     }
 
     @Override
     public void createStaleMarkEntity(final InstanceIdentifier<Meter> identifier, final Meter del,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent, del);
-        StaleMeter staleMeter = makeStaleMeter(del);
-        persistStaleMeter(staleMeter, nodeIdent);
-    }
 
-    private static StaleMeter makeStaleMeter(final Meter del) {
-        StaleMeterBuilder staleMeterBuilder = new StaleMeterBuilder(del);
-        return staleMeterBuilder.setMeterId(del.getMeterId()).build();
-    }
-
-    private void persistStaleMeter(final StaleMeter staleMeter, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        WriteTransaction writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleMeterInstanceIdentifier(staleMeter, nodeIdent),
-                staleMeter);
-
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleMeterResultFuture(submitFuture);
-    }
-
-    private static void handleStaleMeterResultFuture(final FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
+        final var staleMeter = new StaleMeterBuilder(del).setMeterId(del.getMeterId()).build();
+        final var writeTransaction = dataBroker.newWriteOnlyTransaction();
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION,
+            nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId()))), staleMeter);
+        writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(final Object result) {
+            public void onSuccess(final CommitInfo result) {
                 LOG.debug("Stale Meter creation success");
             }
 
@@ -149,11 +124,5 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
                 LOG.error("Stale Meter creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
-    }
-
-    private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819
-        .meters.StaleMeter> getStaleMeterInstanceIdentifier(
-            final StaleMeter staleMeter, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())));
     }
 }

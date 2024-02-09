@@ -15,7 +15,6 @@ import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.getN
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isFlowDependentOnGroup;
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.isGroupExistsOnDevice;
 
-import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -23,11 +22,11 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
@@ -193,49 +192,46 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public Future<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier, final Flow addDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
-        if (tableIdValidationPrecondition(tableKey, addDataObj)) {
-            BundleId bundleId = getActiveBundle(nodeIdent, provider);
-            if (bundleId != null) {
-                return provider.getBundleFlowListener().add(identifier, addDataObj, nodeIdent, bundleId);
-            } else {
-                final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-                nodeConfigurator.enqueueJob(nodeId, () -> {
-                    final AddFlowInputBuilder builder = new AddFlowInputBuilder(addDataObj);
-
-                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                    builder.setFlowRef(new FlowRef(identifier));
-                    builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
-                    builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
-                    Uint32 groupId = isFlowDependentOnGroup(addDataObj);
-                    if (groupId != null) {
-                        LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                                getFlowId(new FlowRef(identifier)), groupId);
-                        if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
-                            LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
-                                    getFlowId(new FlowRef(identifier)));
-                            return provider.getSalFlowService().addFlow(builder.build());
-                        } else {
-                            LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
-                            ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
-                                    groupId);
-                            SettableFuture<RpcResult<AddFlowOutput>> resultFuture = SettableFuture.create();
-                            Futures.addCallback(groupFuture, new AddFlowCallBack(builder.build(), nodeId, groupId,
-                                    resultFuture), MoreExecutors.directExecutor());
-                            return resultFuture;
-                        }
-                    }
-
-                    LOG.trace("The flow {} is not dependent on any group. Adding the flow",
-                            getFlowId(new FlowRef(identifier)));
-                    return provider.getSalFlowService().addFlow(builder.build());
-                });
-            }
+    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier,
+            final Flow addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+        final var tableKey = identifier.firstKeyOf(Table.class);
+        if (!tableIdValidationPrecondition(tableKey, addDataObj)) {
+            return Futures.immediateFuture(null);
         }
-        return Futures.immediateFuture(null);
+        final var bundleId = getActiveBundle(nodeIdent, provider);
+        if (bundleId != null) {
+            return provider.getBundleFlowListener().add(identifier, addDataObj, nodeIdent, bundleId);
+        }
+
+        final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        return nodeConfigurator.enqueueJob(nodeId, () -> {
+            final var builder = new AddFlowInputBuilder(addDataObj)
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setFlowRef(new FlowRef(identifier))
+                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)))
+                .setTransactionUri(new Uri(provider.getNewTransactionId()));
+            final var groupId = isFlowDependentOnGroup(addDataObj);
+            if (groupId != null) {
+                LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
+                    getFlowId(new FlowRef(identifier)), groupId);
+                if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
+                    LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
+                        getFlowId(new FlowRef(identifier)));
+                    return provider.getSalFlowService().addFlow(builder.build());
+                }
+
+                LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
+                final var groupFuture = pushDependentGroup(nodeIdent, groupId);
+                final var resultFuture = SettableFuture.<RpcResult<AddFlowOutput>>create();
+                Futures.addCallback(groupFuture, new AddFlowCallBack(builder.build(), nodeId, groupId,
+                    resultFuture), MoreExecutors.directExecutor());
+                return resultFuture;
+            }
+
+            LOG.trace("The flow {} is not dependent on any group. Adding the flow",
+                getFlowId(new FlowRef(identifier)));
+            return provider.getSalFlowService().addFlow(builder.build());
+        });
     }
 
     @Override
@@ -274,14 +270,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         writeTransaction.put(LogicalDatastoreType.CONFIGURATION, getStaleFlowInstanceIdentifier(staleFlow, nodeIdent),
                 staleFlow);
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleFlowResultFuture(submitFuture);
-    }
-
-    private static void handleStaleFlowResultFuture(final FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
+        writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(final Object result) {
+            public void onSuccess(final CommitInfo result) {
                 LOG.debug("Stale Flow creation success");
             }
 
@@ -290,7 +281,6 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 LOG.error("Stale Flow creation failed", throwable);
             }
         }, MoreExecutors.directExecutor());
-
     }
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
