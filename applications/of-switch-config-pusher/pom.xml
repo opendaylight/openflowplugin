@@ -14,6 +14,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.guicedee.services</groupId>
             <artifactId>javax.inject</artifactId>
             <optional>true</optional>
@@ -29,15 +33,19 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-common-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>yang-binding</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>openflowplugin-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
@@ -50,6 +58,18 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
             <artifactId>model-flow-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
+            <artifactId>openflow-protocol-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>concepts</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
