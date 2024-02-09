@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
+import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
@@ -420,16 +421,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                             bucketList = Collections.<Bucket>emptyList();
                         }
                         for (Bucket bucket : bucketList) {
-                            Collection<Action> actions = bucket.nonnullAction().values();
-                            if (actions == null) {
-                                actions = Collections.<Action>emptyList();
-                            }
-                            for (Action action : actions) {
+                            for (Action action : bucket.nonnullAction()) {
                                 // chained-port
-                                if (action.getAction().implementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.OutputActionCase")) {
-                                    String nodeConnectorUri = ((OutputActionCase) action.getAction()).getOutputAction()
+                                if (action.getAction() instanceof OutputActionCase outputAction) {
+                                    String nodeConnectorUri = outputAction.getOutputAction()
                                             .getOutputNodeConnector().getValue();
 
                                     LOG.debug("Installing the group for node connector {}", nodeConnectorUri);
@@ -441,21 +436,17 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
                                     if (isPresent) {
                                         break;
-                                    } else {
-                                        // else put it in a different list and still set okToInstall = true
-                                        suspectedGroups.add(group);
-                                        LOG.debug(
-                                                "Not yet received the node-connector updated for {} "
-                                                        + "for the group with id {}",
-                                                nodeConnectorUri, group.getGroupId());
-                                        break;
                                     }
-                                } else if (action.getAction().implementedInterface().getName()
-                                        .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
-                                                + ".action.types.rev131112.action.action.GroupActionCase")) {
+
+                                    // else put it in a different list and still set okToInstall = true
+                                    suspectedGroups.add(group);
+                                    LOG.debug(
+                                        "Not yet received the node-connector updated for {} for the group with id {}",
+                                        nodeConnectorUri, group.getGroupId());
+                                    break;
+                                } else if (action.getAction() instanceof GroupActionCase groupAction) {
                                     // chained groups
-                                    Uint32 groupId = ((GroupActionCase) action.getAction()).getGroupAction()
-                                            .getGroupId();
+                                    Uint32 groupId = groupAction.getGroupAction().getGroupId();
                                     ListenableFuture<?> future = groupFutures.get(groupId);
                                     if (future == null) {
                                         okToInstall = false;
@@ -533,12 +524,12 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         private void addGroup(final Map<Uint32, ListenableFuture<?>> map, final Group group) {
             KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdentity.child(Group.class, group.key());
             final Uint32 groupId = group.getGroupId().getValue();
-            ListenableFuture<?> future = JdkFutureAdapters
+            final var future = JdkFutureAdapters
                     .listenInPoolThread(provider.getGroupCommiter().add(groupIdent, group, nodeIdentity));
 
-            Futures.addCallback(future, new FutureCallback<Object>() {
+            Futures.addCallback(future, new FutureCallback<RpcResult<?>>() {
                 @Override
-                public void onSuccess(final Object result) {
+                public void onSuccess(final RpcResult<?> result) {
                     if (LOG.isTraceEnabled()) {
                         LOG.trace("add-group RPC completed: node={}, id={}",
                                 nodeIdentity.firstKeyOf(Node.class).getId().getValue(), groupId);
@@ -684,8 +675,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleFlowIId);
         }
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
+        handleStaleEntityDeletionResultFuture(writeTransaction.commit());
     }
 
     private void deleteDSStaleGroups(final List<InstanceIdentifier<StaleGroup>> groupsForBulkDelete) {
@@ -695,8 +685,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleGroupIId);
         }
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
+        handleStaleEntityDeletionResultFuture(writeTransaction.commit());
     }
 
     private void deleteDSStaleMeters(final List<InstanceIdentifier<StaleMeter>> metersForBulkDelete) {
@@ -706,8 +695,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
             writeTransaction.delete(LogicalDatastoreType.CONFIGURATION, staleMeterIId);
         }
 
-        FluentFuture<?> submitFuture = writeTransaction.commit();
-        handleStaleEntityDeletionResultFuture(submitFuture);
+        handleStaleEntityDeletionResultFuture(writeTransaction.commit());
     }
 
     private static InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.opendaylight
@@ -750,10 +738,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         return futureList;
     }
 
-    private static void handleStaleEntityDeletionResultFuture(final FluentFuture<?> submitFuture) {
-        submitFuture.addCallback(new FutureCallback<Object>() {
+    private static void handleStaleEntityDeletionResultFuture(final FluentFuture<? extends CommitInfo> submitFuture) {
+        submitFuture.addCallback(new FutureCallback<CommitInfo>() {
             @Override
-            public void onSuccess(final Object result) {
+            public void onSuccess(final CommitInfo result) {
                 LOG.debug("Stale entity removal success");
             }
 

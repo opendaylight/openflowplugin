@@ -13,6 +13,7 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,11 +36,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<MultipartReplyBody>,
         DeserializerRegistryInjector {
@@ -90,20 +89,16 @@ public class MultipartReplyFlowStatsDeserializer implements OFDeserializer<Multi
             final int length = itemMessage.readableBytes();
 
             if (length > 0) {
-                final var instructions = BindingMap.<InstructionKey,
+                final var instructions = ImmutableList.<
                     org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
-                        orderedBuilder();
+                        builder();
                 final int startIndex = itemMessage.readerIndex();
-                int offset = 0;
 
                 while (itemMessage.readerIndex() - startIndex < length) {
                     instructions.add(new InstructionBuilder()
-                            .setOrder(offset)
-                            .setInstruction(InstructionUtil
-                                    .readInstruction(EncodeConstants.OF_VERSION_1_3, itemMessage, registry))
-                            .build());
-
-                    offset++;
+                        .setInstruction(InstructionUtil.readInstruction(EncodeConstants.OF_VERSION_1_3, itemMessage,
+                            registry))
+                        .build());
                 }
 
                 itemBuilder.setInstructions(new InstructionsBuilder().setInstruction(instructions.build()).build());

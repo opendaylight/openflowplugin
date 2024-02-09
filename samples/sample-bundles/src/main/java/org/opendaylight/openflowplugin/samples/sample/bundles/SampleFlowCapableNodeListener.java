@@ -32,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.pop.vlan.action._case.PopVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.field._case.SetFieldBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
@@ -43,7 +42,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -250,23 +248,20 @@ public final class SampleFlowCapableNodeListener
         return new BucketsBuilder()
             .setBucket(BindingMap.ordered(new BucketBuilder()
                 .setBucketId(new BucketId(Uint32.valueOf(12)))
-                .setAction(BindingMap.of(new ActionBuilder()
-                    .setOrder(0)
+                .setAction(List.of(new ActionBuilder()
                     .setAction(new PopVlanActionCaseBuilder()
                         .setPopVlanAction(new PopVlanActionBuilder().build())
                         .build())
                     .build()))
                 .build(), new BucketBuilder()
                 .setBucketId(new BucketId(Uint32.valueOf(13)))
-                .setAction(BindingMap.of(new ActionBuilder()
+                .setAction(List.of(new ActionBuilder()
                     .setAction(new SetFieldCaseBuilder()
                         .setSetField(new SetFieldBuilder()
                             .setLayer3Match(new Ipv4MatchBuilder().setIpv4Source(new Ipv4Prefix("10.0.1.0/32")).build())
                             .build())
                         .build())
-                    .setOrder(0)
                     .build(), new ActionBuilder()
-                    .setOrder(0)
                     .setAction(new SetFieldCaseBuilder()
                         .setSetField(new SetFieldBuilder()
                             .setLayer3Match(new Ipv4MatchBuilder()
@@ -280,19 +275,16 @@ public final class SampleFlowCapableNodeListener
 
     private static InstructionsBuilder createGroupInstructions(final Uint32 groupId) {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new GroupActionCaseBuilder()
                                 .setGroupAction(new GroupActionBuilder().setGroupId(groupId).build())
                                 .build())
-                            .setOrder(1)
-                            .withKey(new ActionKey(0))
                             .build()))
                         .build())
                     .build())
-                .withKey(new InstructionKey(0))
                 .build()));
     }
 }

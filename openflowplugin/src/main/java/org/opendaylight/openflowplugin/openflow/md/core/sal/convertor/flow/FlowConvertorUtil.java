@@ -8,16 +8,13 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
-import java.util.Map;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -25,6 +22,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 public final class FlowConvertorUtil {
     private FlowConvertorUtil() {
+        // Hidden on purpose
     }
 
     /**
@@ -36,19 +34,11 @@ public final class FlowConvertorUtil {
      * @param actionList the action list
      * @return the list
      */
-    public static Map<ActionKey, Action> wrapActionList(
+    public static List<Action> wrapActionList(
             final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action> actionList) {
-        final Builder<ActionKey, Action> builder = BindingMap.orderedBuilder(actionList.size());
-
-        int actionKey = 0;
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action action : actionList) {
-            builder.add(new ActionBuilder()
-                .setAction(action)
-                .setOrder(actionKey++)
-                .build());
-        }
-
-        return builder.build();
+        return actionList.stream()
+            .map(action -> new ActionBuilder().setAction(action).build())
+            .collect(ImmutableList.toImmutableList());
     }
 
     /**

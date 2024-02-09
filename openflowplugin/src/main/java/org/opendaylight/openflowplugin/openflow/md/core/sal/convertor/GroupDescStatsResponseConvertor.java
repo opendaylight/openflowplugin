@@ -7,19 +7,17 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.collect.ImmutableList;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionConvertorData;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
@@ -53,39 +51,24 @@ public class GroupDescStatsResponseConvertor
 
     private org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets toSALBucketsDesc(
             final List<BucketsList> bucketDescStats, final Uint8 version) {
-        final ActionResponseConvertorData data = new ActionResponseConvertorData(version);
+        final var data = new ActionResponseConvertorData(version);
         data.setActionPath(ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION);
 
-        BindingMap.Builder<BucketKey, Bucket> allBuckets = BindingMap.orderedBuilder();
+        final var allBuckets = BindingMap.<BucketKey, Bucket>orderedBuilder();
         int bucketKey = 0;
 
         for (BucketsList bucketDetails : bucketDescStats) {
-            BucketBuilder bucketDesc = new BucketBuilder();
             final Optional<List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action>>
                 convertedSalActions = getConvertorExecutor().convert(bucketDetails.getAction(), data);
 
-            if (convertedSalActions.isPresent()) {
-                BindingMap.Builder<ActionKey, Action> actions = BindingMap.orderedBuilder();
+            BucketBuilder bucketDesc = new BucketBuilder()
+                .setAction(convertedSalActions.orElse(List.of()).stream()
+                    .map(action -> new ActionBuilder().setAction(action).build())
+                    .collect(ImmutableList.toImmutableList()))
+                .setWeight(bucketDetails.getWeight())
+                .setWatchPort(bucketDetails.getWatchPort().getValue())
+                .setWatchGroup(bucketDetails.getWatchGroup());
 
-                int actionKey = 0;
-
-                for (var action : convertedSalActions.orElseThrow()) {
-                    actions.add(new ActionBuilder()
-                        .setAction(action)
-                        .withKey(new ActionKey(actionKey))
-                        .setOrder(actionKey)
-                        .build());
-                    actionKey++;
-                }
-
-                bucketDesc.setAction(actions.build());
-            } else {
-                bucketDesc.setAction(Map.of());
-            }
-
-            bucketDesc.setWeight(bucketDetails.getWeight());
-            bucketDesc.setWatchPort(bucketDetails.getWatchPort().getValue());
-            bucketDesc.setWatchGroup(bucketDetails.getWatchGroup());
             BucketId bucketId = new BucketId(Uint32.valueOf(bucketKey));
             bucketDesc.setBucketId(bucketId);
             bucketDesc.withKey(new BucketKey(bucketId));

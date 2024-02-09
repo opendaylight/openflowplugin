@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.tablemissenforcer;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -47,7 +48,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -132,23 +132,21 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDat
 
     private static InstructionsBuilder createSendToControllerInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 // Wrap our Apply Action in an Instruction
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
                         // Create an Apply Action
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new OutputActionCaseBuilder()
                                 .setOutputAction(new OutputActionBuilder()
                                     .setMaxLength(OFConstants.OFPCML_NO_BUFFER)
                                     .setOutputNodeConnector(new Uri(OutputPortValues.CONTROLLER.toString()))
                                     .build())
                                 .build())
-                            .setOrder(0)
                             .build()))
                         .build())
                     .build())
-                .setOrder(0)
                 .build()));
     }
 }

@@ -11,6 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNull;
@@ -97,7 +98,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -697,11 +697,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createDecNwTtlInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
                             .build()))
                         .build())
@@ -711,8 +710,7 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createMeterInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new MeterCaseBuilder()
                     .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.ONE)).build())
                     .build())
@@ -721,8 +719,7 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createGotoTableInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new GoToTableCaseBuilder()
                     .setGoToTable(new GoToTableBuilder().setTableId(Uint8.TWO).build())
                     .build())
@@ -731,11 +728,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createDropInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DropActionCaseBuilder()
                                 .setDropAction(new DropActionBuilder().build())
                                 .build())
@@ -747,11 +743,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new ControllerActionCaseBuilder()
                                 .setControllerAction(new ControllerActionBuilder()
                                     .setMaxLength(Uint16.valueOf(5))
@@ -765,12 +760,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createSentToControllerInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new OutputActionCaseBuilder()
                                 .setOutputAction(new OutputActionBuilder()
                                     .setMaxLength(Uint16.MAX_VALUE)
@@ -785,11 +778,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction2() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushMplsActionCaseBuilder()
                                 .setPushMplsAction(new PushMplsActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x8847))
@@ -803,11 +795,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction3() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushPbbActionCaseBuilder()
                                 .setPushPbbAction(new PushPbbActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x88E7))
@@ -821,11 +812,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction6() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetDlSrcActionCaseBuilder()
                                 .setSetDlSrcAction(new SetDlSrcActionBuilder()
                                     .setAddress(new MacAddress("00:05:b9:7c:81:5f"))
@@ -839,11 +829,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction7() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanIdActionCaseBuilder()
                                 .setSetVlanIdAction(new SetVlanIdActionBuilder()
                                     .setVlanId(new VlanId(Uint16.valueOf(4012)))
@@ -857,11 +846,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction8() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanPcpActionCaseBuilder()
                                 .setSetVlanPcpAction(new SetVlanPcpActionBuilder()
                                     .setVlanPcp(new VlanPcp(Uint8.TWO))
@@ -875,11 +863,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction9() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(new CopyTtlInBuilder().build()).build())
                             .build()))
                         .build())
@@ -889,11 +876,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction16() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new GroupActionCaseBuilder()
                                 .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
                                 .build())
@@ -905,11 +891,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction160() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new FloodAllActionCaseBuilder()
                                 .setFloodAllAction(new FloodAllActionBuilder().build())
                                 .build())
@@ -921,11 +906,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction26() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwDstActionCaseBuilder()
                                 .setSetNwDstAction(new SetNwDstActionBuilder()
                                     .setAddress(new Ipv4Builder()
@@ -941,11 +925,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction27() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwSrcActionCaseBuilder()
                                 .setSetNwSrcAction(new SetNwSrcActionBuilder()
                                     .setAddress(new Ipv4Builder()
@@ -961,11 +944,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction28() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwTosActionCaseBuilder()
                                 .setSetNwTosAction(new SetNwTosActionBuilder().setTos(8).build())
                                 .build())
@@ -977,11 +959,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
 
     private static InstructionsBuilder createAppyActionInstruction34() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SwPathActionCaseBuilder()
                                 .setSwPathAction(new SwPathActionBuilder().build())
                                 .build())

@@ -7,8 +7,9 @@
  */
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.instruction;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
-import java.util.Map;
+import java.util.List;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -17,8 +18,6 @@ import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public abstract class AbstractActionInstructionDeserializer extends AbstractInstructionDeserializer
         implements DeserializerRegistryInjector {
@@ -53,19 +52,17 @@ public abstract class AbstractActionInstructionDeserializer extends AbstractInst
      * @param length  instruction length
      * @return list of actions
      **/
-    protected Map<ActionKey, Action> readActions(final ByteBuf message, final int length) {
+    protected List<Action> readActions(final ByteBuf message, final int length) {
         if (message.readableBytes() <= 0) {
-            return Map.of();
+            return ImmutableList.of();
         }
 
         final int instrLength = length - InstructionConstants.STANDARD_INSTRUCTION_LENGTH;
-        final var actions = BindingMap.<ActionKey, Action>orderedBuilder();
+        final var actions = ImmutableList.<Action>builder();
         final int startIndex = message.readerIndex();
-        int offset = 0;
 
         while (message.readerIndex() - startIndex < instrLength) {
             actions.add(new ActionBuilder()
-                .setOrder(offset++)
                 .setAction(ActionUtil.readAction(EncodeConstants.OF_VERSION_1_3, message, registry, actionPath))
                 .build());
         }

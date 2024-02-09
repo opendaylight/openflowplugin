@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -31,9 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrierOutput;
@@ -244,26 +243,20 @@ public class ReconcileUtilTest {
     }
 
     private static Group createGroupWithPreconditions(final long groupIdValue, final long... requiredId) {
-        final BindingMap.Builder<ActionKey, Action> actionBag = BindingMap.builder(requiredId.length);
-        int key = 0;
-        for (long groupIdPrecondition : requiredId) {
-            actionBag.add(new ActionBuilder()
-                .setOrder(key)
-                .setAction(new GroupActionCaseBuilder()
-                    .setGroupAction(new GroupActionBuilder()
-                        .setGroupId(Uint32.valueOf(groupIdPrecondition))
-                        .build())
-                    .build())
-                .withKey(new ActionKey(key++))
-                .build());
-        }
-
         return new GroupBuilder()
                 .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                 .setBuckets(new BucketsBuilder()
                     .setBucket(BindingMap.of(new BucketBuilder()
                         .setBucketId(new BucketId(Uint32.ZERO))
-                        .setAction(actionBag.build())
+                        .setAction(Arrays.stream(requiredId)
+                            .mapToObj(groupIdPrecondition -> new ActionBuilder()
+                                .setAction(new GroupActionCaseBuilder()
+                                    .setGroupAction(new GroupActionBuilder()
+                                        .setGroupId(Uint32.valueOf(groupIdPrecondition))
+                                        .build())
+                                    .build())
+                                .build())
+                            .collect(ImmutableList.toImmutableList()))
                         .build()))
                     .build())
                 .build();

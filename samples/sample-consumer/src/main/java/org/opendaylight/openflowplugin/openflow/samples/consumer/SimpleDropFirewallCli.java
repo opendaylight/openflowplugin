@@ -21,7 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.TcpMatchBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class SimpleDropFirewallCli {
 
@@ -42,11 +41,10 @@ public class SimpleDropFirewallCli {
                 .setLayer4Match(new TcpMatchBuilder().build())
                 .build())
             .setInstructions(new InstructionsBuilder()
-                .setInstruction(BindingMap.of(new InstructionBuilder()
+                .setInstruction(List.of(new InstructionBuilder()
                     .setInstruction(new ApplyActionsCaseBuilder()
                         .setApplyActions(new ApplyActionsBuilder()
-                            .setAction(BindingMap.of(new ActionBuilder()
-                                .setOrder(0)
+                            .setAction(List.of(new ActionBuilder()
                                 .setAction(new DropActionCaseBuilder().build())
                                 .build()))
                             .build())

@@ -203,12 +203,11 @@ public final class ReconcileUtil {
         boolean okToInstall = true;
         // check each bucket in the pending group
         for (Bucket bucket : pendingGroup.getBuckets().nonnullBucket().values()) {
-            for (Action action : bucket.nonnullAction().values()) {
+            for (Action action : bucket.nonnullAction()) {
                 // if the output action is a group
-                if (GroupActionCase.class.equals(action.getAction().implementedInterface())) {
-                    Uint32 groupId = ((GroupActionCase) action.getAction()).getGroupAction().getGroupId();
+                if (action.getAction() instanceof GroupActionCase groupAction) {
                     // see if that output group is installed
-                    if (!installedGroupIds.contains(groupId)) {
+                    if (!installedGroupIds.contains(groupAction.getGroupAction().getGroupId())) {
                         // if not installed, we have missing dependencies and cannot install this pending group
                         okToInstall = false;
                         break;

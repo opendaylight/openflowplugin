@@ -17,7 +17,6 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegist
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.ActionUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.Buckets;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group.buckets.Bucket;
@@ -53,13 +52,9 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
     public void serialize(final GroupMessage message, final ByteBuf outBuffer) {
         final int index = outBuffer.writerIndex();
         super.serialize(message, outBuffer);
-        if (isGroupAddModEnabled) {
-            if (message.getCommand().equals(GroupModCommand.OFPGCADD)
-                    || message.getCommand().equals(GroupModCommand.OFPGCMODIFY)) {
-                outBuffer.writeShort(OFPGC_ADD_OR_MOD);
-            } else {
-                outBuffer.writeShort(message.getCommand().getIntValue());
-            }
+        if (isGroupAddModEnabled && (message.getCommand().equals(GroupModCommand.OFPGCADD)
+                || message.getCommand().equals(GroupModCommand.OFPGCMODIFY))) {
+            outBuffer.writeShort(OFPGC_ADD_OR_MOD);
         } else {
             outBuffer.writeShort(message.getCommand().getIntValue());
         }
@@ -80,8 +75,7 @@ public class GroupMessageSerializer extends AbstractMessageSerializer<GroupMessa
                     outBuffer.writeInt(requireNonNullElse(bucket.getWatchGroup(), OFConstants.OFPG_ANY).intValue());
                     outBuffer.writeZero(PADDING_IN_BUCKET);
 
-                    bucket.nonnullAction().values().stream()
-                        .sorted(OrderComparator.build())
+                    bucket.nonnullAction().stream()
                         .forEach(a -> ActionUtil.writeAction(a.getAction(), OFConstants.OFP_VERSION_1_3, registry,
                             outBuffer));
 

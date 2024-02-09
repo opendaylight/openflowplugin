@@ -11,6 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -105,7 +106,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.strip.vlan.action._case.StripVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.sw.path.action._case.SwPathActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
@@ -128,7 +128,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.meter._case.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
@@ -166,7 +165,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -754,20 +752,17 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         try {
             table = Uint8.valueOf(tableId);
         } catch (NumberFormatException ex) {
-            LOG.info("Parsing String tableId {} failed. Continuing with default tableId {}.",
-                    tableId, table);
+            LOG.info("Parsing String tableId {} failed. Continuing with default tableId {}.", tableId, table);
         }
         return table;
     }
 
     private static InstructionsBuilder createDecNwTtlInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
                             .build()))
                         .build())
@@ -777,8 +772,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createMeterInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new MeterCaseBuilder()
                     .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.ONE)).build())
                     .build())
@@ -787,8 +781,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createMetadataInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .withKey(new InstructionKey(0))
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new WriteMetadataCaseBuilder()
                     .setWriteMetadata(new WriteMetadataBuilder()
                         .setMetadata(Uint64.TEN).setMetadataMask(Uint64.TEN)
@@ -799,8 +792,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createGotoTableInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new GoToTableCaseBuilder()
                     .setGoToTable(new GoToTableBuilder().setTableId(Uint8.valueOf(5)).build())
                     .build())
@@ -810,12 +802,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
     private static InstructionsBuilder createDropInstructions() {
         // Wrap our Apply Action in an Instruction
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .withKey(new ActionKey(0))
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DropActionCaseBuilder()
                                 .setDropAction(new DropActionBuilder().build())
                                 .build())
@@ -827,12 +817,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new ControllerActionCaseBuilder()
                                 .setControllerAction(new ControllerActionBuilder()
                                     .setMaxLength(Uint16.valueOf(5))
@@ -846,12 +834,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction1() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new OutputActionCaseBuilder()
                                 .setOutputAction(new OutputActionBuilder()
                                     .setMaxLength(Uint16.valueOf(56))
@@ -869,12 +855,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         // this particular test-case is for Port : 1
         // tested as (addMDFlow openflow:<dpid> f82)
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new OutputActionCaseBuilder()
                                 .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("1")).build())
                                 .build())
@@ -886,12 +870,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createOutputInstructions(final String outputType, final Uint16 outputValue) {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new OutputActionCaseBuilder()
                                 .setOutputAction(new OutputActionBuilder()
                                     .setMaxLength(outputValue)
@@ -906,12 +888,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createSentToControllerInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new OutputActionCaseBuilder()
                                 .setOutputAction(new OutputActionBuilder()
                                     .setMaxLength(Uint16.MAX_VALUE)
@@ -926,12 +906,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createStripVlanInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new StripVlanActionCaseBuilder()
                                 .setStripVlanAction(new StripVlanActionBuilder().build())
                                 .build())
@@ -943,12 +921,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction2() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushMplsActionCaseBuilder()
                                 .setPushMplsAction(new PushMplsActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x8847))
@@ -962,12 +938,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction3() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushPbbActionCaseBuilder()
                                 .setPushPbbAction(new PushPbbActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x88E7))
@@ -981,12 +955,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction4() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushVlanActionCaseBuilder()
                                 .setPushVlanAction(new PushVlanActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x8100))
@@ -1000,12 +972,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction5() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetDlDstActionCaseBuilder()
                                 .setSetDlDstAction(new SetDlDstActionBuilder()
                                     .setAddress(new MacAddress("00:05:b9:7c:81:5f"))
@@ -1019,11 +989,9 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction6() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
-                    .setApplyActions(new ApplyActionsBuilder().setAction(BindingMap.of(new ActionBuilder()
-                        .setOrder(0)
+                    .setApplyActions(new ApplyActionsBuilder().setAction(List.of(new ActionBuilder()
                         .setAction(new SetDlSrcActionCaseBuilder()
                             .setSetDlSrcAction(new SetDlSrcActionBuilder()
                                 .setAddress(new MacAddress("00:05:b9:7c:81:5f"))
@@ -1036,12 +1004,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction7() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanIdActionCaseBuilder()
                                 .setSetVlanIdAction(new SetVlanIdActionBuilder()
                                     .setVlanId(new VlanId(Uint16.valueOf(4000))).build())
@@ -1054,12 +1020,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction8() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanPcpActionCaseBuilder()
                                 .setSetVlanPcpAction(new SetVlanPcpActionBuilder()
                                     .setVlanPcp(new VlanPcp(Uint8.TWO))
@@ -1073,12 +1037,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction88() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanPcpActionCaseBuilder()
                                 .setSetVlanPcpAction(new SetVlanPcpActionBuilder()
                                     // the code point is a 3-bit(0-7) field representing the frame priority level
@@ -1093,12 +1055,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction9() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(new CopyTtlInBuilder().build()).build())
                             .build()))
                         .build())
@@ -1108,12 +1068,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction10() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new CopyTtlOutCaseBuilder()
                                 .setCopyTtlOut(new CopyTtlOutBuilder().build())
                                 .build())
@@ -1125,12 +1083,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction11() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DecMplsTtlCaseBuilder()
                                 .setDecMplsTtl(new DecMplsTtlBuilder().build())
                                 .build())
@@ -1142,12 +1098,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction12() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
                             .build()))
                         .build())
@@ -1157,12 +1111,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction13() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DropActionCaseBuilder()
                                 .setDropAction(new DropActionBuilder().build())
                                 .build())
@@ -1174,12 +1126,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction14() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new FloodActionCaseBuilder()
                                 .setFloodAction(new FloodActionBuilder().build())
                                 .build())
@@ -1191,12 +1141,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction15() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new FloodAllActionCaseBuilder()
                                 .setFloodAllAction(new FloodAllActionBuilder().build())
                                 .build())
@@ -1208,12 +1156,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction16() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new GroupActionCaseBuilder()
                                 .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
                                 .build())
@@ -1225,12 +1171,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction17() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new HwPathActionCaseBuilder()
                                 .setHwPathAction(new HwPathActionBuilder().build())
                                 .build())
@@ -1242,12 +1186,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction18() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new LoopbackActionCaseBuilder()
                                 .setLoopbackAction(new LoopbackActionBuilder().build())
                                 .build())
@@ -1259,12 +1201,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction19() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PopMplsActionCaseBuilder()
                                 .setPopMplsAction(new PopMplsActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0xB))
@@ -1278,12 +1218,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction20() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PopPbbActionCaseBuilder()
                                 .setPopPbbAction(new PopPbbActionBuilder().build())
                                 .build())
@@ -1295,12 +1233,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction21() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PopVlanActionCaseBuilder()
                                 .setPopVlanAction(new PopVlanActionBuilder().build())
                                 .build())
@@ -1312,12 +1248,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction22() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetDlTypeActionCaseBuilder()
                                 .setSetDlTypeAction(new SetDlTypeActionBuilder()
                                     .setDlType(new EtherType(Uint32.valueOf(8)))
@@ -1331,24 +1265,19 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction23(final NodeId nodeId) {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
-                    .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder().setOrder(0).build()))
-                        .build())
+                    .setApplyActions(new ApplyActionsBuilder().setAction(List.of(new ActionBuilder().build())).build())
                     .build())
                 .build()));
     }
 
     private static InstructionsBuilder createAppyActionInstruction24() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetMplsTtlActionCaseBuilder()
                                 .setSetMplsTtlAction(new SetMplsTtlActionBuilder().setMplsTtl(Uint8.ONE).build())
                                 .build())
@@ -1360,12 +1289,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction25() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNextHopActionCaseBuilder()
                                 .setSetNextHopAction(new SetNextHopActionBuilder()
                                     .setAddress(new Ipv4Builder().setIpv4Address(new Ipv4Prefix(IPV4_PREFIX)).build())
@@ -1379,12 +1306,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction26() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwDstActionCaseBuilder()
                                 .setSetNwDstAction(new SetNwDstActionBuilder()
                                     .setAddress(new Ipv4Builder()
@@ -1400,12 +1325,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction27() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwSrcActionCaseBuilder()
                                 .setSetNwSrcAction(new SetNwSrcActionBuilder()
                                     .setAddress(new Ipv4Builder()
@@ -1421,12 +1344,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction28() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwTosActionCaseBuilder()
                                 .setSetNwTosAction(new SetNwTosActionBuilder().setTos(8).build())
                                 .build())
@@ -1438,12 +1359,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction29() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetNwTtlActionCaseBuilder()
                                 .setSetNwTtlAction(new SetNwTtlActionBuilder().setNwTtl(Uint8.ONE).build())
                                 .build())
@@ -1455,12 +1374,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction30() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetQueueActionCaseBuilder()
                                 .setSetQueueAction(new SetQueueActionBuilder().setQueueId(Uint32.ONE).build())
                                 .build())
@@ -1472,12 +1389,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction31() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetTpDstActionCaseBuilder()
                                 .setSetTpDstAction(new SetTpDstActionBuilder()
                                     .setPort(new PortNumber(Uint16.valueOf(109)))
@@ -1491,12 +1406,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction32() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetTpSrcActionCaseBuilder()
                                 .setSetTpSrcAction(new SetTpSrcActionBuilder()
                                     .setPort(new PortNumber(Uint16.valueOf(109)))
@@ -1510,12 +1423,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction33() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanCfiActionCaseBuilder()
                                 .setSetVlanCfiAction(new SetVlanCfiActionBuilder().setVlanCfi(new VlanCfi(2)).build())
                                 .build())
@@ -1527,12 +1438,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction34() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SwPathActionCaseBuilder()
                                 .setSwPathAction(new SwPathActionBuilder().build())
                                 .build())
@@ -1545,12 +1454,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
     private static InstructionsBuilder createAppyActionInstruction35() {
         // Ethernet
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setEthernetMatch(new EthernetMatchBuilder()
@@ -1561,7 +1468,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(1)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setEthernetMatch(new EthernetMatchBuilder()
@@ -1572,7 +1478,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(2)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setEthernetMatch(new EthernetMatchBuilder()
@@ -1589,18 +1494,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction36() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder().setSetField(new SetFieldBuilder()
                                 .setVlanMatch(new VlanMatchBuilder()
                                     .setVlanPcp(new VlanPcp(Uint8.valueOf(3)))
                                     .build())
                                 .build()).build()).build(), new ActionBuilder()
-                            .setOrder(0)
                             .setAction(new SetFieldCaseBuilder().setSetField(new SetFieldBuilder()
                                 .setVlanMatch(new VlanMatchBuilder()
                                     .setVlanId(new VlanIdBuilder()
@@ -1619,26 +1521,22 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
     private static InstructionsBuilder createAppyActionInstruction37() {
         // Ip
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setIpMatch(new IpMatchBuilder().setIpDscp(new Dscp(Uint8.valueOf(3))).build())
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(1)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setIpMatch(new IpMatchBuilder().setIpEcn(Uint8.TWO).build())
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(2)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setIpMatch(new IpMatchBuilder().setIpProtocol(Uint8.valueOf(120)).build())
@@ -1652,12 +1550,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
     private static InstructionsBuilder createAppyActionInstruction38() {
         // IPv4
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setLayer3Match(new Ipv4MatchBuilder()
@@ -1666,7 +1562,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(1)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setLayer3Match(new Ipv4MatchBuilder()
@@ -1698,18 +1593,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         tcpmatch1.setTcpDestinationPort(tcpdstport);
         setFieldBuilder.setLayer4Match(tcpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
 
         setFieldBuilder1.setLayer4Match(tcpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .setAction(List.of(ab.build(), ab1.build()))
                         .build())
                     .build())
                 .build()));
@@ -1731,18 +1623,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         udpmatch1.setUdpSourcePort(udpsrcport);
         setFieldBuilder.setLayer4Match(udpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
 
         setFieldBuilder1.setLayer4Match(udpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .setAction(List.of(ab.build(), ab1.build()))
                         .build())
                     .build())
                 .build()));
@@ -1764,18 +1653,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         sctpmatch1.setSctpDestinationPort(dstport);
         setFieldBuilder.setLayer4Match(sctpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
 
         setFieldBuilder1.setLayer4Match(sctpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .setAction(List.of(ab.build(), ab1.build()))
                         .build())
                     .build())
                 .build()));
@@ -1794,18 +1680,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         icmpv4match1.setIcmpv4Code(Uint8.ZERO);
         setFieldBuilder.setIcmpv4Match(icmpv4match.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
 
         setFieldBuilder1.setIcmpv4Match(icmpv4match1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(ab.build(), ab1.build()))
+                        .setAction(List.of(ab.build(), ab1.build()))
                         .build())
                     .build())
                 .build()));
@@ -1846,30 +1729,24 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         arpmatch4.setArpTargetTransportAddress(dstiparp);
         setFieldBuilder.setLayer3Match(arpmatch.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
 
         setFieldBuilder1.setLayer3Match(arpmatch1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
 
         setFieldBuilder2.setLayer3Match(arpmatch2.build());
         ab2.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder2.build()).build());
-        ab2.withKey(new ActionKey(2));
 
         setFieldBuilder3.setLayer3Match(arpmatch3.build());
         ab3.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder3.build()).build());
-        ab3.withKey(new ActionKey(3));
 
         setFieldBuilder4.setLayer3Match(arpmatch4.build());
         ab4.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder4.build()).build());
-        ab4.withKey(new ActionKey(4));
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(ab.build(), ab1.build(), ab2.build(), ab3.build(), ab4.build()))
+                        .setAction(List.of(ab.build(), ab1.build(), ab2.build(), ab3.build(), ab4.build()))
                         .build())
                     .build())
                 .build()));
@@ -1906,26 +1783,21 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
         setFieldBuilder.setLayer3Match(ipv6Builder.build());
         ab.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder.build()).build());
-        ab.setOrder(0);
 
         setFieldBuilder1.setLayer3Match(ipv6Builder1.build());
         ab1.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder1.build()).build());
-        ab1.withKey(new ActionKey(1));
 
         setFieldBuilder5.setLayer3Match(ipv6Builder5.build());
         ab5.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder5.build()).build());
-        ab5.withKey(new ActionKey(5));
 
         setFieldBuilder6.setLayer3Match(ipv6Builder6.build());
         ab6.setAction(new SetFieldCaseBuilder().setSetField(setFieldBuilder6.build()).build());
-        ab6.withKey(new ActionKey(6));
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(ab.build(), ab1.build(), ab5.build(), ab6.build()))
+                        .setAction(List.of(ab.build(), ab1.build(), ab5.build(), ab6.build()))
                         .build())
                     .build())
                 .build()));
@@ -1934,19 +1806,16 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
     private static InstructionsBuilder createAppyActionInstruction45() {
         // Icmpv6
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setIcmpv6Match(new Icmpv6MatchBuilder().setIcmpv6Type(Uint8.valueOf(135)).build())
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(1)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setIcmpv6Match(new Icmpv6MatchBuilder().setIcmpv6Code(Uint8.ZERO).build())
@@ -1961,12 +1830,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
     private static InstructionsBuilder createAppyActionInstruction46() {
         // MPLS
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
@@ -1975,7 +1842,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(1)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
@@ -1984,7 +1850,6 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
                                     .build())
                                 .build())
                             .build(), new ActionBuilder()
-                            .setOrder(2)
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
@@ -2000,12 +1865,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction47() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     .setProtocolMatchFields(new ProtocolMatchFieldsBuilder()
@@ -2024,12 +1887,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createAppyActionInstruction48() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 .setSetField(new SetFieldBuilder()
                                     // Tunnel
@@ -2043,12 +1904,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createTunnelIpv4DstInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 // Add the IPv4 tunnel dst to the set_field value
                                 .setSetField(new SetFieldBuilder()
@@ -2066,12 +1925,10 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private static InstructionsBuilder createTunnelIpv4SrcInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                            .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetFieldCaseBuilder()
                                 // Add the IPv4 tunnel src to the set_field value
                                 .setSetField(new SetFieldBuilder()

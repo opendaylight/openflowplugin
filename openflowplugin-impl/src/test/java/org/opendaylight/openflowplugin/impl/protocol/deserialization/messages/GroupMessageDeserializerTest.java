@@ -83,7 +83,7 @@ public class GroupMessageDeserializerTest extends AbstractDeserializerTest {
         assertEquals(WATCH_GROUP, bucket.getWatchGroup().intValue());
         assertEquals(1, bucket.getAction().size());
         assertEquals(PopPbbActionCase.class,
-            bucket.nonnullAction().values().iterator().next().getAction().implementedInterface());
+            bucket.nonnullAction().iterator().next().getAction().implementedInterface());
     }
 
 }

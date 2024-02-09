@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.ta
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
@@ -17,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.ApplyActionsMissBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class ApplyActionsMissTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
     @Test
@@ -26,8 +26,7 @@ public class ApplyActionsMissTablePropertySerializerTest extends AbstractTablePr
                 .setApplyActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight
                         .table.types.rev131026.table.feature.prop.type.table.feature.prop.type.apply.actions.miss
                         .ApplyActionsMissBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                                .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                                 .setAction(new SetNwSrcActionCaseBuilder().build())
                                 .build()))
                         .build())

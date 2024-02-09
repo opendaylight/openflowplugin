@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.test;
 
 import static java.util.Objects.requireNonNull;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.List;
@@ -61,7 +62,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
@@ -108,8 +108,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
         final TableFeaturesBuilder tableFeature = new TableFeaturesBuilder();
         // Sample data , committing to DataStore
         if (!tableFeatureType.equals("t1")) {
-            final BindingMap.Builder<TableFeaturePropertiesKey, TableFeatureProperties> properties =
-                BindingMap.orderedBuilder();
+            final var properties = ImmutableList.<TableFeatureProperties>builder();
             switch (tableFeatureType) {
                 case "t2":
                     //To set the ApplyActionsMiss
@@ -188,13 +187,11 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
             .setTableFeaturePropType(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                 .feature.prop.type.table.feature.prop.type.ApplyActionsMissBuilder()
                     .setApplyActionsMiss(new ApplyActionsMissBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PopMplsActionCaseBuilder().build())
                             .build()))
                         .build())
-                    .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                    .build());
     }
 
     private static TableFeaturePropertiesBuilder createApplyActionsTblFeatureProp() {
@@ -202,22 +199,18 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
             .setTableFeaturePropType(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                 .feature.prop.type.table.feature.prop.type.ApplyActionsBuilder()
                 .setApplyActions(new ApplyActionsBuilder()
-                    .setAction(BindingMap.of(new ActionBuilder()
+                    .setAction(List.of(new ActionBuilder()
                         .setAction(new PopMplsActionCaseBuilder().build())
                         .build()))
                     .build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private static TableFeaturePropertiesBuilder createNextTblFeatureProp() {
         return new TableFeaturePropertiesBuilder()
             .setTableFeaturePropType(new NextTableBuilder()
                 .setTables(new TablesBuilder().setTableIds(List.of(Uint8.TWO, Uint8.valueOf(3))).build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private static TableFeaturePropertiesBuilder createNextTableMissTblFeatureProp() {
@@ -227,9 +220,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                     .setTableIds(List.of(Uint8.valueOf(23), Uint8.valueOf(24), Uint8.valueOf(25),
                         Uint8.valueOf(27), Uint8.valueOf(28), Uint8.valueOf(29), Uint8.valueOf(30)))
                     .build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private static TableFeaturePropertiesBuilder createInstructionsTblFeatureProp() {
@@ -238,9 +229,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                 .feature.prop.type.table.feature.prop.type.InstructionsBuilder()
                     .setInstructions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                         .feature.prop.type.table.feature.prop.type.instructions.InstructionsBuilder().build())
-                    .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                    .build());
     }
 
     private static TableFeaturePropertiesBuilder createInstructionsMissTblFeatureProp() {
@@ -251,9 +240,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                 .feature.prop.type.table.feature.prop.type.InstructionsMissBuilder()
                     .setInstructionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                         .feature.prop.type.table.feature.prop.type.instructions.miss.InstructionsMissBuilder().build())
-                    .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                    .build());
     }
 
     private static TableFeaturePropertiesBuilder createWriteActionsTblFeatureProp() {
@@ -264,13 +251,11 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                 .feature.prop.type.table.feature.prop.type.WriteActionsBuilder()
                     .setWriteActions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                         .feature.prop.type.table.feature.prop.type.write.actions.WriteActionsBuilder()
-                            .setAction(BindingMap.ordered(
+                            .setAction(List.of(
                                 new ActionBuilder().setAction(new CopyTtlOutCaseBuilder().build()).build(),
                                 new ActionBuilder().setAction(new PopVlanActionCaseBuilder().build()).build()))
                         .build())
-                    .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                    .build());
     }
 
     private static TableFeaturePropertiesBuilder createWriteActionsMissTblFeatureProp() {
@@ -280,13 +265,11 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                 .feature.prop.type.table.feature.prop.type.WriteActionsMissBuilder()
                     .setWriteActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                         .feature.prop.type.table.feature.prop.type.write.actions.miss.WriteActionsMissBuilder()
-                            .setAction(BindingMap.ordered(
+                            .setAction(List.of(
                                 new ActionBuilder().setAction(new CopyTtlInCaseBuilder().build()).build(),
                                 new ActionBuilder().setAction(new PushPbbActionCaseBuilder().build()).build()))
                             .build())
-                    .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                    .build());
     }
 
     private static TableFeaturePropertiesBuilder createMatchFieldTblFeatureProp() {
@@ -299,9 +282,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                         .setMatchType(MplsLabel.VALUE)
                         .build()))
                     .build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private static TableFeaturePropertiesBuilder createWriteSetFieldTblFeatureProp() {
@@ -315,9 +296,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                             new SetFieldMatchBuilder().setHasMask(true).setMatchType(MplsBos.VALUE).build(),
                             new SetFieldMatchBuilder().setHasMask(true).setMatchType(EthDst.VALUE).build()))
                         .build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private static TableFeaturePropertiesBuilder createWriteSetFieldMissTblFeatureProp() {
@@ -331,8 +310,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                         new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build(),
                         new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.VALUE).build()))
                     .build())
-            .build())
-            .withKey(new TableFeaturePropertiesKey(0)).setOrder(1);
+            .build());
     }
 
     private static TableFeaturePropertiesBuilder createApplySetFieldTblFeatureProp() {
@@ -346,9 +324,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                             new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build(),
                             new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.VALUE).build()))
                         .build())
-            .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+            .build());
     }
 
     private static TableFeaturePropertiesBuilder createApplySetFieldMissTblFeatureProp() {
@@ -362,9 +338,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                             new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build(),
                             new SetFieldMatchBuilder().setHasMask(true).setMatchType(Ipv4Dst.VALUE).build()))
                         .build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private static TableFeaturePropertiesBuilder createWildCardsTblFeatureProp() {
@@ -376,9 +350,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
                         new SetFieldMatchBuilder().setHasMask(false).setMatchType(ArpOp.VALUE).build(),
                         new SetFieldMatchBuilder().setHasMask(true).setMatchType(InPort.VALUE).build()))
                     .build())
-                .build())
-            .withKey(new TableFeaturePropertiesKey(0))
-            .setOrder(1);
+                .build());
     }
 
     private void writeTableFeatures(final CommandInterpreter ci, final TableFeatures tableFeatures) {

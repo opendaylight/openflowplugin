@@ -12,7 +12,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import org.junit.Before;
@@ -69,7 +68,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
 import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -157,31 +155,31 @@ public class FlowConvertorTest {
     public void testInstructionsTranslation() {
         AddFlowInput flow = new AddFlowInputBuilder()
             .setInstructions(new InstructionsBuilder()
-                .setInstruction(BindingMap.ordered(
-                    new InstructionBuilder().setOrder(0).setInstruction(new GoToTableCaseBuilder()
+                .setInstruction(List.of(
+                    new InstructionBuilder().setInstruction(new GoToTableCaseBuilder()
                         .setGoToTable(new GoToTableBuilder().setTableId(Uint8.ONE).build())
                         .build())
                     .build(),
-                    new InstructionBuilder().setOrder(1).setInstruction(new WriteMetadataCaseBuilder()
+                    new InstructionBuilder().setInstruction(new WriteMetadataCaseBuilder()
                         .setWriteMetadata(new WriteMetadataBuilder()
                             .setMetadata(Uint64.valueOf(2))
                             .setMetadataMask(Uint64.valueOf(3))
                             .build())
                         .build())
                     .build(),
-                    new InstructionBuilder().setOrder(2).setInstruction(new WriteActionsCaseBuilder()
-                        .setWriteActions(new WriteActionsBuilder().setAction(Map.of()).build())
+                    new InstructionBuilder().setInstruction(new WriteActionsCaseBuilder()
+                        .setWriteActions(new WriteActionsBuilder().setAction(List.of()).build())
                         .build())
                     .build(),
-                    new InstructionBuilder().setOrder(3).setInstruction(new ApplyActionsCaseBuilder()
-                        .setApplyActions(new ApplyActionsBuilder().setAction(Map.of()).build())
+                    new InstructionBuilder().setInstruction(new ApplyActionsCaseBuilder()
+                        .setApplyActions(new ApplyActionsBuilder().setAction(List.of()).build())
                         .build())
                     .build(),
-                    new InstructionBuilder().setOrder(4).setInstruction(new ClearActionsCaseBuilder()
-                        .setClearActions(new ClearActionsBuilder().setAction(Map.of()).build())
+                    new InstructionBuilder().setInstruction(new ClearActionsCaseBuilder()
+                        .setClearActions(new ClearActionsBuilder().setAction(List.of()).build())
                         .build())
                     .build(),
-                    new InstructionBuilder().setOrder(5).setInstruction(new MeterCaseBuilder()
+                    new InstructionBuilder().setInstruction(new MeterCaseBuilder()
                         .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.valueOf(5))).build())
                         .build())
                     .build()))
@@ -240,17 +238,15 @@ public class FlowConvertorTest {
     public void testCloneAndAugmentFlowWithSetVlanId() {
         MockFlow mockFlow = new MockFlow();
         Action action1 = createAction(
-                new SetVlanIdActionCaseBuilder().setSetVlanIdAction(
-                        new SetVlanIdActionBuilder().setVlanId(new VlanId(Uint16.TEN)).build())
-                        .build(),
-                0);
+                new SetVlanIdActionCaseBuilder()
+                    .setSetVlanIdAction(new SetVlanIdActionBuilder().setVlanId(new VlanId(Uint16.TEN)).build())
+                    .build());
 
         mockFlow.setMatch(new MatchBuilder().setEthernetMatch(createEthernetMatch()).build());
         mockFlow.setInstructions(new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
-                    .setApplyActions(new ApplyActionsBuilder().setAction(BindingMap.of(action1)).build())
+                    .setApplyActions(new ApplyActionsBuilder().setAction(List.of(action1)).build())
                     .build())
                 .build()))
             .build());
@@ -270,10 +266,8 @@ public class FlowConvertorTest {
     }
 
     private static Action createAction(
-            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase,
-            final int order) {
-        Action action = new ActionBuilder().setOrder(order).setAction(actionCase).build();
-        return action;
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action actionCase) {
+        return new ActionBuilder().setAction(actionCase).build();
     }
 
     private static EthernetMatch createEthernetMatch() {

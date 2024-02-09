@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.protocol.deserialization.messages;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint16;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint32;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -21,7 +22,6 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowplugin.extension.api.path.ActionPath;
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.ActionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupMessage;
@@ -73,23 +73,16 @@ public class GroupMessageDeserializer implements OFDeserializer<GroupMessage>, D
             message.skipBytes(PADDING_IN_BUCKETS_HEADER);
 
             if (message.readableBytes() > 0) {
-                final var actions = BindingMap.<
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
-                        orderedBuilder();
+                final var actions = ImmutableList.<
+                    org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>builder();
                 final int startIndex = message.readerIndex();
                 final int bucketLength = length - BUCKETS_HEADER_LENGTH;
-                int offset = 0;
 
                 while (message.readerIndex() - startIndex < bucketLength) {
                     actions.add(new ActionBuilder()
-                        .withKey(new ActionKey(offset))
-                        .setOrder(offset)
                         .setAction(ActionUtil.readAction(EncodeConstants.OF_VERSION_1_3, message, registry,
                                 ActionPath.GROUP_DESC_STATS_UPDATED_BUCKET_ACTION))
                         .build());
-
-                    offset++;
                 }
 
                 bucket.setAction(actions.build());

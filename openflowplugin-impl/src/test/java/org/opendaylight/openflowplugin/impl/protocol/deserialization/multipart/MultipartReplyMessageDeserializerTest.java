@@ -147,16 +147,15 @@ public class MultipartReplyMessageDeserializerTest extends AbstractDeserializerT
         assertEquals(BYTE_COUNT, flowAndStatisticsMapList.getByteCount().getValue().longValue());
         assertEquals(PACKET_COUNT, flowAndStatisticsMapList.getPacketCount().getValue().longValue());
 
-        assertEquals(1, flowAndStatisticsMapList.getInstructions().getInstruction().size());
+        assertEquals(1, flowAndStatisticsMapList.getInstructions().nonnullInstruction().size());
 
         final Instruction instruction =
-                flowAndStatisticsMapList.getInstructions().nonnullInstruction().values().iterator().next()
-                        .getInstruction();
+                flowAndStatisticsMapList.getInstructions().nonnullInstruction().iterator().next().getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().getAction().size());
-        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().values().iterator().next()
+        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().iterator().next()
                 .getAction().implementedInterface());
     }
 }

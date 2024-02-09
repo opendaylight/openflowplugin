@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.learningswitch;
 
-import java.util.Map;
+import java.util.List;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
@@ -15,7 +15,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
@@ -28,7 +27,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetDestinationBuilder;
@@ -65,7 +63,6 @@ public final class FlowUtils {
         Uri outputPort = dstPort.getValue().firstKeyOf(NodeConnector.class).getId();
 
         Action outputToControllerAction = new ActionBuilder()
-                .setOrder(0)
                 .setAction(new OutputActionCaseBuilder()
                         .setOutputAction(new OutputActionBuilder()
                                 .setMaxLength(Uint16.MAX_VALUE)
@@ -75,13 +72,10 @@ public final class FlowUtils {
                 .build();
 
         // Create an Apply Action
-        ApplyActions applyActions = new ApplyActionsBuilder()
-                .setAction(Map.of(outputToControllerAction.key(), outputToControllerAction))
-                .build();
+        ApplyActions applyActions = new ApplyActionsBuilder().setAction(List.of(outputToControllerAction)).build();
 
         // Wrap our Apply Action in an Instruction
         Instruction applyActionsInstruction = new InstructionBuilder()
-                .setOrder(0)
                 .setInstruction(new ApplyActionsCaseBuilder()
                         .setApplyActions(applyActions)
                         .build())
@@ -94,7 +88,7 @@ public final class FlowUtils {
                         .setEthernetMatch(ethernetMatch)
                         .build())
                 .setInstructions(new InstructionsBuilder()
-                        .setInstruction(Map.of(applyActionsInstruction.key(), applyActionsInstruction))
+                        .setInstruction(List.of(applyActionsInstruction))
                         .build())
                 .setPriority(priority)
                 .setBufferId(OFConstants.OFP_NO_BUFFER)
@@ -116,23 +110,18 @@ public final class FlowUtils {
         Uri controllerPort = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(controllerPort);
 
-        Action action = new ActionBuilder()
-                .setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build())
-                .withKey(new ActionKey(0))
-                .build();
-
-        // Create an Apply Action
-        ApplyActionsBuilder aab = new ApplyActionsBuilder().setAction(Map.of(action.key(), action));
-
-        // Wrap our Apply Action in an Instruction
+        // Create an Apply Action and wrap it in an Instruction
         Instruction instruction = new InstructionBuilder()
-                .setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab.build()).build())
-                .withKey(new InstructionKey(0))
+                .setInstruction(new ApplyActionsCaseBuilder()
+                    .setApplyActions(new ApplyActionsBuilder()
+                    .setAction(List.of(new ActionBuilder()
+                        .setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build())
+                        .build()))
+                    .build()).build())
                 .build();
 
         // Put our Instruction in a list of Instructions
-        InstructionsBuilder isb = new InstructionsBuilder()
-                .setInstruction(Map.of(instruction.key(), instruction));
+        InstructionsBuilder isb = new InstructionsBuilder().setInstruction(List.of(instruction));
 
         MatchBuilder matchBuilder = new MatchBuilder();
         FlowBuilder allToCtrlFlow = new FlowBuilder().setTableId(tableId).setFlowName("allPacketsToCtrl").setId(flowId)

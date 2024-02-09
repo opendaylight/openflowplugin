@@ -34,16 +34,9 @@ module opendaylight-action-types {
        uses action-list;
     }
 
-    grouping ordered {
-        leaf order {
-          type int32;
-        }
-    }
-
     grouping action-list {
         list action {
-            key "order";
-            uses ordered;
+            ordered-by user;
             uses action;
         }
     }

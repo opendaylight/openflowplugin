@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.math.BigInteger;
@@ -69,14 +70,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.metadata._case.WriteMetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.approved.extensions.rev160802.TcpFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.ActionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.InstructionRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.NextTableRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.OxmRelatedTableFeatureProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.next.table.related.table.feature.property.NextTableIds;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.ActionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlInCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.CopyTtlOutCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.DecMplsTtlCase;
@@ -95,8 +94,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwSrcCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetNwTtlCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.action.grouping.action.choice.SetQueueCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.InstructionChoice;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.ClearActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731.instruction.grouping.instruction.choice.GotoTableCase;
@@ -145,7 +142,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpD
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.UdpSrc;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanPcp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.VlanVid;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table.features._case.MultipartReplyTableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableConfig;
@@ -427,21 +423,15 @@ public class TableFeaturesResponseConvertor
 
     private static TableProperties toTableProperties(final List<TableFeatureProperties> ofTablePropertiesList) {
         if (ofTablePropertiesList == null || ofTablePropertiesList.isEmpty()) {
-            return new TablePropertiesBuilder()
-                    .setTableFeatureProperties(Map.of())
-                    .build();
+            return new TablePropertiesBuilder().setTableFeatureProperties(List.of()).build();
         }
 
-        final BindingMap.Builder<
+        final var salTablePropertiesList = ImmutableList.<
             org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table
-                .properties.TableFeaturePropertiesKey,
-            org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table
-                .properties.TableFeatureProperties> salTablePropertiesList =
-                BindingMap.orderedBuilder(ofTablePropertiesList.size());
+                .properties.TableFeatureProperties>builderWithExpectedSize(ofTablePropertiesList.size());
         TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
-        int index = 0;
 
-        for (TableFeatureProperties property : ofTablePropertiesList) {
+        for (var property : ofTablePropertiesList) {
             TableFeaturesPropType propType = property.getType();
             ActionExecutor actionExecutor = TABLE_FEATURE_PROPERTY_TYPE_TO_ACTION.get(propType);
 
@@ -451,9 +441,7 @@ public class TableFeaturesResponseConvertor
                 LOG.error("Unsupported table feature property : {}", propType);
             }
 
-            propBuilder.setOrder(index);
             salTablePropertiesList.add(propBuilder.build());
-            index += 1;
         }
 
         return new TablePropertiesBuilder()
@@ -461,53 +449,43 @@ public class TableFeaturesResponseConvertor
             .build();
     }
 
-    private static Map<InstructionKey, Instruction> setInstructionTableFeatureProperty(
+    private static List<Instruction> setInstructionTableFeatureProperty(
             final TableFeatureProperties properties) {
-        BindingMap.Builder<InstructionKey, Instruction> instructionList = BindingMap.orderedBuilder();
-        org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder
-            builder = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
-                .list.InstructionBuilder();
-        int index = 0;
+        final var builder = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list
+            .InstructionBuilder();
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction.rev130731
-                .instructions.grouping.Instruction currInstruction : properties
-                .augmentation(InstructionRelatedTableFeatureProperty.class).getInstruction()) {
-            InstructionChoice currInstructionType = currInstruction.getInstructionChoice();
-
-            if (currInstructionType instanceof GotoTableCase) {
-                builder.setInstruction(new GoToTableCaseBuilder()
+        return properties.augmentation(InstructionRelatedTableFeatureProperty.class).nonnullInstruction().stream()
+            .sequential()
+            .map(instruction -> {
+                final var choice = instruction.getInstructionChoice();
+                if (choice instanceof GotoTableCase) {
+                    builder.setInstruction(new GoToTableCaseBuilder()
                         .setGoToTable(new GoToTableBuilder().build())
                         .build());
-            } else if (currInstructionType instanceof WriteMetadataCase) {
-                builder.setInstruction(new WriteMetadataCaseBuilder()
+                } else if (choice instanceof WriteMetadataCase) {
+                    builder.setInstruction(new WriteMetadataCaseBuilder()
                         .setWriteMetadata(new WriteMetadataBuilder().build())
                         .build());
-            } else if (currInstructionType instanceof WriteActionsCase) {
-                builder.setInstruction(new WriteActionsCaseBuilder()
+                } else if (choice instanceof WriteActionsCase) {
+                    builder.setInstruction(new WriteActionsCaseBuilder()
                         .setWriteActions(new WriteActionsBuilder().build())
                         .build());
-            } else if (currInstructionType instanceof ApplyActionsCase) {
-                builder.setInstruction(new ApplyActionsCaseBuilder()
+                } else if (choice instanceof ApplyActionsCase) {
+                    builder.setInstruction(new ApplyActionsCaseBuilder()
                         .setApplyActions(new ApplyActionsBuilder().build())
                         .build());
-            } else if (currInstructionType instanceof ClearActionsCase) {
-                builder.setInstruction(new ClearActionsCaseBuilder()
+                } else if (choice instanceof ClearActionsCase) {
+                    builder.setInstruction(new ClearActionsCaseBuilder()
                         .setClearActions(new ClearActionsBuilder().build())
                         .build());
-            } else if (currInstructionType instanceof MeterCase) {
-                builder.setInstruction(new MeterCaseBuilder()
+                } else if (choice instanceof MeterCase) {
+                    builder.setInstruction(new MeterCaseBuilder()
                         .setMeter(new MeterBuilder().build())
                         .build());
-            }
-
-            // TODO: Experimenter instructions are unhandled
-            builder.setOrder(index);
-            index += 1;
-
-            instructionList.add(builder.build());
-        }
-
-        return instructionList.build();
+                }
+                return builder.build();
+            })
+            .collect(ImmutableList.toImmutableList());
     }
 
     private static List<Uint8> setNextTableFeatureProperty(final TableFeatureProperties properties) {
@@ -515,31 +493,18 @@ public class TableFeaturesResponseConvertor
                 .getNextTableIds().stream().map(NextTableIds::getTableId).collect(Collectors.toList());
     }
 
-    private static Map<
-        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
+    private static List<
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
             setActionTableFeatureProperty(final TableFeatureProperties properties) {
-        BindingMap.Builder<
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionList =
-            BindingMap.orderedBuilder();
+        final var actionList = ImmutableList.<
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>builder();
 
-        int order = 0;
-
-        for (Action action : properties
-                .augmentation(ActionRelatedTableFeatureProperty.class).getAction()) {
+        for (var action : properties.augmentation(ActionRelatedTableFeatureProperty.class).nonnullAction()) {
             if (action != null && null != action.getActionChoice()) {
-                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder
-                    actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action
-                        .list.ActionBuilder();
-
-                actionBuilder.setOrder(order++);
-                ActionChoice actionType = action.getActionChoice();
-                org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action salAction =
-                        OF_TO_SAL_ACTION.get(actionType.implementedInterface());
-
-                actionBuilder.setAction(salAction);
-                actionList.add(actionBuilder.build());
+                actionList.add(new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
+                    .ActionBuilder()
+                    .setAction(OF_TO_SAL_ACTION.get(action.getActionChoice().implementedInterface()))
+                    .build());
             }
         }
 
@@ -548,20 +513,18 @@ public class TableFeaturesResponseConvertor
 
     private static Map<SetFieldMatchKey, SetFieldMatch> setSetFieldTableFeatureProperty(
             final TableFeatureProperties properties, final boolean setHasMask) {
-        BindingMap.Builder<SetFieldMatchKey, SetFieldMatch> builder = BindingMap.orderedBuilder();
-        SetFieldMatchBuilder setFieldMatchBuilder = new SetFieldMatchBuilder();
+        final var builder = BindingMap.<SetFieldMatchKey, SetFieldMatch>orderedBuilder();
+        final var setFieldMatchBuilder = new SetFieldMatchBuilder();
 
         // This handles only OpenflowBasicClass oxm class.
-        for (MatchEntry currMatch : properties.augmentation(OxmRelatedTableFeatureProperty.class)
-                .getMatchEntry()) {
-            MatchField ofMatchField = currMatch.getOxmMatchField();
-
+        for (var currMatch : properties.augmentation(OxmRelatedTableFeatureProperty.class).nonnullMatchEntry()) {
+            final var ofMatchField = currMatch.getOxmMatchField();
             if (setHasMask) {
                 setFieldMatchBuilder.setHasMask(currMatch.getHasMask());
             }
-
-            setFieldMatchBuilder.setMatchType(OF_TO_SAL_TABLE_FEATURE_PROPERTIES.get(ofMatchField));
-            builder.add(setFieldMatchBuilder.build());
+            builder.add(setFieldMatchBuilder
+                .setMatchType(OF_TO_SAL_TABLE_FEATURE_PROPERTIES.get(ofMatchField))
+                .build());
         }
 
         return builder.build();
@@ -574,36 +537,39 @@ public class TableFeaturesResponseConvertor
 
     @Override
     public List<TableFeatures> convert(final MultipartReplyTableFeatures source, final VersionConvertorData data) {
-        if (source == null || source.getTableFeatures() == null) {
-            return Collections.emptyList();
+        if (source == null) {
+            return List.of();
+        }
+        final var tableFeatures = source.getTableFeatures();
+        if (tableFeatures == null) {
+            return List.of();
         }
 
-        List<TableFeatures> salTableFeaturesList = new ArrayList<>();
-        TableFeaturesBuilder salTableFeatures = new TableFeaturesBuilder();
+        final var salTableFeaturesList = new ArrayList<TableFeatures>();
+        final var salTableFeatures = new TableFeaturesBuilder();
 
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply
-                .body.multipart.reply.table.features._case.multipart.reply.table.features.TableFeatures
-                    ofTableFeatures : source.getTableFeatures()) {
-            salTableFeatures.setTableId(ofTableFeatures.getTableId());
-            salTableFeatures.setName(ofTableFeatures.getName());
-
-            if (ofTableFeatures.getMetadataMatch() != null) {
+        for (var ofTableFeatures : tableFeatures) {
+            final var metaMatch = ofTableFeatures.getMetadataMatch();
+            if (metaMatch != null) {
                 salTableFeatures.setMetadataMatch(Uint64.valueOf(new BigInteger(OFConstants.SIGNUM_UNSIGNED,
-                        ofTableFeatures.getMetadataMatch())));
+                    metaMatch)));
             }
-
-            if (ofTableFeatures.getMetadataWrite() != null) {
+            final var metaWrite = ofTableFeatures.getMetadataWrite();
+            if (metaWrite != null) {
                 salTableFeatures.setMetadataWrite(Uint64.valueOf(new BigInteger(OFConstants.SIGNUM_UNSIGNED,
-                        ofTableFeatures.getMetadataWrite())));
+                    metaWrite)));
+            }
+            final var getConfig = ofTableFeatures.getConfig();
+            if (getConfig != null) {
+                salTableFeatures.setConfig(new TableConfig(getConfig.getOFPTCDEPRECATEDMASK()));
             }
 
-            if (ofTableFeatures.getConfig() != null) {
-                salTableFeatures.setConfig(new TableConfig(ofTableFeatures.getConfig().getOFPTCDEPRECATEDMASK()));
-            }
-
-            salTableFeatures.setMaxEntries(ofTableFeatures.getMaxEntries());
-            salTableFeatures.setTableProperties(toTableProperties(ofTableFeatures.getTableFeatureProperties()));
-            salTableFeaturesList.add(salTableFeatures.build());
+            salTableFeaturesList.add(salTableFeatures
+                .setTableId(ofTableFeatures.getTableId())
+                .setName(ofTableFeatures.getName())
+                .setMaxEntries(ofTableFeatures.getMaxEntries())
+                .setTableProperties(toTableProperties(ofTableFeatures.getTableFeatureProperties()))
+                .build());
         }
 
         return salTableFeaturesList;

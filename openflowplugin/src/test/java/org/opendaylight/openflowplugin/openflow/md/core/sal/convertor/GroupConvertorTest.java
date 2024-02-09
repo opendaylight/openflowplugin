@@ -77,24 +77,21 @@ public class GroupConvertorTest {
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
             actionsList1 = new ArrayList<>();
 
-        int actionOrder = 0;
-
         // Action1
         final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup("005");
         final GroupAction groupIdaction = groupActionBuilder.build();
         final ActionBuilder actionsB = new ActionBuilder();
-        actionsB.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction).build());
+        actionsB.setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction).build());
 
         // Action2:
         final GroupActionBuilder groupActionBuilder1 = new GroupActionBuilder();
         groupActionBuilder1.setGroup("006");
         final GroupAction groupIdaction1 = groupActionBuilder.build();
         final ActionBuilder actionsB1 = new ActionBuilder();
-        actionsB1.setOrder(actionOrder++).setAction(new GroupActionCaseBuilder()
-                .setGroupAction(groupIdaction1).build());
+        actionsB1.setAction(new GroupActionCaseBuilder().setGroupAction(groupIdaction1).build());
 
-        final var actionsList = BindingMap.ordered(actionsB.build(), actionsB1.build());
+        final var actionsList = List.of(actionsB.build(), actionsB1.build());
 
 
         final BucketsBuilder bucketsB = new BucketsBuilder();
@@ -118,7 +115,7 @@ public class GroupConvertorTest {
         final CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
         final CopyTtlIn copyTtl = copyTtlB.build();
         final ActionBuilder actionsB2 = new ActionBuilder();
-        actionsB2.setOrder(actionOrder++).setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtl).build());
+        actionsB2.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(copyTtl).build());
 
         // Action2:
         final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
@@ -126,8 +123,7 @@ public class GroupConvertorTest {
         final SetMplsTtlAction setMAction = setMplsTtlActionBuilder.build();
         final ActionBuilder actionsB3 = new ActionBuilder();
 
-        actionsB3.setOrder(actionOrder++).setAction(new SetMplsTtlActionCaseBuilder()
-                .setSetMplsTtlAction(setMAction).build());
+        actionsB3.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(setMAction).build());
 
 
         actionsList1.add(actionsB2.build());
@@ -211,24 +207,22 @@ public class GroupConvertorTest {
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeFastFailure() {
 
-        int actionOrder = 0;
-
         final BucketBuilder bucketB = new BucketBuilder()
-            .setAction(BindingMap.ordered(
+            .setAction(List.of(
                 // Action1: 005
-                assembleActionBuilder("005", actionOrder++).build(),
+                assembleActionBuilder("005").build(),
                 // Action2: 006
-                assembleActionBuilder("006", actionOrder++).build()
+                assembleActionBuilder("006").build()
                 // .. and mr.Bond is not coming today
                 ))
             .withKey(new BucketKey(new BucketId(Uint32.ZERO)));
 
         final BucketBuilder bucketB1 = new BucketBuilder()
-            .setAction(BindingMap.ordered(
+            .setAction(List.of(
                 // Action1
-                assembleCopyTtlInBuilder(actionOrder++).build(),
+                assembleCopyTtlInBuilder().build(),
                 // Action2:
-                assembleSetMplsTtlActionBuilder(actionOrder++).build()))
+                assembleSetMplsTtlActionBuilder().build()))
             .withKey(new BucketKey(new BucketId(Uint32.ONE)));
 
         final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder()
@@ -285,8 +279,7 @@ public class GroupConvertorTest {
             .setBucketId(new BucketId(Uint32.valueOf(4)))
             .setWatchPort(Uint32.TWO)
             .setWatchGroup(Uint32.ONE)
-            .setAction(BindingMap.of(new ActionBuilder()
-                .setOrder(0)
+            .setAction(List.of(new ActionBuilder()
                 .setAction(new OutputActionCaseBuilder()
                     .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:2")).build())
                     .build())
@@ -295,8 +288,7 @@ public class GroupConvertorTest {
             .setBucketId(new BucketId(Uint32.valueOf(3)))
             .setWatchPort(Uint32.valueOf(6))
             .setWatchGroup(Uint32.ONE)
-            .setAction(BindingMap.of(new ActionBuilder()
-                .setOrder(0)
+            .setAction(List.of(new ActionBuilder()
                 .setAction(new OutputActionCaseBuilder()
                     .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:6")).build())
                     .build())
@@ -305,8 +297,7 @@ public class GroupConvertorTest {
             .setBucketId(new BucketId(Uint32.TWO))
             .setWatchPort(Uint32.valueOf(5))
             .setWatchGroup(Uint32.ONE)
-            .setAction(BindingMap.of(new ActionBuilder()
-                .setOrder(0)
+            .setAction(List.of(new ActionBuilder()
                 .setAction(new OutputActionCaseBuilder()
                     .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:5")).build())
                     .build())
@@ -315,8 +306,7 @@ public class GroupConvertorTest {
             .setBucketId(new BucketId(Uint32.ONE))
             .setWatchPort(Uint32.valueOf(4))
             .setWatchGroup(Uint32.ONE)
-            .setAction(BindingMap.of(new ActionBuilder()
-                .setOrder(0)
+            .setAction(List.of(new ActionBuilder()
                 .setAction(new OutputActionCaseBuilder()
                     .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:4")).build())
                     .build())
@@ -325,8 +315,7 @@ public class GroupConvertorTest {
             .setBucketId(new BucketId(Uint32.ZERO))
             .setWatchPort(Uint32.valueOf(3))
             .setWatchGroup(Uint32.ONE)
-            .setAction(BindingMap.of(new ActionBuilder()
-                .setOrder(0)
+            .setAction(List.of(new ActionBuilder()
                 .setAction(new OutputActionCaseBuilder()
                     .setOutputAction(new OutputActionBuilder().setOutputNodeConnector(new Uri("openflow:1:3")).build())
                     .build())
@@ -364,32 +353,32 @@ public class GroupConvertorTest {
 
     }
 
-    private static ActionBuilder assembleSetMplsTtlActionBuilder(final int actionOrder) {
+    private static ActionBuilder assembleSetMplsTtlActionBuilder() {
         final SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
         final SetMplsTtlActionCaseBuilder setMplsTtlActionCaseBuilder = new SetMplsTtlActionCaseBuilder();
         setMplsTtlActionCaseBuilder.setSetMplsTtlAction(setMplsTtlActionBuilder.build());
         final ActionBuilder actionsB3 = new ActionBuilder();
-        actionsB3.setOrder(actionOrder).setAction(setMplsTtlActionCaseBuilder.build());
+        actionsB3.setAction(setMplsTtlActionCaseBuilder.build());
         return actionsB3;
     }
 
-    private static ActionBuilder assembleCopyTtlInBuilder(final int actionOrder) {
+    private static ActionBuilder assembleCopyTtlInBuilder() {
         final CopyTtlInBuilder copyTtlB = new CopyTtlInBuilder();
         final CopyTtlInCaseBuilder copyTtlInCaseBuilder = new CopyTtlInCaseBuilder();
         copyTtlInCaseBuilder.setCopyTtlIn(copyTtlB.build());
         final ActionBuilder actionsB2 = new ActionBuilder();
-        actionsB2.setOrder(actionOrder).setAction(copyTtlInCaseBuilder.build());
+        actionsB2.setAction(copyTtlInCaseBuilder.build());
         return actionsB2;
     }
 
-    private static ActionBuilder assembleActionBuilder(final String groupName, final int actionOrder) {
+    private static ActionBuilder assembleActionBuilder(final String groupName) {
         final GroupActionBuilder groupActionBuilder = new GroupActionBuilder();
         groupActionBuilder.setGroup(groupName);
         final GroupActionCaseBuilder groupActionCaseBuilder = new GroupActionCaseBuilder();
         groupActionCaseBuilder.setGroupAction(groupActionBuilder.build());
         final ActionBuilder actionsBld = new ActionBuilder();
-        actionsBld.setOrder(actionOrder).setAction(groupActionCaseBuilder.build());
+        actionsBld.setAction(groupActionCaseBuilder.build());
         return actionsBld;
     }
 
@@ -399,8 +388,6 @@ public class GroupConvertorTest {
     @Test
     public void testGroupModConvertorBucketwithNOWieghtValuesForGroupTypeAll() {
 
-        int actionOrder = 0;
-
         final AddGroupInputBuilder addGroupBuilder = new AddGroupInputBuilder();
 
         addGroupBuilder.setGroupId(new GroupId(Uint32.TEN));
@@ -409,11 +396,11 @@ public class GroupConvertorTest {
         final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
             actionsList1 = new ArrayList<>();
 
-        final var actionsList = BindingMap.ordered(
+        final var actionsList = List.of(
             // Action1
-            assembleActionBuilder("005", actionOrder++).build(),
+            assembleActionBuilder("005").build(),
             // Action2:
-            assembleActionBuilder("006", actionOrder++).build());
+            assembleActionBuilder("006").build());
 
         final BucketsBuilder bucketsB = new BucketsBuilder();
 
@@ -425,9 +412,9 @@ public class GroupConvertorTest {
         final BucketBuilder bucketB1 = new BucketBuilder();
 
         // Action1
-        actionsList1.add(assembleCopyTtlInBuilder(actionOrder++).build());
+        actionsList1.add(assembleCopyTtlInBuilder().build());
         // Action2:
-        actionsList1.add(assembleSetMplsTtlActionBuilder(actionOrder++).build());
+        actionsList1.add(assembleSetMplsTtlActionBuilder().build());
 
         bucketB1.setAction(actionsList).withKey(new BucketKey(new BucketId(Uint32.ONE)));
 

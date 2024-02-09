@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Map;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
@@ -53,7 +53,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.queue.action._case.SetQueueActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
@@ -212,7 +211,7 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
                 bucket.setAction(createInportOutputAction());
                 break;
             case "a24":
-                bucket.setAction(Map.of());
+                bucket.setAction(List.of());
                 break;
             case "a25":
                 bucket.setAction(createNonAppyOutputAction());
@@ -253,101 +252,99 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
     }
 
 
-    private static Map<ActionKey, Action> createPopVlanAction() {
+    private static List<Action> createPopVlanAction() {
         PopVlanActionBuilder vlanAction = new PopVlanActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopVlanActionCaseBuilder().setPopVlanAction(vlanAction.build()).build());
-        action.withKey(new ActionKey(0));
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createPushVlanAction() {
+    private static List<Action> createPushVlanAction() {
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
         vlan.setEthernetType(Uint16.valueOf(0x8100));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createPushMplsAction() {
+    private static List<Action> createPushMplsAction() {
         PushMplsActionBuilder push = new PushMplsActionBuilder();
         push.setEthernetType(Uint16.valueOf(0x8847));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createPopMplsAction() {
+    private static List<Action> createPopMplsAction() {
         PopMplsActionBuilder popMplsActionBuilder = new PopMplsActionBuilder();
         popMplsActionBuilder.setEthernetType(Uint16.valueOf(0XB));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopMplsActionCaseBuilder().setPopMplsAction(popMplsActionBuilder.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createPopPbbAction() {
+    private static List<Action> createPopPbbAction() {
         PopPbbActionBuilder popPbbActionBuilder = new PopPbbActionBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PopPbbActionCaseBuilder().setPopPbbAction(popPbbActionBuilder.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createPushPbbAction() {
+    private static List<Action> createPushPbbAction() {
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
         pbb.setEthernetType(Uint16.valueOf(0x88E7));
         ActionBuilder action = new ActionBuilder();
         action.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createSetMplsTtlAction() {
+    private static List<Action> createSetMplsTtlAction() {
         SetMplsTtlActionBuilder setMplsTtlActionBuilder = new SetMplsTtlActionBuilder();
         setMplsTtlActionBuilder.setMplsTtl(Uint8.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetMplsTtlActionCaseBuilder().setSetMplsTtlAction(
                 setMplsTtlActionBuilder.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createSetNwTtlAction() {
+    private static List<Action> createSetNwTtlAction() {
         SetNwTtlActionBuilder setNwTtlActionBuilder = new SetNwTtlActionBuilder();
         setNwTtlActionBuilder.setNwTtl(Uint8.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetNwTtlActionCaseBuilder().setSetNwTtlAction(setNwTtlActionBuilder.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createSetQueueAction() {
+    private static List<Action> createSetQueueAction() {
         SetQueueActionBuilder setQueueActionBuilder = new SetQueueActionBuilder();
         setQueueActionBuilder.setQueueId(Uint32.ONE);
         ActionBuilder action = new ActionBuilder();
         action.setAction(new SetQueueActionCaseBuilder().setSetQueueAction(setQueueActionBuilder.build()).build());
-        action.withKey(new ActionKey(0));
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createCopyTtlInAction() {
+    private static List<Action> createCopyTtlInAction() {
         CopyTtlInBuilder ttlin = new CopyTtlInBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(ttlin.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createCopyTtlOutAction() {
+    private static List<Action> createCopyTtlOutAction() {
         CopyTtlOutBuilder ttlout = new CopyTtlOutBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(ttlout.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createDecMplsTtlAction() {
+    private static List<Action> createDecMplsTtlAction() {
         DecMplsTtlBuilder mpls = new DecMplsTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(mpls.build()).build());
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createDecNwTtlAction() {
+    private static List<Action> createDecNwTtlAction() {
         DecNwTtlBuilder nwttl = new DecNwTtlBuilder();
         ActionBuilder action = new ActionBuilder();
         action.setAction(new DecNwTtlCaseBuilder().setDecNwTtl(nwttl.build()).build());
@@ -358,119 +355,108 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
         Uri value = new Uri("2");
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
-        ab.setOrder(0);
 
-        return BindingMap.of(ab.build(), action.build());
+        return List.of(ab.build(), action.build());
     }
 
-    private static Map<ActionKey, Action> createFloodOutputAction() {
-        ActionBuilder ab = new ActionBuilder();
-        OutputActionBuilder output = new OutputActionBuilder();
-        output.setMaxLength(Uint16.valueOf(30));
-        Uri value = new Uri(OutputPortValues.FLOOD.toString());
-        output.setOutputNodeConnector(value);
-        ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
-
-        return BindingMap.of(ab.build());
+    private static List<Action> createFloodOutputAction() {
+        return List.of(new ActionBuilder()
+            .setAction(new OutputActionCaseBuilder()
+                .setOutputAction(new OutputActionBuilder()
+                    .setMaxLength(Uint16.valueOf(30))
+                    .setOutputNodeConnector(new Uri(OutputPortValues.FLOOD.toString()))
+                    .build())
+                .build())
+            .build());
     }
 
-    private static Map<ActionKey, Action> createAllOutputAction() {
+    private static List<Action> createAllOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.ALL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createAnyOutputAction() {
+    private static List<Action> createAnyOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.ANY.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createNormalOutputAction() {
+    private static List<Action> createNormalOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.NORMAL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createInportOutputAction() {
+    private static List<Action> createInportOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.INPORT.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> creatTableOutputAction() {
+    private static List<Action> creatTableOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.TABLE.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createControllerAction() {
+    private static List<Action> createControllerAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createLocalOutputAction() {
+    private static List<Action> createLocalOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         output.setMaxLength(Uint16.valueOf(30));
         Uri value = new Uri(OutputPortValues.LOCAL.toString());
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
-        ab.withKey(new ActionKey(0));
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createGroupAction() {
+    private static List<Action> createGroupAction() {
         GroupActionBuilder groupActionB = new GroupActionBuilder();
         groupActionB.setGroupId(Uint32.ONE);
         groupActionB.setGroup("0");
         ActionBuilder action = new ActionBuilder();
         action.setAction(new GroupActionCaseBuilder().setGroupAction(groupActionB.build()).build());
-        action.withKey(new ActionKey(0));
-        return BindingMap.of(action.build());
+        return List.of(action.build());
     }
 
-    private static Map<ActionKey, Action> createNonAppyOutputAction() {
+    private static List<Action> createNonAppyOutputAction() {
         ActionBuilder ab = new ActionBuilder();
         OutputActionBuilder output = new OutputActionBuilder();
         Uri value = new Uri(OutputPortValues.CONTROLLER.toString());
@@ -479,31 +465,31 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
         output.setMaxLength(Uint16.valueOf(66000));
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(output.build()).build());
 
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createNonAppyPushMplsAction() {
+    private static List<Action> createNonAppyPushMplsAction() {
         ActionBuilder ab = new ActionBuilder();
         PushMplsActionBuilder push = new PushMplsActionBuilder();
         push.setEthernetType(Uint16.valueOf(0x8849));
         ab.setAction(new PushMplsActionCaseBuilder().setPushMplsAction(push.build()).build());
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createNonAppyPushPbbAction() {
+    private static List<Action> createNonAppyPushPbbAction() {
         ActionBuilder ab = new ActionBuilder();
         PushPbbActionBuilder pbb = new PushPbbActionBuilder();
         pbb.setEthernetType(Uint16.valueOf(0x88E8));
         ab.setAction(new PushPbbActionCaseBuilder().setPushPbbAction(pbb.build()).build());
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
-    private static Map<ActionKey, Action> createNonAppyPushVlanAction() {
+    private static List<Action> createNonAppyPushVlanAction() {
         ActionBuilder ab = new ActionBuilder();
         PushVlanActionBuilder vlan = new PushVlanActionBuilder();
         vlan.setEthernetType(Uint16.valueOf(0x8101));
         ab.setAction(new PushVlanActionCaseBuilder().setPushVlanAction(vlan.build()).build());
-        return BindingMap.of(ab.build());
+        return List.of(ab.build());
     }
 
     @SuppressWarnings("checkstyle:MethodName")

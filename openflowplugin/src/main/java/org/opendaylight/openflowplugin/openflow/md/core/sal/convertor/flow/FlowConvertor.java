@@ -11,21 +11,17 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Ordering;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.VersionDatapathIdConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.ApplyActionsCase;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow.cases.ClearActionsCase;
@@ -39,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetVlanIdActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.push.vlan.action._case.PushVlanActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInput;
@@ -52,9 +47,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
@@ -68,7 +61,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmMatchType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -154,8 +146,6 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     private static final Uint16 PUSH_VLAN = Uint16.valueOf(0x8100);
     private static final Integer PUSH_TAG = PUSH_VLAN.toJava();
     private static final VlanCfi PUSH_CFI = new VlanCfi(1);
-    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
-        .list.Instruction> INSTRUCTION_ORDERING = Ordering.from(OrderComparator.build());
     private static final VlanMatch VLAN_MATCH_FALSE;
     private static final VlanMatch VLAN_MATCH_TRUE;
     private static final ConvertorProcessor<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
@@ -246,40 +236,34 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     }
 
     private List<Instruction> toInstructions(final Flow flow, final Uint8 version, final Uint64 datapathid) {
-        final List<Instruction> instructionsList = new ArrayList<>();
-        final ActionConvertorData data = new ActionConvertorData(version);
+        final var instructionsList = new ArrayList<Instruction>();
+        final var data = new ActionConvertorData(version);
         data.setDatapathId(datapathid);
         data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
 
-        final ConvertorExecutor convertor = getConvertorExecutor();
-        for (var instruction : flow.getInstructions().nonnullInstruction().values()) {
-            Optional<Instruction> result = PROCESSOR.process(instruction.getInstruction(), data, convertor);
-            result.ifPresent(instructionsList::add);
+        final var convertor = getConvertorExecutor();
+        for (var instruction : flow.getInstructions().nonnullInstruction()) {
+            PROCESSOR.process(instruction.getInstruction(), data, convertor).ifPresent(instructionsList::add);
         }
 
         return instructionsList;
     }
 
     private List<Action> getActions(final Uint8 version, final Uint64 datapathid, final Flow flow) {
-        Instructions instructions = flow.getInstructions();
-        List<org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
-            sortedInstructions = INSTRUCTION_ORDERING.sortedCopy(instructions.nonnullInstruction().values());
-
-        for (var instruction : sortedInstructions) {
+        for (var instruction : flow.nonnullInstructions().nonnullInstruction()) {
             final var curInstruction = instruction.getInstruction();
-            if (curInstruction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
-                    .instruction.instruction.ApplyActionsCase) {
-                final var applyActions = ((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
-                    .instruction.instruction.ApplyActionsCase) curInstruction).getApplyActions();
+            if (curInstruction
+                    instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction
+                    .instruction.ApplyActionsCase applyActionsCase) {
+                final var applyActions = applyActionsCase.getApplyActions();
 
-                final ActionConvertorData data = new ActionConvertorData(version);
+                final var data = new ActionConvertorData(version);
                 data.setDatapathId(datapathid);
                 data.setIpProtocol(FlowConvertorUtil.getIpProtocolFromFlow(flow));
                 Optional<List<Action>> result = getConvertorExecutor().convert(applyActions.getAction(), data);
                 return result.orElse(List.of());
             }
         }
-
         return null;
     }
 
@@ -287,19 +271,13 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
     private static boolean isSetVlanIdActionCasePresent(final Flow flow) {
         // we are trying to find if there is a set-vlan-id action (OF1.0) action present in the flow.
         // If yes,then we would need to two flows
-        final var insns = flow.getInstructions();
-        if (insns != null) {
-            for (var instruction : insns.nonnullInstruction().values()) {
-                final var curInstruction = instruction.getInstruction();
-
-                if (curInstruction instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
-                        .instruction.instruction.ApplyActionsCase) {
-                    ApplyActions applyActions = ((org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types
-                        .rev131026.instruction.instruction.ApplyActionsCase) curInstruction).getApplyActions();
-                    for (var action : applyActions.nonnullAction().values()) {
-                        if (action.getAction() instanceof SetVlanIdActionCase) {
-                            return true;
-                        }
+        for (var instruction : flow.nonnullInstructions().nonnullInstruction()) {
+            if (instruction.getInstruction()
+                instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction
+                .ApplyActionsCase applyActionsCase) {
+                for (var action : applyActionsCase.getApplyActions().nonnullAction()) {
+                    if (action.getAction() instanceof SetVlanIdActionCase) {
+                        return true;
                     }
                 }
             }
@@ -391,35 +369,26 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
         }
     }
 
-    private static @NonNull Map<InstructionKey,
+    private static @NonNull List<
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
                 injectPushActionToInstruction(final Flow sourceFlow) {
         final var srcInstructionList = sourceFlow.getInstructions().nonnullInstruction();
-        final var targetInstructionList = BindingMap.<
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
+        final var targetInstructionList = ImmutableList.<
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
-                orderedBuilder(srcInstructionList.size());
-        final var targetActionList = BindingMap.<
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>orderedBuilder();
+                builderWithExpectedSize(srcInstructionList.size());
+        final var targetActionList = ImmutableList.<
+            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>builder();
         final var instructionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
             .instruction.list.InstructionBuilder();
 
-        for (var srcInstruction : srcInstructionList.values()) {
+        for (var srcInstruction : srcInstructionList) {
             final var curSrcInstruction = srcInstruction.getInstruction();
-
             if (curSrcInstruction
                     instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026
                         .instruction.instruction.ApplyActionsCase applyActionscase) {
-                final var srcActionList = applyActionscase.getApplyActions().nonnullAction();
-
-                int offset = 0;
-                for (var actionItem : srcActionList.values()) {
+                for (var actionItem : applyActionscase.getApplyActions().nonnullAction()) {
                     // check if its a set-vlan-action. If yes, then add the injected-action
-
-                    if (actionItem.getAction() instanceof SetVlanIdActionCase) {
-                        final var setVlanIdActionCase = (SetVlanIdActionCase) actionItem.getAction();
-
+                    if (actionItem.getAction() instanceof SetVlanIdActionCase setVlanIdActionCase) {
                         targetActionList.add(new ActionBuilder()
                             .setAction(new PushVlanActionCaseBuilder()
                                 .setPushVlanAction(new PushVlanActionBuilder()
@@ -429,20 +398,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
                                     .setTag(PUSH_TAG)
                                     .build())
                                 .build())
-                            // FIXME: this looks like a mismatch
-                            .withKey(actionItem.key())
-                            .setOrder(actionItem.getOrder() + offset)
                             .build());
-                        offset++;
-                    }
-
-                    if (offset > 0) {
-                        // we need to increment the order for all the actions added after injection
-                        final Integer newOrder = actionItem.getOrder() + offset;
-                        actionItem = new ActionBuilder(actionItem)
-                            .setOrder(newOrder)
-                            .withKey(new ActionKey(newOrder))
-                            .build();
                     }
 
                     targetActionList.add(actionItem);
@@ -455,10 +411,7 @@ public class FlowConvertor extends Convertor<Flow, List<FlowModInputBuilder>, Ve
                 instructionBuilder.setInstruction(curSrcInstruction);
             }
 
-            targetInstructionList.add(instructionBuilder
-                .withKey(srcInstruction.key())
-                .setOrder(srcInstruction.getOrder())
-                .build());
+            targetInstructionList.add(instructionBuilder.build());
         }
 
         return targetInstructionList.build();

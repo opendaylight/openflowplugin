@@ -53,7 +53,7 @@ public class MultipartRequestTableFeaturesSerializer implements OFSerializer<Mul
     @SuppressWarnings("unchecked")
     private void serializeProperties(final TableProperties tableProperties, final ByteBuf byteBuf) {
         if (tableProperties != null) {
-            for (TableFeatureProperties property : tableProperties.nonnullTableFeatureProperties().values()) {
+            for (TableFeatureProperties property : tableProperties.nonnullTableFeatureProperties()) {
                 final Class<? extends TableFeaturePropType> clazz =
                     (Class<? extends TableFeaturePropType>) property.getTableFeaturePropType().implementedInterface();
 

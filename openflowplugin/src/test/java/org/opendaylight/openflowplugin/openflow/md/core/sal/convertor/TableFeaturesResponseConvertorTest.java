@@ -524,7 +524,7 @@ public class TableFeaturesResponseConvertorTest {
         Assert.assertEquals("Wrong max-entries", 42, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 4, feature.getTableProperties().nonnullTableFeatureProperties().size());
 
-        var featProps = feature.getTableProperties().getTableFeatureProperties().values().iterator();
+        var featProps = feature.getTableProperties().getTableFeatureProperties().iterator();
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table
             .properties.TableFeatureProperties property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
@@ -549,7 +549,7 @@ public class TableFeaturesResponseConvertorTest {
             + "rev131026.table.feature.prop.type.table.feature.prop.type.Instructions",
                 property.getTableFeaturePropType().implementedInterface().getName());
         Instructions propType3 = (Instructions) property.getTableFeaturePropType();
-        var instructionIds = propType3.getInstructions().nonnullInstruction().values();
+        var instructionIds = propType3.getInstructions().nonnullInstruction();
         Assert.assertEquals("Wrong instruction-ids size", 2, instructionIds.size());
         var instructionIt = instructionIds.iterator();
         Assert.assertEquals("Wrong instruction-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types."
@@ -563,7 +563,7 @@ public class TableFeaturesResponseConvertorTest {
             + "rev131026.table.feature.prop.type.table.feature.prop.type.InstructionsMiss",
                 property.getTableFeaturePropType().implementedInterface().getName());
         InstructionsMiss propType4 = (InstructionsMiss) property.getTableFeaturePropType();
-        instructionIds = propType4.getInstructionsMiss().nonnullInstruction().values();
+        instructionIds = propType4.getInstructionsMiss().nonnullInstruction();
         Assert.assertEquals("Wrong instruction-ids size", 5, instructionIds.size());
         instructionIt = instructionIds.iterator();
         Assert.assertEquals("Wrong instruction-id", "org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types."
@@ -590,7 +590,7 @@ public class TableFeaturesResponseConvertorTest {
         Assert.assertEquals("Wrong config", false, feature.getConfig().getDEPRECATEDMASK());
         Assert.assertEquals("Wrong max-entries", 24, feature.getMaxEntries().intValue());
         Assert.assertEquals("Wrong properties", 12, feature.getTableProperties().getTableFeatureProperties().size());
-        featProps = feature.getTableProperties().nonnullTableFeatureProperties().values().iterator();
+        featProps = feature.getTableProperties().nonnullTableFeatureProperties().iterator();
         property = featProps.next();
         Assert.assertEquals("Wrong property type", "org.opendaylight.yang.gen.v1.urn.opendaylight.table.types."
             + "rev131026.table.feature.prop.type.table.feature.prop.type.Match",
@@ -671,7 +671,7 @@ public class TableFeaturesResponseConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
             .type.ApplyActions propType11 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                     .feature.prop.type.table.feature.prop.type.ApplyActions) property.getTableFeaturePropType();
-        var actionsList = propType11.getApplyActions().nonnullAction().values();
+        var actionsList = propType11.getApplyActions().nonnullAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
         var actionsIt = actionsList.iterator();
         Assert.assertEquals("Wrong actions-id",
@@ -691,7 +691,7 @@ public class TableFeaturesResponseConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
             .type.ApplyActionsMiss propType12 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026
                 .table.feature.prop.type.table.feature.prop.type.ApplyActionsMiss) property.getTableFeaturePropType();
-        actionsList = propType12.getApplyActionsMiss().nonnullAction().values();
+        actionsList = propType12.getApplyActionsMiss().nonnullAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
         actionsIt = actionsList.iterator();
         Assert.assertEquals("Wrong actions-id",
@@ -711,7 +711,7 @@ public class TableFeaturesResponseConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
             .type.WriteActions propType13 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
                 .feature.prop.type.table.feature.prop.type.WriteActions) property.getTableFeaturePropType();
-        actionsList = propType13.getWriteActions().nonnullAction().values();
+        actionsList = propType13.getWriteActions().nonnullAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
         actionsIt = actionsList.iterator();
         Assert.assertEquals("Wrong actions-id",
@@ -731,7 +731,7 @@ public class TableFeaturesResponseConvertorTest {
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop
             .type.WriteActionsMiss propType14 = (org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026
                 .table.feature.prop.type.table.feature.prop.type.WriteActionsMiss) property.getTableFeaturePropType();
-        actionsList = propType14.getWriteActionsMiss().nonnullAction().values();
+        actionsList = propType14.getWriteActionsMiss().nonnullAction();
         Assert.assertEquals("Wrong actions-ids size", 3, actionsList.size());
         actionsIt = actionsList.iterator();
         Assert.assertEquals("Wrong actions-id",

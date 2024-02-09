@@ -7,16 +7,15 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
+import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
+import java.util.List;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.GroupActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupAction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.group.action._case.GroupActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
@@ -63,8 +62,7 @@ public final class DSInputFactory {
         final Buckets buckets = new BucketsBuilder()
                 .setBucket(BindingMap.of(new BucketBuilder()
                         .setBucketId(new BucketId(Uint32.ZERO))
-                        .setAction(BindingMap.of(new ActionBuilder()
-                                .setOrder(0)
+                        .setAction(List.of(new ActionBuilder()
                                 .setAction(new OutputActionCaseBuilder()
                                         .setOutputAction(new OutputActionBuilder()
                                                 .setOutputNodeConnector(new Uri("ut-port-1"))
@@ -95,12 +93,10 @@ public final class DSInputFactory {
                 .setTableId(Uint8.valueOf(42))
                 .setMatch(new MatchBuilder().build())
                 .setInstructions(new InstructionsBuilder()
-                        .setInstruction(BindingMap.of(new InstructionBuilder()
-                                .setOrder(0)
+                        .setInstruction(List.of(new InstructionBuilder()
                                 .setInstruction(new ApplyActionsCaseBuilder()
                                         .setApplyActions(new ApplyActionsBuilder()
-                                                .setAction(BindingMap.of(new ActionBuilder()
-                                                        .setOrder(0)
+                                                .setAction(List.of(new ActionBuilder()
                                                         .setAction(new OutputActionCaseBuilder()
                                                                 .setOutputAction(new OutputActionBuilder()
                                                                         .setOutputNodeConnector(new Uri("ut-port-1"))
@@ -135,28 +131,20 @@ public final class DSInputFactory {
     }
 
     public static Group createGroupWithPreconditions(final long groupIdValue, final long... requiredId) {
-        final BindingMap.Builder<ActionKey, Action> actionBag = BindingMap.orderedBuilder(requiredId.length);
-        int key = 0;
-        for (long groupIdPrecondition : requiredId) {
-            final GroupAction groupAction = new GroupActionBuilder()
-                    .setGroupId(Uint32.valueOf(groupIdPrecondition))
-                    .build();
-            final GroupActionCase groupActionCase = new GroupActionCaseBuilder()
-                    .setGroupAction(groupAction)
-                    .build();
-            final Action action = new ActionBuilder()
-                    .setAction(groupActionCase)
-                    .withKey(new ActionKey(key++))
-                    .build();
-            actionBag.add(action);
-        }
-
         return new GroupBuilder()
                 .setGroupId(new GroupId(Uint32.valueOf(groupIdValue)))
                 .setBuckets(new BucketsBuilder()
                     .setBucket(BindingMap.of(new BucketBuilder()
                         .setBucketId(new BucketId(Uint32.ZERO))
-                        .setAction(actionBag.build())
+                        .setAction(Arrays.stream(requiredId)
+                            .mapToObj(groupIdPrecondition -> new ActionBuilder()
+                                .setAction(new GroupActionCaseBuilder()
+                                    .setGroupAction(new GroupActionBuilder()
+                                        .setGroupId(Uint32.valueOf(groupIdPrecondition))
+                                        .build())
+                                    .build())
+                                .build())
+                            .collect(ImmutableList.toImmutableList()))
                         .build()))
                     .build())
                 .build();

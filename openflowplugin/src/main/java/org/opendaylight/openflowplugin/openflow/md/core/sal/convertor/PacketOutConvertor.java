@@ -13,7 +13,6 @@ import com.google.common.collect.Iterables;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -122,9 +121,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         }
 
         final List<Action> actions;
-        Map<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey,
-            org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> inputActions =
-                source.nonnullAction();
+        final var inputActions = source.nonnullAction();
 
         if (!inputActions.isEmpty()) {
             final ActionConvertorData actionConvertorData = new ActionConvertorData(data.getVersion());

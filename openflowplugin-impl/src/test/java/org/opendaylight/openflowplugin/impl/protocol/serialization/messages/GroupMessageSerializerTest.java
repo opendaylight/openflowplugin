@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -21,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.BucketId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
@@ -55,8 +55,6 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
     private static final Uint32 BUCKET_WATCH_GROUP = Uint32.valueOf(12);
     private static final Uint32 BUCKET_WATCH_PORT = Uint32.valueOf(6);
     private static final Uint16 BUCKET_WEIGHT = Uint16.valueOf(50);
-    private static final Integer ACTION_ORDER = 0;
-    private static final ActionKey ACTION_KEY = new ActionKey(ACTION_ORDER);
     private static final Ipv4Prefix IPV4_PREFIX = new Ipv4Prefix("192.168.76.0/32");
 
     private static final GroupMessage MESSAGE = new GroupMessageBuilder()
@@ -68,7 +66,7 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
                 .setWatchGroup(BUCKET_WATCH_GROUP)
                 .setWatchPort(BUCKET_WATCH_PORT)
                 .setWeight(BUCKET_WEIGHT)
-                .setAction(BindingMap.of(
+                .setAction(List.of(
                     new ActionBuilder()
                     .setAction(new SetNwSrcActionCaseBuilder()
                         .setSetNwSrcAction(new SetNwSrcActionBuilder()
@@ -77,8 +75,6 @@ public class GroupMessageSerializerTest extends AbstractSerializerTest {
                                 .build())
                             .build())
                         .build())
-                    .setOrder(ACTION_ORDER)
-                    .withKey(ACTION_KEY)
                     .build()
                     ))
                 .build()))

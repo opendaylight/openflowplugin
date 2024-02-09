@@ -11,6 +11,7 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +27,8 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.Action
 import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.InstructionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.multipart.reply.MultipartReplyBody;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.TableFeaturesPropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableConfig;
@@ -61,7 +60,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -116,9 +114,8 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
     }
 
     private TableProperties readTableProperties(final ByteBuf message, final int length) {
-        final var items = BindingMap.<TableFeaturePropertiesKey, TableFeatureProperties>orderedBuilder();
+        final var items = ImmutableList.<TableFeatureProperties>builder();
         int tableFeaturesLength = length;
-        int order = 0;
         while (tableFeaturesLength > 0) {
             final int propStartIndex = message.readerIndex();
             final TableFeaturesPropType propType = TableFeaturesPropType.forValue(message.readUnsignedShort());
@@ -126,8 +123,7 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
             final int paddingRemainder = propertyLength % EncodeConstants.PADDING;
             tableFeaturesLength -= propertyLength;
             final int commonPropertyLength = propertyLength - COMMON_PROPERTY_LENGTH;
-            final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder()
-                .setOrder(order++);
+            final TableFeaturePropertiesBuilder propBuilder = new TableFeaturePropertiesBuilder();
 
             switch (propType) {
                 case OFPTFPTINSTRUCTIONS:
@@ -306,20 +302,16 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         return tableIds;
     }
 
-    private Map<InstructionKey, Instruction> readInstructions(final ByteBuf message, final int length) {
-        final var instructions = BindingMap.<InstructionKey, Instruction>orderedBuilder();
+    private List<Instruction> readInstructions(final ByteBuf message, final int length) {
+        final var instructions = ImmutableList.<Instruction>builder();
         final int startIndex = message.readerIndex();
-        int offset = 0;
 
         while (message.readerIndex() - startIndex < length) {
             try {
                 instructions.add(new InstructionBuilder()
-                        .setOrder(offset)
-                        .setInstruction(InstructionUtil
-                                .readInstructionHeader(EncodeConstants.OF_VERSION_1_3, message, registry))
-                        .build());
-
-                offset++;
+                    .setInstruction(InstructionUtil.readInstructionHeader(EncodeConstants.OF_VERSION_1_3, message,
+                        registry))
+                    .build());
             } catch (ClassCastException | IllegalStateException e) {
                 // FIXME: what are we guarding here?
                 message.skipBytes(2 * Short.BYTES);
@@ -329,20 +321,16 @@ public class MultipartReplyTableFeaturesDeserializer implements OFDeserializer<M
         return instructions.build();
     }
 
-    private Map<ActionKey, Action> readActions(final ByteBuf message, final int length) {
-        final var actions = BindingMap.<ActionKey, Action>orderedBuilder();
+    private List<Action> readActions(final ByteBuf message, final int length) {
+        final var actions = ImmutableList.<Action>builder();
         final int startIndex = message.readerIndex();
-        int offset = 0;
 
         while (message.readerIndex() - startIndex < length) {
             try {
                 actions.add(new ActionBuilder()
-                        .setOrder(offset)
                         .setAction(ActionUtil.readActionHeader(EncodeConstants.OF_VERSION_1_3, message, registry,
                                 ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS))
                         .build());
-
-                offset++;
             } catch (ClassCastException | IllegalStateException e) {
                 LOG.debug("Failed to build action", e);
                 // FIXME: what are we guarding here?

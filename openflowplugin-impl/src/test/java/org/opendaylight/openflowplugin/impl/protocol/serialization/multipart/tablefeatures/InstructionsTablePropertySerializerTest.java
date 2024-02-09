@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.multipart.ta
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.impl.util.InstructionConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
@@ -17,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.TableFeaturePropType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature.prop.type.InstructionsBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class InstructionsTablePropertySerializerTest extends AbstractTablePropertySerializerTest {
     @Test
@@ -26,8 +26,7 @@ public class InstructionsTablePropertySerializerTest extends AbstractTableProper
                 .setInstructions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                         .prop.type.table.feature.prop.type.instructions
                         .InstructionsBuilder()
-                        .setInstruction(BindingMap.of(new InstructionBuilder()
-                                .setOrder(0)
+                        .setInstruction(List.of(new InstructionBuilder()
                                 .setInstruction(new ApplyActionsCaseBuilder().build())
                                 .build()))
                         .build())

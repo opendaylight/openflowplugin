@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action;
 
-import com.google.common.collect.Ordering;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -56,7 +55,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cas
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.Convertor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorProcessor;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action;
 
 /**
@@ -129,10 +127,8 @@ public final class ActionConvertor extends Convertor<
             // Try to convert action grouping using converters from openflowplugin-extension
             .addCase(new SalToOfGeneralExtensionGroupingCase());
 
-    private static final Set<Class<?>> TYPES = Set.of(org.opendaylight.yang.gen.v1.urn.opendaylight
-            .action.types.rev131112.action.list.Action.class);
-    private static final Ordering<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-            .action.list.Action> ACTION_ORDERING = Ordering.from(OrderComparator.build());
+    private static final Set<Class<?>> TYPES = Set.of(
+        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action.class);
 
     @Override
     public Collection<Class<?>> getTypes() {
@@ -140,14 +136,15 @@ public final class ActionConvertor extends Convertor<
     }
 
     @Override
-    public List<Action> convert(final Collection<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
-            .action.list.Action> source, final ActionConvertorData data) {
+    public List<Action> convert(
+            final Collection<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
+                source, final ActionConvertorData data) {
         // Prepare list of converted actions
         final var result = new ArrayList<Action>();
 
         // Iterate over SAL actions, run them through tokenizer and then add them to list of converted actions
         if (source != null) {
-            for (var action : ACTION_ORDERING.sortedCopy(source)) {
+            for (var action : source) {
                 PROCESSOR.process(action.getAction(), data, getConvertorExecutor()).ifPresent(result::add);
             }
         }

@@ -60,8 +60,7 @@ module opendaylight-flow-types {
     }
     grouping instruction-list {
         list instruction {
-            key "order";
-            uses action:ordered;
+            ordered-by user;
             uses instruction;
         }
     }

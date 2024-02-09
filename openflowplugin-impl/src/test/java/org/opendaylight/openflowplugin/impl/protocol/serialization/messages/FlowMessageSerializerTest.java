@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -28,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessageBuilder;
@@ -40,11 +40,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.l2.types.rev130827.VlanId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -90,61 +88,49 @@ public class FlowMessageSerializerTest extends AbstractSerializerTest {
     private static final Uint16 TP_SRC_PORT = Uint16.valueOf(22);
     private static final Uint16 TP_DST_PORT = Uint16.valueOf(23);
     private static final Instructions INSTRUCTIONS = new InstructionsBuilder()
-            .setInstruction(BindingMap.ordered(
-                    new InstructionBuilder()
-                            .setOrder(0)
-                            .withKey(new InstructionKey(0))
-                            .setInstruction(new ApplyActionsCaseBuilder()
-                                    .setApplyActions(new ApplyActionsBuilder()
-                                            .setAction(BindingMap.of(new ActionBuilder()
-                                                    .setOrder(0)
-                                                    .withKey(new ActionKey(0))
-                                                    .setAction(new SetVlanIdActionCaseBuilder()
-                                                            .setSetVlanIdAction(new SetVlanIdActionBuilder()
-                                                                    .setVlanId(new VlanId(VLAN_ID))
-                                                                    .build())
-                                                            .build())
-                                                    .build()))
-                                            .build())
-                                    .build())
-                            .build(),
-                    new InstructionBuilder()
-                            .setOrder(2)
-                            .withKey(new InstructionKey(2))
-                            .setInstruction(new ApplyActionsCaseBuilder()
-                                    .setApplyActions(new ApplyActionsBuilder()
-                                            .setAction(BindingMap.of(new ActionBuilder()
-                                                    .setOrder(1)
-                                                    .withKey(new ActionKey(1))
-                                                    .setAction(new SetTpDstActionCaseBuilder()
-                                                            .setSetTpDstAction(new SetTpDstActionBuilder()
-                                                                    .setIpProtocol(IP_PROTOCOL)
-                                                                    .setPort(new PortNumber(TP_DST_PORT))
-                                                                    .build())
-                                                            .build())
-                                                    .build()))
-                                            .build())
-                                    .build())
-                            .build(),
-                    new InstructionBuilder()
-                            .setOrder(1)
-                            .withKey(new InstructionKey(1))
-                            .setInstruction(new ApplyActionsCaseBuilder()
-                                    .setApplyActions(new ApplyActionsBuilder()
-                                            .setAction(BindingMap.of(new ActionBuilder()
-                                                    .setOrder(2)
-                                                    .withKey(new ActionKey(2))
-                                                    .setAction(new SetTpSrcActionCaseBuilder()
-                                                            .setSetTpSrcAction(new SetTpSrcActionBuilder()
-                                                                    .setIpProtocol(IP_PROTOCOL)
-                                                                    .setPort(new PortNumber(TP_SRC_PORT))
-                                                                    .build())
-                                                            .build())
-                                                    .build()))
-                                            .build())
-                                    .build())
-                            .build()))
-            .build();
+        .setInstruction(List.of(
+            new InstructionBuilder()
+            .setInstruction(new ApplyActionsCaseBuilder()
+                .setApplyActions(new ApplyActionsBuilder()
+                    .setAction(List.of(new ActionBuilder()
+                        .setAction(new SetVlanIdActionCaseBuilder()
+                            .setSetVlanIdAction(new SetVlanIdActionBuilder()
+                                .setVlanId(new VlanId(VLAN_ID))
+                                .build())
+                            .build())
+                        .build()))
+                    .build())
+                .build())
+            .build(),
+            new InstructionBuilder()
+            .setInstruction(new ApplyActionsCaseBuilder()
+                .setApplyActions(new ApplyActionsBuilder()
+                    .setAction(List.of(new ActionBuilder()
+                        .setAction(new SetTpDstActionCaseBuilder()
+                            .setSetTpDstAction(new SetTpDstActionBuilder()
+                                .setIpProtocol(IP_PROTOCOL)
+                                .setPort(new PortNumber(TP_DST_PORT))
+                                .build())
+                            .build())
+                        .build()))
+                    .build())
+                .build())
+            .build(),
+            new InstructionBuilder()
+            .setInstruction(new ApplyActionsCaseBuilder()
+                .setApplyActions(new ApplyActionsBuilder()
+                    .setAction(List.of(new ActionBuilder()
+                        .setAction(new SetTpSrcActionCaseBuilder()
+                            .setSetTpSrcAction(new SetTpSrcActionBuilder()
+                                .setIpProtocol(IP_PROTOCOL)
+                                .setPort(new PortNumber(TP_SRC_PORT))
+                                .build())
+                            .build())
+                        .build()))
+                    .build())
+                .build())
+            .build()))
+        .build();
 
     private static final Uint8 IP_PROTOCOL_MATCH = Uint8.valueOf(17);
     private static final Match MATCH = new MatchBuilder()

@@ -376,7 +376,6 @@ public class ActionConvertorV13Test {
         pcpBuilder.setVlanPcp(new VlanPcp(Uint8.valueOf(7)));
         vlanPcpCaseBuilder.setSetVlanPcpAction(pcpBuilder.build());
         actionBuilder.setAction(vlanPcpCaseBuilder.build());
-        actionBuilder.setOrder(0);
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action>
             salActions = new ArrayList<>();
@@ -388,7 +387,6 @@ public class ActionConvertorV13Test {
         StripVlanActionBuilder stripBuilder = new StripVlanActionBuilder();
         stripCaseBuilder.setStripVlanAction(stripBuilder.build());
         actionBuilder.setAction(stripCaseBuilder.build());
-        actionBuilder.setOrder(1);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -398,7 +396,6 @@ public class ActionConvertorV13Test {
         dlDstBuilder.setAddress(new MacAddress("00:00:00:00:00:06"));
         dlDstCaseBuilder.setSetDlDstAction(dlDstBuilder.build());
         actionBuilder.setAction(dlDstCaseBuilder.build());
-        actionBuilder.setOrder(2);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -408,7 +405,6 @@ public class ActionConvertorV13Test {
         dlSrcBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
         dlSrcCaseBuilder.setSetDlSrcAction(dlSrcBuilder.build());
         actionBuilder.setAction(dlSrcCaseBuilder.build());
-        actionBuilder.setOrder(3);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -421,7 +417,6 @@ public class ActionConvertorV13Test {
         nwSrcBuilder.setAddress(ipv4Builder.build());
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setAction(nwSrcCaseBuilder.build());
-        actionBuilder.setOrder(4);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -434,7 +429,6 @@ public class ActionConvertorV13Test {
         SetNwDstActionCaseBuilder nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setAction(nwDstCaseBuilder.build());
-        actionBuilder.setOrder(5);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -445,7 +439,6 @@ public class ActionConvertorV13Test {
                 .rev130715.PortNumber(Uint16.valueOf(54)));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setAction(tpSrcCaseBuilder.build());
-        actionBuilder.setOrder(6);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -456,7 +449,6 @@ public class ActionConvertorV13Test {
                 .rev130715.PortNumber(Uint16.valueOf(45)));
         tpDstCaseBuilder.setSetTpDstAction(tpDstBuilder.build());
         actionBuilder.setAction(tpDstCaseBuilder.build());
-        actionBuilder.setOrder(7);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -466,7 +458,6 @@ public class ActionConvertorV13Test {
         tosBuilder.setTos(16);
         tosCaseBuilder.setSetNwTosAction(tosBuilder.build());
         actionBuilder.setAction(tosCaseBuilder.build());
-        actionBuilder.setOrder(8);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -476,7 +467,6 @@ public class ActionConvertorV13Test {
         vlanIdBuilder.setVlanId(new VlanId(Uint16.valueOf(22)));
         vlanIdCaseBuilder.setSetVlanIdAction(vlanIdBuilder.build());
         actionBuilder.setAction(vlanIdCaseBuilder.build());
-        actionBuilder.setOrder(9);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -489,7 +479,6 @@ public class ActionConvertorV13Test {
         nwSrcBuilder.setAddress(ipv6Builder.build());
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setAction(nwSrcCaseBuilder.build());
-        actionBuilder.setOrder(10);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
@@ -502,7 +491,6 @@ public class ActionConvertorV13Test {
         nwDstBuilder.setAddress(ipv6Builder.build());
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setAction(nwDstCaseBuilder.build());
-        actionBuilder.setOrder(11);
         salActions.add(actionBuilder.build());
 
         IpMatchBuilder ipMatchBld = new IpMatchBuilder().setIpProtocol(Uint8.valueOf(6));

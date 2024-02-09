@@ -12,6 +12,7 @@ import static org.junit.Assert.assertEquals;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.UnpooledByteBufAllocator;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
@@ -58,8 +59,7 @@ public class MultipartRequestTableFeaturesSerializerTest extends AbstractSeriali
                     .setConfig(new TableConfig(IS_DEPRECATED_MASK))
                     .setMaxEntries(MAX_ENTRIES)
                     .setTableProperties(new TablePropertiesBuilder()
-                            .setTableFeatureProperties(BindingMap.of(new TableFeaturePropertiesBuilder()
-                                    .setOrder(0)
+                            .setTableFeatureProperties(List.of(new TableFeaturePropertiesBuilder()
                                     .setTableFeaturePropType(NEXT_TABLE)
                                     .build()))
                             .build())

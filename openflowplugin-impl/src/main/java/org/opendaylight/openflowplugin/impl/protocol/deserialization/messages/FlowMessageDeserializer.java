@@ -13,6 +13,7 @@ import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint64;
 import static org.opendaylight.yangtools.yang.common.netty.ByteBufUtils.readUint8;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistryInjector;
@@ -33,10 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, DeserializerRegistryInjector {
 
@@ -73,9 +72,9 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
         final int length = message.readableBytes();
 
         if (length > 0) {
-            final var instructions = BindingMap.<InstructionKey,
+            final var instructions = ImmutableList.<
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
-                    orderedBuilder();
+                    builder();
             final int startIndex = message.readerIndex();
             int offset = 0;
 
@@ -107,10 +106,7 @@ public class FlowMessageDeserializer implements OFDeserializer<FlowMessage>, Des
                                 EncodeConstants.OF_VERSION_1_3, type, Instruction.class, expId));
                 }
 
-                instructions.add(new InstructionBuilder()
-                        .setOrder(offset)
-                        .setInstruction(deserializer.deserialize(message))
-                        .build());
+                instructions.add(new InstructionBuilder().setInstruction(deserializer.deserialize(message)).build());
 
                 offset++;
             }

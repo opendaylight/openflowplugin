@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
@@ -43,7 +44,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.TransactionId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.InstructionsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
@@ -56,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -134,24 +133,18 @@ public class FlowForwarderTest {
 
     @Test
     public void updateTest() throws Exception {
-        Mockito.when(updateFlow.invoke(updateFlowInputCpt.capture())).thenReturn(
-                RpcResultBuilder.success(
-                        new UpdateFlowOutputBuilder()
-                                .setTransactionId(new TransactionId(Uint64.ONE))
-                                .build()).buildFuture());
+        Mockito.when(updateFlow.invoke(updateFlowInputCpt.capture())).thenReturn(RpcResultBuilder.success(
+            new UpdateFlowOutputBuilder().setTransactionId(new TransactionId(Uint64.ONE)).build()).buildFuture());
 
-        final Instructions originalInstructions = new InstructionsBuilder()
-                .setInstruction(BindingMap.of(new InstructionBuilder()
+        final var originalInstructions = new InstructionsBuilder()
+                .setInstruction(List.of(new InstructionBuilder()
                         .setInstruction(new ApplyActionsCaseBuilder()
                                 .setApplyActions(new ApplyActionsBuilder()
-                                        .setAction(BindingMap.of(new ActionBuilder()
-                                                .setAction(new DropActionCaseBuilder()
-                                                        .build())
-                                                .setOrder(0)
+                                        .setAction(List.of(new ActionBuilder()
+                                                .setAction(new DropActionCaseBuilder().build())
                                                 .build()))
                                         .build())
                                 .build())
-                        .setOrder(0)
                         .build()))
                 .build();
 

@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
-import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,13 +37,9 @@ import org.opendaylight.openflowplugin.applications.deviceownershipservice.Devic
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Instructions;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -107,13 +102,13 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Test
     public void testCreateFlow() {
-        final Flow flow = LLDPPacketPuntEnforcer.createFlow();
-        final Instructions instructions = flow.getInstructions();
-        final Map<InstructionKey, Instruction> insns = instructions.getInstruction();
+        final var flow = LLDPPacketPuntEnforcer.createFlow();
+        final var instructions = flow.getInstructions();
+        final var insns = instructions.getInstruction();
         assertNotNull(insns);
         assertEquals(1, insns.size());
 
-        final Instruction instruction = insns.values().iterator().next();
+        final var instruction = insns.iterator().next();
         assertNotNull(instruction);
 
         final var insn = instruction.getInstruction();
@@ -122,7 +117,7 @@ public class LLDPDataTreeChangeListenerTest {
         assertNotNull(applyActionsCase.getApplyActions().getAction());
         assertEquals(1, applyActionsCase.getApplyActions().nonnullAction().size());
 
-        final Action action = applyActionsCase.getApplyActions().nonnullAction().values().iterator().next().getAction();
+        final Action action = applyActionsCase.getApplyActions().nonnullAction().iterator().next().getAction();
         assertThat(action, instanceOf(OutputActionCase.class));
         final OutputActionCase outputActionCase = (OutputActionCase) action;
         assertEquals("CONTROLLER", outputActionCase.getOutputAction().getOutputNodeConnector().getValue());

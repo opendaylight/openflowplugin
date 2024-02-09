@@ -9,6 +9,7 @@ package org.opendaylight.openflowplugin.extension.test;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import java.util.List;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
@@ -42,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInpu
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -80,16 +80,13 @@ public class Test implements TestService {
                 // .addAugmentation(createNxMatchAugment().getAugmentationObject())
                 .build())
             .setInstructions(new InstructionsBuilder()
-                .setInstruction(BindingMap.of(new InstructionBuilder()
-                    .setOrder(0)
+                .setInstruction(List.of(new InstructionBuilder()
                     .setInstruction(new ApplyActionsCaseBuilder()
                         .setApplyActions(new ApplyActionsBuilder()
-                            .setAction(BindingMap.of(new ActionBuilder()
-                                .setOrder(0)
+                            .setAction(List.of(new ActionBuilder()
                                 .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
                                 .build(), new ActionBuilder()
                                 // base part
-                                .setOrder(1)
                                 .setAction(new NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder()
                                     // vendor part
                                     .setNxRegLoad(new NxRegLoadBuilder()

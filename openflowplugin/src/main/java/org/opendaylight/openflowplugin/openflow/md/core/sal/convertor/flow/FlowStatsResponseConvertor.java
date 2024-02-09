@@ -37,7 +37,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.statistics.types.rev130925.duration.DurationBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStats;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -83,9 +82,8 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
         applyActionsCaseBuilder.setApplyActions(applyActionsBuilder.build());
 
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(applyActionsCaseBuilder.build())
-                .setOrder(0)
                 .build()))
             .build();
     }
@@ -151,7 +149,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                     final AugmentTuple<Match> matchExtensionWrap =
                             MatchExtensionHelper.processAllExtensions(
                                     flowStats.getMatch().nonnullMatchEntry(),
-                                    OpenflowVersion.get(data.getVersion()),
+                                    OpenflowVersion.ofVersion(data.getVersion()),
                                     data.getMatchPath());
 
                     if (matchExtensionWrap != null) {
@@ -176,7 +174,7 @@ public class FlowStatsResponseConvertor extends Convertor<List<FlowStats>, List<
                         flowStats.getInstruction(), simpleConvertorData);
 
                 salFlowStatsBuilder.setInstructions(instructions.orElse(new InstructionsBuilder()
-                        .setInstruction(Collections.emptyMap()).build()));
+                        .setInstruction(List.of()).build()));
             }
 
             result.add(salFlowStatsBuilder.build());

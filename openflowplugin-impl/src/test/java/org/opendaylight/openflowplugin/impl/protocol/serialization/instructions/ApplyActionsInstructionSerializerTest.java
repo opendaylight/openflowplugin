@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
@@ -18,25 +19,20 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.ApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.apply.actions._case.ApplyActionsBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class ApplyActionsInstructionSerializerTest extends AbstractInstructionSerializerTest {
     @Test
     public void testSerialize() {
-        final int order = 0;
         final Ipv4Prefix prefix = new Ipv4Prefix("192.168.76.0/32");
 
         final Instruction instruction = new ApplyActionsCaseBuilder()
                 .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                                .setOrder(order)
-                                .withKey(new ActionKey(order))
+                        .setAction(List.of(new ActionBuilder()
                                 .setAction(new SetNwSrcActionCaseBuilder()
                                         .setSetNwSrcAction(new SetNwSrcActionBuilder()
                                                 .setAddress(new Ipv4Builder()

@@ -22,7 +22,6 @@ import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Uri;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.output.action._case.OutputActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.OutputPortValues;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
@@ -41,7 +40,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Co
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -109,8 +107,6 @@ public class PacketOutConvertorTest {
         output.setOutputNodeConnector(value);
         ab.setAction(new OutputActionCaseBuilder().setOutputAction(
                 output.build()).build());
-        ab.setOrder(0);
-        ab.withKey(new ActionKey(0));
 
         List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action> actionList =
                 new ArrayList<>();
@@ -134,7 +130,7 @@ public class PacketOutConvertorTest {
                 createNodeConnRef(nodeId, ingrConKey));
 
         final TransmitPacketInput transmitPacketInput = new TransmitPacketInputBuilder()
-            .setAction(BindingMap.of(ab.build()))
+            .setAction(List.of(ab.build()))
             .setBufferId(bufferId)
             .setConnectionCookie(connCook)
             .setEgress(egressConfRef)
@@ -198,9 +194,8 @@ public class PacketOutConvertorTest {
     }
 
     private static PortNumber getPortNumber(final NodeConnectorKey nodeConKey, final Uint8 ofVersion) {
-        Uint32 port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(OpenflowVersion.get(ofVersion),
-                nodeConKey.getId());
-        return new PortNumber(port);
+        return new PortNumber(InventoryDataServiceUtil.portNumberfromNodeConnectorId(
+            OpenflowVersion.ofVersion(ofVersion), nodeConKey.getId()));
     }
 
     private static NodeConnectorRef createNodeConnRef(final String nodeId, final NodeConnectorKey nodeConKey) {

@@ -11,11 +11,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import org.junit.Test;
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -45,7 +43,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteMetadataCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
@@ -85,7 +82,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.TablePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -228,13 +224,13 @@ public class TableFeaturesConvertorTest {
         new HashMap<>();
 
     static {
-        var instructions = BindingMap.<InstructionKey, Instruction>ordered(
-            new InstructionBuilder().setOrder(0).setInstruction(new GoToTableCaseBuilder().build()).build(),
-            new InstructionBuilder().setOrder(1).setInstruction(new WriteMetadataCaseBuilder().build()).build(),
-            new InstructionBuilder().setOrder(2).setInstruction(new WriteActionsCaseBuilder().build()).build(),
-            new InstructionBuilder().setOrder(3).setInstruction(new ApplyActionsCaseBuilder().build()).build(),
-            new InstructionBuilder().setOrder(4).setInstruction(new ClearActionsCaseBuilder().build()).build(),
-            new InstructionBuilder().setOrder(5).setInstruction(new MeterCaseBuilder().build()).build());
+        var instructions = List.<Instruction>of(
+            new InstructionBuilder().setInstruction(new GoToTableCaseBuilder().build()).build(),
+            new InstructionBuilder().setInstruction(new WriteMetadataCaseBuilder().build()).build(),
+            new InstructionBuilder().setInstruction(new WriteActionsCaseBuilder().build()).build(),
+            new InstructionBuilder().setInstruction(new ApplyActionsCaseBuilder().build()).build(),
+            new InstructionBuilder().setInstruction(new ClearActionsCaseBuilder().build()).build(),
+            new InstructionBuilder().setInstruction(new MeterCaseBuilder().build()).build());
 
         AUGMENTATIONS_MAP.put(Instructions.class, new InstructionsBuilder()
             .setInstructions(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop
@@ -256,23 +252,23 @@ public class TableFeaturesConvertorTest {
         AUGMENTATIONS_MAP.put(ApplyActionsMiss.class, new ApplyActionsMissBuilder()
             .setApplyActionsMiss(new org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature
                 .prop.type.table.feature.prop.type.apply.actions.miss.ApplyActionsMissBuilder()
-                    .setAction(BindingMap.ordered(
-                        new ActionBuilder().setOrder(0).setAction(new OutputActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(1).setAction(new GroupActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(2).setAction(new CopyTtlOutCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(3).setAction(new CopyTtlInCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(4).setAction(new SetMplsTtlActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(5).setAction(new DecMplsTtlCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(6).setAction(new PushVlanActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(7).setAction(new PopVlanActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(8).setAction(new PushMplsActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(9).setAction(new PopMplsActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(10).setAction(new SetQueueActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(11).setAction(new SetNwTtlActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(12).setAction(new DecNwTtlCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(13).setAction(new SetFieldCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(14).setAction(new PushPbbActionCaseBuilder().build()).build(),
-                        new ActionBuilder().setOrder(15).setAction(new PopPbbActionCaseBuilder().build()).build()))
+                    .setAction(List.of(
+                        new ActionBuilder().setAction(new OutputActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new GroupActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new CopyTtlOutCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new CopyTtlInCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new SetMplsTtlActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new DecMplsTtlCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new PushVlanActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new PopVlanActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new PushMplsActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new PopMplsActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new SetQueueActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new SetNwTtlActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new DecNwTtlCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new SetFieldCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new PushPbbActionCaseBuilder().build()).build(),
+                        new ActionBuilder().setAction(new PopPbbActionCaseBuilder().build()).build()))
                     .build())
             .build());
         AUGMENTATIONS_MAP.put(Match.class, new MatchBuilder().build());
@@ -319,8 +315,8 @@ public class TableFeaturesConvertorTest {
 
         assertNotNull(tableFeatures);
         assertEquals(10, tableFeatures.nonnullTableFeatures().size());
-        Collection<TableFeatureProperties> tableFeaturePropertieses = tableFeatures.nonnullTableFeatures().values()
-                .iterator().next().getTableProperties().nonnullTableFeatureProperties().values();
+        final var tableFeaturePropertieses = tableFeatures.nonnullTableFeatures().values()
+                .iterator().next().getTableProperties().nonnullTableFeatureProperties();
         assertEquals(AUGMENTATIONS_MAP.size() + 1, tableFeaturePropertieses.size());
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.feature.prop.type.table.feature
@@ -342,19 +338,13 @@ public class TableFeaturesConvertorTest {
     private static TableProperties getTableProperties() {
         TableFeaturePropertiesBuilder tableFeaturePropertiesBuilder = new TableFeaturePropertiesBuilder();
         List<TableFeatureProperties> tableFeaturePropertieses = new ArrayList<>();
-        int counter = 0;
-        int order = 0;
-        for (Entry<Class<? extends TableFeaturePropType>, TableFeaturePropType> entry : AUGMENTATIONS_MAP.entrySet()) {
-            counter++;
+        for (var entry : AUGMENTATIONS_MAP.entrySet()) {
             tableFeaturePropertiesBuilder.setTableFeaturePropType(entry.getValue());
-            tableFeaturePropertiesBuilder.setOrder(counter);
-            tableFeaturePropertiesBuilder.withKey(new TableFeaturePropertiesKey(order++));
             tableFeaturePropertieses.add(tableFeaturePropertiesBuilder.build());
         }
-        tableFeaturePropertieses.add(
-                tableFeaturePropertiesBuilder.withKey(new TableFeaturePropertiesKey(order++)).build());
+        tableFeaturePropertieses.add(tableFeaturePropertiesBuilder.build());
         return new TablePropertiesBuilder()
-            .setTableFeatureProperties(BindingMap.ordered(tableFeaturePropertieses))
+            .setTableFeatureProperties(tableFeaturePropertieses)
             .build();
     }
 }

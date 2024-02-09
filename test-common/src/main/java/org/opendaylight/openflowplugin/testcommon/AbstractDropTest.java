@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.testcommon;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
@@ -149,14 +149,14 @@ abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseab
         final DropActionCase dropAction = new DropActionCaseBuilder().setDropAction(
                 new DropActionBuilder().build()).build();
         // Create an Action
-        final Action ab = new ActionBuilder().setOrder(0).setAction(dropAction).build();
+        final Action ab = new ActionBuilder().setAction(dropAction).build();
         // Create an Apply Action
-        final ApplyActions aab = new ApplyActionsBuilder().setAction(Collections.singletonMap(ab.key(), ab)).build();
+        final ApplyActions aab = new ApplyActionsBuilder().setAction(List.of(ab)).build();
         // Wrap our Apply Action in an Instruction
         final Instruction ib = new InstructionBuilder()
-                .setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab).build()).setOrder(0).build();
+                .setInstruction(new ApplyActionsCaseBuilder().setApplyActions(aab).build()).build();
         // Put our Instruction in a list of Instructions
-        return new InstructionsBuilder().setInstruction(Collections.singletonMap(ib.key(), ib)).build();
+        return new InstructionsBuilder().setInstruction(List.of(ib)).build();
     }
 
     @SuppressWarnings("checkstyle:IllegalCatch")

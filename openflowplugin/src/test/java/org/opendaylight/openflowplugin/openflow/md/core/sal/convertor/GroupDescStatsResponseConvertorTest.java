@@ -196,8 +196,7 @@ public class GroupDescStatsResponseConvertorTest {
 
         // Test first action for first bucket for first group desc
         org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list
-                .Action action = bucket.nonnullAction().values().iterator().next();
-        Assert.assertEquals("Wrong type", 0, action.getOrder().intValue());
+                .Action action = bucket.nonnullAction().iterator().next();
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.CopyTtlInCase", action.getAction().implementedInterface().getName());
 
@@ -221,21 +220,18 @@ public class GroupDescStatsResponseConvertorTest {
         Assert.assertEquals("Wrong type", 3, bucket.nonnullAction().size());
 
         // Test first action for first bucket of second group desc
-        var actionIt = bucket.nonnullAction().values().iterator();
+        var actionIt = bucket.nonnullAction().iterator();
         action = actionIt.next();
-        Assert.assertEquals("Wrong type", 0, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.CopyTtlOutCase", action.getAction().implementedInterface().getName());
 
         // Test second action for first bucket of second group desc
         action = actionIt.next();
-        Assert.assertEquals("Wrong type", 1, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.DecNwTtlCase", action.getAction().implementedInterface().getName());
 
         // Test third action for first bucket of second group desc
         action = actionIt.next();
-        Assert.assertEquals("Wrong type", 2, action.getOrder().intValue());
         Assert.assertEquals("Wrong type", "org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112"
                 + ".action.action.PopPbbActionCase", action.getAction().implementedInterface().getName());
 
@@ -249,7 +245,7 @@ public class GroupDescStatsResponseConvertorTest {
         Assert.assertEquals("Wrong type", 0, bucket.nonnullAction().size());
     }
 
-    private List<GroupDescStats> convert(List<GroupDesc> groupDescStats,VersionConvertorData data) {
+    private List<GroupDescStats> convert(final List<GroupDesc> groupDescStats,final VersionConvertorData data) {
         Optional<List<GroupDescStats>> statsListOptional = convertorManager.convert(groupDescStats, data);
         return  statsListOptional.orElse(Collections.emptyList());
     }

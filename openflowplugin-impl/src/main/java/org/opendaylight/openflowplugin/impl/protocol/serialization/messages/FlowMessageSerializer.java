@@ -10,10 +10,10 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.messages;
 import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
+import com.google.common.collect.ImmutableList;
 import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -26,7 +26,6 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.impl.protocol.serialization.util.InstructionUtil;
-import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.OrderComparator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.VlanCfi;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.PushVlanActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetTpDstActionCase;
@@ -39,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.tp.src.action._case.SetTpSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowMessage;
@@ -58,7 +56,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.VlanMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -179,9 +176,8 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         }
 
         // Extract all instructions ...
-        Stream<Instruction> flowInstructions = instructions.nonnullInstruction().values().stream()
+        Stream<Instruction> flowInstructions = instructions.nonnullInstruction().stream()
             .filter(Objects::nonNull)
-            .sorted(OrderComparator.build())
             .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
             .filter(Objects::nonNull);
 
@@ -216,15 +212,15 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @return updated or original instruction
      */
     private static Instruction updateInstruction(final Instruction instruction, final Uint8 protocol) {
-        if (instruction instanceof ApplyActionsCase) {
-            final var actions = ((ApplyActionsCase) instruction).getApplyActions();
+        if (instruction instanceof ApplyActionsCase applyActions) {
+            final var actions = applyActions.getApplyActions();
             if (actions != null) {
                 return new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(actions.nonnullAction().values().stream()
+                        .setAction(actions.nonnullAction().stream()
                             .filter(Objects::nonNull)
                             .map(a -> updateSetTpActions(a, protocol))
-                            .collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                            .collect(ImmutableList.toImmutableList()))
                         .build())
                     .build();
             }
@@ -277,17 +273,12 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      * @param message OpenFlowPlugin flow mod message
      * @return list of instructions
      */
-    private static Map<
-            org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
+    private static List<
             org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
                 updateSetVlanIdAction(final FlowMessage message) {
-        return message.getInstructions().nonnullInstruction().values()
-                .stream()
+        return message.getInstructions().nonnullInstruction().stream()
                 .map(FlowMessageSerializer::updateSetVlanIdAction)
-                .collect(BindingMap.<
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.InstructionKey,
-                    org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction>
-                        toOrderedMap());
+                .collect(ImmutableList.toImmutableList());
     }
 
     private static org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.list.Instruction
@@ -297,12 +288,9 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
         if (instruction instanceof ApplyActionsCase) {
             final ApplyActions actions = ((ApplyActionsCase) instruction).getApplyActions();
             if (actions != null) {
-                final int[] offset = {0};
-
                 return Optional.of(actions)
                     .flatMap(as -> Optional.ofNullable(as.nonnullAction()))
-                    .map(a -> a.values().stream()
-                        .sorted(OrderComparator.build())
+                    .map(a -> a.stream()
                         .flatMap(action -> {
                             final List<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112
                                 .action.list.Action> actionList = new ArrayList<>();
@@ -321,26 +309,17 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
                                             .setTag(PUSH_TAG)
                                             .build())
                                         .build())
-                                    .withKey(action.key())
-                                    .setOrder(action.getOrder() + offset[0])
                                     .build());
-
-                                offset[0]++;
                             }
 
-                            // Update offset of action if there is any inserted PushVlan actions
-                            actionList.add(offset[0] > 0
-                                ? new ActionBuilder(action).setOrder(action.getOrder() + offset[0])
-                                    .withKey(new ActionKey(action.getOrder() + offset[0]))
-                                    .build()
-                                    : action);
+                            actionList.add(action);
 
                             return actionList.stream();
                         }))
                     .map(as -> new InstructionBuilder(insn)
                         .setInstruction(new ApplyActionsCaseBuilder()
                             .setApplyActions(new ApplyActionsBuilder()
-                                .setAction(as.collect(BindingMap.<ActionKey, Action>toOrderedMap()))
+                                .setAction(as.collect(ImmutableList.toImmutableList()))
                                 .build())
                             .build())
                         .build())
@@ -390,12 +369,12 @@ public class FlowMessageSerializer extends AbstractMessageSerializer<FlowMessage
      */
     private static boolean isSetVlanIdActionCasePresent(final Flow flow) {
         final var instructions = flow.getInstructions();
-        return instructions != null && instructions.nonnullInstruction().values().stream()
+        return instructions != null && instructions.nonnullInstruction().stream()
             .map(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Instruction::getInstruction)
             .filter(ApplyActionsCase.class::isInstance)
             .map(i -> ((ApplyActionsCase) i).getApplyActions())
             .filter(Objects::nonNull)
-            .flatMap(actionList -> actionList.nonnullAction().values().stream())
+            .flatMap(actionList -> actionList.nonnullAction().stream())
             .map(Action::getAction)
             .anyMatch(SetVlanIdActionCase.class::isInstance);
     }

@@ -101,7 +101,6 @@ public class ActionConvertorV10Test {
         pcpBuilder.setVlanPcp(new VlanPcp(Uint8.valueOf(7)));
         vlanPcpCaseBuilder.setSetVlanPcpAction(pcpBuilder.build());
         actionBuilder.setAction(vlanPcpCaseBuilder.build());
-        actionBuilder.setOrder(0);
 
         List<Action> salActions = new ArrayList<>();
         salActions.add(actionBuilder.build());
@@ -111,7 +110,6 @@ public class ActionConvertorV10Test {
         StripVlanActionBuilder stripBuilder = new StripVlanActionBuilder();
         stripCaseBuilder.setStripVlanAction(stripBuilder.build());
         actionBuilder.setAction(stripCaseBuilder.build());
-        actionBuilder.setOrder(1);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -120,7 +118,6 @@ public class ActionConvertorV10Test {
         dlDstBuilder.setAddress(new MacAddress("00:00:00:00:00:06"));
         dlDstCaseBuilder.setSetDlDstAction(dlDstBuilder.build());
         actionBuilder.setAction(dlDstCaseBuilder.build());
-        actionBuilder.setOrder(2);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -129,7 +126,6 @@ public class ActionConvertorV10Test {
         dlSrcBuilder.setAddress(new MacAddress("00:00:00:00:00:05"));
         dlSrcCaseBuilder.setSetDlSrcAction(dlSrcBuilder.build());
         actionBuilder.setAction(dlSrcCaseBuilder.build());
-        actionBuilder.setOrder(3);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -141,7 +137,6 @@ public class ActionConvertorV10Test {
         nwSrcBuilder.setAddress(ipv4Builder.build());
         nwSrcCaseBuilder.setSetNwSrcAction(nwSrcBuilder.build());
         actionBuilder.setAction(nwSrcCaseBuilder.build());
-        actionBuilder.setOrder(4);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -153,7 +148,6 @@ public class ActionConvertorV10Test {
         SetNwDstActionCaseBuilder nwDstCaseBuilder = new SetNwDstActionCaseBuilder();
         nwDstCaseBuilder.setSetNwDstAction(nwDstBuilder.build());
         actionBuilder.setAction(nwDstCaseBuilder.build());
-        actionBuilder.setOrder(5);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -162,7 +156,6 @@ public class ActionConvertorV10Test {
         tpSrcBuilder.setPort(new PortNumber(Uint16.valueOf(54)));
         tpSrcCaseBuilder.setSetTpSrcAction(tpSrcBuilder.build());
         actionBuilder.setAction(tpSrcCaseBuilder.build());
-        actionBuilder.setOrder(6);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -171,7 +164,6 @@ public class ActionConvertorV10Test {
         tpDstBuilder.setPort(new PortNumber(Uint16.valueOf(45)));
         tpDstCaseBuilder.setSetTpDstAction(tpDstBuilder.build());
         actionBuilder.setAction(tpDstCaseBuilder.build());
-        actionBuilder.setOrder(7);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -180,7 +172,6 @@ public class ActionConvertorV10Test {
         tosBuilder.setTos(18);
         tosCaseBuilder.setSetNwTosAction(tosBuilder.build());
         actionBuilder.setAction(tosCaseBuilder.build());
-        actionBuilder.setOrder(8);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -189,13 +180,11 @@ public class ActionConvertorV10Test {
         vlanIdBuilder.setVlanId(new VlanId(Uint16.valueOf(22)));
         vlanIdCaseBuilder.setSetVlanIdAction(vlanIdBuilder.build());
         actionBuilder.setAction(vlanIdCaseBuilder.build());
-        actionBuilder.setOrder(9);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
         PopVlanActionCaseBuilder popVlanActionCaseBuilder = new PopVlanActionCaseBuilder();
         actionBuilder.setAction(popVlanActionCaseBuilder.build());
-        actionBuilder.setOrder(10);
         salActions.add(actionBuilder.build());
 
         actionBuilder = new ActionBuilder();
@@ -206,7 +195,6 @@ public class ActionConvertorV10Test {
         setFieldBuilder.setVlanMatch(vlanMatchBuilder.build());
         setFieldCaseBuilder.setSetField(setFieldBuilder.build());
         actionBuilder.setAction(setFieldCaseBuilder.build());
-        actionBuilder.setOrder(11);
         salActions.add(actionBuilder.build());
 
         IpMatchBuilder ipMatchBld = new IpMatchBuilder().setIpProto(IpVersion.Ipv4);

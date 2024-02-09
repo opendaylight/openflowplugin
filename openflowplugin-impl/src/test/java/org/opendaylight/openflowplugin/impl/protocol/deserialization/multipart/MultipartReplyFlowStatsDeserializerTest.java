@@ -143,14 +143,14 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
         assertEquals(PACKET_COUNT, flowAndStatisticsMapList.getPacketCount().getValue().longValue());
 
         assertEquals(2, flowAndStatisticsMapList.getInstructions().getInstruction().size());
-        final var instructionIter = flowAndStatisticsMapList.getInstructions().nonnullInstruction().values().iterator();
+        final var instructionIter = flowAndStatisticsMapList.getInstructions().nonnullInstruction().iterator();
 
         final Instruction instruction = instructionIter.next().getInstruction();
         assertEquals(ApplyActionsCase.class, instruction.implementedInterface());
 
         final ApplyActionsCase applyActions = (ApplyActionsCase) instruction;
         assertEquals(1, applyActions.getApplyActions().nonnullAction().size());
-        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().values().iterator().next()
+        assertEquals(PopPbbActionCase.class, applyActions.getApplyActions().nonnullAction().iterator().next()
                 .getAction().implementedInterface());
 
         final Instruction instruction1 = instructionIter.next().getInstruction();
@@ -158,7 +158,7 @@ public class MultipartReplyFlowStatsDeserializerTest extends AbstractMultipartDe
 
         final WriteActionsCase writeActions = (WriteActionsCase) instruction1;
         assertEquals(1, writeActions.getWriteActions().getAction().size());
-        assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().nonnullAction().values().iterator().next()
+        assertEquals(PopVlanActionCase.class, writeActions.getWriteActions().nonnullAction().iterator().next()
                 .getAction().implementedInterface());
     }
 

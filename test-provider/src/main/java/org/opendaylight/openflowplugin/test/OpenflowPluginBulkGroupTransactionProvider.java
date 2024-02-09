@@ -11,7 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.MoreExecutors;
-import java.util.Map;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
@@ -52,7 +52,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.vlan.id.action._case.SetVlanIdActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
@@ -154,11 +153,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createDecNwTtlInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
-                .setOrder(0)
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DecNwTtlCaseBuilder().setDecNwTtl(new DecNwTtlBuilder().build()).build())
                             .build()))
                         .build())
@@ -183,10 +181,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createDropInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new DropActionCaseBuilder()
                                 .setDropAction(new DropActionBuilder().build())
                                 .build())
@@ -213,7 +211,7 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createMeterInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new MeterCaseBuilder()
                     .setMeter(new MeterBuilder().setMeterId(new MeterId(Uint32.ONE)).build())
                     .build())
@@ -222,10 +220,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createAppyActionInstruction() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new ControllerActionCaseBuilder()
                                 .setControllerAction(new ControllerActionBuilder()
                                     .setMaxLength(Uint16.valueOf(5))
@@ -239,10 +237,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createAppyActionInstruction7() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new SetVlanIdActionCaseBuilder()
                                 .setSetVlanIdAction(new SetVlanIdActionBuilder()
                                     .setVlanId(new VlanId(Uint16.valueOf(4012)))
@@ -256,10 +254,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createAppyActionInstruction21() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PopVlanActionCaseBuilder()
                                 .setPopVlanAction(new PopVlanActionBuilder().build())
                                 .build())
@@ -271,10 +269,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createAppyActionInstruction2() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushMplsActionCaseBuilder()
                                 .setPushMplsAction(new PushMplsActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x8847))
@@ -288,10 +286,10 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createAppyActionInstruction3() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new ApplyActionsCaseBuilder()
                     .setApplyActions(new ApplyActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
+                        .setAction(List.of(new ActionBuilder()
                             .setAction(new PushPbbActionCaseBuilder()
                                 .setPushPbbAction(new PushPbbActionBuilder()
                                     .setEthernetType(Uint16.valueOf(0x88E7))
@@ -305,7 +303,7 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private static InstructionsBuilder createGotoTableInstructions() {
         return new InstructionsBuilder()
-            .setInstruction(BindingMap.of(new InstructionBuilder()
+            .setInstruction(List.of(new InstructionBuilder()
                 .setInstruction(new GoToTableCaseBuilder()
                     .setGoToTable(new GoToTableBuilder().setTableId(Uint8.TWO).build())
                     .build())
@@ -724,16 +722,14 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
             .setBuckets(new BucketsBuilder().setBucket(BindingMap.of(bucket.build())).build());
     }
 
-    private static Map<ActionKey, Action> createPopVlanAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createPopVlanAction() {
+        return List.of(new ActionBuilder()
             .setAction(new PopVlanActionCaseBuilder().setPopVlanAction(new PopVlanActionBuilder().build()).build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createPushVlanAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createPushVlanAction() {
+        return List.of(new ActionBuilder()
             .setAction(new PushVlanActionCaseBuilder()
                 .setPushVlanAction(new PushVlanActionBuilder()
                     .setEthernetType(Uint16.valueOf(0x8100))
@@ -743,73 +739,64 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
             .build());
     }
 
-    private static Map<ActionKey, Action> createPushMplsAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createPushMplsAction() {
+        return List.of(new ActionBuilder()
             .setAction(new PushMplsActionCaseBuilder()
                 .setPushMplsAction(new PushMplsActionBuilder().setEthernetType(Uint16.valueOf(0x8847)).build())
                 .build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createPopMplsAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createPopMplsAction() {
+        return List.of(new ActionBuilder()
             .setAction(new PopMplsActionCaseBuilder()
                 .setPopMplsAction(new PopMplsActionBuilder().setEthernetType(Uint16.valueOf(0xB)).build())
                 .build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createPopPbbAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createPopPbbAction() {
+        return List.of(new ActionBuilder()
             .setAction(new PopPbbActionCaseBuilder().setPopPbbAction(new PopPbbActionBuilder().build()).build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createPushPbbAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createPushPbbAction() {
+        return List.of(new ActionBuilder()
             .setAction(new PushPbbActionCaseBuilder()
                 .setPushPbbAction(new PushPbbActionBuilder().setEthernetType(Uint16.valueOf(0x88E7)).build())
                 .build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createCopyTtlInAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createCopyTtlInAction() {
+        return List.of(new ActionBuilder()
             .setAction(new CopyTtlInCaseBuilder().setCopyTtlIn(new CopyTtlInBuilder().build()).build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createCopyTtlOutAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createCopyTtlOutAction() {
+        return List.of(new ActionBuilder()
             .setAction(new CopyTtlOutCaseBuilder().setCopyTtlOut(new CopyTtlOutBuilder().build()).build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createDecMplsTtlAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createDecMplsTtlAction() {
+        return List.of(new ActionBuilder()
             .setAction(new DecMplsTtlCaseBuilder().setDecMplsTtl(new DecMplsTtlBuilder().build()).build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createGroupAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createGroupAction() {
+        return List.of(new ActionBuilder()
             .setAction(new GroupActionCaseBuilder()
                 .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
                 .build())
             .build());
     }
 
-    private static Map<ActionKey, Action> createNonAppyPushVlanAction() {
-        return BindingMap.of(new ActionBuilder()
-            .setOrder(0)
+    private static List<Action> createNonAppyPushVlanAction() {
+        return List.of(new ActionBuilder()
             .setAction(new GroupActionCaseBuilder()
                 .setGroupAction(new GroupActionBuilder().setGroupId(Uint32.ONE).setGroup("0").build())
                 .build())

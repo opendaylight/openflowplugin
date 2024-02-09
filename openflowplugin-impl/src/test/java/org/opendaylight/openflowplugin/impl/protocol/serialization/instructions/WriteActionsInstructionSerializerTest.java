@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.protocol.serialization.instructions
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.util.List;
 import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.OxmMatchConstants;
 import org.opendaylight.openflowjava.protocol.impl.util.ActionConstants;
@@ -18,13 +19,11 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.SetNwSrcActionCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.set.nw.src.action._case.SetNwSrcActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.address.address.Ipv4Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.Instruction;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.WriteActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instruction.instruction.write.actions._case.WriteActionsBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class WriteActionsInstructionSerializerTest extends AbstractInstructionSerializerTest {
     @Test
@@ -33,20 +32,16 @@ public class WriteActionsInstructionSerializerTest extends AbstractInstructionSe
         final Ipv4Prefix prefix = new Ipv4Prefix("192.168.76.0/32");
 
         final Instruction instruction = new WriteActionsCaseBuilder()
-                .setWriteActions(new WriteActionsBuilder()
-                        .setAction(BindingMap.of(new ActionBuilder()
-                                .setOrder(order)
-                                .withKey(new ActionKey(order))
-                                .setAction(new SetNwSrcActionCaseBuilder()
-                                        .setSetNwSrcAction(new SetNwSrcActionBuilder()
-                                                .setAddress(new Ipv4Builder()
-                                                        .setIpv4Address(prefix)
-                                                .build())
-                                        .build())
-                                        .build())
-                                .build()))
+            .setWriteActions(new WriteActionsBuilder()
+                .setAction(List.of(new ActionBuilder()
+                    .setAction(new SetNwSrcActionCaseBuilder()
+                        .setSetNwSrcAction(new SetNwSrcActionBuilder()
+                            .setAddress(new Ipv4Builder().setIpv4Address(prefix).build())
+                            .build())
                         .build())
-                .build();
+                    .build()))
+                .build())
+            .build();
 
         assertInstruction(instruction, out -> {
             out.skipBytes(InstructionConstants.PADDING_IN_ACTIONS_INSTRUCTION);

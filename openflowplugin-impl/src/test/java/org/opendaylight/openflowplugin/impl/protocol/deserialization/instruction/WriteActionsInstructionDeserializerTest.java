@@ -56,7 +56,7 @@ public class WriteActionsInstructionDeserializerTest extends AbstractInstruction
         assertEquals(WriteActionsCase.class, instruction.implementedInterface());
         final WriteActionsCase actionCase = (WriteActionsCase) instruction;
         assertEquals(1, actionCase.getWriteActions().getAction().size());
-        assertEquals(PopPbbActionCase.class, actionCase.getWriteActions().nonnullAction().values().iterator().next()
+        assertEquals(PopPbbActionCase.class, actionCase.getWriteActions().nonnullAction().iterator().next()
                 .getAction().implementedInterface());
         assertEquals(0, in.readableBytes());
     }
