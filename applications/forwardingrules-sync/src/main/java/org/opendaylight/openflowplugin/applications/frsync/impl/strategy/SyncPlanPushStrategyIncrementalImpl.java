@@ -310,8 +310,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 //                    // at
 //                    // org.opendaylight.openflowjava.protocol.impl.serialization.match.AbstractOxmMatchEntrySerializer
 //                    //    .serializeHeader(AbstractOxmMatchEntrySerializer.java:31
-//                    // allResults.add(JdkFutureAdapters.listenInPoolThread(
-//                    // tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent)));
+//                    // allResults.add(
+//                    // tableForwarder.update(tableFeaturesII, null, tableFeaturesItem, nodeIdent));
 //                }
 //            }
 //        }
