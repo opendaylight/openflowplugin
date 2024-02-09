@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frm;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.applications.frm.impl.DevicesGroupRegistry;
@@ -198,6 +199,13 @@ public interface ForwardingRulesManager extends ConfigurationListener {
      * @return modeConfigurator.
      */
     NodeConfigurator getNodeConfigurator();
+
+    /**
+     * Return the {@link FlowNodeReconciliation} associated with this manager.
+     *
+     * @return the FlowNodeReconciliation
+     */
+    @NonNull FlowNodeReconciliation getFlowNodeReconciliation();
 
     /**
      * Method for register RecoverableListener.
