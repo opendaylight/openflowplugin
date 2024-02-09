@@ -23,7 +23,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService;
 
 /**
  * Test for {@link DeviceMastershipManager}.
@@ -47,13 +46,11 @@ public class DeviceMastershipManagerTest {
     private NodeId nodeId;
     @Mock
     private RpcProviderService rpcProviderService;
-    @Mock
-    private FrmReconciliationService reconciliationService;
 
     @Before
     public void setUp() {
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonService, reconciliationAgent, dataBroker,
-                mastershipChangeServiceManager, rpcProviderService, reconciliationService);
+        deviceMastershipManager = new DeviceMastershipManager(reconciliationAgent, dataBroker,
+                mastershipChangeServiceManager, rpcProviderService);
         Mockito.lenient().when(clusterSingletonService
                 .registerClusterSingletonService(ArgumentMatchers.any()))
                 .thenReturn(registration);

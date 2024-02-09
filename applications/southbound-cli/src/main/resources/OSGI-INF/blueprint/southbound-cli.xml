@@ -6,10 +6,11 @@
 
     <reference id="dataBroker"
                interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-    <reference id="flowCacheManager" interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
+    <reference id="flowCacheManager"
+               interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager"/>
+    <reference id="frm"
+               interface="org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager"/>
 
-    <odl:rpc-service id="frmReconciliationService"
-             interface="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.FrmReconciliationService"/>
     <bean id="alarmAgent"
           class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
     </bean>
@@ -23,7 +24,7 @@
           class="org.opendaylight.openflowplugin.applications.southboundcli.ReconciliationServiceImpl"
           destroy-method="close">
         <argument ref="dataBroker"/>
-        <argument ref="frmReconciliationService"/>
+        <argument ref="frm"/>
         <argument ref="alarmAgent"/>
         <argument ref="nodeListener"/>
         <argument ref="flowCacheManager"/>

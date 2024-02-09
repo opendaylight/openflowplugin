@@ -32,6 +32,7 @@ import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
+import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
@@ -74,11 +75,11 @@ public class ReconciliationServiceImpl implements ReconciliationService, AutoClo
 
     private ExecutorService executor = Executors.newWorkStealingPool(10);
 
-    public ReconciliationServiceImpl(final DataBroker broker, final FrmReconciliationService frmReconciliationService,
-                                     final AlarmAgent alarmAgent, final NodeListener nodeListener,
-                                     final FlowGroupCacheManager flowGroupCacheManager) {
+    public ReconciliationServiceImpl(final DataBroker broker, final ForwardingRulesManager frm,
+            final AlarmAgent alarmAgent, final NodeListener nodeListener,
+            final FlowGroupCacheManager flowGroupCacheManager) {
         this.broker = broker;
-        this.frmReconciliationService = frmReconciliationService;
+        frmReconciliationService = frm;
         this.alarmAgent = alarmAgent;
         this.nodeListener = requireNonNull(nodeListener, "NodeListener cannot be null!");
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
