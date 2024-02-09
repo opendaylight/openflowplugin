@@ -94,7 +94,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     private ForwardingRulesCommiter<Group> groupListener;
     private ForwardingRulesCommiter<Meter> meterListener;
     private ForwardingRulesCommiter<TableFeatures> tableListener;
-    private FlowNodeReconciliation nodeListener;
+    private FlowNodeReconciliationImpl flowNodeReconciliation;
     private NotificationRegistration reconciliationNotificationRegistration;
     private DeviceMastershipManager deviceMastershipManager;
     private boolean disableReconciliation;
@@ -141,17 +141,16 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
                 requireNonNull(rpcRegistry.getRpcService(ArbitratorReconcileService.class),
                         "ArbitratorReconciliationManager can not be null!");
 
-        nodeListener = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME, FRM_RECONCILIATION_PRIORITY,
-                ResultState.DONOTHING, flowGroupCacheManager);
+        flowNodeReconciliation = new FlowNodeReconciliationImpl(this, dataService, SERVICE_NAME,
+                FRM_RECONCILIATION_PRIORITY, ResultState.DONOTHING, flowGroupCacheManager);
         if (isReconciliationDisabled()) {
             LOG.debug("Reconciliation is disabled by user");
         } else {
-            reconciliationNotificationRegistration = reconciliationManager.registerService(nodeListener);
+            reconciliationNotificationRegistration = reconciliationManager.registerService(flowNodeReconciliation);
             LOG.debug("Reconciliation is enabled by user and successfully registered to the reconciliation framework");
         }
-        deviceMastershipManager = new DeviceMastershipManager(clusterSingletonServiceProvider, nodeListener,
-                dataService, mastershipChangeServiceManager, rpcProviderService,
-                new FrmReconciliationServiceImpl(this));
+        deviceMastershipManager = new DeviceMastershipManager(flowNodeReconciliation, dataService,
+            mastershipChangeServiceManager, rpcProviderService);
         flowNodeConnectorInventoryTranslatorImpl = new FlowNodeConnectorInventoryTranslatorImpl(dataService);
 
         bundleFlowListener = new BundleFlowForwarder(this);
@@ -184,9 +183,9 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
             tableListener.close();
             tableListener = null;
         }
-        if (nodeListener != null) {
-            nodeListener.close();
-            nodeListener = null;
+        if (flowNodeReconciliation != null) {
+            flowNodeReconciliation.close();
+            flowNodeReconciliation = null;
         }
         if (deviceMastershipManager != null) {
             deviceMastershipManager.close();
@@ -328,8 +327,9 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
         return nodeConfigurator;
     }
 
-    public FlowNodeReconciliation getNodeListener() {
-        return nodeListener;
+    @Override
+    public FlowNodeReconciliation getFlowNodeReconciliation() {
+        return flowNodeReconciliation;
     }
 
     @Override
