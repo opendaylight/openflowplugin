@@ -108,7 +108,6 @@ import org.slf4j.LoggerFactory;
  * @author <a href="mailto:vdemcak@cisco.com">Vaclav Demcak</a>
  */
 public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
-
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeReconciliationImpl.class);
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
 
@@ -181,7 +180,6 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
         final var dpnId = getDpnIdFromNodeName(node);
         reconciliationStates.remove(dpnId.toString());
     }
-
     private class BundleBasedReconciliationTask implements Callable<Boolean> {
         final InstanceIdentifier<FlowCapableNode> nodeIdentity;
 
