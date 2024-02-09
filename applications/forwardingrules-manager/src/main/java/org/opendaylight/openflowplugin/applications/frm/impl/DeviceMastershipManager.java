@@ -9,12 +9,12 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+import org.checkerframework.checker.lock.qual.Holding;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -52,12 +52,12 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     private final ClusterSingletonServiceProvider clusterSingletonService;
     private final FlowNodeReconciliation reconcliationAgent;
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
-    private final Object lockObj = new Object();
+    private final Set<InstanceIdentifier<FlowCapableNode>> activeNodes = ConcurrentHashMap.newKeySet();
+    private final ReentrantLock lock = new ReentrantLock();
     private final RpcProviderService rpcProviderService;
     private final FrmReconciliationService reconcliationService;
 
     private ListenerRegistration<DeviceMastershipManager> listenerRegistration;
-    private Set<InstanceIdentifier<FlowCapableNode>> activeNodes = Collections.emptySet();
     private MastershipChangeRegistration mastershipChangeServiceRegistration;
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "Non-final for mocking")
@@ -82,10 +82,9 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     }
 
     public boolean isNodeActive(final NodeId nodeId) {
-        final InstanceIdentifier<FlowCapableNode> flowNodeIdentifier = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
-        return activeNodes.contains(flowNodeIdentifier);
-
+        return activeNodes.contains(InstanceIdentifier.create(Nodes.class)
+            .child(Node.class, new NodeKey(nodeId))
+            .augmentation(FlowCapableNode.class));
     }
 
     @VisibleForTesting
@@ -127,15 +126,13 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
                 LOG.debug("Node removed: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
             }
 
-            if (!nodeIdent.isWildcarded() && activeNodes.contains(nodeIdent)) {
-                synchronized (lockObj) {
-                    if (activeNodes.contains(nodeIdent)) {
-                        Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
-                        set.remove(nodeIdent);
-                        reconcliationAgent.flowNodeDisconnected(nodeIdent);
-                        activeNodes = Collections.unmodifiableSet(set);
-                        setNodeOperationalStatus(nodeIdent, false);
-                    }
+            if (!nodeIdent.isWildcarded() && activeNodes.remove(nodeIdent)) {
+                lock.lock();
+                try {
+                    reconcliationAgent.flowNodeDisconnected(nodeIdent);
+                    setNodeOperationalStatus(nodeIdent, false);
+                } finally {
+                    lock.unlock();
                 }
             }
         }
@@ -148,14 +145,12 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
                 LOG.debug("Node added: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
             }
 
-            if (!nodeIdent.isWildcarded() && !activeNodes.contains(nodeIdent)) {
-                synchronized (lockObj) {
-                    if (!activeNodes.contains(nodeIdent)) {
-                        Set<InstanceIdentifier<FlowCapableNode>> set = Sets.newHashSet(activeNodes);
-                        set.add(nodeIdent);
-                        activeNodes = Collections.unmodifiableSet(set);
-                        setNodeOperationalStatus(nodeIdent, true);
-                    }
+            if (!nodeIdent.isWildcarded() && activeNodes.add(nodeIdent)) {
+                lock.lock();
+                try {
+                    setNodeOperationalStatus(nodeIdent, true);
+                } finally {
+                    lock.unlock();
                 }
             }
         }
@@ -179,10 +174,15 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
                 .equals(Iterables.getLast(identifier2.getPathArguments()));
     }
 
+    @Holding("lockObj")
     private void setNodeOperationalStatus(final InstanceIdentifier<FlowCapableNode> nodeIid, final boolean status) {
-        NodeId nodeId = nodeIid.firstKeyOf(Node.class).getId();
-        if (nodeId != null && deviceMasterships.containsKey(nodeId)) {
-            deviceMasterships.get(nodeId).setDeviceOperationalStatus(status);
+        final var nodeId = nodeIid.firstKeyOf(Node.class).getId();
+        if (nodeId == null) {
+            return;
+        }
+        final var mastership = deviceMasterships.get(nodeId);
+        if (mastership != null) {
+            mastership.setDeviceOperationalStatus(status);
             LOG.debug("Operational status of device {} is set to {}", nodeId, status);
         }
     }
@@ -190,7 +190,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     @Override
     public void onBecomeOwner(@NonNull final DeviceInfo deviceInfo) {
         LOG.debug("Mastership role notification received for device : {}", deviceInfo.getDatapathId());
-        DeviceMastership membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
+        final var membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
             device -> new DeviceMastership(deviceInfo.getNodeId()));
         membership.reconcile();
         membership.registerReconciliationRpc(rpcProviderService, reconcliationService);
@@ -198,7 +198,7 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
 
     @Override
     public void onLoseOwnership(@NonNull final DeviceInfo deviceInfo) {
-        final DeviceMastership mastership = deviceMasterships.remove(deviceInfo.getNodeId());
+        final var mastership = deviceMasterships.remove(deviceInfo.getNodeId());
         if (mastership != null) {
             mastership.deregisterReconciliationRpc();
             mastership.close();
