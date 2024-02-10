@@ -9,7 +9,12 @@ package org.opendaylight.openflowplugin.extension.test;
 
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
+import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Prefix;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.DecNwTtlCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.dec.nw.ttl._case.DecNwTtlBuilder;
@@ -38,9 +43,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nodes.node.table.flow.instructions.instruction.instruction.apply.actions._case.apply.actions.action.action.NxActionRegLoadNodesNodeTableFlowApplyActionsCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.NxRegLoadBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.action.rev140714.nx.action.reg.load.grouping.nx.reg.load.DstBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestService;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -49,6 +55,10 @@ import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,13 +67,30 @@ import org.slf4j.LoggerFactory;
  *
  * @author msunal
  */
-public class Test implements TestService {
+@Singleton
+@Component(service = { })
+public final class Test implements TestFlow, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(Test.class);
 
-    private AddFlow addFlow;
+    private final AddFlow addFlow;
+    private final Registration reg;
+
+    @Inject
+    @Activate
+    public Test(@Reference final RpcService rpcService, @Reference final RpcProviderService rpcProviderService) {
+        addFlow = rpcService.getRpc(AddFlow.class);
+        reg = rpcProviderService.registerRpcImplementation(this);
+    }
+
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        reg.close();
+    }
 
     @Override
-    public ListenableFuture<RpcResult<TestFlowOutput>> testFlow(final TestFlowInput input) {
+    public ListenableFuture<RpcResult<TestFlowOutput>> invoke(final TestFlowInput input) {
         // Construct the flow instance id
         final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
                 .builder(Nodes.class) // File under nodes
@@ -127,9 +154,5 @@ public class Test implements TestService {
         if (addFlow != null) {
             LoggingFutures.addErrorLogging(addFlow.invoke(addFlowInput), LOG, "addFlow");
         }
-    }
-
-    public void setAddFlow(final AddFlow addFlow) {
-        this.addFlow = addFlow;
     }
 }
