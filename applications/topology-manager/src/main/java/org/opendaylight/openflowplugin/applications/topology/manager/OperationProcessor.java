@@ -9,16 +9,20 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
+@Component(service = OperationProcessor.class)
 public final class OperationProcessor implements AutoCloseable, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(OperationProcessor.class);
     private static final int MAX_TRANSACTION_OPERATIONS = 100;
@@ -31,7 +35,8 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
     private volatile boolean finishing = false;
 
     @Inject
-    public OperationProcessor(final DataBroker dataBroker) {
+    @Activate
+    public OperationProcessor(@Reference final DataBroker dataBroker) {
         transactionChainManager = new TransactionChainManager(dataBroker, TOPOLOGY_MANAGER);
         transactionChainManager.activateTransactionManager();
         transactionChainManager.initialSubmitWriteTransaction();
@@ -39,6 +44,8 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
         thread = new Thread(this);
         thread.setDaemon(true);
         thread.setName("ofp-topo-expo-" + FlowCapableTopologyProvider.TOPOLOGY_ID);
+        thread.start();
+        LOG.debug("OperationProcessor started");
     }
 
     void enqueueOperation(final TopologyOperation task) {
@@ -47,11 +54,6 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
         } catch (InterruptedException e) {
             LOG.warn("Interrupted while submitting task {}", task, e);
         }
-    }
-
-    @PostConstruct
-    public void start() {
-        thread.start();
     }
 
     @Override
@@ -96,8 +98,9 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
         }
     }
 
-    @Override
     @PreDestroy
+    @Deactivate
+    @Override
     public void close() {
         thread.interrupt();
         try {
@@ -107,7 +110,6 @@ public final class OperationProcessor implements AutoCloseable, Runnable {
         }
 
         transactionChainManager.close();
-
-        LOG.debug("OperationProcessor closed");
+        LOG.debug("OperationProcessor stopped");
     }
 }

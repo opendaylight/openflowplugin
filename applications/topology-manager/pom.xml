@@ -14,8 +14,23 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.guicedee.services</groupId>
+      <artifactId>javax.inject</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.annotation</groupId>
+      <artifactId>jakarta.annotation-api</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opendaylight.mdsal</groupId>
@@ -42,19 +57,8 @@
       <artifactId>model-topology</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.github.spotbugs</groupId>
-      <artifactId>spotbugs-annotations</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>com.guicedee.services</groupId>
-      <artifactId>javax.inject</artifactId>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.annotation</groupId>
-      <artifactId>jakarta.annotation-api</artifactId>
-      <optional>true</optional>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.service.component.annotations</artifactId>
     </dependency>
   </dependencies>
 
