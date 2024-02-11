@@ -29,20 +29,25 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
+@Component(service = { })
 public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNodeConnector> {
     private static final Logger LOG = LoggerFactory.getLogger(TerminationPointChangeListenerImpl.class);
 
     @Inject
-    public TerminationPointChangeListenerImpl(final DataBroker dataBroker,
-                                              final OperationProcessor operationProcessor) {
+    @Activate
+    public TerminationPointChangeListenerImpl(@Reference final DataBroker dataBroker,
+            @Reference final OperationProcessor operationProcessor) {
         super(operationProcessor, dataBroker,
               InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
                       .augmentation(FlowCapableNodeConnector.class).build());
-        this.operationProcessor = operationProcessor;
     }
 
     @Override
@@ -65,8 +70,9 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
         }
     }
 
-    @Override
+    @Deactivate
     @PreDestroy
+    @Override
     public void close() {
         super.close();
     }
