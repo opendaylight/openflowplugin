@@ -43,7 +43,6 @@ import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
 import org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager;
 import org.opendaylight.openflowplugin.applications.southboundcli.alarm.NodeReconciliationAlarm;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
-import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.DateAndTime;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -82,19 +81,19 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
     }
 
     private final NodeReconciliationAlarm alarm = new NodeReconciliationAlarm();
-    private final DataBroker broker;
-    private final FlowNodeReconciliation flowNodeReconciliation;
-    private final NodeListener nodeListener;
     private final Map<String, ReconciliationState> reconciliationStates;
+    private final FlowNodeReconciliation flowNodeReconciliation;
+    private final DpnTracker dpnTracker;
+    private final DataBroker broker;
 
     private ExecutorService executor = Executors.newWorkStealingPool(10);
     private boolean unregister;
 
     public ReconciliationServiceImpl(final DataBroker broker, final ForwardingRulesManager frm,
-            final NodeListener nodeListener, final FlowGroupCacheManager flowGroupCacheManager) {
+            final DpnTracker dpnTracker, final FlowGroupCacheManager flowGroupCacheManager) {
         this.broker = requireNonNull(broker);
         flowNodeReconciliation = frm.getFlowNodeReconciliation();
-        this.nodeListener = requireNonNull(nodeListener);
+        this.dpnTracker = requireNonNull(dpnTracker);
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
 
         unregister = false;
@@ -191,9 +190,7 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
     }
 
     private List<Long> getAllNodes() {
-        List<OFNode> nodeList = ShellUtil.getAllNodes(nodeListener);
-        List<Long> nodes = nodeList.stream().distinct().map(OFNode::getNodeId).collect(Collectors.toList());
-        return nodes;
+        return dpnTracker.currentNodes().stream().distinct().map(OFNode::getNodeId).collect(Collectors.toList());
     }
 
     /**

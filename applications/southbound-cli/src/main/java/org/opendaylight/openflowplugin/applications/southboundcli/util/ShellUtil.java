@@ -10,15 +10,12 @@ package org.opendaylight.openflowplugin.applications.southboundcli.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.applications.southboundcli.NodeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
@@ -38,17 +35,6 @@ public final class ShellUtil {
     public static final String NODE_PREFIX = "openflow:";
 
     private ShellUtil() {
-    }
-
-    public static List<OFNode> getAllNodes(final NodeListener nodeListener) {
-        List<OFNode> dpnList = new ArrayList<>();
-        for (Map.Entry<Long, String> entry : nodeListener.getDpnIdToNameCache().entrySet()) {
-            OFNode dpn = new OFNode(entry.getKey(), entry.getValue());
-            dpnList.add(dpn);
-            LOG.trace("Added OFNode: {} to the list", dpn.getNodeId());
-        }
-        Collections.sort(dpnList);
-        return dpnList;
     }
 
     public static OFNode getNode(final long nodeId, final DataBroker broker) {

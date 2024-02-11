@@ -7,48 +7,48 @@
  */
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
+import static java.util.Objects.requireNonNull;
+
 import java.util.Formatter;
-import java.util.List;
 import org.apache.felix.gogo.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.openflowplugin.applications.southboundcli.NodeListener;
+import org.opendaylight.openflowplugin.applications.southboundcli.DpnTracker;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
-import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 
 @Command(scope = "openflow", name = "getallnodes", description = "Print all nodes from the operational datastore")
 public class GetAllNodesCommandProvider extends OsgiCommandSupport {
-    private NodeListener nodeListener;
+    private final DpnTracker dpnTracker;
 
-    public void setNodeListener(final NodeListener nodeListener) {
-        this.nodeListener = nodeListener;
+    public GetAllNodesCommandProvider(final DpnTracker dpnTracker) {
+        this.dpnTracker = requireNonNull(dpnTracker);
     }
 
     @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
     protected Object doExecute() throws Exception {
-        List<OFNode> ofNodeList = ShellUtil.getAllNodes(nodeListener);
+        final var ofNodeList = dpnTracker.currentNodes();
         if (ofNodeList.isEmpty()) {
             System.out.println("No node is connected yet");
-        } else {
-            StringBuilder stringBuilder = new StringBuilder();
-            Formatter formatter = new Formatter(stringBuilder);
+            return null;
+        }
+
+        final var stringBuilder = new StringBuilder();
+        try (var formatter = new Formatter(stringBuilder)) {
             System.out.println("Number of nodes: " + ofNodeList.size());
             System.out.println(getAllLocalNodesHeaderOutput());
             System.out.println("--------------------------------------------------------------------------");
             for (OFNode ofNode : ofNodeList) {
                 System.out.println(formatter.format("%-15s %3s %-15s %n",
-                        ofNode.getNodeId(), "", ofNode.getNodeName()).toString());
+                    ofNode.getNodeId(), "", ofNode.getNodeName()).toString());
                 stringBuilder.setLength(0);
             }
-            formatter.close();
         }
         return null;
     }
 
     private static String getAllLocalNodesHeaderOutput() {
-        Formatter formatter = new Formatter();
-        String header = formatter.format("%-15s %3s %-15s", "NodeId", "", "NodeName").toString();
-        formatter.close();
-        return header;
+        try (var formatter = new Formatter()) {
+            return formatter.format("%-15s %3s %-15s", "NodeId", "", "NodeName").toString();
+        }
     }
 }

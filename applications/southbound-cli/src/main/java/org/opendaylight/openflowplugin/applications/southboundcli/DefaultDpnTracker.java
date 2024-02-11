@@ -7,60 +7,76 @@
  */
 package org.opendaylight.openflowplugin.applications.southboundcli;
 
-import static java.util.Objects.requireNonNull;
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.ListenerRegistration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeListener.class);
+@Singleton
+@Component(service = DpnTracker.class)
+public final class DefaultDpnTracker
+        implements DpnTracker, ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultDpnTracker.class);
     public static final String DEFAULT_DPN_NAME = "UNKNOWN";
     public static final String SEPARATOR = ":";
 
-    private final Map<Long, String> dpnIdToNameCache = new ConcurrentHashMap<>();
-    private final DataBroker dataBroker;
-    private ListenerRegistration<?> listenerReg;
+    private final Map<Long, String> dpnIdToNameCache = new HashMap<>();
+    private final ListenerRegistration<?> listenerReg;
 
-    public NodeListener(final DataBroker broker) {
-        dataBroker = broker;
+    @Inject
+    @Activate
+    public DefaultDpnTracker(@Reference final DataBroker dataBroker) {
+        listenerReg = dataBroker.registerDataTreeChangeListener(
+            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
     }
 
-    public void start() {
-        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> identifier =
-                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, path);
-        listenerReg = dataBroker.registerDataTreeChangeListener(identifier, NodeListener.this);
-    }
-
+    @PreDestroy
+    @Deactivate
     @Override
     public void close() {
-        if (listenerReg != null) {
-            listenerReg.close();
-        }
+        listenerReg.close();
     }
 
     @Override
-    public void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> changes) {
-        requireNonNull(changes, "Changes may not be null!");
-        for (DataTreeModification<FlowCapableNode> change : changes) {
-            final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
-            final DataObjectModification<FlowCapableNode> mod = change.getRootNode();
-            final InstanceIdentifier<FlowCapableNode> nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
+    public synchronized List<OFNode> currentNodes() {
+        final var dpnList = new ArrayList<OFNode>();
+        for (var entry : dpnIdToNameCache.entrySet()) {
+            final var dpn = new OFNode(entry.getKey(), entry.getValue());
+            dpnList.add(dpn);
+            LOG.trace("Added OFNode: {} to the list", dpn.getNodeId());
+        }
+        dpnList.sort(null);
+        return dpnList;
+    }
+
+    @Override
+    public synchronized void onDataTreeChanged(final Collection<DataTreeModification<FlowCapableNode>> changes) {
+        for (var change : changes) {
+            final var key = change.getRootPath().getRootIdentifier();
+            final var mod = change.getRootNode();
+            final var nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
             switch (mod.getModificationType()) {
                 case DELETE:
                     remove(nodeIdent, mod.getDataBefore());
@@ -89,8 +105,7 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
                     .getValue());
             return;
         }
-        long dpnId = Long.parseLong(node[1]);
-        dpnIdToNameCache.remove(dpnId);
+        dpnIdToNameCache.remove(Long.parseLong(node[1]));
     }
 
     private void update(final InstanceIdentifier<FlowCapableNode> instId,
@@ -125,9 +140,5 @@ public class NodeListener implements ClusteredDataTreeChangeListener<FlowCapable
             dpnName = DEFAULT_DPN_NAME;
         }
         dpnIdToNameCache.put(dpnId, dpnName);
-    }
-
-    public Map<Long, String> getDpnIdToNameCache() {
-        return dpnIdToNameCache;
     }
 }
