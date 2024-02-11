@@ -5,7 +5,7 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-package org.opendaylight.openflowplugin.impl.device;
+package org.opendaylight.openflowplugin.common.txchain;
 
 import static org.mockito.ArgumentMatchers.any;
 
@@ -25,9 +25,6 @@ import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.TransactionChainListener;
 import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
-import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
@@ -48,8 +45,6 @@ public class TransactionChainManagerTest {
     private ReadWriteTransaction writeTx;
     @Mock
     private TransactionChain transactionChain;
-    @Mock
-    DeviceInfo deviceInfo;
 
     @Mock
     private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
@@ -64,7 +59,7 @@ public class TransactionChainManagerTest {
         Mockito.when(dataBroker.createTransactionChain(any(TransactionChainListener.class)))
                 .thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
-        nodeKeyIdent = DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
+        nodeKeyIdent = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
         txChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());
         Mockito.when(txChain.newReadWriteTransaction()).thenReturn(writeTx);
 

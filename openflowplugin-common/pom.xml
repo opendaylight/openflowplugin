@@ -23,8 +23,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-simple</artifactId>
+      <groupId>org.opendaylight.openflowplugin.model</groupId>
+      <artifactId>model-inventory</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
