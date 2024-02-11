@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import static java.util.Objects.requireNonNull;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
@@ -33,11 +35,11 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
         justification = "'this' passed to registerDataTreeChangeListener")
-    public DataTreeChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
+    protected DataTreeChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
             final InstanceIdentifier<T> ii) {
+        this.operationProcessor = requireNonNull(operationProcessor);
         listenerRegistration = dataBroker.registerDataTreeChangeListener(
             DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, ii), this);
-        this.operationProcessor = operationProcessor;
     }
 
     @Override
