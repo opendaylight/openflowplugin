@@ -27,6 +27,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -36,6 +39,7 @@ import javax.management.ObjectName;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
+import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager;
 import org.opendaylight.openflowplugin.api.openflow.ReconciliationState;
@@ -49,14 +53,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.Reconcile;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorTag;
 import org.opendaylight.yangtools.yang.common.ErrorType;
@@ -64,12 +69,20 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// FIXME: this is not just a CLI component, it should live somewhere else
-public final class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
+@Singleton
+@Component(service = Reconcile.class, immediate = true)
+// FIXME: this should probably live in FRM, but how does it integrate with its functionality?
+// FIXME: YANG-modeled multiplexed RPC. The sole caller is getting it injected, so we should perhaps model it
+//        explicitly? and how does it relate to FRM's services?
+public final class DefaultReconcile implements Reconcile, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultReconcile.class);
     private static final ObjectName ALARM_NAME;
 
     static {
@@ -85,12 +98,16 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
     private final FlowNodeReconciliation flowNodeReconciliation;
     private final DpnTracker dpnTracker;
     private final DataBroker broker;
+    private final Registration reg;
 
     private ExecutorService executor = Executors.newWorkStealingPool(10);
     private boolean unregister;
 
-    public ReconciliationServiceImpl(final DataBroker broker, final ForwardingRulesManager frm,
-            final DpnTracker dpnTracker, final FlowGroupCacheManager flowGroupCacheManager) {
+    @Inject
+    @Activate
+    public DefaultReconcile(@Reference final DataBroker broker, @Reference final ForwardingRulesManager frm,
+            @Reference final DpnTracker dpnTracker, @Reference final FlowGroupCacheManager flowGroupCacheManager,
+            @Reference final RpcProviderService rpcProviderService) {
         this.broker = requireNonNull(broker);
         flowNodeReconciliation = frm.getFlowNodeReconciliation();
         this.dpnTracker = requireNonNull(dpnTracker);
@@ -107,10 +124,15 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
                 LOG.error("Registeration failed for Mbean {}", ALARM_NAME, e);
             }
         }
+
+        reg = rpcProviderService.registerRpcImplementation(this);
     }
 
+    @PreDestroy
+    @Deactivate
     @Override
     public void close() {
+        reg.close();
         if (unregister) {
             unregister = false;
             try {
@@ -127,9 +149,9 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
     }
 
     @Override
-    public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(final ReconcileInput input) {
+    public ListenableFuture<RpcResult<ReconcileOutput>> invoke(final ReconcileInput input) {
         boolean reconcileAllNodes = input.getReconcileAllNodes();
-        Set<Uint64> inputNodes = input.getNodes();
+        var inputNodes = input.getNodes();
         if (inputNodes == null) {
             inputNodes = Set.of();
         }
