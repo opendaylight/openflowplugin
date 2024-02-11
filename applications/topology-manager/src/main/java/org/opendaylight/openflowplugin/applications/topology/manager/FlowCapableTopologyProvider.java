@@ -7,11 +7,12 @@
  */
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -30,41 +31,34 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class FlowCapableTopologyProvider implements ClusterSingletonService, AutoCloseable {
+@Component(service = { })
+public final class FlowCapableTopologyProvider implements ClusterSingletonService, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyProvider.class);
     private static final String TOPOLOGY_PROVIDER = "ofp-topology-manager";
     static final String TOPOLOGY_ID = "flow:1";
 
-    private final DataBroker dataBroker;
-    private final NotificationService notificationService;
+    private final InstanceIdentifier<Topology> topologyPathIID;
+    private final TransactionChainManager transactionChainManager;
     private final OperationProcessor processor;
-    private final ClusterSingletonServiceProvider clusterSingletonServiceProvider;
 
-    private InstanceIdentifier<Topology> topologyPathIID;
-    private TransactionChainManager transactionChainManager = null;
     private Registration listenerRegistration;
     private ClusterSingletonServiceRegistration singletonServiceRegistration;
 
     @Inject
-    public FlowCapableTopologyProvider(final DataBroker dataBroker,
-                                       final NotificationService notificationService,
-                                       final OperationProcessor processor,
-                                       final ClusterSingletonServiceProvider clusterSingletonServiceProvider) {
-        this.dataBroker = dataBroker;
-        this.notificationService = notificationService;
-        this.processor = processor;
-        this.clusterSingletonServiceProvider = clusterSingletonServiceProvider;
-    }
-
-    /**
-     * Gets called on start of a bundle.
-     */
-    @PostConstruct
-    public void start() {
+    @Activate
+    public FlowCapableTopologyProvider(@Reference final DataBroker dataBroker,
+            @Reference final NotificationService notificationService,
+            @Reference final ClusterSingletonServiceProvider clusterSingletonServiceProvider,
+            @Reference final OperationProcessor processor) {
+        this.processor = requireNonNull(processor);
         final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
         topologyPathIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
 
@@ -77,8 +71,9 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
         LOG.info("Topology Manager service started.");
     }
 
-    @Override
     @PreDestroy
+    @Deactivate
+    @Override
     public void close() {
         transactionChainManager.close();
         if (listenerRegistration != null) {
@@ -92,7 +87,7 @@ public class FlowCapableTopologyProvider implements ClusterSingletonService, Aut
             singletonServiceRegistration.close();
             singletonServiceRegistration = null;
         }
-        LOG.debug("Topology Manager instance is stopped.");
+        LOG.info("Topology Manager instance is stopped.");
     }
 
     @Override

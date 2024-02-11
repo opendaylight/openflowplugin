@@ -22,15 +22,22 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.re
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNode> {
+@Component(service = { })
+public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(NodeChangeListenerImpl.class);
 
     @Inject
-    public NodeChangeListenerImpl(final DataBroker dataBroker, final OperationProcessor operationProcessor) {
+    @Activate
+    public NodeChangeListenerImpl(@Reference final DataBroker dataBroker,
+            @Reference final OperationProcessor operationProcessor) {
         // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
         // listener)
         super(operationProcessor, dataBroker,
@@ -57,18 +64,17 @@ public class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<FlowCapab
         }
     }
 
-    @Override
+    @Deactivate
     @PreDestroy
+    @Override
     public void close() {
         super.close();
     }
 
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
-        final NodeId nodeId = provideTopologyNodeId(iiToNodeInInventory);
-        final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
-                .rev131021.network.topology.topology.Node>
-                iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
+        final var iiToNodeInInventory = modification.getRootPath().getRootIdentifier();
+        final var nodeId = provideTopologyNodeId(iiToNodeInInventory);
+        final var iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
             operationProcessor.enqueueOperation(manager -> {
                 manager.addDeleteOperationToTxChain(LogicalDatastoreType.OPERATIONAL, iiToTopologyRemovedNode);
