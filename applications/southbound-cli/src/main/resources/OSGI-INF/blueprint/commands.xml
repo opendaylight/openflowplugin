@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.2.0">
-
+    <reference id="dataBroker"
+               interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
     <reference id="reconciliationJMXServiceMBean"
                interface="org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean"
                availability="optional"/>
@@ -10,6 +11,10 @@
                availability="optional"/>
     <reference id="flowGroupHistories"
                interface="org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories"/>
+    <reference id="reconciliationService"
+               interface="org.opendaylight.openflowplugin.applications.southboundcli.ReconcileService"/>
+    <reference id="dpnTracker"
+               interface="org.opendaylight.openflowplugin.applications.southboundcli.DpnTracker"/>
 
     <cm:property-placeholder persistent-id="org.ops4j.pax.web" update-strategy="none">
         <cm:default-properties>
@@ -51,5 +56,4 @@
             </action>
         </command>
     </command-bundle>
-
 </blueprint>

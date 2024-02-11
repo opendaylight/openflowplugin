@@ -14,7 +14,6 @@ import static org.opendaylight.openflowplugin.api.openflow.ReconciliationState.R
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import java.lang.management.ManagementFactory;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -27,6 +26,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanRegistrationException;
@@ -49,11 +51,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.Reconcile;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
@@ -64,12 +66,18 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// FIXME: this is not just a CLI component, it should live somewhere else
-public final class ReconciliationServiceImpl implements ReconciliationService, AutoCloseable {
-    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationServiceImpl.class);
+@Singleton
+@Component(service = ReconcileService.class, immediate = true)
+// FIXME: this should probably live in FRM, but how does it integrate with its functionality?
+public final class DefaultReconcileService implements Reconcile, ReconcileService, AutoCloseable {
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultReconcileService.class);
     private static final ObjectName ALARM_NAME;
 
     static {
@@ -87,16 +95,17 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
     private final DataBroker broker;
 
     private ExecutorService executor = Executors.newWorkStealingPool(10);
-    private boolean unregister;
+    private boolean unregister = false;
 
-    public ReconciliationServiceImpl(final DataBroker broker, final ForwardingRulesManager frm,
-            final DpnTracker dpnTracker, final FlowGroupCacheManager flowGroupCacheManager) {
+    @Inject
+    @Activate
+    public DefaultReconcileService(@Reference final DataBroker broker, @Reference final ForwardingRulesManager frm,
+            @Reference final DpnTracker dpnTracker, @Reference final FlowGroupCacheManager flowGroupCacheManager) {
         this.broker = requireNonNull(broker);
         flowNodeReconciliation = frm.getFlowNodeReconciliation();
         this.dpnTracker = requireNonNull(dpnTracker);
         reconciliationStates = flowGroupCacheManager.getReconciliationStates();
 
-        unregister = false;
         final var mbs = ManagementFactory.getPlatformMBeanServer();
         if (!mbs.isRegistered(ALARM_NAME)) {
             try {
@@ -109,6 +118,8 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
         }
     }
 
+    @PreDestroy
+    @Deactivate
     @Override
     public void close() {
         if (unregister) {
@@ -127,62 +138,72 @@ public final class ReconciliationServiceImpl implements ReconciliationService, A
     }
 
     @Override
-    public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(final ReconcileInput input) {
-        boolean reconcileAllNodes = input.getReconcileAllNodes();
-        Set<Uint64> inputNodes = input.getNodes();
-        if (inputNodes == null) {
-            inputNodes = Set.of();
-        }
-        if (reconcileAllNodes && inputNodes.size() > 0) {
-            return buildErrorResponse("Error executing command reconcile. "
-                    + "If 'all' option is enabled, no Node must be specified as input parameter.");
-        }
-        if (!reconcileAllNodes && inputNodes.size() == 0) {
+    public ListenableFuture<RpcResult<ReconcileOutput>> reconcile(final Set<Uint64> nodes) {
+        if (nodes == null || nodes.isEmpty()) {
             return buildErrorResponse("Error executing command reconcile. No Node information was specified.");
         }
-        SettableFuture<RpcResult<ReconcileOutput>> result = SettableFuture.create();
-        List<Long> nodeList = getAllNodes();
-        List<Long> nodesToReconcile = reconcileAllNodes ? nodeList :
-                inputNodes.stream().distinct().map(Uint64::longValue).collect(Collectors.toList());
-        if (nodesToReconcile.size() > 0) {
-            List<Long> unresolvedNodes =
-                    nodesToReconcile.stream().filter(node -> !nodeList.contains(node)).collect(Collectors.toList());
-            if (!unresolvedNodes.isEmpty()) {
-                return buildErrorResponse("Error executing command reconcile. "
-                        + "Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
-            }
-            ImmutableSet.Builder<Uint64> inprogressNodes = ImmutableSet.builder();
-            nodesToReconcile.parallelStream().forEach(nodeId -> {
-                ReconciliationState state = getReconciliationState(nodeId);
-                if (state != null && state.getState().equals(STARTED)) {
-                    inprogressNodes.add(Uint64.valueOf(nodeId));
-                } else {
-                    final var alarmText = getAlarmText(nodeId,  " started reconciliation");
-                    final var source = getSourceText(nodeId);
-                    LOG.debug("Raising NodeReconciliationOperationOngoing alarm, alarmText {} source {}", alarmText,
-                        source);
-                    alarm.raiseAlarm("NodeReconciliationOperationOngoing", alarmText, source);
-                    LOG.info("Executing reconciliation for node {} with state ", nodeId);
-                    NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
-                    executor.execute(new ReconciliationTask(Uint64.valueOf(nodeId), nodeKey));
-                }
-            });
-            ReconcileOutput reconcilingInProgress = new ReconcileOutputBuilder()
-                    .setInprogressNodes(inprogressNodes.build())
-                    .build();
-            result.set(RpcResultBuilder.success(reconcilingInProgress).build());
-            return result;
-        } else {
+
+        final var allNodes = getAllNodes();
+        final var unresolvedNodes = nodes.stream().filter(node -> !allNodes.contains(node))
+            .collect(Collectors.toList());
+        if (!unresolvedNodes.isEmpty()) {
             return buildErrorResponse("Error executing command reconcile. "
-                    + "No node information is found for reconciliation");
+                + "Node(s) not found: " + String.join(", ", unresolvedNodes.toString()));
         }
+        return doReconcile(nodes.stream().map(Uint64::longValue).collect(Collectors.toList()));
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReconcileOutput>> reconcileAll() {
+        return doReconcile(getAllNodes());
+    }
+
+    private @NonNull ListenableFuture<RpcResult<ReconcileOutput>> doReconcile(final List<Long> nodes) {
+        if (!nodes.isEmpty()) {
+            return buildErrorResponse(
+                "Error executing command reconcile. No node information is found for reconciliation");
+        }
+        final var inprogressNodes = ImmutableSet.<Uint64>builder();
+        nodes.parallelStream().forEach(nodeId -> {
+            ReconciliationState state = getReconciliationState(nodeId);
+            if (state != null && state.getState().equals(STARTED)) {
+                inprogressNodes.add(Uint64.valueOf(nodeId));
+            } else {
+                final var alarmText = getAlarmText(nodeId,  " started reconciliation");
+                final var source = getSourceText(nodeId);
+                LOG.debug("Raising NodeReconciliationOperationOngoing alarm, alarmText {} source {}", alarmText,
+                    source);
+                alarm.raiseAlarm("NodeReconciliationOperationOngoing", alarmText, source);
+                LOG.info("Executing reconciliation for node {} with state ", nodeId);
+                NodeKey nodeKey = new NodeKey(new NodeId("openflow:" + nodeId));
+                executor.execute(new ReconciliationTask(Uint64.valueOf(nodeId), nodeKey));
+            }
+        });
+        return RpcResultBuilder.success(new ReconcileOutputBuilder()
+            .setInprogressNodes(inprogressNodes.build())
+            .build())
+            .buildFuture();
+    }
+
+    @Override
+    public ListenableFuture<RpcResult<ReconcileOutput>> invoke(final ReconcileInput input) {
+        final var reconcileAllNodes = input.getReconcileAllNodes();
+        final var nodes = input.getNodes();
+        if (reconcileAllNodes != null && reconcileAllNodes) {
+            if (nodes != null && nodes.size() > 0) {
+                return buildErrorResponse("Error executing command reconcile. If 'all' option is enabled, no Node "
+                    + "must be specified as input parameter.");
+            }
+            return reconcileAll();
+        }
+        return reconcile(nodes == null ? Set.of() : nodes);
     }
 
     private ReconciliationState getReconciliationState(final Long nodeId) {
         return reconciliationStates.get(nodeId.toString());
     }
 
-    private static ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(final String msg) {
+    private static @NonNull ListenableFuture<RpcResult<ReconcileOutput>> buildErrorResponse(final String msg) {
         LOG.error("Error {}", msg);
         return RpcResultBuilder.<ReconcileOutput>failed()
                 .withError(ErrorType.PROTOCOL, new ErrorTag("reconcile"), msg)

@@ -46,7 +46,6 @@ module reconciliation {
             leaf reconcile-all-nodes {
                 description "Flag to indicate that all nodes to be reconciled";
                 type boolean;
-                mandatory false;
                 default false;
             }
         }
