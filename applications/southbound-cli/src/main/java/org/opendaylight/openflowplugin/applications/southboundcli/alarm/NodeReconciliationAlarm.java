@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.southboundcli.alarm;
 
 import com.google.common.collect.ImmutableList;
@@ -15,11 +14,11 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.management.AttributeChangeNotification;
 import javax.management.NotificationBroadcasterSupport;
 
-public class NodeReconciliationAlarm extends NotificationBroadcasterSupport implements NodeReconciliationAlarmMBean {
+public final class NodeReconciliationAlarm extends NotificationBroadcasterSupport
+        implements NodeReconciliationAlarmMBean {
+    private final AtomicLong sequenceNumber = new AtomicLong(1);
 
-    private AtomicLong sequenceNumber = new AtomicLong(1);
-
-    private volatile java.util.List<String> raiseAlarmObject = new ArrayList<>();
+    private volatile List<String> raiseAlarmObject = new ArrayList<>();
     private volatile List<String> clearAlarmObject = new ArrayList<>();
 
     @Override

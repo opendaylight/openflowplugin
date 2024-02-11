@@ -11,9 +11,6 @@
     <reference id="frm"
                interface="org.opendaylight.openflowplugin.applications.frm.ForwardingRulesManager"/>
 
-    <bean id="alarmAgent"
-          class="org.opendaylight.openflowplugin.applications.southboundcli.alarm.AlarmAgent" init-method="start">
-    </bean>
     <bean id="nodeListener"
           class="org.opendaylight.openflowplugin.applications.southboundcli.NodeListener"
           init-method="start"
@@ -25,7 +22,6 @@
           destroy-method="close">
         <argument ref="dataBroker"/>
         <argument ref="frm"/>
-        <argument ref="alarmAgent"/>
         <argument ref="nodeListener"/>
         <argument ref="flowCacheManager"/>
     </bean>
