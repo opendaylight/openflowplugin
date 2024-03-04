@@ -47,7 +47,7 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
     public FlowNodeConnectorInventoryTranslatorImpl(final DataBroker dataBroker) {
         requireNonNull(dataBroker, "DataBroker can not be null!");
         listenerRegistration = dataBroker.registerDataTreeChangeListener(
-            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, getWildCardPath()), this);
+            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, getWildCardPath()), this);
     }
 
     @Override

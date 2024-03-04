@@ -21,9 +21,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import org.checkerframework.checker.lock.qual.Holding;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Manager for clustering service registrations of {@link DeviceMastership}.
  */
-public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable,
+public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapableNode>, AutoCloseable,
         MastershipChangeService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
     private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE = InstanceIdentifier
@@ -75,8 +75,8 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
                                    final RpcProviderService rpcProviderService) {
         this.reconcliationAgent = reconcliationAgent;
         this.rpcProviderService = rpcProviderService;
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(
-            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        listenerRegistration = dataBroker.registerTreeChangeListener(
+            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
         mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
     }
@@ -99,26 +99,26 @@ public class DeviceMastershipManager implements ClusteredDataTreeChangeListener<
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (DataTreeModification<FlowCapableNode> change : changes) {
-            final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().getRootIdentifier();
+            final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().path();
             final DataObjectModification<FlowCapableNode> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNode> nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
 
-            switch (mod.getModificationType()) {
+            switch (mod.modificationType()) {
                 case DELETE:
-                    if (mod.getDataAfter() == null) {
-                        remove(key, mod.getDataBefore(), nodeIdent);
+                    if (mod.dataAfter() == null) {
+                        remove(key, mod.dataBefore(), nodeIdent);
                     }
                     break;
                 case SUBTREE_MODIFIED:
                     // NO-OP since we do not need to reconcile on Node-updated
                     break;
                 case WRITE:
-                    if (mod.getDataBefore() == null) {
-                        add(key, mod.getDataAfter(), nodeIdent);
+                    if (mod.dataBefore() == null) {
+                        add(key, mod.dataAfter(), nodeIdent);
                     }
                     break;
                 default:
-                    throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                    throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
             }
         }
     }

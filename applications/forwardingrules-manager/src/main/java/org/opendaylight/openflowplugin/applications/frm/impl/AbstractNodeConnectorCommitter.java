@@ -25,28 +25,29 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         requireNonNull(changes, "Changes may not be null!");
 
         for (DataTreeModification<T> change : changes) {
-            final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
+            final InstanceIdentifier<T> key = change.getRootPath().path();
             final DataObjectModification<T> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent = key
                     .firstIdentifierOf(FlowCapableNodeConnector.class);
 
             if (preConfigurationCheck(nodeConnIdent)) {
-                switch (mod.getModificationType()) {
+                switch (mod.modificationType()) {
                     case DELETE:
-                        remove(key, mod.getDataBefore(), nodeConnIdent);
+                        remove(key, mod.dataBefore(), nodeConnIdent);
                         break;
                     case SUBTREE_MODIFIED:
-                        update(key, mod.getDataBefore(), mod.getDataAfter(), nodeConnIdent);
+                        update(key, mod.dataBefore(), mod.dataAfter(), nodeConnIdent);
                         break;
                     case WRITE:
-                        if (mod.getDataBefore() == null) {
-                            add(key, mod.getDataAfter(), nodeConnIdent);
+                        final var dataBefore = mod.dataBefore();
+                        if (dataBefore == null) {
+                            add(key, mod.dataAfter(), nodeConnIdent);
                         } else {
-                            update(key, mod.getDataBefore(), mod.getDataAfter(), nodeConnIdent);
+                            update(key, dataBefore, mod.dataAfter(), nodeConnIdent);
                         }
                         break;
                     default:
-                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                        throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
                 }
             }
         }

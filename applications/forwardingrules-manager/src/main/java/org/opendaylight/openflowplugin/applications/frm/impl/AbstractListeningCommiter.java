@@ -64,47 +64,46 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
         LOG.trace("Received data changes :{}", requireNonNull(changes, "Changes may not be null!"));
 
         for (DataTreeModification<T> change : changes) {
-            final InstanceIdentifier<T> key = change.getRootPath().getRootIdentifier();
+            final InstanceIdentifier<T> key = change.getRootPath().path();
             final DataObjectModification<T> mod = change.getRootNode();
             final InstanceIdentifier<FlowCapableNode> nodeIdent =
                     key.firstIdentifierOf(FlowCapableNode.class);
             try {
                 if (preConfigurationCheck(nodeIdent)) {
-                    switch (mod.getModificationType()) {
+                    switch (mod.modificationType()) {
                         case DELETE:
-                            remove(key, mod.getDataBefore(), nodeIdent);
+                            remove(key, mod.dataBefore(), nodeIdent);
                             break;
                         case SUBTREE_MODIFIED:
-                            update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                            update(key, mod.dataBefore(), mod.dataAfter(), nodeIdent);
                             break;
                         case WRITE:
-                            if (mod.getDataBefore() == null) {
-                                add(key, mod.getDataAfter(), nodeIdent);
+                            final var dataBefore = mod.dataBefore();
+                            if (dataBefore == null) {
+                                add(key, mod.dataAfter(), nodeIdent);
                             } else {
-                                update(key, mod.getDataBefore(), mod.getDataAfter(), nodeIdent);
+                                update(key, dataBefore, mod.dataAfter(), nodeIdent);
                             }
                             break;
                         default:
-                            throw new IllegalArgumentException(
-                                "Unhandled modification type " + mod.getModificationType());
+                            throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
                     }
                 } else if (provider.isStaleMarkingEnabled()) {
                     LOG.info("Stale-Marking ENABLED and switch {} is NOT connected, storing stale entities", nodeIdent);
                     // Switch is NOT connected
-                    switch (mod.getModificationType()) {
+                    switch (mod.modificationType()) {
                         case DELETE:
-                            createStaleMarkEntity(key, mod.getDataBefore(), nodeIdent);
+                            createStaleMarkEntity(key, mod.dataBefore(), nodeIdent);
                             break;
                         case SUBTREE_MODIFIED:
                         case WRITE:
                             break;
                         default:
-                            throw new IllegalArgumentException(
-                                "Unhandled modification type " + mod.getModificationType());
+                            throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
                     }
                 }
             } catch (RuntimeException e) {
-                LOG.error("Failed to handle event {} key {} due to error ", mod.getModificationType(), key, e);
+                LOG.error("Failed to handle event {} key {} due to error ", mod.modificationType(), key, e);
             }
         }
     }
