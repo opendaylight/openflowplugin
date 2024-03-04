@@ -55,17 +55,16 @@ import org.slf4j.LoggerFactory;
 public class GroupForwarder extends AbstractListeningCommiter<Group> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupForwarder.class);
 
-    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker db,
-                          final ListenerRegistrationHelper registrationHelper) {
-        super(manager, db, registrationHelper);
+    public GroupForwarder(final ForwardingRulesManager manager, final DataBroker dataBroker) {
+        super(manager, dataBroker);
     }
 
     @Override
     protected InstanceIdentifier<Group> getWildCardPath() {
         return InstanceIdentifier.create(Nodes.class)
-                .child(Node.class)
-                .augmentation(FlowCapableNode.class)
-                .child(Group.class);
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .child(Group.class);
     }
 
     @Override

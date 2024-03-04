@@ -118,8 +118,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
                                       final ReconciliationManager reconciliationManager,
                                       final OpenflowServiceRecoveryHandler openflowServiceRecoveryHandler,
                                       final ServiceRecoveryRegistry serviceRecoveryRegistry,
-                                      final FlowGroupCacheManager flowGroupCacheManager,
-                                      final ListenerRegistrationHelper registrationHelper) {
+                                      final FlowGroupCacheManager flowGroupCacheManager) {
         disableReconciliation = config.getDisableReconciliation();
         staleMarkingEnabled = config.getStaleMarkingEnabled();
         reconciliationRetryCount = config.getReconciliationRetryCount().toJava();
@@ -157,10 +156,10 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
 
         bundleFlowListener = new BundleFlowForwarder(this);
         bundleGroupListener = new BundleGroupForwarder(this);
-        flowListener = new FlowForwarder(this, dataService, registrationHelper);
-        groupListener = new GroupForwarder(this, dataService, registrationHelper);
-        meterListener = new MeterForwarder(this, dataService, registrationHelper);
-        tableListener = new TableForwarder(this, dataService, registrationHelper);
+        flowListener = new FlowForwarder(this, dataService);
+        groupListener = new GroupForwarder(this, dataService);
+        meterListener = new MeterForwarder(this, dataService);
+        tableListener = new TableForwarder(this, dataService);
         LOG.info("ForwardingRulesManager has started successfully.");
     }
 

@@ -102,8 +102,7 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
         final var dataBroker = getDataBroker();
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcConsumerRegistry,
                 rpcProviderService, getConfig(), mastershipChangeServiceManager, getConfigurationService(),
-                reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry, flowGroupCacheManager,
-                new ListenerRegistrationHelperImpl(dataBroker));
+                reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry, flowGroupCacheManager);
     }
 
     protected void setDeviceMastership(final NodeId nodeId) {

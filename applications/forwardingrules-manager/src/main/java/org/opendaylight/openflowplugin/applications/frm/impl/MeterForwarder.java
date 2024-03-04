@@ -49,9 +49,8 @@ import org.slf4j.LoggerFactory;
 public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     private static final Logger LOG = LoggerFactory.getLogger(MeterForwarder.class);
 
-    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker db,
-                          final ListenerRegistrationHelper listenerRegistrationHelper) {
-        super(manager, db, listenerRegistrationHelper);
+    public MeterForwarder(final ForwardingRulesManager manager, final DataBroker dataBroker) {
+        super(manager, dataBroker);
     }
 
     @Override

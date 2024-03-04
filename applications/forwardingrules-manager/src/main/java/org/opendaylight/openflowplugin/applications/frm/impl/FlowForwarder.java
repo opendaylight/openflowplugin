@@ -74,9 +74,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     private static final Logger LOG = LoggerFactory.getLogger(FlowForwarder.class);
     private static final String GROUP_EXISTS_IN_DEVICE_ERROR = "GROUPEXISTS";
 
-    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker db,
-                         final ListenerRegistrationHelper registrationHelper) {
-        super(manager, db, registrationHelper);
+    public FlowForwarder(final ForwardingRulesManager manager, final DataBroker dataBroker) {
+        super(manager, dataBroker);
     }
 
     @Override

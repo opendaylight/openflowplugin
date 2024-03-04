@@ -9,9 +9,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.MoreExecutors;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import org.opendaylight.mdsal.binding.api.DataBroker;
@@ -41,17 +38,14 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     final ForwardingRulesManager provider;
     NodeConfigurator nodeConfigurator;
     protected final DataBroker dataBroker;
-    private final ListenerRegistrationHelper registrationHelper;
 
     private Registration listenerRegistration;
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "See FIXME below")
-    protected AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker,
-                                     final ListenerRegistrationHelper registrationHelper) {
+    protected AbstractListeningCommiter(final ForwardingRulesManager provider, final DataBroker dataBroker) {
         this.provider = requireNonNull(provider, "ForwardingRulesManager can not be null!");
         nodeConfigurator = requireNonNull(provider.getNodeConfigurator(), "NodeConfigurator can not be null!");
         this.dataBroker = requireNonNull(dataBroker, "DataBroker can not be null!");
-        this.registrationHelper = requireNonNull(registrationHelper, "registrationHelper can not be null!");
 
         // FIXME: this may start listening on an uninitialized object: clean up the lifecycle here
         registerListener();
@@ -110,20 +104,8 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
 
     @Override
     public final void registerListener() {
-        Futures.addCallback(registrationHelper.checkedRegisterListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION, getWildCardPath()), this),
-            new FutureCallback<Registration>() {
-                @Override
-                public void onSuccess(final Registration flowListenerRegistration) {
-                    LOG.info("{} registered successfully", this);
-                    listenerRegistration = flowListenerRegistration;
-                }
-
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    LOG.error("Registration failed ", throwable);
-                }
-            }, MoreExecutors.directExecutor());
+        listenerRegistration = dataBroker.registerTreeChangeListener(
+            DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION, getWildCardPath()), this);
     }
 
     @Override

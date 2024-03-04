@@ -17,8 +17,6 @@
              interface="org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager"/>
   <reference id="serviceRecoveryRegistry"
              interface="org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry"/>
-  <reference id="listenerRegistrationHelper"
-             interface="org.opendaylight.openflowplugin.applications.frm.impl.ListenerRegistrationHelper"/>
   <reference id="openflowServiceRecoveryHandler"
              interface="org.opendaylight.openflowplugin.applications.frm.recovery.OpenflowServiceRecoveryHandler"/>
 
@@ -38,7 +36,6 @@
     <argument ref="openflowServiceRecoveryHandler"/>
     <argument ref="serviceRecoveryRegistry"/>
     <argument ref="flowGroupCacheManager"/>
-    <argument ref="listenerRegistrationHelper"/>
   </bean>
 
   <service ref="forwardingRulesManagerImpl"

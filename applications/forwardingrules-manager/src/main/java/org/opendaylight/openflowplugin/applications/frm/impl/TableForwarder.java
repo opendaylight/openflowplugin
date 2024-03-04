@@ -31,9 +31,8 @@ import org.slf4j.LoggerFactory;
 public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     private static final Logger LOG = LoggerFactory.getLogger(TableForwarder.class);
 
-    public TableForwarder(final ForwardingRulesManager manager, final DataBroker db,
-                          final ListenerRegistrationHelper registrationHelper) {
-        super(manager, db, registrationHelper);
+    public TableForwarder(final ForwardingRulesManager manager, final DataBroker dataBroker) {
+        super(manager, dataBroker);
     }
 
     @Override
