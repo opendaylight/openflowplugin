@@ -83,10 +83,11 @@ public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListen
                     update(nodeIdent, mod.dataBefore(), mod.dataAfter());
                     break;
                 case WRITE:
-                    if (mod.getDataBefore() == null) {
+                    final var dataBefore = mod.dataBefore();
+                    if (dataBefore == null) {
                         add(nodeIdent, mod.dataAfter());
                     } else {
-                        update(nodeIdent, mod.dataBefore(), mod.dataAfter());
+                        update(nodeIdent, dataBefore, mod.dataAfter());
                     }
                     break;
                 default:
