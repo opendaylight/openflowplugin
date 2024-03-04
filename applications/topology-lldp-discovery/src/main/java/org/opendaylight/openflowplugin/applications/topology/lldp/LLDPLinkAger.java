@@ -19,9 +19,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNull;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataTreeChangeListener<Link>, AutoCloseable {
+public final class LLDPLinkAger implements ConfigurationListener, DataTreeChangeListener<Link>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPLinkAger.class);
     static final String TOPOLOGY_ID = "flow:1";
     static final InstanceIdentifier<Link> II_TO_LINK = InstanceIdentifier.create(NetworkTopology.class)
@@ -79,7 +79,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
         final DataTreeIdentifier<Link> dtiToNodeConnector = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                 II_TO_LINK);
         try {
-            listenerRegistration = dataBroker.registerDataTreeChangeListener(dtiToNodeConnector, LLDPLinkAger.this);
+            listenerRegistration = dataBroker.registerTreeChangeListener(dtiToNodeConnector, this);
         } catch (Exception e) {
             LOG.error("DataTreeChangeListeners registration failed:", e);
             throw new IllegalStateException("LLDPLinkAger startup failed!", e);
@@ -152,7 +152,7 @@ public final class LLDPLinkAger implements ConfigurationListener, ClusteredDataT
     }
 
     private void processLinkDeleted(final DataObjectModification<Link> rootNode) {
-        Link link = rootNode.getDataBefore();
+        Link link = rootNode.dataBefore();
         LOG.trace("Removing link {} from linkToDate cache", link);
         LinkDiscovered linkDiscovered = LLDPDiscoveryUtils.toLLDPLinkDiscovered(link);
         linkToDate.remove(linkDiscovered);
