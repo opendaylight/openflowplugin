@@ -144,7 +144,7 @@ public final class DefaultReconcileService implements Reconcile, ReconcileServic
         }
 
         final var allNodes = getAllNodes();
-        final var unresolvedNodes = nodes.stream().filter(node -> !allNodes.contains(node))
+        final var unresolvedNodes = nodes.stream().filter(node -> !allNodes.contains(node.longValue()))
             .collect(Collectors.toList());
         if (!unresolvedNodes.isEmpty()) {
             return buildErrorResponse("Error executing command reconcile. "
