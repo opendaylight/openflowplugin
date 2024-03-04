@@ -16,9 +16,9 @@ import java.util.concurrent.Future;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
@@ -90,8 +90,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @Component(service = { })
-public final class SampleFlowCapableNodeListener
-        implements ClusteredDataTreeChangeListener<FlowCapableNode>, AutoCloseable {
+public final class SampleFlowCapableNodeListener implements DataTreeChangeListener<FlowCapableNode>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SampleFlowCapableNodeListener.class);
 
     private static final BundleId BUNDLE_ID = new BundleId(Uint32.ONE);
@@ -113,9 +112,9 @@ public final class SampleFlowCapableNodeListener
         final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
                 .augmentation(FlowCapableNode.class);
         final DataTreeIdentifier<FlowCapableNode> identifier =
-                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, path);
+                DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, path);
 
-        listenerReg = dataBroker.registerDataTreeChangeListener(identifier, SampleFlowCapableNodeListener.this);
+        listenerReg = dataBroker.registerTreeChangeListener(identifier, SampleFlowCapableNodeListener.this);
     }
 
     @PreDestroy
@@ -129,12 +128,11 @@ public final class SampleFlowCapableNodeListener
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
-            if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                LOG.info("Node connected:  {}",
-                        modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
+            if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
+                final var nodePath = modification.getRootPath().path().firstIdentifierOf(Node.class);
+                LOG.info("Node connected:  {}", nodePath);
 
-                final var nodeRef =
-                        new NodeRef(modification.getRootPath().getRootIdentifier().firstIdentifierOf(Node.class));
+                final var nodeRef = new NodeRef(nodePath);
 
                 final var openBundleInput = new ControlBundleInputBuilder()
                         .setNode(nodeRef)
