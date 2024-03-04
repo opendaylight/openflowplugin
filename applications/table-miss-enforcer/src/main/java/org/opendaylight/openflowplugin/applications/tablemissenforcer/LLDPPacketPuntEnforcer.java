@@ -14,9 +14,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
@@ -60,7 +60,7 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @Component(service = { })
-public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDataTreeChangeListener<FlowCapableNode> {
+public final class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChangeListener<FlowCapableNode> {
     private static final Logger LOG = LoggerFactory.getLogger(LLDPPacketPuntEnforcer.class);
     private static final Uint8 TABLE_ID = Uint8.ZERO;
     private static final String LLDP_PUNT_WHOLE_PACKET_FLOW = "LLDP_PUNT_WHOLE_PACKET_FLOW";
@@ -77,8 +77,8 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, ClusteredDat
             @Reference final RpcService rpcService) {
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
         addFlow = rpcService.getRpc(AddFlow.class);
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(
-            DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL,
+        listenerRegistration = dataBroker.registerTreeChangeListener(
+            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
                 InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)),
             this);
     }

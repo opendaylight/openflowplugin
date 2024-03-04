@@ -13,7 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,6 +71,8 @@ public class LLDPDataTreeChangeListenerTest {
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
+    private DataObjectModification<FlowCapableNode> dataObjectModification;
+    @Mock
     private DeviceOwnershipService deviceOwnershipService;
     @Captor
     private ArgumentCaptor<AddFlowInput> addFlowInputCaptor;
@@ -80,14 +81,14 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Before
     public void setUp() {
-        doReturn(reg).when(dataBroker).registerDataTreeChangeListener(any(), any());
+        doReturn(reg).when(dataBroker).registerTreeChangeListener(any(), any());
         doReturn(RpcResultBuilder.success().buildFuture()).when(addFlow).invoke(any());
         doReturn(addFlow).when(rpcService).getRpc(any());
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(dataBroker, deviceOwnershipService, rpcService);
-        final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.create(
+        final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.of(
                 LogicalDatastoreType.OPERATIONAL, NODE_IID.augmentation(FlowCapableNode.class));
         when(dataTreeModification.getRootPath()).thenReturn(identifier);
-        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
+        when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataTreeModification.getRootNode().modificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
     }
