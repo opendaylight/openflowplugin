@@ -104,7 +104,7 @@ public class SimplifiedOperationalListenerTest {
         fcNodePath = nodePath.augmentation(FlowCapableNode.class);
 
         final DataTreeIdentifier<Node> dataTreeIdentifier =
-                DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, nodePath);
+                DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, nodePath);
 
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.when(operationalNode.getId()).thenReturn(NODE_ID);
@@ -128,8 +128,8 @@ public class SimplifiedOperationalListenerTest {
 
     @Test
     public void testOnDataTreeChangedDeletePhysical() {
-        Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
-        Mockito.when(operationalModification.getDataAfter()).thenReturn(null);
+        Mockito.when(operationalModification.dataBefore()).thenReturn(operationalNode);
+        Mockito.when(operationalModification.dataAfter()).thenReturn(null);
 
         nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
@@ -139,10 +139,10 @@ public class SimplifiedOperationalListenerTest {
 
     @Test
     public void testOnDataTreeChangedDeleteLogical() {
-        Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
+        Mockito.when(operationalModification.dataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalNode.getNodeConnector()).thenReturn(nodeConnector);
         Mockito.when(operationalNodeEmpty.getId()).thenReturn(NODE_ID);
-        Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNodeEmpty);
+        Mockito.when(operationalModification.dataAfter()).thenReturn(operationalNodeEmpty);
         Mockito.when(operationalNodeEmpty.getNodeConnector()).thenReturn(null);
 
         nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
@@ -276,13 +276,13 @@ public class SimplifiedOperationalListenerTest {
     }
 
     private void operationalAdd() {
-        Mockito.when(operationalModification.getDataBefore()).thenReturn(null);
-        Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
+        Mockito.when(operationalModification.dataBefore()).thenReturn(null);
+        Mockito.when(operationalModification.dataAfter()).thenReturn(operationalNode);
     }
 
     private void operationalUpdate() {
-        Mockito.when(operationalModification.getDataBefore()).thenReturn(operationalNode);
-        Mockito.when(operationalModification.getDataAfter()).thenReturn(operationalNode);
+        Mockito.when(operationalModification.dataBefore()).thenReturn(operationalNode);
+        Mockito.when(operationalModification.dataAfter()).thenReturn(operationalNode);
     }
 
     private SyncupEntry loadConfigDSAndPrepareSyncupEntry(final FlowCapableNode after,

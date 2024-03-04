@@ -21,20 +21,20 @@ public final class ModificationUtil {
         // Hidden on purpose
     }
 
-    public static String nodeIdValue(DataTreeModification<Node> modification) {
+    public static String nodeIdValue(final DataTreeModification<Node> modification) {
         final NodeId nodeId = nodeId(modification);
         return nodeId == null ? null : nodeId.getValue();
     }
 
-    public static NodeId nodeId(DataTreeModification<Node> modification) {
+    public static NodeId nodeId(final DataTreeModification<Node> modification) {
         final DataObjectModification<Node> rootNode = modification.getRootNode();
-        final Node dataAfter = rootNode.getDataAfter();
+        final Node dataAfter = rootNode.dataAfter();
 
         if (dataAfter != null) {
             return dataAfter.getId();
         }
 
-        final Node dataBefore = rootNode.getDataBefore();
+        final Node dataBefore = rootNode.dataBefore();
         if (dataBefore != null) {
             return dataBefore.getId();
         }
@@ -42,8 +42,8 @@ public final class ModificationUtil {
         return null;
     }
 
-    public static FlowCapableNode flowCapableNodeAfter(DataTreeModification<Node> modification) {
-        final Node dataAfter = modification.getRootNode().getDataAfter();
+    public static FlowCapableNode flowCapableNodeAfter(final DataTreeModification<Node> modification) {
+        final Node dataAfter = modification.getRootNode().dataAfter();
         if (dataAfter == null) {
             return null;
         }

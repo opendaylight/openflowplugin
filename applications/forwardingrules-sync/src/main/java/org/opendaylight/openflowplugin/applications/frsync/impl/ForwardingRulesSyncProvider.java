@@ -84,9 +84,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
         processFlatBatch = requireNonNull(rpcRegistry.getRpc(ProcessFlatBatch.class),
                 "RPC SalFlatBatchService not found.");
 
-        nodeConfigDataTreePath = DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION,
+        nodeConfigDataTreePath = DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION,
                 FLOW_CAPABLE_NODE_WC_PATH);
-        nodeOperationalDataTreePath = DataTreeIdentifier.create(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
+        nodeOperationalDataTreePath = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
         syncThreadPool = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
             .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
@@ -120,9 +120,9 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                 operationalSnapshot, configDao, reconciliationRegistry, deviceMastershipManager);
 
         dataTreeConfigChangeListener =
-                dataService.registerDataTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
+                dataService.registerTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
         dataTreeOperationalChangeListener =
-                dataService.registerDataTreeChangeListener(nodeOperationalDataTreePath, nodeListenerOperational);
+                dataService.registerTreeChangeListener(nodeOperationalDataTreePath, nodeListenerOperational);
         LOG.info("ForwardingRulesSync started");
     }
 

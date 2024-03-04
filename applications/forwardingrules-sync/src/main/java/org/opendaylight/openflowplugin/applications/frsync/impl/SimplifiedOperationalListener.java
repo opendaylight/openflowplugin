@@ -109,35 +109,33 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
         if (LOG.isTraceEnabled()) {
             LOG.trace("Skipping operational modification: {}, before {}, after {}",
                     ModificationUtil.nodeIdValue(modification),
-                    modification.getRootNode().getDataBefore() == null ? "null" : "nonnull",
-                    modification.getRootNode().getDataAfter() == null ? "null" : "nonnull");
+                    modification.getRootNode().dataBefore() == null ? "null" : "nonnull",
+                    modification.getRootNode().dataAfter() == null ? "null" : "nonnull");
         }
         return Optional.empty();
     }
 
     private static boolean isDelete(final DataObjectModification<Node> nodeModification) {
-        return nodeModification.getDataBefore() != null && nodeModification.getDataAfter() == null;
+        return nodeModification.dataBefore() != null && nodeModification.dataAfter() == null;
     }
 
     /**
      * All connectors disappeared from operational store (logical delete).
      */
     private static boolean isDeleteLogical(final DataObjectModification<Node> nodeModification) {
-        return !safeConnectorsEmpty(nodeModification.getDataBefore())
-                && safeConnectorsEmpty(nodeModification.getDataAfter());
+        return !safeConnectorsEmpty(nodeModification.dataBefore()) && safeConnectorsEmpty(nodeModification.dataAfter());
 
     }
 
     private static boolean isAdd(final DataObjectModification<Node> nodeModification) {
-        return nodeModification.getDataBefore() == null && nodeModification.getDataAfter() != null;
+        return nodeModification.dataBefore() == null && nodeModification.dataAfter() != null;
     }
 
     /**
      * All connectors appeared in operational store (logical add).
      */
     private static boolean isAddLogical(final DataObjectModification<Node> nodeModification) {
-        return safeConnectorsEmpty(nodeModification.getDataBefore())
-                && !safeConnectorsEmpty(nodeModification.getDataAfter());
+        return safeConnectorsEmpty(nodeModification.dataBefore()) && !safeConnectorsEmpty(nodeModification.dataAfter());
     }
 
     /**
@@ -173,8 +171,8 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @return status of modification
      */
     private boolean isConsistentForReconcile(final DataTreeModification<Node> modification) {
-        final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().getRootIdentifier());
-        final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().getDataAfter()
+        final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().path());
+        final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().dataAfter()
                 .augmentation(FlowCapableStatisticsGatheringStatus.class);
 
         if (gatheringStatus == null) {

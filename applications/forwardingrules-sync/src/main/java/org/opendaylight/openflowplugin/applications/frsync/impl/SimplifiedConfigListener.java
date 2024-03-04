@@ -54,10 +54,10 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     @Override
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().getRootIdentifier();
+        final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().path();
         final NodeId nodeId = PathUtil.digNodeId(nodePath);
 
-        configSnapshot.updateCache(nodeId, Optional.ofNullable(modification.getRootNode().getDataAfter()));
+        configSnapshot.updateCache(nodeId, Optional.ofNullable(modification.getRootNode().dataAfter()));
 
         final Optional<FlowCapableNode> operationalNode = operationalDao.loadByNodeId(nodeId);
         if (operationalNode.isEmpty()) {
@@ -66,8 +66,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
         }
 
         final DataObjectModification<FlowCapableNode> configModification = modification.getRootNode();
-        final FlowCapableNode dataBefore = configModification.getDataBefore();
-        final FlowCapableNode dataAfter = configModification.getDataAfter();
+        final FlowCapableNode dataBefore = configModification.dataBefore();
+        final FlowCapableNode dataAfter = configModification.dataAfter();
         final ListenableFuture<Boolean> endResult;
         if (dataBefore == null && dataAfter != null) {
             endResult = onNodeAdded(nodePath, dataAfter, operationalNode.orElseThrow());

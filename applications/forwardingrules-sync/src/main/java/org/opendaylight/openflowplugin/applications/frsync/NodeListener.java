@@ -7,12 +7,12 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync;
 
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * Unifying listener for data and event changes on node.
  */
-public interface NodeListener<T extends DataObject> extends ClusteredDataTreeChangeListener<T> {
+public interface NodeListener<T extends DataObject> extends DataTreeChangeListener<T> {
 
 }

@@ -76,7 +76,7 @@ public class SimplifiedConfigListenerTest {
                 .augmentation(FlowCapableNode.class);
 
         final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
-                DataTreeIdentifier.create(LogicalDatastoreType.CONFIGURATION, fcNodePath);
+                DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION, fcNodePath);
 
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
@@ -90,8 +90,8 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedAdd() {
-        Mockito.when(configModification.getDataBefore()).thenReturn(null);
-        Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
+        Mockito.when(configModification.dataBefore()).thenReturn(null);
+        Mockito.when(configModification.dataAfter()).thenReturn(dataAfter);
         final SyncupEntry syncupEntry =
                 loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, operationalDS);
 
@@ -104,8 +104,8 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedUpdate() {
-        Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
-        Mockito.when(configModification.getDataAfter()).thenReturn(dataAfter);
+        Mockito.when(configModification.dataBefore()).thenReturn(dataBefore);
+        Mockito.when(configModification.dataAfter()).thenReturn(dataAfter);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, confgDS);
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
@@ -117,8 +117,8 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedDelete() {
-        Mockito.when(configModification.getDataBefore()).thenReturn(dataBefore);
-        Mockito.when(configModification.getDataAfter()).thenReturn(null);
+        Mockito.when(configModification.dataBefore()).thenReturn(dataBefore);
+        Mockito.when(configModification.dataAfter()).thenReturn(null);
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(null, confgDS, dataBefore, confgDS);
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));

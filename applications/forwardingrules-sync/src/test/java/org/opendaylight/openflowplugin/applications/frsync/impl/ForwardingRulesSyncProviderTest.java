@@ -42,7 +42,7 @@ public class ForwardingRulesSyncProviderTest {
         try (var provider = new ForwardingRulesSyncProvider(dataBroker, rpcRegistry, clusterSingletonService)) {
             verify(rpcRegistry).getRpc(UpdateTable.class);
             verify(rpcRegistry).getRpc(ProcessFlatBatch.class);
-            verify(dataBroker, times(2)).registerDataTreeChangeListener(any(), any());
+            verify(dataBroker, times(2)).registerTreeChangeListener(any(), any());
         }
     }
 }
