@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frm;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import org.opendaylight.mdsal.binding.api.ClusteredDataTreeChangeListener;
+import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -22,9 +22,7 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
  * DataTreeModification and relevant SalRpcService for device. Every
  * implementation has to be registered for Configurational/DS tree path.
  */
-public interface ForwardingRulesCommiter<D extends DataObject>
-        extends AutoCloseable, ClusteredDataTreeChangeListener<D> {
-
+public interface ForwardingRulesCommiter<D extends DataObject> extends DataTreeChangeListener<D>, AutoCloseable {
     /**
      * Method removes DataObject which is identified by InstanceIdentifier from
      * device.
