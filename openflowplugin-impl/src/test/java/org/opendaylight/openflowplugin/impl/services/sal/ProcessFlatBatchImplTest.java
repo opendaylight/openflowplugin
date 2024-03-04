@@ -498,7 +498,7 @@ public class ProcessFlatBatchImplTest {
         when(batchStepJob2.getStepFunction().apply(any())).thenReturn(failedChainOutput);
 
         final List<BatchStepJob> batchChainElements = Lists.newArrayList(batchStepJob1, batchStepJob2);
-        final var rpcResultFuture = processFlatBatch.executeBatchPlan(batchChainElements);
+        final var rpcResultFuture = ProcessFlatBatchImpl.executeBatchPlan(batchChainElements);
 
         assertTrue(rpcResultFuture.isDone());
         final var rpcResult = rpcResultFuture.get();
@@ -551,7 +551,7 @@ public class ProcessFlatBatchImplTest {
                         .success(new AddFlowsBatchOutputBuilder().build())
                         .buildFuture());
 
-        final var rpcResultFuture = processFlatBatch.executeBatchPlan(batchChain);
+        final var rpcResultFuture = ProcessFlatBatchImpl.executeBatchPlan(batchChain);
         assertTrue(rpcResultFuture.isDone());
         final var rpcResult = rpcResultFuture.get();
         assertTrue(rpcResult.isSuccessful());
@@ -597,7 +597,7 @@ public class ProcessFlatBatchImplTest {
                         .withError(ErrorType.APPLICATION, "ut-addFlowBatchError")
                         .buildFuture());
 
-        final var rpcResultFuture = processFlatBatch.executeBatchPlan(batchChain);
+        final var rpcResultFuture = ProcessFlatBatchImpl.executeBatchPlan(batchChain);
         assertTrue(rpcResultFuture.isDone());
         final var rpcResult = rpcResultFuture.get();
         assertFalse(rpcResult.isSuccessful());

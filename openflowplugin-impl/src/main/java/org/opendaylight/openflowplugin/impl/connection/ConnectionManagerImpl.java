@@ -196,7 +196,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
             requireNonNull(changes, "Changes must not be null!");
             for (DataTreeModification<Node> change : changes) {
                 final DataObjectModification<Node> mod = change.getRootNode();
-                switch (mod.getModificationType()) {
+                switch (mod.modificationType()) {
                     case DELETE:
                         break;
                     case SUBTREE_MODIFIED:
@@ -205,7 +205,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
                         processNodeModification(change);
                         break;
                     default:
-                        throw new IllegalArgumentException("Unhandled modification type " + mod.getModificationType());
+                        throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
                 }
             }
         }
@@ -215,7 +215,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
         }
 
         private void processNodeModification(final DataTreeModification<Node> change) {
-            final InstanceIdentifier<Node> key = change.getRootPath().getRootIdentifier();
+            final InstanceIdentifier<Node> key = change.getRootPath().path();
             final InstanceIdentifier<Node> nodeIdent = key.firstIdentifierOf(Node.class);
             String[] nodeIdentity = nodeIdent.firstKeyOf(Node.class).getId().getValue().split(":");
             String nodeId = nodeIdentity[1];
