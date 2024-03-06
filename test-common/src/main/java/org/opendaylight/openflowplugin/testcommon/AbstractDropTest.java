@@ -44,7 +44,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseable {
+abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseable, DropTest {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractDropTest.class);
 
     protected static final Uint16 PRIORITY = Uint16.valueOf(4);
@@ -86,6 +86,7 @@ abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseab
             .newUpdater(AbstractDropTest.class, "runablesRejected");
     protected volatile int runablesRejected;
 
+    @Override
     public final DropTestStats getStats() {
         return new DropTestStats(sent, rcvd, excs, ftrFailed, ftrSuccess, runablesExecuted, runablesRejected);
     }
@@ -107,6 +108,7 @@ abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseab
         executorService = threadPool;
     }
 
+    @Override
     public final void clearStats() {
         sent = 0;
         rcvd = 0;

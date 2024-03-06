@@ -7,6 +7,13 @@
  */
 package org.opendaylight.openflowplugin.testcommon;
 
-public interface DropTestCommiter extends DropTest {
+public interface DropTest {
 
+    DropTestStats getStats();
+
+    void clearStats();
+
+    boolean start();
+
+    boolean stop();
 }
