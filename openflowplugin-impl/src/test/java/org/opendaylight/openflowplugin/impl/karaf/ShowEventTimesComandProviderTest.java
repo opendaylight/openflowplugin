@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 Cisco Systems, Inc. and others.  All rights reserved.
+ * Copyright (c) 2024 PANTHEON.tech s.r.o. and others. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
@@ -7,61 +7,53 @@
  */
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.function.Function;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
 /**
  * Test for {@link ShowEventTimesComandProvider}.
  */
-public class ShowEventTimesComandProviderTest extends AbstractKarafTest {
-
-    private ShowEventTimesComandProvider showEventTimesComandProvider;
+class ShowEventTimesComandProviderTest extends AbstractKarafTest {
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
+    @InjectMocks
+    private ShowEventTimesComandProvider showEventTimesCommand;
+
     @Override
-
-    public void doSetUp() {
-        showEventTimesComandProvider = new ShowEventTimesComandProvider();
+    protected void doBeforeEach() {
         EventsTimeCounter.resetAllCounters();
-    }
-
-    @After
-    public void tearDown() {
-        EventsTimeCounter.resetAllCounters();
+        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ShowEventTimesComandProvider#doExecute()} when no stats were touched before.
+     * Test for {@link ShowEventTimesComandProvider#execute()} when no stats were touched before.
      */
     @Test
-    public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        showEventTimesComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print("");
+    void showNoActivity() {
+        showEventTimesCommand.execute();
+        verify(console, never()).println(anyString());
+        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ShowEventTimesComandProvider#doExecute()} when stats were touched before.
+     * Test for {@link ShowEventTimesComandProvider#execute()} when stats were touched before.
      */
     @Test
-    public void testDoExecute_dirty() throws Exception {
-        final EventIdentifier dummyEvent = new EventIdentifier("junit", "junitDevice");
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-
+    void showHavingActivity() {
+        final var dummyEvent = new EventIdentifier("junit", "junitDevice");
         EventsTimeCounter.markStart(dummyEvent);
         EventsTimeCounter.markEnd(dummyEvent);
-        Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertHasActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
 
-        showEventTimesComandProvider.execute(cmdSession);
-        Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print(contains("junitDevice"));
+        showEventTimesCommand.execute();
+        verify(console).println(contains("junitDevice"));
     }
 }

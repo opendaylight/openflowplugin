@@ -5,25 +5,27 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
-import java.io.PrintStream;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 
 @Command(scope = "ofp", name = "clearStats", description = "Clear openflow statistics.")
-public class ClearStatsCommandProvider extends OsgiCommandSupport {
+@Service
+public class ClearStatsCommandProvider implements Action {
+    @Reference
+    Session session;
     @Reference
     MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
-    protected Object doExecute() {
+    public Object execute() {
         messageIntelligenceAgency.resetStatistics();
-        PrintStream out = session.getConsole();
-        out.print("Openflow plugin statistics cleaned.\n");
+        session.getConsole().println("Openflow plugin statistics cleaned.");
         return null;
     }
 }
