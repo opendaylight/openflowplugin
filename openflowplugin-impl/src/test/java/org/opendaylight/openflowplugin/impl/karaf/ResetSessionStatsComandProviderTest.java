@@ -5,60 +5,52 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 import java.util.function.Function;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
  * Test for {@link ResetSessionStatsComandProvider}.
  */
-public class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
-
-    private ResetSessionStatsComandProvider resetSessionStatsComandProvider;
+class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
+    @InjectMocks
+    private ResetSessionStatsComandProvider resetSessionStatsCommand;
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
     @Override
-    public void doSetUp() {
-        resetSessionStatsComandProvider = new ResetSessionStatsComandProvider();
+    protected void doBeforeEach() {
         SessionStatistics.resetAllCounters();
-    }
-
-    @After
-    public void tearDown() {
-        Mockito.verify(console).print(anyString());
-        SessionStatistics.resetAllCounters();
+        assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ResetSessionStatsComandProvider#doExecute()} when no stats were touched before.
+     * Test for {@link ResetSessionStatsComandProvider#execute()} when no stats were touched before.
      */
     @Test
-    public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        resetSessionStatsComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+    void resetNoActivity() {
+        resetSessionStatsCommand.execute();
+        verify(console, atLeastOnce()).println(anyString());
+        assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ResetSessionStatsComandProvider#doExecute()} when stats were touched before.
+     * Test for {@link ResetSessionStatsComandProvider#execute()} when stats were touched before.
      */
     @Test
-    public void testDoExecute_dirty() throws Exception {
+    void resetHavingActivity() {
         final String dummySessionId = "junitSessionId";
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-
         SessionStatistics.countEvent(dummySessionId, SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
-        Assert.assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertHasActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
 
-        resetSessionStatsComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        resetSessionStatsCommand.execute();
+        verify(console, atLeastOnce()).println(anyString());
+        assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 }

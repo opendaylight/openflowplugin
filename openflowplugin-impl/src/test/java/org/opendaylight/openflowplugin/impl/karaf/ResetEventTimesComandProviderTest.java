@@ -5,62 +5,54 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 
 import java.util.function.Function;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
 /**
  * Test for {@link  ResetEventTimesComandProvider}.
  */
-public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
-
-    private ResetEventTimesComandProvider resetEventTimesComandProvider;
+class ResetEventTimesComandProviderTest extends AbstractKarafTest {
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
+    @InjectMocks
+    private ResetEventTimesComandProvider resetEventTimesCommand;
+
     @Override
-    public void doSetUp() {
-        resetEventTimesComandProvider = new ResetEventTimesComandProvider();
+    protected void doBeforeEach() {
         EventsTimeCounter.resetAllCounters();
-    }
-
-    @After
-    public void tearDown() {
-        Mockito.verify(console).print(anyString());
-        EventsTimeCounter.resetAllCounters();
+        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ResetEventTimesComandProvider#doExecute()} when no stats were touched before.
+     * Test for {@link ResetEventTimesComandProvider#execute()} when no stats were touched before.
      */
     @Test
-    public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-        resetEventTimesComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+    void resetNoActivity() {
+        resetEventTimesCommand.execute();
+        verify(console).println(anyString());
+        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ResetEventTimesComandProvider#doExecute()} when stats were touched before.
+     * Test for {@link ResetEventTimesComandProvider#execute()} when stats were touched before.
      */
     @Test
-    public void testDoExecute_dirty() throws Exception {
-        final EventIdentifier dummyEvent = new EventIdentifier("junit", "junitDevice");
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
-
+    void resetHavingActivity() {
+        final var dummyEvent = new EventIdentifier("junit", "junitDevice");
         EventsTimeCounter.markStart(dummyEvent);
         EventsTimeCounter.markEnd(dummyEvent);
-        Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertHasActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
 
-        resetEventTimesComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        resetEventTimesCommand.execute();
+        verify(console).println(anyString());
+        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 }

@@ -5,62 +5,55 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.function.Function;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
  * Test for {@link ShowSessionStatsCommandProvider}.
  */
-public class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
-
-    private ShowSessionStatsCommandProvider showSessionStatsCommandProvider;
+class ShowSessionStatsCommandProviderTest extends AbstractKarafTest {
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
+    @InjectMocks
+    private ShowSessionStatsCommandProvider showSessionStatsCommand;
+
     @Override
-
-    public void doSetUp() {
-        showSessionStatsCommandProvider = new ShowSessionStatsCommandProvider();
+    protected void doBeforeEach() {
         SessionStatistics.resetAllCounters();
-    }
-
-    @After
-    public void tearDown() {
-        SessionStatistics.resetAllCounters();
+        assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ShowEventTimesComandProvider#doExecute()} when no stats were touched before.
+     * Test for {@link ShowEventTimesComandProvider#execute()} when no stats were touched before.
      */
     @Test
-    public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        showSessionStatsCommandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print("");
+    void showNoActivity() {
+        showSessionStatsCommand.execute();
+        verify(console, never()).println(anyString());
+        assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ShowEventTimesComandProvider#doExecute()} when stats were touched before.
+     * Test for {@link ShowEventTimesComandProvider#execute()} when stats were touched before.
      */
     @Test
-    public void testDoExecute_dirty() throws Exception {
-        final String dummySessionId = "junitSessionId";
-        Assert.assertTrue(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-
+    void showHavingActivity() {
+        final var dummySessionId = "junitSessionId";
         SessionStatistics.countEvent(dummySessionId, SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
-        Assert.assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
+        assertHasActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
 
-        showSessionStatsCommandProvider.execute(cmdSession);
-        Assert.assertFalse(checkNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION));
-        Mockito.verify(console).print(contains(dummySessionId));
+        showSessionStatsCommand.execute();
+        verify(console, atLeastOnce()).println(contains(dummySessionId));
+        assertHasActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 }

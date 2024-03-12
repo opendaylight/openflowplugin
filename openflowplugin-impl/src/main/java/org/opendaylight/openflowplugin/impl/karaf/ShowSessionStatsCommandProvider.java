@@ -5,13 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
-import java.io.PrintStream;
-import java.util.List;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
@@ -19,18 +19,15 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatis
  */
 
 @Command(scope = "ofp", name = "show-session-stats", description = "Show session statistics.")
-public class ShowSessionStatsCommandProvider extends OsgiCommandSupport {
+@Service
+public class ShowSessionStatsCommandProvider implements Action {
+    @Reference
+    Session session;
 
     @Override
-    protected Object doExecute() {
-        PrintStream out = session.getConsole();
-        final List<String> statistics = SessionStatistics.provideStatistics();
-        final StringBuilder result = new StringBuilder();
-        for (String line : statistics) {
-            result.append(line);
-            result.append("\n");
-        }
-        out.print(result.toString());
+    public Object execute() {
+        final var console = session.getConsole();
+        SessionStatistics.provideStatistics().forEach(console::println);
         return null;
     }
 }

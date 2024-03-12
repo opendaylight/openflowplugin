@@ -5,31 +5,27 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.karaf;
 
-import java.io.PrintStream;
-import java.util.List;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 
 @Command(scope = "ofp", name = "showStats", description = "Show openflow statistics.")
-public class ShowStatsCommandProvider extends OsgiCommandSupport {
+@Service
+public class ShowStatsCommandProvider implements Action {
+    @Reference
+    Session session;
     @Reference
     MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
-    protected Object doExecute() {
-        PrintStream out = session.getConsole();
-        final List<String> statistics = messageIntelligenceAgency.provideIntelligence();
-        final StringBuilder result = new StringBuilder();
-        for (String line : statistics) {
-            result.append(line);
-            result.append("\n");
-        }
-        out.print(result.toString());
+    public Object execute() {
+        final var console = session.getConsole();
+        messageIntelligenceAgency.provideIntelligence().forEach(console::println);
         return null;
     }
 }
