@@ -28,6 +28,7 @@
         <module>openflowplugin-api</module>
         <module>openflowplugin</module>
         <module>openflowplugin-impl</module>
+        <module>openflowplugin-shell</module>
         <module>openflowplugin-common</module>
         <module>extension</module>
         <module>openflowplugin-blueprint-config</module>
