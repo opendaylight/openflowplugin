@@ -108,6 +108,10 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>openflowplugin-shell</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
         <dependency>
