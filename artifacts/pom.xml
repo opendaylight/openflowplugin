@@ -43,6 +43,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>openflowplugin-shell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>openflowplugin-blueprint-config</artifactId>
                 <version>${project.version}</version>
             </dependency>
