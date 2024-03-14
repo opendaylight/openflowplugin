@@ -8,19 +8,23 @@
 package org.opendaylight.openflowplugin.droptestkaraf;
 
 import java.util.List;
-import org.apache.karaf.shell.console.Completer;
-import org.apache.karaf.shell.console.completer.StringsCompleter;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
 
 /**
  * General dropAllPackets on/off argument completer.
  */
+@Service
 public class DropAllPacketsCompleter implements Completer {
 
     @Override
-    public int complete(String buffer, int cursor, List<String> candidates) {
-        StringsCompleter delegate = new StringsCompleter();
+    public int complete(final Session session, final CommandLine commandLine, final List<String> candidates) {
+        final var delegate = new StringsCompleter();
         delegate.getStrings().add("on");
         delegate.getStrings().add("off");
-        return delegate.complete(buffer, cursor, candidates);
+        return delegate.complete(session, commandLine, candidates);
     }
 }

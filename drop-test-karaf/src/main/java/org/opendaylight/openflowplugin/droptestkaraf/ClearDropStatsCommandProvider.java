@@ -7,21 +7,26 @@
  */
 package org.opendaylight.openflowplugin.droptestkaraf;
 
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.testcommon.DropTestCommiter;
 import org.opendaylight.openflowplugin.testcommon.DropTestRpcSender;
 
 @Command(scope = "drop-test", name = "clearDropStats", description = "Clear drop statistics.")
-public class ClearDropStatsCommandProvider extends OsgiCommandSupport {
+@Service
+public class ClearDropStatsCommandProvider implements Action {
     @Reference
     DropTestRpcSender rpcProvider;
     @Reference
     DropTestCommiter dsProvider;
+    @Reference
+    Session session;
 
     @Override
-    protected Object doExecute() {
+    public Object execute() {
         final var out = session.getConsole();
         out.println("Clearing drop statistics... ");
         rpcProvider.clearStats();
