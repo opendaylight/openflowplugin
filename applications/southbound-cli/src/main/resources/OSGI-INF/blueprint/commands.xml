@@ -46,8 +46,6 @@
         <command name="openflow/getreconciliationstate">
             <action class="org.opendaylight.openflowplugin.applications.southboundcli.cli.GetReconciliationStateProvider">
                 <argument ref ="reconciliationJMXServiceMBean"/>
-                <argument ref="clusterMemberInfoProvider"/>
-                <argument value="${org.osgi.service.http.port}"/>
             </action>
         </command>
         <command name="openflow/getflownodecache">
