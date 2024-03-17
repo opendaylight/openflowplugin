@@ -9,7 +9,6 @@ package org.opendaylight.serviceutils.srm.impl;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -66,7 +65,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.ServiceOpReinstall;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -131,12 +129,11 @@ public final class RegistryControlImpl implements RegistryControl, AutoCloseable
     @Activate
     public RegistryControlImpl(@Reference DataBroker dataBroker, @Reference RpcProviderService rpcProvider) {
         this.dataBroker = requireNonNull(dataBroker);
-        reg = rpcProvider.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(Recover.class, input -> FutureRpcResults.fromListenableFuture(LOG, "recover", input,
-                () -> recover(input)).build())
-            .put(Reinstall.class, input -> FutureRpcResults.fromListenableFuture(LOG, "reinstall", input,
-                () -> reinstall(input)).build())
-            .build());
+        reg = rpcProvider.registerRpcImplementations(
+            (Recover) input -> FutureRpcResults.fromListenableFuture(LOG, "recover", input,
+                () -> recover(input)).build(),
+            (Reinstall) input -> FutureRpcResults.fromListenableFuture(LOG, "reinstall", input,
+                () -> reinstall(input)).build());
     }
 
     @Override
