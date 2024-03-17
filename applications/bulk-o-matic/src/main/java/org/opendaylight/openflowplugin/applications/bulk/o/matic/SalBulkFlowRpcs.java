@@ -11,7 +11,6 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Objects.requireNonNullElse;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -89,7 +88,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -122,18 +120,17 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
         this.dataBroker = requireNonNull(dataBroker);
         addFlow = rpcService.getRpc(AddFlow.class);
         removeFlow = rpcService.getRpc(RemoveFlow.class);
-        reg = rpcProviderService.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(Register.class, this::register)
-            .put(AddFlowsRpc.class, this::addFlowsRpc)
-            .put(RemoveFlowsRpc.class, this::removeFlowsRpc)
-            .put(AddFlowsDs.class, this::addFlowsDs)
-            .put(RemoveFlowsDs.class, this::removeFlowsDs)
-            .put(FlowTest.class, this::flowTest)
-            .put(ReadFlowTest.class, this::readFlowTest)
-            .put(FlowRpcAddTest.class, this::flowRpcAddTest)
-            .put(FlowRpcAddMultiple.class, this::flowRpcAddMultiple)
-            .put(TableTest.class, this::tableTest)
-            .build());
+        reg = rpcProviderService.registerRpcImplementations(
+            (Register) this::register,
+            (AddFlowsRpc) this::addFlowsRpc,
+            (RemoveFlowsRpc) this::removeFlowsRpc,
+            (AddFlowsDs) this::addFlowsDs,
+            (RemoveFlowsDs) this::removeFlowsDs,
+            (FlowTest) this::flowTest,
+            (ReadFlowTest) this::readFlowTest,
+            (FlowRpcAddTest) this::flowRpcAddTest,
+            (FlowRpcAddMultiple) this::flowRpcAddMultiple,
+            (TableTest) this::tableTest);
         LoggingFutures.addErrorLogging(register(new RegisterInputBuilder().build()), LOG, "register");
     }
 

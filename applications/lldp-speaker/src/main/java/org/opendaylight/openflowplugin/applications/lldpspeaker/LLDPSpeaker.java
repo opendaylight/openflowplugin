@@ -11,7 +11,6 @@ import static java.util.Objects.requireNonNull;
 import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErrorLogging;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +54,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.SetLldpFloodIntervalOutput;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -104,12 +102,11 @@ public final class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable,
 
         scheduledSpeakerTask = scheduledExecutorService.scheduleAtFixedRate(this, LLDP_FLOOD_PERIOD, LLDP_FLOOD_PERIOD,
             TimeUnit.SECONDS);
-        registration = rpcProviderService.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(GetLldpFloodInterval.class, this::getLldpFloodInterval)
-            .put(GetOperationalStatus.class, this::getOperationalStatus)
-            .put(SetLldpFloodInterval.class, this::setLldpFloodInterval)
-            .put(ChangeOperationalStatus.class, this::changeOperationalStatus)
-            .build());
+        registration = rpcProviderService.registerRpcImplementations(
+            (GetLldpFloodInterval) this::getLldpFloodInterval,
+            (GetOperationalStatus) this::getOperationalStatus,
+            (SetLldpFloodInterval) this::setLldpFloodInterval,
+            (ChangeOperationalStatus) this::changeOperationalStatus);
         LOG.info("LLDPSpeaker started, it will send LLDP frames each {} seconds", LLDP_FLOOD_PERIOD);
     }
 
