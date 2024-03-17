@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.arbitratorreconciliation.im
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -75,7 +74,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -339,11 +337,9 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     private void registerRpc(final DeviceInfo node) {
         final var path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(node.getNodeId()));
         LOG.debug("The path is registered : {}", path);
-        rpcRegistrations.put(node.getNodeId().getValue(), rpcProviderService.registerRpcImplementations(
-            ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-                .put(GetActiveBundle.class, this::getActiveBundle)
-                .put(CommitActiveBundle.class, this::commitActiveBundle)
-                .build(), Set.of(path)));
+        rpcRegistrations.put(node.getNodeId().getValue(), rpcProviderService.registerRpcImplementations(List.of(
+            (GetActiveBundle) this::getActiveBundle,
+            (CommitActiveBundle) this::commitActiveBundle), Set.of(path)));
     }
 
     private void deregisterRpc(final DeviceInfo node) {

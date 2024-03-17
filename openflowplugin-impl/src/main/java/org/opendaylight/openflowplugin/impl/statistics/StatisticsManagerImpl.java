@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableClassToInstanceMap;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,7 +32,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.GetStatisticsWorkModeOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.sm.control.rev150812.StatisticsWorkMode;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -62,10 +60,8 @@ public final class StatisticsManagerImpl implements StatisticsManager {
         this.executor = executor;
         converterExecutor = convertorExecutor;
         controlServiceRegistration = rpcProviderRegistry.registerRpcImplementations(
-            ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(GetStatisticsWorkMode.class, this::getStatisticsWorkMode)
-            .put(ChangeStatisticsWorkMode.class, this::changeStatisticsWorkMode)
-            .build());
+            (GetStatisticsWorkMode) this::getStatisticsWorkMode,
+            (ChangeStatisticsWorkMode) this::changeStatisticsWorkMode);
     }
 
     @VisibleForTesting

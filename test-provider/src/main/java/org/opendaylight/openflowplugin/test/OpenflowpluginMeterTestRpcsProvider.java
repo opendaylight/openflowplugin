@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.collect.ImmutableClassToInstanceMap;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -22,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Rem
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,21 +39,19 @@ public final class OpenflowpluginMeterTestRpcsProvider implements AutoCloseable 
     @Inject
     @Activate
     public OpenflowpluginMeterTestRpcsProvider(@Reference final RpcProviderService rpcRegistry) {
-        meterRegistration = rpcRegistry.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(RemoveMeter.class, input -> {
+        meterRegistration = rpcRegistry.registerRpcImplementations(List.of(
+            (RemoveMeter) input -> {
                 LOG.info("removeMeter - {}", input);
                 return null;
-            })
-            .put(AddMeter.class, input -> {
+            },
+            (AddMeter) input -> {
                 LOG.info("addMeter - {}", input);
                 return null;
-            })
-            .put(UpdateMeter.class, input -> {
+            },
+            (UpdateMeter) input -> {
                 LOG.info("updateMeter - {}", input);
                 return null;
-            })
-            .build(),
-            Set.of(InstanceIdentifier.create(Nodes.class)
+            }), Set.of(InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))));
         LOG.info("SalMeterRpcsProvider Started.");
     }

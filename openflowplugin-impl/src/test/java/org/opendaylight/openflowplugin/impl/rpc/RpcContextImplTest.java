@@ -15,7 +15,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ClassToInstanceMap;
+import java.util.Collection;
 import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +70,7 @@ public class RpcContextImplTest {
     @Mock
     private DeviceFlowRegistry flowRegistry;
     @Captor
-    private ArgumentCaptor<ClassToInstanceMap<Rpc<?, ?>>> captor;
+    private ArgumentCaptor<Collection<Rpc<?, ?>>> captor;
 
     private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
     private RpcContextImpl rpcContext;
@@ -161,7 +161,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testInstantiateServiceInstance() {
-        when(rpcProviderRegistry.registerRpcImplementations(any(),
+        when(rpcProviderRegistry.registerRpcImplementations(any(Collection.class),
             eq(Set.of(nodeInstanceIdentifier)))).thenReturn(registration);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(flowRegistry);
 

@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.rpc;
 
-import com.google.common.collect.ImmutableClassToInstanceMap;
+import com.google.common.collect.ImmutableList;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Set;
@@ -90,50 +90,8 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelay
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleGetNodeConnectorStatistics;
 import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelayer.SingleGetQueueStatistics;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.GetAsync;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.async.config.service.rev170619.SetAsync;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetFlowStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetGroupStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetMeterStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetNodeConnectorStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.direct.statistics.rev160511.GetQueueStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.echo.service.rev150305.SendEcho;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.service.rev151020.SendExperimenter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.mp.message.service.rev151020.SendExperimenterMpRequest;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForAllFlows;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAggregateFlowStatisticsFromFlowTableForGivenMatch;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowStatisticsFromFlowTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetAllFlowsStatisticsFromAllFlowTables;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.GetFlowStatisticsFromFlowTable;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.GetFlowTablesStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.transaction.rev150304.SendBarrier;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroup;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroup;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroup;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetAllGroupStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupDescription;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetAllMeterConfigStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterFeatures;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.service.rev131107.UpdatePort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.GetAllNodeConnectorsStatistics;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromAllPorts;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetAllQueuesStatisticsFromGivenPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.GetQueueStatisticsFromGivenPort;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.Rpc;
@@ -269,37 +227,36 @@ final class RpcContextImpl implements RpcContext {
         // FIXME: Use multipart writer provider from device context
         final var multipartWriterProvider = MultipartWriterProviderFactory.createDefaultProvider(deviceContext);
 
-        final var builder = ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(SendBarrier.class, sendBarrier)
+        final var builder = ImmutableList.<Rpc<?, ?>>builder()
+            .add(sendBarrier)
             // node-config.yang
-            .put(SetConfig.class, new SetConfigImpl(this, deviceContext))
+            .add(new SetConfigImpl(this, deviceContext))
             // packet-processing.yang
-            .put(TransmitPacket.class, new TransmitPacketImpl(this, deviceContext, convertorExecutor))
+            .add(new TransmitPacketImpl(this, deviceContext, convertorExecutor))
             // sal-async-config.yang
-            .put(GetAsync.class, new GetAsyncImpl(this, deviceContext))
-            .put(SetAsync.class, new SetAsyncImpl(this, deviceContext))
+            .add(new GetAsyncImpl(this, deviceContext))
+            .add(new SetAsyncImpl(this, deviceContext))
             // sal-echo.yang
-            .put(SendEcho.class, new SendEchoImpl(this, deviceContext))
-            .put(SendExperimenter.class, sendExperimenter)
+            .add(new SendEchoImpl(this, deviceContext))
+            .add(sendExperimenter)
             // sal-bundle.yang (ONF extension?)
-            .put(ControlBundle.class, new ControlBundleImpl(sendExperimenter))
-            .put(AddBundleMessages.class, new AddBundleMessagesImpl(sendExperimenter))
+            .add(new ControlBundleImpl(sendExperimenter))
+            .add(new AddBundleMessagesImpl(sendExperimenter))
             // sal-experimenter-mp-message.yang
-            .put(SendExperimenterMpRequest.class, new SendExperimenterMpRequestImpl(this, deviceContext,
-                extensionConverterProvider))
-            .put(AddFlow.class, addFlow)
-            .put(RemoveFlow.class, removeFlow)
-            .put(UpdateFlow.class, updateFlow)
-            .put(AddGroup.class, addGroup)
-            .put(RemoveGroup.class, removeGroup)
-            .put(UpdateGroup.class, updateGroup)
-            .put(AddMeter.class, addMeter)
-            .put(RemoveMeter.class, removeMeter)
-            .put(UpdateMeter.class, updateMeter)
+            .add(new SendExperimenterMpRequestImpl(this, deviceContext, extensionConverterProvider))
+            .add(addFlow)
+            .add(removeFlow)
+            .add(updateFlow)
+            .add(addGroup)
+            .add(removeGroup)
+            .add(updateGroup)
+            .add(addMeter)
+            .add(removeMeter)
+            .add(updateMeter)
             // sal-port.yang
-            .put(UpdatePort.class, new UpdatePortImpl(this, deviceContext, convertorExecutor))
+            .add(new UpdatePortImpl(this, deviceContext, convertorExecutor))
             // sal-flat-batch.yang
-            .put(ProcessFlatBatch.class, new ProcessFlatBatchImpl(
+            .add(new ProcessFlatBatchImpl(
                 // sal-flows-batch.yang
                 // FIXME: register these?
                 new AddFlowsBatchImpl(addFlow, sendBarrier),
@@ -316,25 +273,23 @@ final class RpcContextImpl implements RpcContext {
                 new RemoveMetersBatchImpl(removeMeter, sendBarrier),
                 new UpdateMetersBatchImpl(updateMeter, sendBarrier)))
             // sal-table.yang
-            .put(UpdateTable.class, new UpdateTableImpl(this, deviceContext, convertorExecutor,
-                multipartWriterProvider))
+            .add(new UpdateTableImpl(this, deviceContext, convertorExecutor, multipartWriterProvider))
             // opendaylight-flow-statistics.yang
-            .put(GetAggregateFlowStatisticsFromFlowTableForGivenMatch.class,
-                new GetAggregateFlowStatisticsFromFlowTableForGivenMatchImpl(this, deviceContext, convertorExecutor))
+            .add(new GetAggregateFlowStatisticsFromFlowTableForGivenMatchImpl(this, deviceContext, convertorExecutor))
             // opendaylight-direct-statistics.yang
-            .put(GetFlowStatistics.class, singleLayer
+            .add(singleLayer
                 ? new SingleGetFlowStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider)
                 : new MultiGetFlowStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider))
-            .put(GetGroupStatistics.class, singleLayer
+            .add(singleLayer
                 ? new SingleGetGroupStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider)
                 : new MultiGetGroupStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider))
-            .put(GetQueueStatistics.class, singleLayer
+            .add(singleLayer
                 ? new SingleGetQueueStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider)
                 : new MultiGetQueueStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider))
-            .put(GetMeterStatistics.class, singleLayer
+            .add(singleLayer
                 ? new SingleGetMeterStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider)
                 : new MultiGetMeterStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider))
-            .put(GetNodeConnectorStatistics.class, singleLayer
+            .add(singleLayer
                 ? new SingleGetNodeConnectorStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider)
                 : new MultiGetNodeConnectorStatistics(this, deviceContext, convertorExecutor, multipartWriterProvider));
 
@@ -347,64 +302,44 @@ final class RpcContextImpl implements RpcContext {
 
             builder
                 // Legacy RPCs
-                .put(GetAggregateFlowStatisticsFromFlowTableForAllFlows.class,
-                    new GetAggregateFlowStatisticsFromFlowTableForAllFlowsImpl(this, deviceContext, convertorExecutor,
+                .add(new GetAggregateFlowStatisticsFromFlowTableForAllFlowsImpl(this, deviceContext, convertorExecutor,
+                    statsCompatXidSeed, notificationPublishService))
+                .add(new GetAllFlowStatisticsFromFlowTableImpl(this, deviceContext, convertorExecutor,
+                    statsCompatXidSeed, notificationPublishService))
+                .add(new GetAllFlowsStatisticsFromAllFlowTablesImpl(this, deviceContext, convertorExecutor,
                         statsCompatXidSeed, notificationPublishService))
-                .put(GetAllFlowStatisticsFromFlowTable.class,
-                    new GetAllFlowStatisticsFromFlowTableImpl(this, deviceContext, convertorExecutor,
-                        statsCompatXidSeed, notificationPublishService))
-                .put(GetAllFlowsStatisticsFromAllFlowTables.class,
-                    new GetAllFlowsStatisticsFromAllFlowTablesImpl(this, deviceContext, convertorExecutor,
-                        statsCompatXidSeed, notificationPublishService))
-                .put(GetFlowStatisticsFromFlowTable.class,
-                    new GetFlowStatisticsFromFlowTableImpl(this, deviceContext, convertorExecutor, statsCompatXidSeed,
-                        notificationPublishService))
+                .add(new GetFlowStatisticsFromFlowTableImpl(this, deviceContext, convertorExecutor, statsCompatXidSeed,
+                    notificationPublishService))
 
                 // register all statistics (deprecated) services
-                .put(GetFlowTablesStatistics.class,
-                    new GetFlowTablesStatisticsImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService))
-                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.GetGroupStatistics.class,
-                    new GetGroupStatisticsImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(GetAllGroupStatistics.class,
-                    new GetAllGroupStatisticsImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(GetGroupDescription.class,
-                    new GetGroupDescriptionImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(GetGroupFeatures.class,
-                    new GetGroupFeaturesImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.GetMeterStatistics.class,
-                    new GetMeterStatisticsImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111
-                        .GetAllMeterStatistics.class,
-                    new GetAllMeterStatisticsImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(GetAllMeterConfigStatistics.class,
-                    new GetAllMeterConfigStatisticsImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService, convertorExecutor))
-                .put(GetMeterFeatures.class,
-                    new GetMeterFeaturesImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
-                        convertorExecutor))
-                .put(GetQueueStatisticsFromGivenPort.class,
-                    new GetQueueStatisticsFromGivenPortImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService))
-                .put(GetAllQueuesStatisticsFromAllPorts.class,
-                    new GetAllQueuesStatisticsFromAllPortsImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService))
-                .put(GetAllQueuesStatisticsFromGivenPort.class,
-                    new GetAllQueuesStatisticsFromGivenPortImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService))
-                .put(org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214
-                    .GetNodeConnectorStatistics.class,
-                    new GetNodeConnectorStatisticsImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService))
-                .put(GetAllNodeConnectorsStatistics.class,
-                    new GetAllNodeConnectorsStatisticsImpl(this, deviceContext, compatibilityXidSeed,
-                        notificationPublishService));
+                .add(new GetFlowTablesStatisticsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService))
+                .add(new GetGroupStatisticsImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
+                    convertorExecutor))
+                .add(new GetAllGroupStatisticsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService, convertorExecutor))
+                .add(new GetGroupDescriptionImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
+                    convertorExecutor))
+                .add(new GetGroupFeaturesImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
+                    convertorExecutor))
+                .add(new GetMeterStatisticsImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
+                    convertorExecutor))
+                .add(new GetAllMeterStatisticsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService, convertorExecutor))
+                .add(new GetAllMeterConfigStatisticsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService, convertorExecutor))
+                .add(new GetMeterFeaturesImpl(this, deviceContext, compatibilityXidSeed, notificationPublishService,
+                    convertorExecutor))
+                .add(new GetQueueStatisticsFromGivenPortImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService))
+                .add(new GetAllQueuesStatisticsFromAllPortsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService))
+                .add(new GetAllQueuesStatisticsFromGivenPortImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService))
+                .add(new GetNodeConnectorStatisticsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService))
+                .add(new GetAllNodeConnectorsStatisticsImpl(this, deviceContext, compatibilityXidSeed,
+                    notificationPublishService));
         }
 
         rpcRegistration = rpcProviderRegistry.registerRpcImplementations(builder.build(),
