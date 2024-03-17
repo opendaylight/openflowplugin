@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.test;
 
-import com.google.common.collect.ImmutableClassToInstanceMap;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -22,7 +22,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,21 +39,19 @@ public final class OpenflowpluginGroupTestRpcsProvider implements AutoCloseable 
     @Inject
     @Activate
     public OpenflowpluginGroupTestRpcsProvider(@Reference final RpcProviderService rpcRegistry) {
-        groupRegistration = rpcRegistry.registerRpcImplementations(ImmutableClassToInstanceMap.<Rpc<?, ?>>builder()
-            .put(AddGroup.class, input -> {
+        groupRegistration = rpcRegistry.registerRpcImplementations(List.of(
+            (AddGroup) input -> {
                 LOG.info("addGroup - {}", input);
                 return null;
-            })
-            .put(RemoveGroup.class, input -> {
+            },
+            (RemoveGroup) input -> {
                 LOG.info("removeGroup - {}", input);
                 return null;
-            })
-            .put(UpdateGroup.class, input -> {
+            },
+            (UpdateGroup) input -> {
                 LOG.info("updateGroup - {}", input);
                 return null;
-            })
-            .build(),
-            Set.of(InstanceIdentifier.create(Nodes.class)
+            }), Set.of(InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))));
         LOG.info("SalGroupRpcsProvider Started.");
     }
