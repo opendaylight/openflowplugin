@@ -27,9 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  * and application can't do anything with node before the device is not stored in to data store.</b>
  * @since 0.5.0 Nitrogen
  */
-
-public interface ReconciliationFrameworkEvent extends AutoCloseable {
-
+public interface ReconciliationFrameworkEvent {
     /**
      * Event when device is ready as a master but not yet submitted in data store. This event is evoked by
      * {@link OwnershipChangeListener#becomeMasterBeforeSubmittedDS(DeviceInfo)}
@@ -47,6 +45,4 @@ public interface ReconciliationFrameworkEvent extends AutoCloseable {
      * @see MastershipChangeService
      */
     ListenableFuture<Void> onDeviceDisconnected(@NonNull DeviceInfo deviceInfo);
-
-
 }

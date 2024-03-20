@@ -29,7 +29,6 @@ import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeReconciliation;
@@ -66,7 +65,7 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
     private final RpcProviderService rpcProviderService;
 
     private Registration listenerRegistration;
-    private MastershipChangeRegistration mastershipChangeServiceRegistration;
+    private Registration mastershipChangeServiceRegistration;
 
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR", justification = "Non-final for mocking")
     public DeviceMastershipManager(final FlowNodeReconciliation reconcliationAgent,

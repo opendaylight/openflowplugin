@@ -14,8 +14,8 @@ import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeS
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Deprecated
 public class MastershipServiceDelegate implements MastershipChangeService, MastershipChangeRegistration {
-
     private static final Logger LOG = LoggerFactory.getLogger(MastershipServiceDelegate.class);
 
     private final MastershipChangeService service;

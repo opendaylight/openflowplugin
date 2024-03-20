@@ -28,7 +28,6 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMastershipState;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
-import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleContext;
 import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
@@ -89,7 +88,7 @@ public class ContextChainHolderImplTest {
     private OpenflowProviderConfig config;
 
     private ContextChainHolderImpl contextChainHolder;
-    private ReconciliationFrameworkRegistration registration;
+    private Registration registration;
     private final MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
 
     @Before

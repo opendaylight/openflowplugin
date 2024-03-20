@@ -20,11 +20,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
-import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MastershipChangeServiceManagerImplTest {
@@ -43,8 +42,8 @@ public class MastershipChangeServiceManagerImplTest {
     private ReconciliationFrameworkEvent secondEvent;
 
     private final MastershipChangeServiceManager manager = new MastershipChangeServiceManagerImpl();
-    private MastershipChangeRegistration registration;
-    private ReconciliationFrameworkRegistration registrationRF;
+    private Registration registration;
+    private Registration registrationRF;
 
     @Before
     public void setUp() throws Exception {
@@ -61,20 +60,18 @@ public class MastershipChangeServiceManagerImplTest {
 
     @Test
     public void registerTwice() {
-        MastershipChangeRegistration registration2;
-        registration2 = manager.register(secondService);
+        Registration registration2 = manager.register(secondService);
         Assert.assertNotNull(registration);
         Assert.assertNotNull(registration2);
     }
 
     @Test
     public void uregisterTwice() throws Exception {
-        MastershipChangeRegistration registration2;
-        registration2 = manager.register(secondService);
-        Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 2);
-        registration.close();
-        Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 1);
-        registration2.close();
+        try (var registration2 = manager.register(secondService)) {
+            Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 2);
+            registration.close();
+            Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 1);
+        }
         Assert.assertTrue(((MastershipChangeServiceManagerImpl)manager).serviceGroupListSize() == 0);
     }
 
@@ -91,8 +88,7 @@ public class MastershipChangeServiceManagerImplTest {
     @Test
     public void unregosteringRF() throws Exception {
         registrationRF.close();
-        ReconciliationFrameworkRegistration registration1;
-        registration1 = manager.reconciliationFrameworkRegistration(secondEvent);
+        Registration registration1 = manager.reconciliationFrameworkRegistration(secondEvent);
         Assert.assertNotNull(registration1);
     }
 

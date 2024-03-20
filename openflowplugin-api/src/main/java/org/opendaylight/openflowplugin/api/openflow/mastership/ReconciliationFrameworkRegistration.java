@@ -17,5 +17,6 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
  * @see ReconciliationFrameworkEvent
  * @since 0.5.0 Nitrogen
  */
+@Deprecated(forRemoval = true)
 public interface ReconciliationFrameworkRegistration extends AutoCloseable {
 }

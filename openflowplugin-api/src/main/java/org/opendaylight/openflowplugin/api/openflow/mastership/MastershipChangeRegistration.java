@@ -18,5 +18,6 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
  * @see MastershipChangeService
  * @since 0.5.0 Nitrogen
  */
+@Deprecated(forRemoval = true)
 public interface MastershipChangeRegistration extends AutoCloseable {
 }

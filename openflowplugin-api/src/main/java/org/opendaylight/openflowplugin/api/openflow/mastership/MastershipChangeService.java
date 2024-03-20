@@ -23,8 +23,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeLis
  * with the device in both cases.
  * @since 0.5.0 Nitrogen
  */
-public interface MastershipChangeService extends AutoCloseable {
-
+public interface MastershipChangeService {
     /**
      * Event when device is ready as a master. This event is evoked by
      * {@link OwnershipChangeListener#becomeMaster(DeviceInfo)}
@@ -38,5 +37,4 @@ public interface MastershipChangeService extends AutoCloseable {
      * @param deviceInfo connected switch identification
      */
     void onLoseOwnership(@NonNull DeviceInfo deviceInfo);
-
 }

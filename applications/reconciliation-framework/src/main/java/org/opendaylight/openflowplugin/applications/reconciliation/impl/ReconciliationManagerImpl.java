@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.reconciliation.impl;
 
 import com.google.common.collect.ImmutableMap;
@@ -29,11 +28,11 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
-import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -43,7 +42,8 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @Component(service = ReconciliationManager.class, immediate = true)
-public final class ReconciliationManagerImpl implements ReconciliationManager, ReconciliationFrameworkEvent {
+public final class ReconciliationManagerImpl
+        implements ReconciliationManager, ReconciliationFrameworkEvent, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(ReconciliationManagerImpl.class);
 
     private final AtomicReference<ResultState> decidedResultState = new AtomicReference<>(ResultState.DONOTHING);
@@ -51,7 +51,7 @@ public final class ReconciliationManagerImpl implements ReconciliationManager, R
             new ConcurrentSkipListMap<>();
     private final ConcurrentMap<DeviceInfo, ListenableFuture<ResultState>> futureMap = new ConcurrentHashMap<>();
     private final ConcurrentMap<ResultState, Integer> resultStateMap = new ConcurrentHashMap<>();
-    private final ReconciliationFrameworkRegistration reg;
+    private final Registration reg;
 
     @Inject
     @Activate
@@ -64,7 +64,7 @@ public final class ReconciliationManagerImpl implements ReconciliationManager, R
     @PreDestroy
     @Deactivate
     @Override
-    public void close() throws Exception {
+    public void close() {
         reg.close();
         LOG.info("ReconciliationManager stopped");
     }

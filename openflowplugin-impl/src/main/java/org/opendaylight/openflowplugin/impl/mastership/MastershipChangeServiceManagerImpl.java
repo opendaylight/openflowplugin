@@ -7,6 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.mastership;
 
+import static java.util.Objects.requireNonNull;
 import static org.opendaylight.infrautils.utils.concurrent.LoggingFutures.addErrorLogging;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -21,12 +22,12 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.lifecycle.MasterChecker;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
-import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeRegistration;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkEvent;
-import org.opendaylight.openflowplugin.api.openflow.mastership.ReconciliationFrameworkRegistration;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.concepts.AbstractRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -35,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @Component(immediate = true)
-public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager {
+public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);
 
     private final List<MastershipChangeService> serviceGroup = new CopyOnWriteArrayList<>();
@@ -57,9 +58,15 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public MastershipChangeRegistration register(final MastershipChangeService service) {
-        final var registration = new MastershipServiceDelegate(service, () -> serviceGroup.remove(service));
-        serviceGroup.add(service);
+    public Registration register(final MastershipChangeService service) {
+        serviceGroup.add(requireNonNull(service));
+        final var registration = new AbstractRegistration() {
+            @Override
+            protected void removeRegistration() {
+                serviceGroup.remove(service);
+            }
+        };
+
         if (masterChecker != null && masterChecker.isAnyDeviceMastered()) {
             masterChecker.listOfMasteredDevices().forEach(service::onBecomeOwner);
         }
@@ -67,13 +74,20 @@ public final class MastershipChangeServiceManagerImpl implements MastershipChang
     }
 
     @Override
-    public ReconciliationFrameworkRegistration reconciliationFrameworkRegistration(
+    public synchronized Registration reconciliationFrameworkRegistration(
             final ReconciliationFrameworkEvent reconciliationFrameworkEvent) throws MastershipChangeException {
         if (rfService != null) {
             throw new MastershipChangeException("Reconciliation framework already registered.");
         }
-        rfService = reconciliationFrameworkEvent;
-        return new ReconciliationFrameworkServiceDelegate(reconciliationFrameworkEvent, () -> rfService = null);
+        rfService = requireNonNull(reconciliationFrameworkEvent);
+        return new AbstractRegistration() {
+            @Override
+            protected void removeRegistration() {
+                synchronized (MastershipChangeServiceManagerImpl.this) {
+                    rfService = null;
+                }
+            }
+        };
     }
 
     @Override
