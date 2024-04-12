@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
 import static org.opendaylight.openflowplugin.applications.frm.util.FrmUtil.OPENFLOW_PREFIX;
+import static org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil.LINE_SEPARATOR;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -15,33 +16,34 @@ import java.util.Collection;
 import java.util.Formatter;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfo;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 
+@Service
 @Command(scope = "openflow", name = "getflownodecache", description = "Print all flow/group cache")
-public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
-    // FIXME: use String.repeat(), this does look arbitrary
-    private static final String LINE_SEPARATOR =
-        "--------------------------------------------------------------------------------------------------------------"
-        + "------------------------------";
-
+public final class GetFlowGroupCacheCommand implements Action {
     @Option(name = "-d", description = "Node Id")
     String dpnId;
 
-    private final FlowGroupInfoHistories histories;
-
-    public GetFlowGroupCacheProvider(final FlowGroupInfoHistories histories) {
-        this.histories = histories;
-    }
+    @Reference
+    Session session;
+    @Reference
+    FlowGroupInfoHistories histories;
 
     @Override
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    protected Object doExecute() {
+    public Object execute() {
+        if (histories == null) {
+            // not initialized
+            return null;
+        }
         if (dpnId == null) {
             printAllNodes();
             return null;
@@ -61,14 +63,14 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
 
         StringBuilder sb = new StringBuilder();
         Formatter fmt = new Formatter(sb);
-        System.out.println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
+        session.getConsole().println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
             entries.size()));
-        System.out.println(getLocalNodeHeaderOutput());
-        System.out.println(LINE_SEPARATOR);
+        session.getConsole().println(getLocalNodeHeaderOutput());
+        session.getConsole().println(LINE_SEPARATOR);
 
         for (FlowGroupInfo entry : entries) {
-            System.out.println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", entry.getDescription(), "",
-                entry.getStatus(), "", getTime(entry), "", entry.getId()).toString());
+            session.getConsole().println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", entry.getDescription(), "",
+                entry.getStatus(), "", getTime(entry), "", entry.getId()));
             sb.setLength(0);
         }
         fmt.close();
@@ -89,14 +91,14 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
 
         StringBuilder sb = new StringBuilder();
         Formatter fmt = new Formatter(sb);
-        System.out.println(getAllLocalNodesHeaderOutput());
-        System.out.println(LINE_SEPARATOR);
+        session.getConsole().println(getAllLocalNodesHeaderOutput());
+        session.getConsole().println(LINE_SEPARATOR);
         for (Entry<NodeId, FlowGroupInfoHistory> entry : allHistories.entrySet()) {
             // FIXME: just seek/substring
             String[] temp = entry.getKey().getValue().split(":");
             String node = temp[1];
             for (FlowGroupInfo info : entry.getValue().readEntries()) {
-                System.out.println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
+                session.getConsole().println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
                     info.getDescription(), "", info.getStatus(), "", getTime(info), "", info.getId()).toString());
                 sb.setLength(0);
             }

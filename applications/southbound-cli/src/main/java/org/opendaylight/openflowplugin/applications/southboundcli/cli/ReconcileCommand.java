@@ -7,30 +7,34 @@
  */
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
+import static org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil.LINE_SEPARATOR;
+
 import java.util.Formatter;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import org.apache.karaf.shell.commands.Argument;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.applications.southboundcli.ReconcileService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconcileOutput;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Service
 @Command(scope = "openflow", name = "reconcile", description = "Launch reconciliation for openflow nodes")
-public class Reconciliation extends OsgiCommandSupport {
-    private static final Logger LOG = LoggerFactory.getLogger(Reconciliation.class);
-
-    private ReconcileService reconciliationService = null;
-
-    public void setReconciliationService(final ReconcileService reconciliationService) {
-        this.reconciliationService = reconciliationService;
-    }
+public final class ReconcileCommand implements Action {
+    private static final Logger LOG = LoggerFactory.getLogger(ReconcileCommand.class);
+    @Reference
+    Session session;
+    @Reference
+    ReconcileService reconciliationService = null;
 
     @Argument(name = "nodeId", description = "The NODE Id", multiValued = true)
     List<Long> nodeIds;
@@ -38,9 +42,13 @@ public class Reconciliation extends OsgiCommandSupport {
     @Option(name = "-all", description = "Reconcile all operative NODEs")
     boolean reconcileAllNodes;
 
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
+        if (reconciliationService == null) {
+            // not initialized
+            return null;
+        }
+
         final var nodes = nodeIds == null ? Set.<Uint64>of()
             : nodeIds.stream().map(Uint64::valueOf).collect(Collectors.toSet());
         final var rpcOutput = reconcileAllNodes ? reconciliationService.reconcileAll()
@@ -49,10 +57,10 @@ public class Reconciliation extends OsgiCommandSupport {
         try {
             final var rpcResult = rpcOutput.get();
             if (rpcResult.isSuccessful()) {
-                System.out.println("Reconciliation triggered for the node(s)");
+                session.getConsole().println("Reconciliation triggered for the node(s)");
                 printInProgressNodes(rpcResult.getResult());
             } else {
-                System.out.println(rpcResult.getErrors().stream().findFirst().orElseThrow().getMessage());
+                session.getConsole().println(rpcResult.getErrors().stream().findFirst().orElseThrow().getMessage());
             }
         } catch (ExecutionException e) {
             LOG.error("Error occurred while invoking reconcile RPC for node {}", nodes, e);
@@ -60,16 +68,15 @@ public class Reconciliation extends OsgiCommandSupport {
         return null;
     }
 
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
-    private static void printInProgressNodes(final ReconcileOutput reconcileOutput) {
+    private void printInProgressNodes(final ReconcileOutput reconcileOutput) {
         final var inprogressNodes = reconcileOutput.getInprogressNodes();
         if (inprogressNodes.size() > 0) {
             final var stringBuilder = new StringBuilder();
             try (var formatter = new Formatter(stringBuilder)) {
-                System.out.println(getReconcileHeaderOutput());
-                System.out.println("----------------------------------------------------");
+                session.getConsole().println(getReconcileHeaderOutput());
+                session.getConsole().println(LINE_SEPARATOR);
                 for (Uint64 node : inprogressNodes) {
-                    System.out.println(formatter.format("%-15s %n",node).toString());
+                    session.getConsole().println(formatter.format("%-15s %n",node));
                     stringBuilder.setLength(0);
                 }
             }

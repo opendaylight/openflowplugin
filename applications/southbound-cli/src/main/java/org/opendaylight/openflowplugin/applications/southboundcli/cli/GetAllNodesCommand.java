@@ -7,38 +7,45 @@
  */
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
-import static java.util.Objects.requireNonNull;
+import static org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil.LINE_SEPARATOR;
 
 import java.util.Formatter;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.applications.southboundcli.DpnTracker;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 
+@Service
 @Command(scope = "openflow", name = "getallnodes", description = "Print all nodes from the operational datastore")
-public class GetAllNodesCommandProvider extends OsgiCommandSupport {
-    private final DpnTracker dpnTracker;
+public final class GetAllNodesCommand implements Action {
+    @Reference
+    Session session;
+    @Reference
+    DpnTracker dpnTracker;
 
-    public GetAllNodesCommandProvider(final DpnTracker dpnTracker) {
-        this.dpnTracker = requireNonNull(dpnTracker);
-    }
-
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
+        if (dpnTracker == null) {
+            // not initialized
+            return null;
+        }
+
         final var ofNodeList = dpnTracker.currentNodes();
         if (ofNodeList.isEmpty()) {
-            System.out.println("No node is connected yet");
+            session.getConsole().println("No node is connected yet");
             return null;
         }
 
         final var stringBuilder = new StringBuilder();
         try (var formatter = new Formatter(stringBuilder)) {
-            System.out.println("Number of nodes: " + ofNodeList.size());
-            System.out.println(getAllLocalNodesHeaderOutput());
-            System.out.println("--------------------------------------------------------------------------");
+            session.getConsole().println("Number of nodes: " + ofNodeList.size());
+            session.getConsole().println(getAllLocalNodesHeaderOutput());
+            session.getConsole().println(LINE_SEPARATOR);
             for (OFNode ofNode : ofNodeList) {
-                System.out.println(formatter.format("%-15s %3s %-15s %n",
+                session.getConsole().println(formatter.format("%-15s %3s %-15s %n",
                     ofNode.getNodeId(), "", ofNode.getNodeName()).toString());
                 stringBuilder.setLength(0);
             }

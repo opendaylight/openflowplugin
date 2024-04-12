@@ -7,22 +7,32 @@
  */
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
+import static org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil.LINE_SEPARATOR;
+
 import java.util.ArrayList;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.applications.frm.ReconciliationJMXServiceMBean;
 
+@Service
 @Command(scope = "openflow", name = "getreconciliationstate",
         description = "Print reconciliation state for all devices")
-public class GetReconciliationStateProvider extends OsgiCommandSupport {
-    private final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean;
-
-    public GetReconciliationStateProvider(final ReconciliationJMXServiceMBean reconciliationJMXServiceMBean) {
-        this.reconciliationJMXServiceMBean = reconciliationJMXServiceMBean;
-    }
+public final class GetReconciliationStateCommand implements Action {
+    @Reference
+    Session session;
+    @Reference
+    ReconciliationJMXServiceMBean reconciliationJMXServiceMBean;
 
     @Override
-    protected Object doExecute() {
+    public Object execute() {
+        if (reconciliationJMXServiceMBean == null) {
+            // not initialized
+            return null;
+        }
+
         final var reconciliationStates  = reconciliationJMXServiceMBean.acquireReconciliationStates();
         if (!reconciliationStates.isEmpty()) {
             final var result = new ArrayList<String>();
@@ -31,7 +41,7 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
                 result.add(status);
             });
             session.getConsole().println(getHeaderOutput());
-            session.getConsole().println(getLineSeparator());
+            session.getConsole().println(LINE_SEPARATOR);
             result.stream().forEach(p -> session.getConsole().println(p));
         } else {
             session.getConsole().println("Reconciliation data not available");
@@ -41,9 +51,5 @@ public class GetReconciliationStateProvider extends OsgiCommandSupport {
 
     private static String getHeaderOutput() {
         return String.format("%-17s %-25s %-25s", "DatapathId", "Reconciliation Status", "Reconciliation Time");
-    }
-
-    private static String getLineSeparator() {
-        return "-------------------------------------------------------------------";
     }
 }

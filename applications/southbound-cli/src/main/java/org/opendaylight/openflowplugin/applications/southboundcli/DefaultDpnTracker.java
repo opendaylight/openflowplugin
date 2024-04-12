@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Component(service = DpnTracker.class)
+@Component(service = DpnTracker.class, immediate = true)
 public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListener<FlowCapableNode>, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultDpnTracker.class);
     public static final String DEFAULT_DPN_NAME = "UNKNOWN";

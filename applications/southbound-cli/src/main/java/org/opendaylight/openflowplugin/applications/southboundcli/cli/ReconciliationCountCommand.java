@@ -8,40 +8,43 @@
 
 package org.opendaylight.openflowplugin.applications.southboundcli.cli;
 
-import java.util.Collection;
 import java.util.Formatter;
-import org.apache.karaf.shell.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.ShellUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 
+@Service
 @Command(scope = "openflow", name = "getReconciliationCount",
         description = "Displays the number of reconciliation triggered for openflow nodes")
-public class ReconciliationCount extends OsgiCommandSupport {
+public final class ReconciliationCountCommand implements Action {
+    @Reference
+    Session session;
+    @Reference
+    DataBroker dataBroker;
 
-    private DataBroker dataBroker;
-
-    public void setDataBroker(final DataBroker dataBroker) {
-        this.dataBroker = dataBroker;
-    }
-
-    @SuppressWarnings("checkstyle:RegexpSinglelineJava")
     @Override
-    protected Object doExecute() {
-        Collection<ReconcileCounter> result = ShellUtil.getReconcileCount(dataBroker);
+    public Object execute() {
+        if (dataBroker == null) {
+            // not initialized
+            return null;
+        }
+        final var result = ShellUtil.getReconcileCount(dataBroker);
         if (result.isEmpty()) {
-            System.out.println("Reconciliation count not yet available for openflow nodes.");
+            session.getConsole().println("Reconciliation count not yet available for openflow nodes.");
         } else {
             StringBuilder stringBuilder = new StringBuilder();
             final Formatter formatter = new Formatter(stringBuilder);
-            System.out.println(getReconcileCountHeaderOutput());
-            System.out.println("--------------------------------------------------------------------------"
-                    + "---------------------------");
+            session.getConsole().println(getReconcileCountHeaderOutput());
+            session.getConsole().println("-".repeat(100));
             for (ReconcileCounter reconcile : result) {
-                System.out.println(formatter.format("%-15s %3s %-15s %9s %-20s %4s %-20s %n",
+                session.getConsole().println(formatter.format("%-15s %3s %-15s %9s %-20s %4s %-20s %n",
                         reconcile.getNodeId(), "", reconcile.getSuccessCount(), "", reconcile.getFailureCount(), "",
-                        reconcile.getLastRequestTime().getValue()).toString());
+                        reconcile.getLastRequestTime().getValue()));
                 stringBuilder.setLength(0);
             }
             formatter.close();

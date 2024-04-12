@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 public final class ShellUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ShellUtil.class);
 
+    public static final String LINE_SEPARATOR = "-".repeat(100);
     public static final String NODE_PREFIX = "openflow:";
 
     private ShellUtil() {
