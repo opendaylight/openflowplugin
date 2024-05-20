@@ -16,6 +16,7 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
+import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
@@ -57,6 +58,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.queue.property.header.QueueProperty;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.table.features.properties.grouping.TableFeatureProperties;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,10 +73,17 @@ import org.slf4j.LoggerFactory;
  * @author mirehak
  * @author michal.polkorab
  */
+@Component(service = SwitchConnectionProvider.class, factory = SwitchConnectionProviderImpl.FACTORY_NAME)
 public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderImpl.class);
+
     private static final String THREAD_NAME_PREFIX = "OFP-SwitchConnectionProvider-Udp/TcpHandler";
     private static final String OPENFLOW_JAVA_SERVICE_NAME_PREFIX = "OPENFLOW_SERVER";
+
+    // OSGi DS Component Factory name
+    public static final String FACTORY_NAME =
+        "org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl";
+    public static final String PROP_CONFIG = ".config";
 
     private SwitchConnectionHandler switchConnectionHandler;
     private ServerFacade serverFacade;
@@ -105,6 +118,17 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         deserializerRegistry = new DeserializerRegistryImpl();
         deserializerRegistry.init();
         deserializationFactory = new DeserializationFactory(deserializerRegistry);
+    }
+
+    @Activate
+    public SwitchConnectionProviderImpl(@Reference final DiagStatusService diagStatus,
+            final Map<String, Object> props) {
+        this(diagStatus, new ConnectionConfigurationImpl((SwitchConnectionConfig) props.get(PROP_CONFIG)));
+    }
+
+    @Deactivate
+    void deactivate() {
+        diagReg.close();
     }
 
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
