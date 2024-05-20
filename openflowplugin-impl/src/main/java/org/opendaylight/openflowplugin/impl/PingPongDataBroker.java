@@ -7,13 +7,32 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
+import static java.util.Objects.requireNonNull;
+
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.TransactionChain;
+import org.opendaylight.mdsal.binding.spi.ForwardingDataBroker;
 
 /**
- * An <code>odl:type="pingpong"</code> {@link DataBroker}.
+ * A {@link DataBroker} implementation which always creates merging transaction chains.
  *
  * @author Michael Vorburger.ch
  */
-public interface PingPongDataBroker extends DataBroker {
+final class PingPongDataBroker extends ForwardingDataBroker {
+    private final @NonNull DataBroker delegate;
 
+    PingPongDataBroker(final DataBroker delegate) {
+        this.delegate = requireNonNull(delegate);
+    }
+
+    @Override
+    protected DataBroker delegate() {
+        return delegate;
+    }
+
+    @Override
+    public TransactionChain createTransactionChain() {
+        return delegate.createMergingTransactionChain();
+    }
 }
