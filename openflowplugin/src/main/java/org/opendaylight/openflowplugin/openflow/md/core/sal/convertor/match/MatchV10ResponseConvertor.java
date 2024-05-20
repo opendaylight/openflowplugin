@@ -65,9 +65,6 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
     public MatchBuilder convert(final MatchV10 source, final VersionDatapathIdConvertorData datapathIdConvertorData) {
         MatchBuilder matchBuilder = new MatchBuilder();
         EthernetMatchBuilder ethMatchBuilder = new EthernetMatchBuilder();
-        VlanMatchBuilder vlanMatchBuilder = new VlanMatchBuilder();
-        Ipv4MatchBuilder ipv4MatchBuilder = new Ipv4MatchBuilder();
-        IpMatchBuilder ipMatchBuilder = new IpMatchBuilder();
         OpenflowVersion ofVersion = OpenflowVersion.get(datapathIdConvertorData.getVersion());
         Uint64 datapathid = datapathIdConvertorData.getDatapathId();
 
@@ -95,6 +92,8 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
             ethMatchBuilder.setEthernetType(ethTypeBuilder.build());
             matchBuilder.setEthernetMatch(ethMatchBuilder.build());
         }
+
+        final var vlanMatchBuilder = new VlanMatchBuilder();
         if (!source.getWildcards().getDLVLAN() && source.getDlVlan() != null) {
             Uint16 vlanId = source.getDlVlan();
             if (vlanId.toJava() == 0xffff) {
@@ -112,6 +111,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                     source.getDlVlanPcp()));
             matchBuilder.setVlanMatch(vlanMatchBuilder.build());
         }
+        final var ipv4MatchBuilder = new Ipv4MatchBuilder();
         if (!source.getWildcards().getDLTYPE() && source.getNwSrc() != null) {
             final Ipv4Prefix prefix;
             if (source.getNwSrcMask() != null) {
@@ -144,6 +144,7 @@ public class MatchV10ResponseConvertor extends Convertor<MatchV10, MatchBuilder,
                 matchBuilder.setLayer3Match(ipv4MatchBuilder.build());
             }
         }
+        final var ipMatchBuilder = new IpMatchBuilder();
         if (!source.getWildcards().getNWPROTO() && source.getNwProto() != null) {
             Uint8 nwProto = source.getNwProto();
             ipMatchBuilder.setIpProtocol(nwProto);
