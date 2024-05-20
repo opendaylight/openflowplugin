@@ -166,7 +166,6 @@ public abstract class BitBufferHelper {
     public static byte @NonNull [] getBits(final byte[] data, final int startOffset, final int numBits)
             throws BufferException {
         int startByteOffset;
-        int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         final int extraOffsetBits = startOffset % NetUtils.NUM_BITS_IN_A_BYTE;
         int numBytes = numBits % NetUtils.NUM_BITS_IN_A_BYTE != 0 ? 1 + numBits / NetUtils.NUM_BITS_IN_A_BYTE
                 : numBits / NetUtils.NUM_BITS_IN_A_BYTE;
@@ -178,6 +177,7 @@ public abstract class BitBufferHelper {
 
         checkExceptions(data, startOffset, numBits);
 
+        final int extranumBits = numBits % NetUtils.NUM_BITS_IN_A_BYTE;
         if (extraOffsetBits == 0) {
             if (extranumBits == 0) {
                 System.arraycopy(data, startByteOffset, bytes, 0, numBytes);
@@ -539,9 +539,8 @@ public abstract class BitBufferHelper {
     public static byte[] shiftBitsToMSB(final byte[] inputBytes, final int numBits) {
         int numBitstoShiftBy;
         int leadZeroesMSB = 8;
-        int numEndRestBits;
         int size = inputBytes.length;
-        byte[] shiftedBytes = new byte[size];
+        final byte[] shiftedBytes = new byte[size];
 
         for (int i = 0; i < Byte.SIZE; i++) {
             if ((byte) (inputBytes[0] & getMSBMask(i + 1)) != 0) {
@@ -565,7 +564,7 @@ public abstract class BitBufferHelper {
             shiftedBytes[0] = (byte) ((inputBytes[0] & getLSBMask(numBits)) << numBitstoShiftBy);
         } else {
             // # of bits to read from last byte
-            numEndRestBits = NetUtils.NUM_BITS_IN_A_BYTE
+            final int numEndRestBits = NetUtils.NUM_BITS_IN_A_BYTE
                     - (inputBytes.length * NetUtils.NUM_BITS_IN_A_BYTE - numBits - numBitstoShiftBy);
 
             for (int i = 0; i < size - 1; i++) {

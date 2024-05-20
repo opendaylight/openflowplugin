@@ -80,7 +80,7 @@ public class QueueGetConfigReplyMessageFactory implements OFDeserializer<GetQueu
         int propertiesLength = length;
         List<QueueProperty> propertiesList = new ArrayList<>();
         while (propertiesLength > 0) {
-            int propertyStartIndex = input.readerIndex();
+            final int propertyStartIndex = input.readerIndex();
             QueuePropertyBuilder propertiesBuilder = new QueuePropertyBuilder();
             QueueProperties property = QueueProperties.forValue(input.readUnsignedShort());
             propertiesBuilder.setProperty(property);
