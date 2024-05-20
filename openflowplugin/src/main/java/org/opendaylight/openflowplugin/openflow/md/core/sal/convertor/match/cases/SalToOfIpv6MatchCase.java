@@ -99,17 +99,19 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
 
         if (source.getIpv6Label() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            boolean hasmask = false;
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
             matchEntryBuilder.setOxmMatchField(Ipv6Flabel.VALUE);
             Ipv6FlabelCaseBuilder ipv6FlabelCaseBuilder = new Ipv6FlabelCaseBuilder();
             Ipv6FlabelBuilder ipv6FlabelBuilder = new Ipv6FlabelBuilder();
             ipv6FlabelBuilder.setIpv6Flabel(source.getIpv6Label().getIpv6Flabel());
 
+            final boolean hasmask;
             if (source.getIpv6Label().getFlabelMask() != null) {
                 hasmask = true;
                 ipv6FlabelBuilder.setMask(ByteUtil.unsignedIntToBytes(
                         source.getIpv6Label().getFlabelMask().getValue()));
+            } else {
+                hasmask = false;
             }
 
             ipv6FlabelCaseBuilder.setIpv6Flabel(ipv6FlabelBuilder.build());
@@ -165,7 +167,6 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
 
         if (source.getIpv6ExtHeader() != null) {
             MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-            boolean hasmask = false;
             matchEntryBuilder.setOxmClass(OpenflowBasicClass.VALUE);
             matchEntryBuilder.setOxmMatchField(Ipv6Exthdr.VALUE);
             Ipv6ExthdrCaseBuilder ipv6ExthdrCaseBuilder = new Ipv6ExthdrCaseBuilder();
@@ -174,9 +175,12 @@ public class SalToOfIpv6MatchCase extends ConvertorCase<Ipv6Match, List<MatchEnt
             int bitmap = source.getIpv6ExtHeader().getIpv6Exthdr().toJava();
             ipv6ExthdrBuilder.setPseudoField(makeIpv6ExthdrFlags(bitmap));
 
+            final boolean hasmask;
             if (source.getIpv6ExtHeader().getIpv6ExthdrMask() != null) {
                 hasmask = true;
                 ipv6ExthdrBuilder.setMask(ByteUtil.unsignedShortToBytes(source.getIpv6ExtHeader().getIpv6ExthdrMask()));
+            } else {
+                hasmask = false;
             }
 
             ipv6ExthdrCaseBuilder.setIpv6Exthdr(ipv6ExthdrBuilder.build());

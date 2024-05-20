@@ -116,9 +116,6 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
     private GroupBuilder createTestGroup(String actionType, String groupType, final String groupMod) {
         // Sample data , committing to DataStore
 
-        GroupBuilder group = new GroupBuilder();
-        BucketBuilder bucket = new BucketBuilder().withKey(new BucketKey(new BucketId(Uint32.valueOf(12))));
-
         if (groupType == null) {
             groupType = "g1";
         }
@@ -126,6 +123,7 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
             actionType = "a1";
         }
 
+        final var group = new GroupBuilder();
         switch (groupType) {
             case "g1":
                 group.setGroupType(GroupTypes.GroupSelect);
@@ -143,6 +141,7 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
                 break;
         }
 
+        final var bucket = new BucketBuilder().withKey(new BucketKey(new BucketId(Uint32.valueOf(12))));
         switch (actionType) {
             case "a1":
                 bucket.setAction(createPopVlanAction());
