@@ -1,26 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
-  <reference id="switchConnectionProviderFactory" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderFactory"/>
   <!-- Create OF switch connection provider on port 6653 (default) -->
   <odl:clustered-app-config id="defaultSwitchConnConfig" default-config-file-name="default-openflow-connection-config.xml"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig"
       list-key-value="openflow-switch-connection-provider-default-impl">
   </odl:clustered-app-config>
-  <bean id="defaultSwitchConnProvider" factory-ref="switchConnectionProviderFactory" factory-method="newInstance">
-    <argument ref="defaultSwitchConnConfig"/>
-  </bean>
-  <service ref="defaultSwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
-          odl:type="openflow-switch-connection-provider-default-impl"/>
 
   <!-- Create OF switch connection provider on port 6633 (legacy) -->
   <odl:clustered-app-config id="legacySwitchConnConfig" default-config-file-name="legacy-openflow-connection-config.xml"
       binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig"
       list-key-value="openflow-switch-connection-provider-legacy-impl">
   </odl:clustered-app-config>
-  <bean id="legacySwitchConnProvider" factory-ref="switchConnectionProviderFactory" factory-method="newInstance">
-    <argument ref="legacySwitchConnConfig"/>
-  </bean>
-  <service ref="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
-          odl:type="openflow-switch-connection-provider-legacy-impl"/>
 </blueprint>
