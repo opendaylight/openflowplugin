@@ -13,8 +13,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +28,6 @@ import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -108,7 +107,7 @@ public class OpenFlowPluginProviderImplTest {
     public void testInitializeAndClose() {
         final OpenFlowPluginProviderImpl provider = new OpenFlowPluginProviderImpl(
                 configurationService,
-                new SwitchConnectionProviderList(Lists.newArrayList(switchConnectionProvider)),
+                List.of(switchConnectionProvider),
                 dataBroker,
                 rpcProviderRegistry,
                 notificationPublishService,

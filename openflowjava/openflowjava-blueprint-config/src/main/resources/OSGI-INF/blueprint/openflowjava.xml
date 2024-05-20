@@ -23,14 +23,4 @@
   </bean>
   <service ref="legacySwitchConnProvider" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
           odl:type="openflow-switch-connection-provider-legacy-impl"/>
-
-  <bean id="switchConnectionProviders" class="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList">
-      <argument>
-          <list>
-              <ref component-id="defaultSwitchConnProvider"/>
-              <ref component-id="legacySwitchConnProvider"/>
-          </list>
-      </argument>
-  </bean>
-  <service ref="switchConnectionProviders" interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList"/>
 </blueprint>
