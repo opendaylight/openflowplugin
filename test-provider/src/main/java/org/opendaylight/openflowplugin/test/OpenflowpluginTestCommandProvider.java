@@ -2607,9 +2607,7 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
         int numberOfSwtiches = 0;
         int numberOfFlows = 0;
         int warmupIterations = 0;
-        boolean warmUpIterations = false;
 
-        int threadCount = 0;
         if (numberOfSwtichesStr != null && !numberOfSwtichesStr.trim().equals("")) {
             numberOfSwtiches = Integer.parseInt(numberOfSwtichesStr);
         } else {
@@ -2628,16 +2626,20 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider {
             warmupIterations = 2;
         }
 
+        final int threadCount;
         if (threadCountStr != null && !threadCountStr.trim().equals("")) {
             threadCount = Integer.parseInt(threadCountStr);
         } else {
             threadCount = 2;
         }
+
+        final boolean warmUpIterations;
         if (warmUpStr != null && !warmUpStr.trim().equals("") && warmUpStr.trim().equals("true")) {
             warmUpIterations = true;
         } else {
             warmUpIterations = false;
         }
+
         ci.println("*     Test Configurations*");
         ci.println("*     numberOfSwtiches:::" + numberOfSwtiches + "");
         ci.println("*     numberOfFlows:::" + numberOfFlows + "");

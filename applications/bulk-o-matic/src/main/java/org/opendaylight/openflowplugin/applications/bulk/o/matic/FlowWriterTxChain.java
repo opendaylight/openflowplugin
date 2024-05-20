@@ -110,15 +110,15 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         @Override
         public void run() {
             writeOpStatus.set(FlowCounter.OperationStatus.IN_PROGRESS.status());
-            short tableId = startTableId;
-            int numSubmits = flowsPerDpn / batchSize;
-            int sourceIp = 1;
-            int newBatchSize = batchSize;
+            final int numSubmits = flowsPerDpn / batchSize;
             LOG.info("Number of Txn for dpId: {} is: {}", dpId, numSubmits);
 
             txChain = dataBroker.createMergingTransactionChain(this);
             LOG.info("Creating new txChain: {} for dpid: {}", txChain, dpId);
 
+            short tableId = startTableId;
+            int sourceIp = 1;
+            int newBatchSize = batchSize;
             for (int i = 1; i <= numSubmits; i++) {
                 WriteTransaction writeTransaction = txChain.newWriteOnlyTransaction();
                 short calculatedTableId = tableId;

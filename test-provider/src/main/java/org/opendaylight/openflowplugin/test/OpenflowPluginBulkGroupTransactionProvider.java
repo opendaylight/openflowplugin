@@ -635,7 +635,6 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             final String strId) {
         // Sample data , committing to DataStore
 
-        GroupBuilder group = new GroupBuilder();
         BucketBuilder bucket = new BucketBuilder();
         bucket.withKey(new BucketKey(new BucketId(Uint32.valueOf(12))));
 
@@ -646,6 +645,7 @@ public class OpenflowPluginBulkGroupTransactionProvider implements CommandProvid
             actionType = "a1";
         }
 
+        final var group = new GroupBuilder();
         switch (groupType) {
             case "g1":
                 group.setGroupType(GroupTypes.GroupSelect);

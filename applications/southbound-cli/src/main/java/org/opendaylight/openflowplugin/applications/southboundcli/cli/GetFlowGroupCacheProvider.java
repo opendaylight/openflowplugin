@@ -59,13 +59,13 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
-        Formatter fmt = new Formatter(sb);
         System.out.println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
             entries.size()));
         System.out.println(getLocalNodeHeaderOutput());
         System.out.println(LINE_SEPARATOR);
 
+        StringBuilder sb = new StringBuilder();
+        Formatter fmt = new Formatter(sb);
         for (FlowGroupInfo entry : entries) {
             System.out.println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", entry.getDescription(), "",
                 entry.getStatus(), "", getTime(entry), "", entry.getId()).toString());
@@ -87,10 +87,10 @@ public class GetFlowGroupCacheProvider extends OsgiCommandSupport {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        Formatter fmt = new Formatter(sb);
         System.out.println(getAllLocalNodesHeaderOutput());
         System.out.println(LINE_SEPARATOR);
+        StringBuilder sb = new StringBuilder();
+        Formatter fmt = new Formatter(sb);
         for (Entry<NodeId, FlowGroupInfoHistory> entry : allHistories.entrySet()) {
             // FIXME: just seek/substring
             String[] temp = entry.getKey().getValue().split(":");
