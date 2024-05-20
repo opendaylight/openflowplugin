@@ -159,7 +159,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     private ServerFacade createAndConfigureServer() {
         LOG.debug("Configuring ..");
-        ServerFacade server;
 
         checkState(connConfig != null, "Connection not configured");
 
@@ -176,6 +175,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         // TODO : Add option to disable Epoll.
         boolean isEpollEnabled = Epoll.isAvailable();
 
+        final ServerFacade server;
         if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
             server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),
                 () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));

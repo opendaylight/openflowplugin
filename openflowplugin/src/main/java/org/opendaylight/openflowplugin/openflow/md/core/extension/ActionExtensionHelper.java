@@ -34,7 +34,6 @@ public final class ActionExtensionHelper {
     public static org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action
             processAlienAction(final Action action, final OpenflowVersion ofVersion, final ActionPath actionPath) {
         ConvertorActionFromOFJava<Action, ActionPath> convertor = null;
-        org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action alienAction = null;
         final ExtensionConverterProvider extensionConvertorProvider = OFSessionUtil.getExtensionConvertorProvider();
 
         if (extensionConvertorProvider == null) {
@@ -58,10 +57,6 @@ public final class ActionExtensionHelper {
             convertor = extensionConvertorProvider.getActionConverter(key);
         }
 
-        if (convertor != null) {
-            alienAction = convertor.convert(action, actionPath);
-        }
-
-        return alienAction;
+        return convertor != null ? convertor.convert(action, actionPath) : null;
     }
 }
