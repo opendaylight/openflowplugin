@@ -136,7 +136,7 @@ public class OpenFlowPluginProviderImpl implements
     @Inject
     public OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
                                final List<SwitchConnectionProvider> switchConnectionProviders,
-                               final PingPongDataBroker pingPongDataBroker,
+                               final DataBroker dataBroker,
                                final RpcProviderService rpcProviderRegistry,
                                final NotificationPublishService notificationPublishService,
                                final ClusterSingletonServiceProvider singletonServiceProvider,
@@ -145,7 +145,7 @@ public class OpenFlowPluginProviderImpl implements
                                final DiagStatusProvider diagStatusProvider,
                                final SystemReadyMonitor systemReadyMonitor) {
         this.switchConnectionProviders = switchConnectionProviders;
-        dataBroker = pingPongDataBroker;
+        this.dataBroker = new PingPongDataBroker(dataBroker);
         this.rpcProviderRegistry = rpcProviderRegistry;
         this.notificationPublishService = notificationPublishService;
         singletonServicesProvider = singletonServiceProvider;

@@ -15,7 +15,7 @@
             <ref component-id="legacySwitchConnProvider"/>
         </list>
     </argument>
-    <argument ref="pingPongDataBroker"/>
+    <argument ref="dataBroker"/>
     <argument ref="rpcProviderService"/>
     <argument ref="notificationPublishService"/>
     <argument ref="clusterSingletonServiceProvider"/>
@@ -52,13 +52,8 @@
   <odl:clustered-app-config id="openflowProviderConfig"
                             binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
 
-  <bean id="pingPongDataBroker"
-        class="org.opendaylight.openflowplugin.impl.ForwardingPingPongDataBroker">
-    <argument ref="ppDB"/>
-  </bean>
-  <reference id="ppDB"
+  <reference id="dataBroker"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-
   <reference id="defaultSwitchConnProvider"
              interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
              odl:type="openflow-switch-connection-provider-default-impl"/>
