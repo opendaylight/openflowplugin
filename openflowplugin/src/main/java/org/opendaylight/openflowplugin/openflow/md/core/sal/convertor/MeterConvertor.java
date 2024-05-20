@@ -155,7 +155,6 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
     @Override
     public MeterModInputBuilder convert(final Meter source, final VersionConvertorData data) {
         MeterModInputBuilder meterModInputBuilder = new MeterModInputBuilder();
-        List<Bands> bands = new ArrayList<>();
 
         if (source instanceof AddMeterInput) {
             meterModInputBuilder.setCommand(MeterModCommand.OFPMCADD);
@@ -182,6 +181,7 @@ public class MeterConvertor extends Convertor<Meter, MeterModInputBuilder, Versi
         }
 
         if (source.getMeterBandHeaders() != null) {
+            List<Bands> bands = new ArrayList<>();
             getBandsFromSAL(source.getMeterBandHeaders(), bands);
             meterModInputBuilder.setBands(bands);
         } else {

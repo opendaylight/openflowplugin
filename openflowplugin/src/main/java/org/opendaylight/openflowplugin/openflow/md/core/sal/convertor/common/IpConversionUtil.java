@@ -285,14 +285,13 @@ public final class IpConversionUtil {
         List<String> partsV6Address = PERCENT_SPLITTER.splitToList(ipv6Address);
 
         int colonp;
-        char ch;
         boolean sawXdigit;
 
         /* Isn't it fun - the above variable names are the same in BSD and Sun sources */
 
         char[] src = partsV6Address.get(0).toCharArray();
 
-        byte[] dst = new byte[INADDR6SZ];
+        final byte[] dst = new byte[INADDR6SZ];
 
         colonp = -1;
         int index1 = 0;
@@ -315,7 +314,7 @@ public final class IpConversionUtil {
         int srcLength = src.length;
         int val = 0;
         while (index1 < srcLength) {
-            ch = src[index1++];
+            final char ch = src[index1++];
             int chval = Character.digit(ch, 16);
 
             /* Business as usual - ipv6 address digit.
@@ -444,16 +443,13 @@ public final class IpConversionUtil {
 
 
         int colonp;
-        char ch;
         boolean sawXdigit;
 
         /* Isn't it fun - the above variable names are the same in BSD and Sun sources */
 
         char[] src = partsV6Prefix.get(0).toCharArray();
 
-        byte[] dst = new byte[INADDR6SZ + 1];
-
-        int mask = initialMask;
+        final byte[] dst = new byte[INADDR6SZ + 1];
 
         colonp = -1;
         int index1 = 0;
@@ -473,10 +469,11 @@ public final class IpConversionUtil {
         int curtok = index1;
         sawXdigit = false;
 
+        int mask = initialMask;
         int srcLength = src.length;
         int val = 0;
         while (index1 < srcLength) {
-            ch = src[index1++];
+            final char ch = src[index1++];
             int chval = Character.digit(ch, 16);
 
             /* Business as usual - ipv6 address digit.

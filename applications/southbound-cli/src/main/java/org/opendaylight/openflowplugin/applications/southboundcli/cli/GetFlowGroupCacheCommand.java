@@ -61,13 +61,13 @@ public final class GetFlowGroupCacheCommand implements Action {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
-        Formatter fmt = new Formatter(sb);
         session.getConsole().println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
             entries.size()));
         session.getConsole().println(getLocalNodeHeaderOutput());
         session.getConsole().println(LINE_SEPARATOR);
 
+        StringBuilder sb = new StringBuilder();
+        Formatter fmt = new Formatter(sb);
         for (FlowGroupInfo entry : entries) {
             session.getConsole().println(fmt.format("%-10s %1s %-8s %1s %-23s %1s %-60s", entry.getDescription(), "",
                 entry.getStatus(), "", getTime(entry), "", entry.getId()));
@@ -89,36 +89,34 @@ public final class GetFlowGroupCacheCommand implements Action {
             return;
         }
 
-        StringBuilder sb = new StringBuilder();
-        Formatter fmt = new Formatter(sb);
         session.getConsole().println(getAllLocalNodesHeaderOutput());
         session.getConsole().println(LINE_SEPARATOR);
-        for (Entry<NodeId, FlowGroupInfoHistory> entry : allHistories.entrySet()) {
-            // FIXME: just seek/substring
-            String[] temp = entry.getKey().getValue().split(":");
-            String node = temp[1];
-            for (FlowGroupInfo info : entry.getValue().readEntries()) {
-                session.getConsole().println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
-                    info.getDescription(), "", info.getStatus(), "", getTime(info), "", info.getId()).toString());
-                sb.setLength(0);
+        StringBuilder sb = new StringBuilder();
+        try (var fmt = new Formatter(sb)) {
+            for (Entry<NodeId, FlowGroupInfoHistory> entry : allHistories.entrySet()) {
+                // FIXME: just seek/substring
+                String[] temp = entry.getKey().getValue().split(":");
+                String node = temp[1];
+                for (FlowGroupInfo info : entry.getValue().readEntries()) {
+                    session.getConsole().println(fmt.format("%-15s %1s %-10s %1s %-8s %1s %-21s %1s %-60s", node, "",
+                        info.getDescription(), "", info.getStatus(), "", getTime(info), "", info.getId()).toString());
+                    sb.setLength(0);
+                }
             }
         }
-        fmt.close();
     }
 
     private static String getLocalNodeHeaderOutput() {
-        Formatter formatter = new Formatter();
-        String header = formatter.format("%-10s %1s %-8s %1s %-23s %1s %-60s",
+        try (var formatter = new Formatter()) {
+            return formatter.format("%-10s %1s %-8s %1s %-23s %1s %-60s",
                 "TableId", "", "Status", "", "Time", "", "Flow/Group Id").toString();
-        formatter.close();
-        return header;
+        }
     }
 
     private static String getAllLocalNodesHeaderOutput() {
-        Formatter formatter = new Formatter();
-        String header = formatter.format("%-15s %1s %-10s %1s %-8s %1s %-23s %1s %-60s",
+        try (var  formatter = new Formatter()) {
+            return formatter.format("%-15s %1s %-10s %1s %-8s %1s %-23s %1s %-60s",
                 "DpnId", "", "TableId", "", "Status", "", "Time", "", "Flow/Group Id").toString();
-        formatter.close();
-        return header;
+        }
     }
 }

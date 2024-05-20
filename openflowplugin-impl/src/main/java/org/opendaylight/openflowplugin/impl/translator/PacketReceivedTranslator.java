@@ -41,7 +41,6 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
                                     final Object connectionDistinguisher) {
 
         PacketReceivedBuilder packetReceivedBuilder = new PacketReceivedBuilder();
-        Uint64 datapathId = deviceInfo.getDatapathId();
 
         // TODO: connection cookie from connection distinguisher
         packetReceivedBuilder.setPayload(input.getData());
@@ -52,7 +51,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
         }
 
         // Try to create the NodeConnectorRef
-        Uint64 dataPathId = deviceInfo.getDatapathId();
+        final var dataPathId = deviceInfo.getDatapathId();
         NodeConnectorRef nodeConnectorRef = NodeConnectorRefToPortTranslator.toNodeConnectorRef(input, dataPathId);
 
         // If we was able to create NodeConnectorRef, use it
@@ -70,7 +69,7 @@ public class PacketReceivedTranslator implements MessageTranslator<PacketInMessa
 
         if (input.getMatch() != null) {
             org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match packetInMatch
-                    = getPacketInMatch(input, datapathId);
+                    = getPacketInMatch(input, dataPathId);
             packetReceivedBuilder.setMatch(packetInMatch);
         }
 
