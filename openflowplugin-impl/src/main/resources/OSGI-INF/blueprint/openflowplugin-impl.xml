@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0"
-           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            odl:use-default-for-reference-types="true">
 
   <bean id="openFlowPluginProviderImpl"
@@ -10,7 +9,12 @@
         init-method="initialize"
         destroy-method="close">
     <argument ref="configurationService"/>
-    <argument ref="switchConnectionProviderList"/>
+    <argument>
+        <list>
+            <ref component-id="defaultSwitchConnProvider"/>
+            <ref component-id="legacySwitchConnProvider"/>
+        </list>
+    </argument>
     <argument ref="pingPongDataBroker"/>
     <argument ref="rpcProviderService"/>
     <argument ref="notificationPublishService"/>
@@ -55,9 +59,12 @@
   <reference id="ppDB"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
 
-  <reference id="switchConnectionProviderList"
-             interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProviderList"
-             ext:proxy-method="classes"/>
+  <reference id="defaultSwitchConnProvider"
+             interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+             odl:type="openflow-switch-connection-provider-default-impl"/>
+  <reference id="legacySwitchConnProvider"
+             interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
+             odl:type="openflow-switch-connection-provider-legacy-impl"/>
   <reference id="rpcProviderService"
              interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
   <reference id="notificationPublishService"
