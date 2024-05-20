@@ -15,28 +15,32 @@
     <name>ODL :: openflowjava :: ${project.artifactId}</name>
     <scm>
         <url>https://wiki.opendaylight.org/view/Openflow_Protocol_Library:Main</url>
-      <tag>HEAD</tag>
-  </scm>
-
-  <build>
-        <plugins>
-            <plugin>
-              <groupId>org.apache.felix</groupId>
-              <artifactId>maven-bundle-plugin</artifactId>
-              <extensions>true</extensions>
-              <configuration>
-                <instructions>
-                  <Import-Package>org.opendaylight.openflowjava.protocol.api.keys,*</Import-Package>
-                </instructions>
-              </configuration>
-            </plugin>
-        </plugins>
-    </build>
+        <tag>HEAD</tag>
+    </scm>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991-ietf-inet-types</artifactId>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>org.opendaylight.openflowjava.protocol.api.keys,*</Import-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
