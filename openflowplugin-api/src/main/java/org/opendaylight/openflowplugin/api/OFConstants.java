@@ -72,9 +72,6 @@ public final class OFConstants {
     /** RpcError application tag. */
     public static final ErrorTag APPLICATION_TAG = new ErrorTag("OPENFLOW_PLUGIN");
 
-    /** Persistent ID of OpenFlowPlugin configuration file. */
-    public static final String CONFIG_FILE_ID = "org.opendaylight.openflowplugin";
-
     /** supported version ordered by height (highest version is at the beginning). */
     public static final List<Uint8> VERSION_ORDER = List.of(OFP_VERSION_1_3, OFP_VERSION_1_0);
 

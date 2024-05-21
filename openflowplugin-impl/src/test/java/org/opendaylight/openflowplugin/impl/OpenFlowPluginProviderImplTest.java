@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.impl;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,10 +26,11 @@ import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -78,19 +78,14 @@ public class OpenFlowPluginProviderImplTest {
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
         when(switchConnectionProvider.startup(any())).thenReturn(Futures.immediateVoidFuture());
         when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateVoidFuture());
-        when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()),
-                any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
-        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString()), any()))
-                .thenReturn(THREAD_POOL_MIN_THREADS);
-        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MAX_THREADS.toString()), any()))
-                .thenReturn(THREAD_POOL_MAX_THREADS);
-        when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_TIMEOUT.toString()), any()))
-                .thenReturn(THREAD_POOL_TIMEOUT);
-        when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_CONNECTION_RATE_LIMIT_PER_MIN.toString()),
-                any())).thenReturn(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN);
-        when(configurationService.getProperty(
-                eq(ConfigurationProperty.DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS.toString()), any()))
-                .thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
+        when(configurationService.toProviderConfig()).thenReturn(new OpenflowProviderConfigBuilder()
+            .setUseSingleLayerSerialization(USE_SINGLE_LAYER_SERIALIZATION)
+            .setThreadPoolMinThreads(THREAD_POOL_MIN_THREADS)
+            .setThreadPoolMaxThreads(new NonZeroUint16Type(THREAD_POOL_MAX_THREADS))
+            .setThreadPoolTimeout(THREAD_POOL_TIMEOUT)
+            .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
+            .setDeviceConnectionHoldTimeInSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS)
+            .build());
     }
 
     @Test
