@@ -9,18 +9,18 @@
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.PrintStream;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 
 @Command(scope = "ofp", name = "clearStats", description = "Clear openflow statistics.")
 public class ClearStatsCommandProvider extends OsgiCommandSupport {
+    @Reference
+    MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
     protected Object doExecute() {
-        final MessageIntelligenceAgency messageIntelligenceAgency =
-                OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
         messageIntelligenceAgency.resetStatistics();
         PrintStream out = session.getConsole();
         out.print("Openflow plugin statistics cleaned.\n");

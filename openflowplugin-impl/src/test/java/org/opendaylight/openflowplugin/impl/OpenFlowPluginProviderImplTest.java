@@ -31,48 +31,39 @@ import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionPro
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenFlowPluginProviderImplTest {
-
     @Mock
     PingPongDataBroker dataBroker;
-
     @Mock
     RpcProviderService rpcProviderRegistry;
-
     @Mock
     NotificationPublishService notificationPublishService;
-
     @Mock
     DiagStatusProvider ofPluginDiagstatusProvider;
-
     @Mock
     SystemReadyMonitor systemReadyMonitor;
-
     @Mock
     WriteTransaction writeTransaction;
-
     @Mock
     EntityOwnershipService entityOwnershipService;
-
     @Mock
     Registration entityOwnershipListenerRegistration;
-
     @Mock
     SwitchConnectionProvider switchConnectionProvider;
-
     @Mock
     ClusterSingletonServiceProvider clusterSingletonServiceProvider;
-
     @Mock
     ConfigurationService configurationService;
-
     @Mock
     MastershipChangeServiceManager mastershipChangeServiceManager;
+    @Mock
+    MessageIntelligenceAgency messageIntelligenceAgency;
 
     private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.ONE;
     private static final Uint16 THREAD_POOL_MAX_THREADS = Uint16.valueOf(32000);
@@ -114,6 +105,7 @@ public class OpenFlowPluginProviderImplTest {
                 clusterSingletonServiceProvider,
                 entityOwnershipService,
                 mastershipChangeServiceManager,
+                messageIntelligenceAgency,
                 ofPluginDiagstatusProvider,
                 systemReadyMonitor);
 
