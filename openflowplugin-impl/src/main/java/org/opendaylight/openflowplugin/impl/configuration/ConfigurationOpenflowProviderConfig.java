@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.configuration;
 
+import static java.util.Objects.requireNonNull;
+
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
@@ -16,14 +18,12 @@ import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
-// FIXME: Rename this to "ConfigurationOpenflowProviderConfig" or some such. OpenFlowProviderConfigImpl is taken as
-//        Builder-based (guaranteed to work).
-public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProviderConfig>
+final class ConfigurationOpenflowProviderConfig extends AbstractAugmentable<OpenflowProviderConfig>
         implements OpenflowProviderConfig {
     private final ConfigurationService service;
 
-    public OpenFlowProviderConfigImpl(final ConfigurationService service) {
-        this.service = service;
+    ConfigurationOpenflowProviderConfig(final ConfigurationService service) {
+        this.service = requireNonNull(service);
     }
 
     @Override
@@ -78,6 +78,7 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     }
 
     @Override
+    @Deprecated
     public Boolean getIsStatisticsRpcEnabled() {
         return service.getProperty(ConfigurationProperty.IS_STATISTICS_RPC_ENABLED.toString(), Boolean::valueOf);
     }
