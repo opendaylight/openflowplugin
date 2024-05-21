@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-@Component(immediate = true)
+@Component(immediate = true, service = MastershipChangeServiceManager.class)
 public final class MastershipChangeServiceManagerImpl implements MastershipChangeServiceManager, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MastershipChangeServiceManagerImpl.class);
 
