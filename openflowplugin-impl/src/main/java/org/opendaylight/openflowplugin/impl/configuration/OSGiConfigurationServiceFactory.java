@@ -7,47 +7,51 @@
  */
 package org.opendaylight.openflowplugin.impl.configuration;
 
+import static java.util.Objects.requireNonNull;
+
+import com.google.common.collect.Maps;
 import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
+import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// NOT @Singleton @Service - we do not want this OSGi specific implementation to be auto-discovered in a standalone env
-public class ConfigurationServiceFactoryOsgiImpl extends ConfigurationServiceFactoryImpl {
-    private static final Logger LOG = LoggerFactory.getLogger(ConfigurationServiceFactoryOsgiImpl.class);
+@Component(service = ConfigurationServiceFactory.class)
+public final class OSGiConfigurationServiceFactory extends ConfigurationServiceFactoryImpl {
+    private static final Logger LOG = LoggerFactory.getLogger(OSGiConfigurationServiceFactory.class);
 
     private final BundleContext bundleContext;
 
-    public ConfigurationServiceFactoryOsgiImpl(final BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+    @Activate
+    public OSGiConfigurationServiceFactory(final BundleContext bundleContext) {
+        this.bundleContext = requireNonNull(bundleContext);
     }
 
     @Override
     public ConfigurationService newInstance(final OpenflowProviderConfig providerConfig) {
-        ConfigurationService cs = super.newInstance(providerConfig);
+        var cs = super.newInstance(providerConfig);
         update(cs);
         return cs;
     }
 
     private void update(final ConfigurationService configurationService) {
         LOG.info("Loading configuration from '{}' configuration file", OFConstants.CONFIG_FILE_ID);
-        final ServiceReference<ConfigurationAdmin> serviceReference =
-            bundleContext.getServiceReference(ConfigurationAdmin.class);
+        final var serviceReference = bundleContext.getServiceReference(ConfigurationAdmin.class);
         if (serviceReference == null) {
+            LOG.debug("No Configuration Admin Service available");
             return;
         }
-        final ConfigurationAdmin configurationAdmin = bundleContext.getService(serviceReference);
+        final var configurationAdmin = bundleContext.getService(serviceReference);
         if (configurationAdmin == null) {
+            LOG.debug("Failed to get Configuration Admin Service from {}", serviceReference);
             return;
         }
 
@@ -60,18 +64,9 @@ public class ConfigurationServiceFactoryOsgiImpl extends ConfigurationServiceFac
                 return;
             }
 
-            final Dictionary<String, Object> properties = configuration.getProperties();
+            final var properties = configuration.getProperties();
             if (properties != null) {
-                final Enumeration<String> keys = properties.keys();
-                final Map<String, String> mapProperties = new HashMap<>(properties.size());
-
-                while (keys.hasMoreElements()) {
-                    final String key = keys.nextElement();
-                    final String value = properties.get(key).toString();
-                    mapProperties.put(key, value);
-                }
-
-                configurationService.update(mapProperties);
+                configurationService.update(Maps.transformValues(FrameworkUtil.asMap(properties), Object::toString));
             }
         } finally {
             bundleContext.ungetService(serviceReference);

@@ -33,6 +33,8 @@
     </interfaces>
   </service>
 
+  <odl:clustered-app-config id="openflowProviderConfig"
+                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
   <bean id="configurationService"
         factory-ref="configurationServiceFactory"
         factory-method="newInstance"
@@ -44,14 +46,6 @@
   </bean>
   <service ref="configurationService"
            interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
-  <bean id="configurationServiceFactory"
-        class="org.opendaylight.openflowplugin.impl.configuration.ConfigurationServiceFactoryOsgiImpl">
-    <argument ref="blueprintBundleContext"/>
-  </bean>
-  <service ref="configurationServiceFactory"
-           interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
-  <odl:clustered-app-config id="openflowProviderConfig"
-                            binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
 
   <reference id="dataBroker"
              interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
@@ -77,4 +71,6 @@
              interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
   <reference id="messageIntelligenceAgency"
              interface="org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency"/>
+  <reference id="configurationServiceFactory"
+             interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
 </blueprint>
