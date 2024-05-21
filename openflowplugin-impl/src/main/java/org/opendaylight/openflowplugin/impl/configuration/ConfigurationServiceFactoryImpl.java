@@ -27,8 +27,7 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
     private static final Logger LOG = LoggerFactory.getLogger(ConfigurationServiceFactoryImpl.class);
 
     @Override
-    public ConfigurationService newInstance(
-            final OpenflowProviderConfig providerConfig) {
+    public ConfigurationService newInstance(final OpenflowProviderConfig providerConfig) {
         return new ConfigurationServiceImpl(providerConfig);
     }
 
