@@ -134,11 +134,11 @@
                 <configuration>
                     <instructions>
                         <Provide-Capability>
-                            osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager";uses:="org.opendaylight.openflowplugin.api.openflow.mastership",
                             osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.api.openflow.FlowGroupCacheManager";uses:="org.opendaylight.openflowplugin.api.openflow",
                             osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories,org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider";uses:="org.opendaylight.openflowplugin.api.openflow,org.opendaylight.openflowplugin.extension.api",
+                            osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager";uses:="org.opendaylight.openflowplugin.api.openflow.mastership",
+                            osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency";uses:="org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific",
                             osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.impl.DiagStatusProvider";uses:="org.opendaylight.openflowplugin.impl",
-
                             osgi.service;objectClass:List&lt;String&gt;="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService";uses:="org.opendaylight.openflowplugin.api.openflow.configuration"
                         </Provide-Capability>
                     </instructions>

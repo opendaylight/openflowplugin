@@ -17,7 +17,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
-import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -30,13 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanRegistrationException;
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-import javax.management.NotCompliantMBeanException;
-import javax.management.ObjectName;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
 import org.opendaylight.infrautils.ready.SystemReadyListener;
 import org.opendaylight.infrautils.ready.SystemReadyMonitor;
@@ -70,8 +62,6 @@ import org.opendaylight.openflowplugin.impl.protocol.serialization.SerializerInj
 import org.opendaylight.openflowplugin.impl.role.RoleManagerImpl;
 import org.opendaylight.openflowplugin.impl.rpc.RpcManagerImpl;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsManagerImpl;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyImpl;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntelligenceAgencyMXBean;
 import org.opendaylight.openflowplugin.impl.util.ThreadPoolLoggingExecutor;
 import org.opendaylight.openflowplugin.impl.util.TranslatorLibraryUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.extension.ExtensionConverterManagerImpl;
@@ -103,14 +93,11 @@ public final class OpenFlowPluginProviderImpl
     private static final long TICK_DURATION = 10;
     private static final String POOL_NAME = "ofppool";
 
-    private static final MessageIntelligenceAgency MESSAGE_INTELLIGENCE_AGENCY = new MessageIntelligenceAgencyImpl();
-    private static final String MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME = String
-            .format("%s:type=%s",
-                    MessageIntelligenceAgencyMXBean.class.getPackage().getName(),
-                    MessageIntelligenceAgencyMXBean.class.getSimpleName());
-
+    // TODO: Split this out into a separate component, which requires proper timer cancellation from all users. But is
+    //       that worth the complications?
     private final HashedWheelTimer hashedWheelTimer =
             new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
+    private final SettableFuture<Void> fullyStarted = SettableFuture.create();
     private final ExtensionConverterManager extensionConverterManager;
     private final List<SwitchConnectionProvider> switchConnectionProviders;
     private final DeviceInitializerProvider deviceInitializerProvider;
@@ -123,13 +110,8 @@ public final class OpenFlowPluginProviderImpl
     private final ExecutorService executorService;
     private final ContextChainHolderImpl contextChainHolder;
     private final DiagStatusProvider diagStatusProvider;
-    private final SettableFuture<Void> fullyStarted = SettableFuture.create();
 
     private ConnectionManager connectionManager;
-
-    public static MessageIntelligenceAgency getMessageIntelligenceAgency() {
-        return MESSAGE_INTELLIGENCE_AGENCY;
-    }
 
     @Inject
     @Activate
@@ -141,6 +123,7 @@ public final class OpenFlowPluginProviderImpl
             @Reference final ClusterSingletonServiceProvider singletonServiceProvider,
             @Reference final EntityOwnershipService entityOwnershipService,
             @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
+            @Reference final MessageIntelligenceAgency messageIntelligenceAgency,
             @Reference final DiagStatusProvider diagStatusProvider,
             @Reference final SystemReadyMonitor systemReadyMonitor) {
         config = new OpenFlowProviderConfigImpl(configurationService);
@@ -151,8 +134,6 @@ public final class OpenFlowPluginProviderImpl
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
-
-        registerMXBean(MESSAGE_INTELLIGENCE_AGENCY, MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
 
         // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
         // TODO: rewrite later!
@@ -170,7 +151,7 @@ public final class OpenFlowPluginProviderImpl
         final var devMgr = new DeviceManagerImpl(
                 config,
                 ppdb,
-                getMessageIntelligenceAgency(),
+                messageIntelligenceAgency,
                 notificationPublishService,
                 hashedWheelTimer,
                 convertorManager,
@@ -317,7 +298,6 @@ public final class OpenFlowPluginProviderImpl
         gracefulShutdown(roleManager);
         gracefulShutdown(executorService);
         gracefulShutdown(hashedWheelTimer);
-        unregisterMXBean(MESSAGE_INTELLIGENCE_AGENCY_MX_BEAN_NAME);
         diagStatusProvider.reportStatus(ServiceState.UNREGISTERED);
         try {
             if (connectionManager != null) {
@@ -360,28 +340,5 @@ public final class OpenFlowPluginProviderImpl
         }
     }
 
-    private static void registerMXBean(final Object bean, final String beanName) {
-        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
 
-        try {
-            mbs.registerMBean(bean, new ObjectName(beanName));
-        } catch (MalformedObjectNameException
-                | NotCompliantMBeanException
-                | MBeanRegistrationException
-                | InstanceAlreadyExistsException e) {
-            LOG.warn("Error registering MBean {}", beanName, e);
-        }
-    }
-
-    private static void unregisterMXBean(final String beanName) {
-        final MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
-        try {
-            mbs.unregisterMBean(new ObjectName(beanName));
-        } catch (InstanceNotFoundException
-                | MBeanRegistrationException
-                | MalformedObjectNameException e) {
-            LOG.warn("Error unregistering MBean {}", beanName, e);
-        }
-    }
 }
