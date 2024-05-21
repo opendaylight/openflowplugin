@@ -3,38 +3,11 @@
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
            odl:use-default-for-reference-types="true">
-
-  <bean id="openFlowPluginProviderImpl"
-        class="org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl"
-        init-method="initialize"
-        destroy-method="close">
-    <argument ref="configurationService"/>
-    <argument>
-        <list>
-            <ref component-id="defaultSwitchConnProvider"/>
-            <ref component-id="legacySwitchConnProvider"/>
-        </list>
-    </argument>
-    <argument ref="dataBroker"/>
-    <argument ref="rpcProviderService"/>
-    <argument ref="notificationPublishService"/>
-    <argument ref="clusterSingletonServiceProvider"/>
-    <argument ref="entityOwnershipService"/>
-    <argument ref="mastershipChangeServiceManager"/>
-    <argument ref="messageIntelligenceAgency"/>
-    <argument ref="diagStatusProvider"/>
-    <argument ref="systemReadyMonitor"/>
-  </bean>
-  <service ref="openFlowPluginProviderImpl">
-    <interfaces>
-      <value>org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider</value>
-      <value>org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider</value>
-      <value>org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories</value>
-    </interfaces>
-  </service>
-
+  <reference id="configurationServiceFactory"
+             interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
   <odl:clustered-app-config id="openflowProviderConfig"
                             binding-class="org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig"/>
+
   <bean id="configurationService"
         factory-ref="configurationServiceFactory"
         factory-method="newInstance"
@@ -46,31 +19,4 @@
   </bean>
   <service ref="configurationService"
            interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService"/>
-
-  <reference id="dataBroker"
-             interface="org.opendaylight.mdsal.binding.api.DataBroker"/>
-  <reference id="defaultSwitchConnProvider"
-             interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
-             odl:type="openflow-switch-connection-provider-default-impl"/>
-  <reference id="legacySwitchConnProvider"
-             interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
-             odl:type="openflow-switch-connection-provider-legacy-impl"/>
-  <reference id="rpcProviderService"
-             interface="org.opendaylight.mdsal.binding.api.RpcProviderService"/>
-  <reference id="notificationPublishService"
-             interface="org.opendaylight.mdsal.binding.api.NotificationPublishService"/>
-  <reference id="clusterSingletonServiceProvider"
-             interface="org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider"/>
-  <reference id="entityOwnershipService"
-             interface="org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService"/>
-  <reference id="diagStatusProvider"
-             interface="org.opendaylight.openflowplugin.impl.DiagStatusProvider"/>
-  <reference id="systemReadyMonitor"
-             interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
-  <reference id="mastershipChangeServiceManager"
-             interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
-  <reference id="messageIntelligenceAgency"
-             interface="org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency"/>
-  <reference id="configurationServiceFactory"
-             interface="org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory"/>
 </blueprint>
