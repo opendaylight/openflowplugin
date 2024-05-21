@@ -96,24 +96,14 @@ public class OpenFlowPluginProviderImplTest {
 
     @Test
     public void testInitializeAndClose() {
-        final OpenFlowPluginProviderImpl provider = new OpenFlowPluginProviderImpl(
-                configurationService,
-                List.of(switchConnectionProvider),
-                dataBroker,
-                rpcProviderRegistry,
-                notificationPublishService,
-                clusterSingletonServiceProvider,
-                entityOwnershipService,
-                mastershipChangeServiceManager,
-                messageIntelligenceAgency,
-                ofPluginDiagstatusProvider,
-                systemReadyMonitor);
-
-        provider.initialize();
-        // Calling the onSystemBootReady() callback
-        provider.onSystemBootReady();
-        verify(switchConnectionProvider).startup();
-        provider.close();
+        try (var provider = new OpenFlowPluginProviderImpl(configurationService, List.of(switchConnectionProvider),
+                dataBroker, rpcProviderRegistry, notificationPublishService, clusterSingletonServiceProvider,
+                entityOwnershipService, mastershipChangeServiceManager, messageIntelligenceAgency,
+                ofPluginDiagstatusProvider, systemReadyMonitor)) {
+            // Calling the onSystemBootReady() callback
+            provider.onSystemBootReady();
+            verify(switchConnectionProvider).startup();
+        }
         verify(switchConnectionProvider).shutdown();
     }
 }

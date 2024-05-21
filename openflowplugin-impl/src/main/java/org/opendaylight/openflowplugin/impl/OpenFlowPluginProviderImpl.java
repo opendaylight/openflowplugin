@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl;
 
+import static java.util.Objects.requireNonNull;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -15,7 +17,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timer;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -25,7 +26,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -40,7 +40,6 @@ import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
-import org.opendaylight.openflowplugin.api.openflow.OpenFlowPluginProvider;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
@@ -49,7 +48,6 @@ import org.opendaylight.openflowplugin.api.openflow.role.RoleManager;
 import org.opendaylight.openflowplugin.api.openflow.rpc.RpcManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.openflowplugin.extension.api.ExtensionConverterProviderKeeper;
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
@@ -72,16 +70,23 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class OpenFlowPluginProviderImpl implements
-        OpenFlowPluginProvider,
-        OpenFlowPluginExtensionRegistratorProvider,
-        FlowGroupInfoHistories,
-        SystemReadyListener {
-
+@Component(immediate = true, service = {
+    OpenFlowPluginExtensionRegistratorProvider.class,
+    FlowGroupInfoHistories.class
+})
+public final class OpenFlowPluginProviderImpl
+        implements OpenFlowPluginExtensionRegistratorProvider, FlowGroupInfoHistories, SystemReadyListener,
+                   AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OpenFlowPluginProviderImpl.class);
 
     private static final int TICKS_PER_WHEEL = 500; // 0.5 sec.
@@ -92,56 +97,106 @@ public class OpenFlowPluginProviderImpl implements
     //       that worth the complications?
     private final HashedWheelTimer hashedWheelTimer =
             new HashedWheelTimer(TICK_DURATION, TimeUnit.MILLISECONDS, TICKS_PER_WHEEL);
-    private final NotificationPublishService notificationPublishService;
     private final ExtensionConverterManager extensionConverterManager;
-    private final DataBroker dataBroker;
-    private final Collection<SwitchConnectionProvider> switchConnectionProviders;
+    private final List<SwitchConnectionProvider> switchConnectionProviders;
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorManager convertorManager;
-    private final RpcProviderService rpcProviderRegistry;
-    private final ClusterSingletonServiceProvider singletonServicesProvider;
     private final OpenflowProviderConfig config;
-    private final EntityOwnershipService entityOwnershipService;
-    private final MastershipChangeServiceManager mastershipChangeServiceManager;
-    private DeviceManager deviceManager;
-    private RpcManager rpcManager;
-    private StatisticsManager statisticsManager;
-    private RoleManager roleManager;
-    private ConnectionManager connectionManager;
-    private ExecutorService executorService;
-    private ContextChainHolderImpl contextChainHolder;
-    private final MessageIntelligenceAgency messageIntelligenceAgency;
+    private final DeviceManager deviceManager;
+    private final RpcManager rpcManager;
+    private final StatisticsManager statisticsManager;
+    private final RoleManager roleManager;
+    private final ExecutorService executorService;
+    private final ContextChainHolderImpl contextChainHolder;
     private final DiagStatusProvider diagStatusProvider;
-    private final SystemReadyMonitor systemReadyMonitor;
     private final SettableFuture<Void> fullyStarted = SettableFuture.create();
-    private static final String OPENFLOW_SERVICE_NAME = "OPENFLOW";
+
+    private ConnectionManager connectionManager;
 
     @Inject
-    public OpenFlowPluginProviderImpl(final ConfigurationService configurationService,
-                               final List<SwitchConnectionProvider> switchConnectionProviders,
-                               final DataBroker dataBroker,
-                               final RpcProviderService rpcProviderRegistry,
-                               final NotificationPublishService notificationPublishService,
-                               final ClusterSingletonServiceProvider singletonServiceProvider,
-                               final EntityOwnershipService entityOwnershipService,
-                               final MastershipChangeServiceManager mastershipChangeServiceManager,
-                               final MessageIntelligenceAgency messageIntelligenceAgency,
-                               final DiagStatusProvider diagStatusProvider,
-                               final SystemReadyMonitor systemReadyMonitor) {
-        this.switchConnectionProviders = switchConnectionProviders;
-        this.dataBroker = new PingPongDataBroker(dataBroker);
-        this.rpcProviderRegistry = rpcProviderRegistry;
-        this.notificationPublishService = notificationPublishService;
-        singletonServicesProvider = singletonServiceProvider;
-        this.entityOwnershipService = entityOwnershipService;
+    @Activate
+    public OpenFlowPluginProviderImpl(@Reference final ConfigurationService configurationService,
+            @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policyOption = ReferencePolicyOption.GREEDY)
+            final List<SwitchConnectionProvider> switchConnectionProviders,
+            @Reference final DataBroker dataBroker, @Reference final RpcProviderService rpcProviderRegistry,
+            @Reference final NotificationPublishService notificationPublishService,
+            @Reference final ClusterSingletonServiceProvider singletonServiceProvider,
+            @Reference final EntityOwnershipService entityOwnershipService,
+            @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
+            @Reference final MessageIntelligenceAgency messageIntelligenceAgency,
+            @Reference final DiagStatusProvider diagStatusProvider,
+            @Reference final SystemReadyMonitor systemReadyMonitor) {
+        config = new OpenFlowProviderConfigImpl(configurationService);
+        this.switchConnectionProviders = List.copyOf(switchConnectionProviders);
+        final var ppdb = new PingPongDataBroker(dataBroker);
+        this.diagStatusProvider = requireNonNull(diagStatusProvider);
+
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         extensionConverterManager = new ExtensionConverterManagerImpl();
         deviceInitializerProvider = DeviceInitializerProviderFactory.createDefaultProvider();
-        config = new OpenFlowProviderConfigImpl(configurationService);
-        this.mastershipChangeServiceManager = mastershipChangeServiceManager;
-        this.messageIntelligenceAgency = messageIntelligenceAgency;
-        this.diagStatusProvider = diagStatusProvider;
-        this.systemReadyMonitor = systemReadyMonitor;
+
+        // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
+        // TODO: rewrite later!
+        OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
+
+        // Creates a thread pool that creates new threads as needed, but will reuse previously
+        // constructed threads when they are available.
+        // Threads that have not been used for x seconds are terminated and removed from the cache.
+        executorService = new ThreadPoolLoggingExecutor(
+                config.getThreadPoolMinThreads().toJava(),
+                config.getThreadPoolMaxThreads().getValue().toJava(),
+                config.getThreadPoolTimeout().toJava(),
+                TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME);
+
+        final var devMgr = new DeviceManagerImpl(
+                config,
+                ppdb,
+                messageIntelligenceAgency,
+                notificationPublishService,
+                hashedWheelTimer,
+                convertorManager,
+                deviceInitializerProvider,
+                executorService);
+        deviceManager = devMgr;
+
+        TranslatorLibraryUtil.injectBasicTranslatorLibrary(deviceManager, convertorManager);
+        devMgr.setExtensionConverterProvider(extensionConverterManager);
+
+        rpcManager = new RpcManagerImpl(
+                config,
+                rpcProviderRegistry,
+                extensionConverterManager,
+                convertorManager,
+                notificationPublishService);
+
+        statisticsManager = new StatisticsManagerImpl(
+                config,
+                rpcProviderRegistry,
+                convertorManager,
+                executorService);
+
+        roleManager = new RoleManagerImpl(hashedWheelTimer, config, executorService);
+
+        contextChainHolder = new ContextChainHolderImpl(
+                executorService,
+                singletonServiceProvider,
+                entityOwnershipService,
+                mastershipChangeServiceManager,
+                config);
+
+        contextChainHolder.addManager(deviceManager);
+        contextChainHolder.addManager(statisticsManager);
+        contextChainHolder.addManager(rpcManager);
+        contextChainHolder.addManager(roleManager);
+
+        connectionManager = new ConnectionManagerImpl(config, executorService, ppdb, notificationPublishService);
+        connectionManager.setDeviceConnectedHandler(contextChainHolder);
+        connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
+
+        deviceManager.setContextChainHolder(contextChainHolder);
+        deviceManager.initialize();
+        systemReadyMonitor.registerListener(this);
+        LOG.info("registered onSystemBootReady() listener for OpenFlowPluginProvider");
     }
 
     @Override
@@ -210,72 +265,6 @@ public class OpenFlowPluginProviderImpl implements
     }
 
     @Override
-    @PostConstruct
-    public void initialize() {
-        // TODO: copied from OpenFlowPluginProvider (Helium) misusesing the old way of distributing extension converters
-        // TODO: rewrite later!
-        OFSessionUtil.getSessionManager().setExtensionConverterProvider(extensionConverterManager);
-
-        // Creates a thread pool that creates new threads as needed, but will reuse previously
-        // constructed threads when they are available.
-        // Threads that have not been used for x seconds are terminated and removed from the cache.
-        executorService = new ThreadPoolLoggingExecutor(
-                config.getThreadPoolMinThreads().toJava(),
-                config.getThreadPoolMaxThreads().getValue().toJava(),
-                config.getThreadPoolTimeout().toJava(),
-                TimeUnit.SECONDS, new SynchronousQueue<>(), POOL_NAME);
-
-        deviceManager = new DeviceManagerImpl(
-                config,
-                dataBroker,
-                messageIntelligenceAgency,
-                notificationPublishService,
-                hashedWheelTimer,
-                convertorManager,
-                deviceInitializerProvider,
-                executorService);
-
-        TranslatorLibraryUtil.injectBasicTranslatorLibrary(deviceManager, convertorManager);
-        ((ExtensionConverterProviderKeeper) deviceManager).setExtensionConverterProvider(extensionConverterManager);
-
-        rpcManager = new RpcManagerImpl(
-                config,
-                rpcProviderRegistry,
-                extensionConverterManager,
-                convertorManager,
-                notificationPublishService);
-
-        statisticsManager = new StatisticsManagerImpl(
-                config,
-                rpcProviderRegistry,
-                convertorManager,
-                executorService);
-
-        roleManager = new RoleManagerImpl(hashedWheelTimer, config, executorService);
-
-        contextChainHolder = new ContextChainHolderImpl(
-                executorService,
-                singletonServicesProvider,
-                entityOwnershipService,
-                mastershipChangeServiceManager,
-                config);
-
-        contextChainHolder.addManager(deviceManager);
-        contextChainHolder.addManager(statisticsManager);
-        contextChainHolder.addManager(rpcManager);
-        contextChainHolder.addManager(roleManager);
-
-        connectionManager = new ConnectionManagerImpl(config, executorService, dataBroker, notificationPublishService);
-        connectionManager.setDeviceConnectedHandler(contextChainHolder);
-        connectionManager.setDeviceDisconnectedHandler(contextChainHolder);
-
-        deviceManager.setContextChainHolder(contextChainHolder);
-        deviceManager.initialize();
-        systemReadyMonitor.registerListener(this);
-        LOG.info("registered onSystemBootReady() listener for OpenFlowPluginProvider");
-    }
-
-    @Override
     public ExtensionConverterRegistrator getExtensionConverterRegistrator() {
         return extensionConverterManager;
     }
@@ -292,6 +281,7 @@ public class OpenFlowPluginProviderImpl implements
 
     @Override
     @PreDestroy
+    @Deactivate
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
         try {
