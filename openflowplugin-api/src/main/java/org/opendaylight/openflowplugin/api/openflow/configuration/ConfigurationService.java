@@ -10,11 +10,14 @@ package org.opendaylight.openflowplugin.api.openflow.configuration;
 
 import java.util.Map;
 import java.util.function.Function;
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.concepts.Registration;
 
 /**
  * Manages OpenFlowPlugin configuration.
  */
+@NonNullByDefault
 public interface ConfigurationService extends AutoCloseable {
 
     /**
@@ -22,7 +25,7 @@ public interface ConfigurationService extends AutoCloseable {
      *
      * @param properties properties
      */
-    void update(@NonNull Map<String, String> properties);
+    void update(Map<String, String> properties);
 
     /**
      * Register listener for configuration changes.
@@ -30,8 +33,7 @@ public interface ConfigurationService extends AutoCloseable {
      * @param listener the listener
      * @return the auto closeable listener registration
      */
-    @NonNull
-    AutoCloseable registerListener(@NonNull ConfigurationListener listener);
+    Registration registerListener(ConfigurationListener listener);
 
     /**
      * Get single property from configuration service.
@@ -41,7 +43,12 @@ public interface ConfigurationService extends AutoCloseable {
      * @param transformer property type transformer
      * @return property property
      */
-    @NonNull
-    <T> T getProperty(@NonNull String key, @NonNull Function<String, T> transformer);
+    <T> T getProperty(String key, Function<String, T> transformer);
 
+    /**
+     * Return this service as a {@link OpenflowProviderConfig}.
+     *
+     * @return A {@link OpenflowProviderConfig} instance reflecting this services' state
+     */
+    OpenflowProviderConfig toProviderConfig();
 }

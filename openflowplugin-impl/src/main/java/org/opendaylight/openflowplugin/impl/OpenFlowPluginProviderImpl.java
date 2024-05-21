@@ -51,7 +51,6 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
-import org.opendaylight.openflowplugin.impl.configuration.OpenFlowProviderConfigImpl;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
@@ -126,7 +125,7 @@ public final class OpenFlowPluginProviderImpl
             @Reference final MessageIntelligenceAgency messageIntelligenceAgency,
             @Reference final DiagStatusProvider diagStatusProvider,
             @Reference final SystemReadyMonitor systemReadyMonitor) {
-        config = new OpenFlowProviderConfigImpl(configurationService);
+        config = configurationService.toProviderConfig();
         this.switchConnectionProviders = List.copyOf(switchConnectionProviders);
         final var ppdb = new PingPongDataBroker(dataBroker);
         this.diagStatusProvider = requireNonNull(diagStatusProvider);
