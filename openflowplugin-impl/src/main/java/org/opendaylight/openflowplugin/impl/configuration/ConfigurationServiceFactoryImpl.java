@@ -7,19 +7,21 @@
  */
 package org.opendaylight.openflowplugin.impl.configuration;
 
-import com.google.common.base.Verify;
+import static com.google.common.base.Verify.verify;
+
 import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationListener;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationServiceFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.concepts.AbstractRegistration;
+import org.opendaylight.yangtools.concepts.Registration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,7 +95,7 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
         }
 
         @Override
-        public void update(@NonNull final Map<String, String> properties) {
+        public void update(final Map<String, String> properties) {
             properties.forEach((propertyName, newValue) -> {
                 final String originalValue = propertyMap.get(propertyName);
 
@@ -119,26 +121,34 @@ public class ConfigurationServiceFactoryImpl implements ConfigurationServiceFact
             });
         }
 
-        @NonNull
         @Override
-        public <T> T getProperty(@NonNull final String key, @NonNull final Function<String, T> transformer) {
+        public <T> T getProperty(final String key, final Function<String, T> transformer) {
             return transformer.apply(propertyMap.get(key));
         }
 
-        @NonNull
         @Override
-        public AutoCloseable registerListener(@NonNull final ConfigurationListener listener) {
-            Verify.verify(!listeners.contains(listener));
+        public Registration registerListener(final ConfigurationListener listener) {
+            verify(!listeners.contains(listener));
             LOG.info("{} was registered as configuration listener to OpenFlowPlugin configuration service", listener);
             listeners.add(listener);
             propertyMap.forEach(listener::onPropertyChanged);
-            return () -> listeners.remove(listener);
+            return new AbstractRegistration() {
+                @Override
+                protected void removeRegistration() {
+                    listeners.remove(listener);
+                }
+            };
         }
 
         @Override
         public void close() {
             propertyMap.clear();
             listeners.clear();
+        }
+
+        @Override
+        public OpenflowProviderConfig toProviderConfig() {
+            return new ConfigurationOpenflowProviderConfig(this);
         }
     }
 }
