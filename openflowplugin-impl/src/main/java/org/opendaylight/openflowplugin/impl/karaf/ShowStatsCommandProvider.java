@@ -10,19 +10,19 @@ package org.opendaylight.openflowplugin.impl.karaf;
 
 import java.io.PrintStream;
 import java.util.List;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.openflowplugin.impl.OpenFlowPluginProviderImpl;
 
 @Command(scope = "ofp", name = "showStats", description = "Show openflow statistics.")
 public class ShowStatsCommandProvider extends OsgiCommandSupport {
+    @Reference
+    MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
     protected Object doExecute() {
         PrintStream out = session.getConsole();
-        final MessageIntelligenceAgency messageIntelligenceAgency =
-                OpenFlowPluginProviderImpl.getMessageIntelligenceAgency();
         final List<String> statistics = messageIntelligenceAgency.provideIntelligence();
         final StringBuilder result = new StringBuilder();
         for (String line : statistics) {

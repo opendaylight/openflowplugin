@@ -9,14 +9,25 @@ package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
 import static java.util.Objects.requireNonNull;
 
+import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanRegistrationException;
+import javax.management.MalformedObjectNameException;
+import javax.management.NotCompliantMBeanException;
+import javax.management.ObjectName;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +36,22 @@ import org.slf4j.LoggerFactory;
  * {@link org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency}.
  * Class counts message of {@link StatisticsGroup} type and provides info as debug log.
  */
-public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency, MessageIntelligenceAgencyMXBean {
+@Singleton
+@Component(immediate = true, service = MessageIntelligenceAgency.class)
+public final class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(MessageIntelligenceAgencyImpl.class);
+
+    private static final ObjectName MXBEAN_OBJECT_NAME;
+
+    static {
+        try {
+            MXBEAN_OBJECT_NAME = new ObjectName("%s:type=%s".formatted(
+                    MessageIntelligenceAgencyMXBean.class.getPackage().getName(),
+                    MessageIntelligenceAgencyMXBean.class.getSimpleName()));
+        } catch (MalformedObjectNameException e) {
+            throw new ExceptionInInitializerError(e);
+        }
+    }
 
     private static final class MessageCounters {
         private static final AtomicLongFieldUpdater<MessageCounters> UPDATER =
@@ -50,8 +75,38 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
         }
     }
 
-    private ConcurrentMap<StatisticsGroup, ConcurrentMap<Class<?>, MessageCounters>> inputStats =
-            new ConcurrentHashMap<>();
+    private final Map<StatisticsGroup, Map<Class<?>, MessageCounters>> inputStats = new ConcurrentHashMap<>();
+
+    private boolean runUnreg;
+
+    @Inject
+    @Activate
+    public MessageIntelligenceAgencyImpl() {
+        try {
+            ManagementFactory.getPlatformMBeanServer()
+                .registerMBean((MessageIntelligenceAgencyMXBean) this::provideIntelligence, MXBEAN_OBJECT_NAME);
+            runUnreg = true;
+            LOG.info("Registered MBean {}", MXBEAN_OBJECT_NAME);
+        } catch (NotCompliantMBeanException | MBeanRegistrationException | InstanceAlreadyExistsException e) {
+            LOG.warn("Error registering MBean {}", MXBEAN_OBJECT_NAME, e);
+            runUnreg = false;
+        }
+    }
+
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        if (runUnreg) {
+            runUnreg = false;
+            try {
+                ManagementFactory.getPlatformMBeanServer().unregisterMBean(MXBEAN_OBJECT_NAME);
+                LOG.info("Unregistered MBean {}", MXBEAN_OBJECT_NAME);
+            } catch (InstanceNotFoundException | MBeanRegistrationException e) {
+                LOG.warn("Error unregistering MBean {}", MXBEAN_OBJECT_NAME, e);
+            }
+        }
+    }
 
     @Override
     public void spyMessage(final Class<?> message, final StatisticsGroup statGroup) {
@@ -66,41 +121,16 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
      * @return corresponding counter
      */
     private MessageCounters getCounters(final Class<?> message, final StatisticsGroup statGroup) {
-        ConcurrentMap<Class<?>, MessageCounters> groupData = getOrCreateGroupData(statGroup);
-        MessageCounters counters = getOrCreateCountersPair(message, groupData);
-        return counters;
-    }
-
-    private static MessageCounters getOrCreateCountersPair(final Class<?> msgType,
-                                                           final ConcurrentMap<Class<?>, MessageCounters> groupData) {
-        final MessageCounters lookup = groupData.get(msgType);
-        if (lookup != null) {
-            return lookup;
-        }
-
-        final MessageCounters newCounters = new MessageCounters();
-        final MessageCounters check = groupData.putIfAbsent(msgType, newCounters);
-        return check == null ? newCounters : check;
-
-    }
-
-    private ConcurrentMap<Class<?>, MessageCounters> getOrCreateGroupData(final StatisticsGroup statGroup) {
-        final ConcurrentMap<Class<?>, MessageCounters> lookup = inputStats.get(statGroup);
-        if (lookup != null) {
-            return lookup;
-        }
-
-        final ConcurrentMap<Class<?>, MessageCounters> newmap = new ConcurrentHashMap<>();
-        final ConcurrentMap<Class<?>, MessageCounters> check = inputStats.putIfAbsent(statGroup, newmap);
-
-        return check == null ? newmap : check;
+        return inputStats
+            .computeIfAbsent(statGroup, key -> new ConcurrentHashMap<>())
+            .computeIfAbsent(message, key -> new MessageCounters());
     }
 
     @Override
     public void run() {
         // log current counters and cleans it
         if (LOG.isDebugEnabled()) {
-            for (String counterItem : provideIntelligence()) {
+            for (var counterItem : provideIntelligence()) {
                 LOG.debug("Counter: {}", counterItem);
             }
         }
@@ -108,12 +138,12 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
 
     @Override
     public List<String> provideIntelligence() {
-        List<String> dump = new ArrayList<>();
+        final var dump = new ArrayList<String>();
 
-        for (StatisticsGroup statGroup : StatisticsGroup.values()) {
-            Map<Class<?>, MessageCounters> groupData = inputStats.get(statGroup);
+        for (var statGroup : StatisticsGroup.values()) {
+            final var groupData = inputStats.get(statGroup);
             if (groupData != null) {
-                for (Entry<Class<?>, MessageCounters> statEntry : groupData.entrySet()) {
+                for (var statEntry : groupData.entrySet()) {
                     long amountPerInterval = statEntry.getValue().accumulate();
                     long cumulativeAmount = statEntry.getValue().getCumulative();
                     dump.add(String.format("%s: MSG[%s] -> +%d | %d",
@@ -130,6 +160,6 @@ public class MessageIntelligenceAgencyImpl implements MessageIntelligenceAgency,
 
     @Override
     public void resetStatistics() {
-        inputStats = new ConcurrentHashMap<>();
+        inputStats.clear();
     }
 }

@@ -21,6 +21,7 @@
     <argument ref="clusterSingletonServiceProvider"/>
     <argument ref="entityOwnershipService"/>
     <argument ref="mastershipChangeServiceManager"/>
+    <argument ref="messageIntelligenceAgency"/>
     <argument ref="diagStatusProvider"/>
     <argument ref="systemReadyMonitor"/>
   </bean>
@@ -74,4 +75,6 @@
              interface="org.opendaylight.infrautils.ready.SystemReadyMonitor"/>
   <reference id="mastershipChangeServiceManager"
              interface="org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager"/>
+  <reference id="messageIntelligenceAgency"
+             interface="org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency"/>
 </blueprint>
