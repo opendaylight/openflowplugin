@@ -91,7 +91,7 @@ public class OpenFlowProviderConfigImplTest {
                 any())).thenReturn(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS);
         when(configurationService.getProperty(eq(ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString()),
                 any())).thenReturn(DEVICE_DATASTORE_REMOVAL_DELAY);
-        openflowProviderConfig = new OpenFlowProviderConfigImpl(configurationService);
+        openflowProviderConfig = new ConfigurationOpenflowProviderConfig(configurationService);
     }
 
     @After
