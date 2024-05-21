@@ -5,14 +5,15 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
 import java.util.List;
+import javax.management.MXBean;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 11.5.2015.
  */
+@MXBean
 public interface MessageIntelligenceAgencyMXBean {
 
     List<String> provideIntelligence();
