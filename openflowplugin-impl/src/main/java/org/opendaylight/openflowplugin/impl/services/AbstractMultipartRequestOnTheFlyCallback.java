@@ -21,7 +21,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.impl.common.MultipartReplyTranslatorUtil;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.statistics.StatisticsGatheringUtils;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.DefaultEventsTimeCounter;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
@@ -131,7 +131,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      * Starts collecting of multipart data.
      */
     private synchronized void startCollecting() {
-        EventsTimeCounter.markStart(doneEventIdentifier);
+        DefaultEventsTimeCounter.markStart(doneEventIdentifier);
         gatheringState = Service.State.RUNNING;
 
         final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo
@@ -171,8 +171,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
      */
     private void endCollecting(final boolean setResult) {
         gatheringState = Service.State.TERMINATED;
-        EventsTimeCounter.markEnd(doneEventIdentifier);
-        EventsTimeCounter.markEnd(getEventIdentifier());
+        DefaultEventsTimeCounter.markEnd(doneEventIdentifier);
+        DefaultEventsTimeCounter.markEnd(getEventIdentifier());
         spyMessage(MessageSpy.StatisticsGroup.FROM_SWITCH_TRANSLATE_OUT_SUCCESS);
 
         if (setResult) {

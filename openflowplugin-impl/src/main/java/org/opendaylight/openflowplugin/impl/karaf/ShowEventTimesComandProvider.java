@@ -12,7 +12,7 @@ import java.io.PrintStream;
 import java.util.List;
 import org.apache.karaf.shell.commands.Command;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.DefaultEventsTimeCounter;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
@@ -23,7 +23,7 @@ public class ShowEventTimesComandProvider extends OsgiCommandSupport {
     @Override
     protected Object doExecute() {
         PrintStream out = session.getConsole();
-        final List<String> statistics = EventsTimeCounter.provideTimes();
+        final List<String> statistics = DefaultEventsTimeCounter.provideTimes();
         final StringBuilder result = new StringBuilder();
         for (String line : statistics) {
             result.append(line);

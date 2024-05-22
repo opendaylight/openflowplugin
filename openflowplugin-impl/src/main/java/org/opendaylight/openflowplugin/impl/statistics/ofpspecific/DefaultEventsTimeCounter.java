@@ -5,50 +5,49 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.ofpspecific;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
 
-public final class EventsTimeCounter {
+@Singleton
+@Component(immediate = true)
+public final class DefaultEventsTimeCounter {
+    private final Map<String, Map<String, EventTimeCounter>> deviceEvents = new ConcurrentHashMap<>();
 
-    private static final Map<String, Map<String, EventTimeCounter>> DEVICES_EVENTS = new HashMap<>();
-
-    private EventsTimeCounter() {
-        // Hiding implicit constructor
+    @Inject
+    @Activate
+    private DefaultEventsTimeCounter() {
+        // Expose for DI
     }
 
-    public static void markStart(final EventIdentifier eventIdentifier) {
-        Map<String, EventTimeCounter> deviceEvents = getOrCreateCountersForDevice(eventIdentifier.getDeviceId());
-        EventTimeCounter eventTimeCounter = getOrCreateEventOfType(eventIdentifier.getEventName(), deviceEvents);
-        eventTimeCounter.markStart();
+    public void markStart(final EventIdentifier eventIdentifier) {
+        getCounter(eventIdentifier).markStart();
     }
 
-    public static void markEnd(final EventIdentifier eventIdentifier) {
-        Map<String, EventTimeCounter> deviceEvents = getOrCreateCountersForDevice(eventIdentifier.getDeviceId());
-        EventTimeCounter eventTimeCounter = getOrCreateEventOfType(eventIdentifier.getEventName(), deviceEvents);
-        eventTimeCounter.markEnd();
+    public void markEnd(final EventIdentifier eventIdentifier) {
+        getCounter(eventIdentifier).markEnd();
     }
 
-    private static EventTimeCounter getOrCreateEventOfType(final String event,
-                                                           final Map<String, EventTimeCounter> deviceEvents) {
-        return deviceEvents.computeIfAbsent(event, k -> new EventTimeCounter());
+    private EventTimeCounter getCounter(final EventIdentifier eventIdentifier) {
+        return deviceEvents
+            .computeIfAbsent(eventIdentifier.deviceId(), k -> new ConcurrentHashMap<>())
+            .computeIfAbsent(eventIdentifier.eventName(), k -> new EventTimeCounter());
     }
 
-    private static Map<String, EventTimeCounter> getOrCreateCountersForDevice(final String deviceId) {
-        return DEVICES_EVENTS.computeIfAbsent(deviceId, k -> new HashMap<>());
-    }
-
-    public static List<String> provideTimes() {
-        List<String> dump = new ArrayList<>();
-        for (Map.Entry<String, Map<String, EventTimeCounter>> deviceEntry : DEVICES_EVENTS.entrySet()) {
-            Map<String, EventTimeCounter> eventsMap = deviceEntry.getValue();
+    public List<String> provideTimes() {
+        final var dump = new ArrayList<String>();
+        for (var deviceEntry : deviceEvents.entrySet()) {
+            var eventsMap = deviceEntry.getValue();
             dump.add("================================================");
             dump.add(String.format("DEVICE : %s", deviceEntry.getKey()));
             for (Map.Entry<String, EventTimeCounter> eventEntry : eventsMap.entrySet()) {
@@ -67,10 +66,9 @@ public final class EventsTimeCounter {
         return dump;
     }
 
-    public static void resetAllCounters() {
-        DEVICES_EVENTS.clear();
+    public void resetAllCounters() {
+        deviceEvents.clear();
     }
-
 
     private static final class EventTimeCounter {
 
@@ -128,6 +126,5 @@ public final class EventsTimeCounter {
         public synchronized long getMaximum() {
             return maximum;
         }
-
     }
 }

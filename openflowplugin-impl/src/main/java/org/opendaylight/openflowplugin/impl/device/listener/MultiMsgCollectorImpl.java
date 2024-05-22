@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.device.RequestContext;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.DeviceReplyProcessor;
 import org.opendaylight.openflowplugin.api.openflow.device.handlers.MultiMsgCollector;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.DefaultEventsTimeCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -63,7 +63,7 @@ public class MultiMsgCollectorImpl<T extends OfHeader> implements MultiMsgCollec
         final RpcResult<List<T>> rpcResult = RpcResultBuilder.success(replyCollection).build();
 
         if (eventIdentifier != null) {
-            EventsTimeCounter.markEnd(eventIdentifier);
+            DefaultEventsTimeCounter.markEnd(eventIdentifier);
         }
 
         requestContext.setResult(rpcResult);

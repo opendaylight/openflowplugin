@@ -16,7 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.DefaultEventsTimeCounter;
 
 /**
  * Test for {@link  ResetEventTimesComandProvider}.
@@ -29,13 +29,13 @@ public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
     @Override
     public void doSetUp() {
         resetEventTimesComandProvider = new ResetEventTimesComandProvider();
-        EventsTimeCounter.resetAllCounters();
+        DefaultEventsTimeCounter.resetAllCounters();
     }
 
     @After
     public void tearDown() {
         Mockito.verify(console).print(anyString());
-        EventsTimeCounter.resetAllCounters();
+        DefaultEventsTimeCounter.resetAllCounters();
     }
 
     /**
@@ -43,9 +43,9 @@ public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
      */
     @Test
     public void testDoExecute_clean() throws Exception {
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        Assert.assertTrue(checkNoActivity(DefaultEventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
         resetEventTimesComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        Assert.assertTrue(checkNoActivity(DefaultEventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
     }
 
     /**
@@ -54,13 +54,13 @@ public class ResetEventTimesComandProviderTest extends AbstractKarafTest {
     @Test
     public void testDoExecute_dirty() throws Exception {
         final EventIdentifier dummyEvent = new EventIdentifier("junit", "junitDevice");
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        Assert.assertTrue(checkNoActivity(DefaultEventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
 
-        EventsTimeCounter.markStart(dummyEvent);
-        EventsTimeCounter.markEnd(dummyEvent);
-        Assert.assertFalse(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        DefaultEventsTimeCounter.markStart(dummyEvent);
+        DefaultEventsTimeCounter.markEnd(dummyEvent);
+        Assert.assertFalse(checkNoActivity(DefaultEventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
 
         resetEventTimesComandProvider.execute(cmdSession);
-        Assert.assertTrue(checkNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
+        Assert.assertTrue(checkNoActivity(DefaultEventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION));
     }
 }
