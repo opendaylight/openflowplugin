@@ -16,7 +16,7 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventTimeCountersImpl;
 
 /**
  * Test for {@link ShowEventTimesCommand}.
@@ -29,8 +29,8 @@ class ShowEventTimesCommandTest extends AbstractCommandTest {
 
     @Override
     protected void doBeforeEach() {
-        EventsTimeCounter.resetAllCounters();
-        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        EventTimeCountersImpl.resetAllCounters();
+        assertNoActivity(EventTimeCountersImpl.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
@@ -40,7 +40,7 @@ class ShowEventTimesCommandTest extends AbstractCommandTest {
     void showNoActivity() {
         showEventTimesCommand.execute();
         verify(console, never()).println(anyString());
-        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        assertNoActivity(EventTimeCountersImpl.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
@@ -49,9 +49,9 @@ class ShowEventTimesCommandTest extends AbstractCommandTest {
     @Test
     void showHavingActivity() {
         final var dummyEvent = new EventIdentifier("junit", "junitDevice");
-        EventsTimeCounter.markStart(dummyEvent);
-        EventsTimeCounter.markEnd(dummyEvent);
-        assertHasActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        EventTimeCountersImpl.markStart(dummyEvent);
+        EventTimeCountersImpl.markEnd(dummyEvent);
+        assertHasActivity(EventTimeCountersImpl.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
 
         showEventTimesCommand.execute();
         verify(console).println(contains("junitDevice"));

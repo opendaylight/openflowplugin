@@ -12,7 +12,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.Session;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventTimeCounters;
 
 /**
  * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
@@ -22,10 +22,12 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCou
 public class ResetEventTimesCommand implements Action {
     @Reference
     Session session;
+    @Reference
+    EventTimeCounters counters;
 
     @Override
     public Object execute() {
-        EventsTimeCounter.resetAllCounters();
+        counters.resetAllCounters();
         session.getConsole().println("Events time counters reset.");
         return null;
     }

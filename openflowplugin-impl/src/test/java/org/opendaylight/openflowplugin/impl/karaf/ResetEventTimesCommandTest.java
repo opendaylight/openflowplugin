@@ -14,7 +14,8 @@ import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventIdentifier;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.EventTimeCounters;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventTimeCountersImpl;
 
 /**
  * Test for {@link  ResetEventTimesCommand}.
@@ -22,13 +23,15 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCou
 class ResetEventTimesCommandTest extends AbstractCommandTest {
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
 
+    private final EventTimeCounters counters = new EventTimeCountersImpl();
     @InjectMocks
     private ResetEventTimesCommand resetEventTimesCommand;
 
     @Override
     protected void doBeforeEach() {
-        EventsTimeCounter.resetAllCounters();
-        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        resetEventTimesCommand.counters = counters;
+        counters.resetAllCounters();
+        assertNoActivity(counters.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
@@ -38,7 +41,7 @@ class ResetEventTimesCommandTest extends AbstractCommandTest {
     void resetNoActivity() {
         resetEventTimesCommand.execute();
         verify(console).println(anyString());
-        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        assertNoActivity(counters.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
@@ -47,12 +50,12 @@ class ResetEventTimesCommandTest extends AbstractCommandTest {
     @Test
     void resetHavingActivity() {
         final var dummyEvent = new EventIdentifier("junit", "junitDevice");
-        EventsTimeCounter.markStart(dummyEvent);
-        EventsTimeCounter.markEnd(dummyEvent);
-        assertHasActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        counters.markStart(dummyEvent);
+        counters.markEnd(dummyEvent);
+        assertHasActivity(counters.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
 
         resetEventTimesCommand.execute();
         verify(console).println(anyString());
-        assertNoActivity(EventsTimeCounter.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
+        assertNoActivity(counters.provideTimes(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 }

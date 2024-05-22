@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Event
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy.StatisticsGroup;
 import org.opendaylight.openflowplugin.impl.services.util.RequestContextUtil;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventTimeCountersImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.Error;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.ErrorType;
@@ -58,7 +58,7 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
     public final void onFailure(final Throwable throwable) {
         final RpcResultBuilder<T> builder;
         if (null != eventIdentifier) {
-            EventsTimeCounter.markEnd(eventIdentifier);
+            EventTimeCountersImpl.markEnd(eventIdentifier);
         }
         if (throwable instanceof DeviceRequestFailedException) {
             final Error err = ((DeviceRequestFailedException) throwable).getError();

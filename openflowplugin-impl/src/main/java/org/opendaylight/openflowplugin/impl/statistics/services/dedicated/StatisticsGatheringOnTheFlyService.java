@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Stati
 import org.opendaylight.openflowplugin.impl.common.MultipartRequestInputFactory;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.services.AbstractMultipartOnTheFlyService;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventTimeCountersImpl;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
@@ -46,7 +46,7 @@ public class StatisticsGatheringOnTheFlyService<T extends OfHeader>
     public ListenableFuture<RpcResult<List<T>>> getStatisticsOfType(final EventIdentifier eventIdentifier,
                                                                     final MultipartType type) {
         LOG.debug("Getting statistics (onTheFly) for node {} of type {}", getDeviceInfo().getNodeId(), type);
-        EventsTimeCounter.markStart(eventIdentifier);
+        EventTimeCountersImpl.markStart(eventIdentifier);
         setEventIdentifier(eventIdentifier);
         return handleServiceCall(type);
     }
