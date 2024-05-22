@@ -12,21 +12,22 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.Session;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 21.5.2015.
  */
-@Command(scope = "ofp", name = "show-time-counters", description = "Shows time counts for events.")
+
+@Command(scope = "ofp", name = "show-session-stats", description = "Show session statistics.")
 @Service
-public class ShowEventTimesComandProvider implements Action {
+public class ShowSessionStatsCommand implements Action {
     @Reference
     Session session;
 
     @Override
     public Object execute() {
         final var console = session.getConsole();
-        EventsTimeCounter.provideTimes().forEach(console::println);
+        SessionStatistics.provideStatistics().forEach(console::println);
         return null;
     }
 }

@@ -12,20 +12,21 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.Session;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
-@Command(scope = "ofp", name = "clearStats", description = "Clear openflow statistics.")
+/**
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
+ */
+@Command(scope = "ofp", name = "reset-time-counters", description = "Resets events time counters.")
 @Service
-public class ClearStatsCommandProvider implements Action {
+public class ResetEventTimesCommand implements Action {
     @Reference
     Session session;
-    @Reference
-    MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
     public Object execute() {
-        messageIntelligenceAgency.resetStatistics();
-        session.getConsole().println("Openflow plugin statistics cleaned.");
+        EventsTimeCounter.resetAllCounters();
+        session.getConsole().println("Events time counters reset.");
         return null;
     }
 }

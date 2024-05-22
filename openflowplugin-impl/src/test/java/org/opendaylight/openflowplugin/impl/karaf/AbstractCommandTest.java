@@ -24,7 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * Created by mirehak on 7/29/15.
  */
 @ExtendWith(MockitoExtension.class)
-abstract class AbstractKarafTest {
+abstract class AbstractCommandTest {
     @Mock
     protected Session session;
     @Mock

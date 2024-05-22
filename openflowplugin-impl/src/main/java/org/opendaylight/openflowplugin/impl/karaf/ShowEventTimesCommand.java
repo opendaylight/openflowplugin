@@ -12,20 +12,21 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.Session;
-import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
+import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
-@Command(scope = "ofp", name = "showStats", description = "Show openflow statistics.")
+/**
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
+ */
+@Command(scope = "ofp", name = "show-time-counters", description = "Shows time counts for events.")
 @Service
-public class ShowStatsCommandProvider implements Action {
+public class ShowEventTimesCommand implements Action {
     @Reference
     Session session;
-    @Reference
-    MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
     public Object execute() {
         final var console = session.getConsole();
-        messageIntelligenceAgency.provideIntelligence().forEach(console::println);
+        EventsTimeCounter.provideTimes().forEach(console::println);
         return null;
     }
 }
