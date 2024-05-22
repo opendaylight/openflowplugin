@@ -15,19 +15,18 @@ import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 21.5.2015.
+ * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
  */
-
-@Command(scope = "ofp", name = "show-session-stats", description = "Show session statistics.")
+@Command(scope = "ofp", name = "reset-session-stats", description = "Resets session statistics counters.")
 @Service
-public class ShowSessionStatsCommandProvider implements Action {
+public class ResetSessionStatsCommand implements Action {
     @Reference
     Session session;
 
     @Override
     public Object execute() {
-        final var console = session.getConsole();
-        SessionStatistics.provideStatistics().forEach(console::println);
+        SessionStatistics.resetAllCounters();
+        session.getConsole().println("Session statistics counters reset.");
         return null;
     }
 }

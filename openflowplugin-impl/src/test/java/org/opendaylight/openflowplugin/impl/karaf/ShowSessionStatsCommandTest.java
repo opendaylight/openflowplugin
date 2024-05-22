@@ -8,7 +8,9 @@
 package org.opendaylight.openflowplugin.impl.karaf;
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.function.Function;
@@ -17,12 +19,13 @@ import org.mockito.InjectMocks;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
- * Test for {@link ResetSessionStatsComandProvider}.
+ * Test for {@link ShowSessionStatsCommand}.
  */
-class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
-    @InjectMocks
-    private ResetSessionStatsComandProvider resetSessionStatsCommand;
+class ShowSessionStatsCommandTest extends AbstractCommandTest {
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION = String::isEmpty;
+
+    @InjectMocks
+    private ShowSessionStatsCommand showSessionStatsCommand;
 
     @Override
     protected void doBeforeEach() {
@@ -31,26 +34,26 @@ class ResetSessionStatsComandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * Test for {@link ResetSessionStatsComandProvider#execute()} when no stats were touched before.
+     * Test for {@link ShowEventTimesCommand#execute()} when no stats were touched before.
      */
     @Test
-    void resetNoActivity() {
-        resetSessionStatsCommand.execute();
-        verify(console, atLeastOnce()).println(anyString());
+    void showNoActivity() {
+        showSessionStatsCommand.execute();
+        verify(console, never()).println(anyString());
         assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 
     /**
-     * Test for {@link ResetSessionStatsComandProvider#execute()} when stats were touched before.
+     * Test for {@link ShowEventTimesCommand#execute()} when stats were touched before.
      */
     @Test
-    void resetHavingActivity() {
-        final String dummySessionId = "junitSessionId";
+    void showHavingActivity() {
+        final var dummySessionId = "junitSessionId";
         SessionStatistics.countEvent(dummySessionId, SessionStatistics.ConnectionStatus.CONNECTION_CREATED);
         assertHasActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
 
-        resetSessionStatsCommand.execute();
-        verify(console, atLeastOnce()).println(anyString());
-        assertNoActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
+        showSessionStatsCommand.execute();
+        verify(console, atLeastOnce()).println(contains(dummySessionId));
+        assertHasActivity(SessionStatistics.provideStatistics(), CHECK_NO_ACTIVITY_FUNCTION);
     }
 }

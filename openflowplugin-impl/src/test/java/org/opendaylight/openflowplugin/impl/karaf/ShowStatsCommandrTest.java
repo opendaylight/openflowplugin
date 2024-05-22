@@ -21,13 +21,13 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntell
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * Test for {@link ShowStatsCommandProvider}.
+ * Test for {@link ShowStatsCommand}.
  */
-class ShowStatsCommandProviderTest extends AbstractKarafTest {
+class ShowStatsCommandrTest extends AbstractCommandTest {
     private final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
     @InjectMocks
-    private ShowStatsCommandProvider showStatsCommand;
+    private ShowStatsCommand showStatsCommand;
 
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION =
         input -> input.endsWith(": no activity detected");
@@ -40,7 +40,7 @@ class ShowStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * Test for {@link ShowEventTimesComandProvider#execute()} when no stats were touched before.
+     * Test for {@link ShowEventTimesCommand#execute()} when no stats were touched before.
      */
     @Test
     void showNoActivity() {
@@ -50,7 +50,7 @@ class ShowStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * Test for {@link ShowEventTimesComandProvider#execute()} when stats were touched before.
+     * Test for {@link ShowEventTimesCommand#execute()} when stats were touched before.
      */
     @Test
     void showHavingActivity() {

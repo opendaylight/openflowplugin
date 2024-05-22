@@ -12,21 +12,20 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.api.console.Session;
-import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
+import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
 
-/**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
- */
-@Command(scope = "ofp", name = "reset-session-stats", description = "Resets session statistics counters.")
+@Command(scope = "ofp", name = "clearStats", description = "Clear openflow statistics.")
 @Service
-public class ResetSessionStatsComandProvider implements Action {
+public class ClearStatsCommand implements Action {
     @Reference
     Session session;
+    @Reference
+    MessageIntelligenceAgency messageIntelligenceAgency;
 
     @Override
     public Object execute() {
-        SessionStatistics.resetAllCounters();
-        session.getConsole().println("Session statistics counters reset.");
+        messageIntelligenceAgency.resetStatistics();
+        session.getConsole().println("Openflow plugin statistics cleaned.");
         return null;
     }
 }

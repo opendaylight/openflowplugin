@@ -19,16 +19,16 @@ import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.MessageIntell
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 
 /**
- * Test for {@link ClearStatsCommandProvider}.
+ * Test for {@link ClearStatsCommand}.
  */
-class ClearStatsCommandProviderTest extends AbstractKarafTest {
+class ClearStatsCommandTest extends AbstractCommandTest {
     private static final Function<String, Boolean> CHECK_NO_ACTIVITY_FUNCTION =
         input -> input.endsWith(": no activity detected");
 
     private final MessageIntelligenceAgency messageIntelligenceAgency = new MessageIntelligenceAgencyImpl();
 
     @InjectMocks
-    private ClearStatsCommandProvider clearStatsCommand;
+    private ClearStatsCommand clearStatsCommand;
 
     @Override
     protected void doBeforeEach() {
@@ -38,7 +38,7 @@ class ClearStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * Test for {@link ClearStatsCommandProvider#execute()} when no stats were touched before.
+     * Test for {@link ClearStatsCommand#execute()} when no stats were touched before.
      */
     @Test
     void clearNoActivity() {
@@ -48,7 +48,7 @@ class ClearStatsCommandProviderTest extends AbstractKarafTest {
     }
 
     /**
-     * Test for {@link ClearStatsCommandProvider#execute()} when stats were touched before.
+     * Test for {@link ClearStatsCommand#execute()} when stats were touched before.
      */
     @Test
     void clearHavingActivity() {
