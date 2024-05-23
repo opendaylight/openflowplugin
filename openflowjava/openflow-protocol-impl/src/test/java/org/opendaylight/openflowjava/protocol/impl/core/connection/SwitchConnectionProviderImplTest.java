@@ -91,9 +91,9 @@ public class SwitchConnectionProviderImplTest {
      * Tests provider startup - without configuration and {@link SwitchConnectionHandler}.
      */
     @Test
-    public void testStartup1() throws UnknownHostException {
+    public void testStartup1() throws Exception {
         startUp(null);
-        final var future = provider.startup();
+        final var future = provider.startup(null);
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
@@ -105,10 +105,9 @@ public class SwitchConnectionProviderImplTest {
      * Tests provider startup - without configuration.
      */
     @Test
-    public void testStartup2() throws UnknownHostException {
+    public void testStartup2() throws Exception {
         startUp(null);
-        provider.setSwitchConnectionHandler(handler);
-        final var future = provider.startup();
+        final var future = provider.startup(handler);
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
@@ -120,9 +119,9 @@ public class SwitchConnectionProviderImplTest {
      * Tests provider startup - without {@link SwitchConnectionHandler}.
      */
     @Test
-    public void testStartup3() throws UnknownHostException {
+    public void testStartup3() throws Exception {
         startUp(TransportProtocol.TCP);
-        final var future = provider.startup();
+        final var future = provider.startup(null);
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
@@ -136,9 +135,7 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup4() throws Exception {
         startUp(TransportProtocol.TCP);
-        provider.setSwitchConnectionHandler(handler);
-
-        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
+        provider.startup(handler).get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -147,9 +144,7 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup5() throws Exception {
         startUp(TransportProtocol.TLS);
-        provider.setSwitchConnectionHandler(handler);
-
-        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
+        provider.startup(handler).get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -158,9 +153,7 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup6() throws Exception {
         startUp(TransportProtocol.UDP);
-        provider.setSwitchConnectionHandler(handler);
-
-        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
+        provider.startup(handler).get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -169,9 +162,7 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testShutdown() throws Exception {
         startUp(TransportProtocol.TCP);
-        provider.setSwitchConnectionHandler(handler);
-
-        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
+        provider.startup(handler).get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
         assertTrue("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 }
