@@ -7,19 +7,20 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import io.netty.channel.epoll.Epoll;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import org.checkerframework.checker.lock.qual.GuardedBy;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
 import org.opendaylight.infrautils.diagstatus.ServiceRegistration;
 import org.opendaylight.infrautils.diagstatus.ServiceState;
-import org.opendaylight.infrautils.utils.concurrent.Executors;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.opendaylight.openflowjava.protocol.api.connection.SwitchConnectionHandler;
 import org.opendaylight.openflowjava.protocol.api.extensibility.DeserializerRegistry;
@@ -73,8 +74,6 @@ import org.slf4j.LoggerFactory;
 @Component(service = SwitchConnectionProvider.class, factory = SwitchConnectionProviderImpl.FACTORY_NAME)
 public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderImpl.class);
-
-    private static final String THREAD_NAME_PREFIX = "OFP-SwitchConnectionProvider-Udp/TcpHandler";
     private static final String OPENFLOW_JAVA_SERVICE_NAME_PREFIX = "OPENFLOW_SERVER";
 
     // OSGi DS Component Factory name
@@ -87,14 +86,12 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final SerializerRegistry serializerRegistry;
     private final DeserializerRegistry deserializerRegistry;
     private final DeserializationFactory deserializationFactory;
-    private final ListeningExecutorService listeningExecutorService;
     private final String diagStatusIdentifier;
-    private final String threadName;
 
-    private TcpConnectionInitializer connectionInitializer;
-    private ServerFacade serverFacade;
-    // FIXME: clean this up when no longer needed
-    private final ServiceRegistration diagReg;
+    @GuardedBy("this")
+    private ListenableFuture<? extends ServerFacade> serverFacade;
+    @GuardedBy("this")
+    private ServiceRegistration diagReg;
 
     public SwitchConnectionProviderImpl(final DiagStatusService diagStatus,
             final @Nullable ConnectionConfiguration connConfig) {
@@ -103,8 +100,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         diagStatusIdentifier = OPENFLOW_JAVA_SERVICE_NAME_PREFIX + connectionSuffix;
         diagReg = diagStatus.register(diagStatusIdentifier);
 
-        threadName = THREAD_NAME_PREFIX + connectionSuffix;
-        listeningExecutorService = Executors.newListeningSingleThreadExecutor(threadName, LOG);
         serializerRegistry = new SerializerRegistryImpl();
         if (connConfig != null) {
             serializerRegistry.setGroupAddModConfig(connConfig.isGroupAddModEnabled());
@@ -124,9 +119,17 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     @Deactivate
-    public void close() {
-        shutdown();
-        diagReg.close();
+    public synchronized void close() throws InterruptedException, ExecutionException {
+        final var local = diagReg;
+        if (local != null) {
+            diagReg = null;
+            final var future = serverFacade;
+            if (future != null) {
+                shutdownFacade(future).addListener(local::close, MoreExecutors.directExecutor());
+            } else {
+                local.close();
+            }
+        }
     }
 
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
@@ -137,52 +140,76 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     @Override
     public ListenableFuture<Void> shutdown() {
         LOG.debug("Shutdown summoned");
-        if (serverFacade == null) {
-            LOG.warn("Can not shutdown - not configured or started");
+        final ListenableFuture<? extends ServerFacade> local;
+        synchronized (this) {
+            if (diagReg == null) {
+                return Futures.immediateVoidFuture();
+            }
+            local = serverFacade;
+        }
+        if (local == null) {
             throw new IllegalStateException("SwitchConnectionProvider is not started or not configured.");
         }
-        final var serverFacadeShutdownFuture = serverFacade.shutdown();
-        Executors.shutdownAndAwaitTermination(listeningExecutorService);
-        return serverFacadeShutdownFuture;
+        return shutdownFacade(local);
+    }
+
+    private ListenableFuture<Void> shutdownFacade(final ListenableFuture<? extends ServerFacade> future) {
+        return Futures.transformAsync(future, facade -> {
+            final var shutdownFuture = facade.shutdown();
+            shutdownFuture.addListener(() -> removeFacade(future), MoreExecutors.directExecutor());
+            return shutdownFuture;
+        }, MoreExecutors.directExecutor());
+    }
+
+    private synchronized void removeFacade(final ListenableFuture<? extends ServerFacade> expected) {
+        if (expected == serverFacade) {
+            serverFacade = null;
+            diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR, "Terminated"));
+        }
     }
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public ListenableFuture<Void> startup(final SwitchConnectionHandler connectionHandler) {
+    public synchronized ListenableFuture<Void> startup(final SwitchConnectionHandler connectionHandler) {
         LOG.debug("Startup summoned");
+
         if (connConfig == null) {
             return Futures.immediateFailedFuture(new IllegalStateException("Connection not configured"));
         }
         if (connectionHandler == null) {
             return Futures.immediateFailedFuture(new IllegalStateException("SwitchConnectionHandler is not set"));
         }
-
-        try {
-            serverFacade = createAndConfigureServer(connectionHandler);
-            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
-                @Override
-                public void onFailure(final Throwable throwable) {
-                    diagReg.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
-                }
-
-                @Override
-                public void onSuccess(final Object result) {
-                    diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR,
-                        threadName + " terminated"));
-                }
-            }, MoreExecutors.directExecutor());
-            return serverFacade.getIsOnlineFuture();
-        } catch (RuntimeException e) {
-            return Futures.immediateFailedFuture(e);
+        if (serverFacade != null) {
+            return Futures.immediateFailedFuture(new IllegalStateException("Provider already started"));
         }
+
+        final var future = createAndConfigureServer(connectionHandler);
+        serverFacade = future;
+        Futures.addCallback(future, new FutureCallback<ServerFacade>() {
+            @Override
+            public void onSuccess(final ServerFacade result) {
+                diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL));
+                LOG.info("Started {} connection on {}", connConfig.getTransferProtocol(), result.localAddress());
+            }
+
+            @Override
+            public void onFailure(final Throwable cause) {
+                LOG.error("Failed to start {} connection on {}:{}", connConfig.getTransferProtocol(),
+                    connConfig.getAddress(), connConfig.getPort(), cause);
+                diagReg.report(new ServiceDescriptor(diagStatusIdentifier, cause));
+            }
+        }, MoreExecutors.directExecutor());
+
+        return Futures.transform(future, facade -> null, MoreExecutors.directExecutor());
     }
 
-    private ServerFacade createAndConfigureServer(final SwitchConnectionHandler connectionHandler) {
+    private ListenableFuture<? extends ServerFacade> createAndConfigureServer(
+            final SwitchConnectionHandler connectionHandler) {
         LOG.debug("Configuring ..");
-
         final var transportProtocol = (TransportProtocol) connConfig.getTransferProtocol();
         if (transportProtocol == null) {
-            throw new IllegalStateException("No transport protocol received in " + connConfig);
+            return Futures.immediateFailedFuture(
+                new IllegalStateException("No transport protocol received in " + connConfig));
         }
 
         final var factory = new ChannelInitializerFactory();
@@ -198,29 +225,23 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         boolean isEpollEnabled = Epoll.isAvailable();
 
         return switch (transportProtocol) {
-            case TCP, TLS -> {
-                final var tcpHandler = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),
-                    () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
-                final var channelInitializer = factory.createPublishingChannelInitializer();
-                tcpHandler.setChannelInitializer(channelInitializer);
-                tcpHandler.initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
-                final var workerGroupFromTcpHandler = tcpHandler.getWorkerGroup();
-                connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, channelInitializer,
-                    isEpollEnabled);
-                yield tcpHandler;
-            }
-            case UDP -> {
-                final var udpHandler = new UdpHandler(connConfig.getAddress(), connConfig.getPort(),
-                    () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
-                udpHandler.initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
-                udpHandler.setChannelInitializer(factory.createUdpChannelInitializer());
-                yield udpHandler;
-            }
+            case TCP, TLS -> TcpServerFacade.start(connConfig, isEpollEnabled,
+                factory.createPublishingChannelInitializer());
+            case UDP -> UdpServerFacade.start(connConfig, isEpollEnabled, factory.createUdpChannelInitializer());
         };
     }
 
+    @VisibleForTesting
     public ServerFacade getServerFacade() {
-        return serverFacade;
+        final ListenableFuture<? extends ServerFacade> future;
+        synchronized (this) {
+            future = serverFacade;
+        }
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new IllegalStateException("Failed to acquire facade", e);
+        }
     }
 
     @Override
@@ -347,7 +368,12 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     public void initiateConnection(final String host, final int port) {
-        connectionInitializer.initiateConnection(host, port);
+        final var facade = getServerFacade();
+        if (facade instanceof ConnectionInitializer initializer) {
+            initializer.initiateConnection(host, port);
+        } else {
+            throw new UnsupportedOperationException(facade + " does not support connections");
+        }
     }
 
     @Override
