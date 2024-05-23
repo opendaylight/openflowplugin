@@ -236,21 +236,21 @@ public final class OpenFlowPluginProviderImpl
         return fullyStarted;
     }
 
-    private ListenableFuture<List<Boolean>> shutdownSwitchConnections() {
-        final ListenableFuture<List<Boolean>> listListenableFuture =
-                Futures.allAsList(switchConnectionProviders.stream().map(switchConnectionProvider -> {
-                    // Revert deserializers to their original state
-                    if (config.getUseSingleLayerSerialization()) {
-                        DeserializerInjector.revertDeserializers(switchConnectionProvider);
-                    }
+    private ListenableFuture<List<Void>> shutdownSwitchConnections() {
+        final var listListenableFuture = Futures.allAsList(switchConnectionProviders.stream()
+            .map(switchConnectionProvider -> {
+                // Revert deserializers to their original state
+                if (config.getUseSingleLayerSerialization()) {
+                    DeserializerInjector.revertDeserializers(switchConnectionProvider);
+                }
 
-                    // Shutdown switch connection provider
-                    return switchConnectionProvider.shutdown();
-                }).collect(Collectors.toSet()));
+                // Shutdown switch connection provider
+                return switchConnectionProvider.shutdown();
+            }).collect(Collectors.toList()));
 
-        Futures.addCallback(listListenableFuture, new FutureCallback<List<Boolean>>() {
+        Futures.addCallback(listListenableFuture, new FutureCallback<>() {
             @Override
-            public void onSuccess(final List<Boolean> result) {
+            public void onSuccess(final List<Void> result) {
                 LOG.info("All switchConnectionProviders were successfully shut down ({}).", result.size());
             }
 

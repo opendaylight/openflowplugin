@@ -9,6 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
@@ -113,6 +114,6 @@ public class UdpHandlerTest {
 
     private void shutdownServer() throws InterruptedException, ExecutionException, TimeoutException {
         final var shutdownRet = udpHandler.shutdown() ;
-        assertTrue("Wrong - shutdown failed", shutdownRet.get(10, TimeUnit.SECONDS));
+        assertNull("Wrong - shutdown failed", shutdownRet.get(10, TimeUnit.SECONDS));
     }
 }
