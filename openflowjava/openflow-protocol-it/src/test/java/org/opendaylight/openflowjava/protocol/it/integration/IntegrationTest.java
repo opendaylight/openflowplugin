@@ -41,8 +41,6 @@ import org.opendaylight.openflowjava.protocol.impl.clients.SleepEvent;
 import org.opendaylight.openflowjava.protocol.impl.clients.UdpSimpleClient;
 import org.opendaylight.openflowjava.protocol.impl.clients.WaitForMessageEvent;
 import org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl;
-import org.opendaylight.openflowjava.protocol.impl.core.TcpHandler;
-import org.opendaylight.openflowjava.protocol.impl.core.UdpHandler;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionConfigurationImpl;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.KeystoreType;
@@ -109,17 +107,11 @@ public class IntegrationTest {
 
         switchConnectionProvider = new SwitchConnectionProviderImpl(diagStatusService, connConfig);
         switchConnectionProvider.startup(mockPlugin).get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-        if (protocol.equals(TransportProtocol.TCP) || protocol.equals(TransportProtocol.TLS)) {
-            final TcpHandler tcpHandler = (TcpHandler) switchConnectionProvider.getServerFacade();
-            port = tcpHandler.getPort();
-        } else {
-            final UdpHandler udpHandler = (UdpHandler) switchConnectionProvider.getServerFacade();
-            port = udpHandler.getPort();
-        }
+        port = switchConnectionProvider.getServerFacade().localAddress().getPort();
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws Exception {
         switchConnectionProvider.close();
         LOGGER.debug("\n ending test -------------------------------");
     }
