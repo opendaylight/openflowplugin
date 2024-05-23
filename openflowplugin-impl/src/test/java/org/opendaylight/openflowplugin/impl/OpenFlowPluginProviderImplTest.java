@@ -77,7 +77,7 @@ public class OpenFlowPluginProviderImplTest {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
-        when(switchConnectionProvider.startup()).thenReturn(Futures.immediateFuture(null));
+        when(switchConnectionProvider.startup(any())).thenReturn(Futures.immediateFuture(null));
         when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));
         when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()),
                 any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
@@ -102,7 +102,7 @@ public class OpenFlowPluginProviderImplTest {
                 ofPluginDiagstatusProvider, systemReadyMonitor)) {
             // Calling the onSystemBootReady() callback
             provider.onSystemBootReady();
-            verify(switchConnectionProvider).startup();
+            verify(switchConnectionProvider).startup(any());
         }
         verify(switchConnectionProvider).shutdown();
     }
