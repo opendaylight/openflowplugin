@@ -19,9 +19,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtens
  * @author mirehak
  * @author michal.polkorab
  */
-public interface SwitchConnectionProvider extends AutoCloseable,
-        SerializerExtensionProvider, DeserializerExtensionProvider {
-
+public interface SwitchConnectionProvider extends SerializerExtensionProvider, DeserializerExtensionProvider {
     /**
      * Returns the connection configuration.
      *
@@ -30,12 +28,12 @@ public interface SwitchConnectionProvider extends AutoCloseable,
     ConnectionConfiguration getConfiguration();
 
     /**
-     * Start listening to switches, but please don't forget to do
-     * {@link #setSwitchConnectionHandler(SwitchConnectionHandler)} first.
+     * Start listening to switches using specified {@link SwitchConnectionHandler}.
      *
+     * @param connectionHandler instance being informed when new switch connects
      * @return future completing when the channel has been resolved
      */
-    ListenableFuture<Void> startup();
+    ListenableFuture<Void> startup(SwitchConnectionHandler connectionHandler);
 
     /**
      * Stop listening to switches.
@@ -43,11 +41,4 @@ public interface SwitchConnectionProvider extends AutoCloseable,
      * @return future, triggered to true, when all listening channels are down
      */
     ListenableFuture<Boolean> shutdown();
-
-    /**
-     * Sets the SwitchConnectionHandler.
-     *
-     * @param switchConHandler instance being informed when new switch connects
-     */
-    void setSwitchConnectionHandler(SwitchConnectionHandler switchConHandler);
 }

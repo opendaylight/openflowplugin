@@ -71,7 +71,7 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 @Component(service = SwitchConnectionProvider.class, factory = SwitchConnectionProviderImpl.FACTORY_NAME)
-public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer {
+public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, ConnectionInitializer, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(SwitchConnectionProviderImpl.class);
 
     private static final String THREAD_NAME_PREFIX = "OFP-SwitchConnectionProvider-Udp/TcpHandler";
@@ -82,8 +82,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         "org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl";
     public static final String PROP_CONFIG = ".config";
 
-    private SwitchConnectionHandler switchConnectionHandler;
-    private ServerFacade serverFacade;
     private final ConnectionConfiguration connConfig;
     private final SerializationFactory serializationFactory;
     private final SerializerRegistry serializerRegistry;
@@ -94,6 +92,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final String threadName;
 
     private TcpConnectionInitializer connectionInitializer;
+    private ServerFacade serverFacade;
     // FIXME: clean this up when no longer needed
     private final ServiceRegistration diagReg;
 
@@ -123,20 +122,16 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         this(diagStatus, new ConnectionConfigurationImpl((SwitchConnectionConfig) props.get(PROP_CONFIG)));
     }
 
+    @Override
     @Deactivate
-    void deactivate() {
+    public void close() {
+        shutdown();
         diagReg.close();
     }
 
     // ID based, on configuration, used for diagstatus serviceIdentifier (ServiceDescriptor moduleServiceName)
     private static String createConnectionSuffix(final @Nullable ConnectionConfiguration config) {
         return config == null ? "-null-config" : "_" + config.getPort();
-    }
-
-    @Override
-    public void setSwitchConnectionHandler(final SwitchConnectionHandler switchConnectionHandler) {
-        LOG.debug("setSwitchConnectionHandler");
-        this.switchConnectionHandler = switchConnectionHandler;
     }
 
     @Override
@@ -153,14 +148,18 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public ListenableFuture<Void> startup() {
+    public ListenableFuture<Void> startup(final SwitchConnectionHandler connectionHandler) {
         LOG.debug("Startup summoned");
+        if (connConfig == null) {
+            return Futures.immediateFailedFuture(new IllegalStateException("Connection not configured"));
+        }
+        if (connectionHandler == null) {
+            return Futures.immediateFailedFuture(new IllegalStateException("SwitchConnectionHandler is not set"));
+        }
+
         try {
-            serverFacade = createAndConfigureServer();
-            if (switchConnectionHandler == null) {
-                throw new IllegalStateException("SwitchConnectionHandler is not set");
-            }
-            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
+            serverFacade = createAndConfigureServer(connectionHandler);
+            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<>() {
                 @Override
                 public void onFailure(final Throwable throwable) {
                     diagReg.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
@@ -178,19 +177,16 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         }
     }
 
-    private ServerFacade createAndConfigureServer() {
+    private ServerFacade createAndConfigureServer(final SwitchConnectionHandler connectionHandler) {
         LOG.debug("Configuring ..");
 
-        if (connConfig == null) {
-            throw new IllegalStateException("Connection not configured");
-        }
         final var transportProtocol = (TransportProtocol) connConfig.getTransferProtocol();
         if (transportProtocol == null) {
             throw new IllegalStateException("No transport protocol received in " + connConfig);
         }
 
         final var factory = new ChannelInitializerFactory();
-        factory.setSwitchConnectionHandler(switchConnectionHandler);
+        factory.setSwitchConnectionHandler(connectionHandler);
         factory.setSwitchIdleTimeout(connConfig.getSwitchIdleTimeout());
         factory.setTlsConfig(connConfig.getTlsConfiguration());
         factory.setSerializationFactory(serializationFactory);
@@ -225,11 +221,6 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     public ServerFacade getServerFacade() {
         return serverFacade;
-    }
-
-    @Override
-    public void close() {
-        shutdown();
     }
 
     @Override
