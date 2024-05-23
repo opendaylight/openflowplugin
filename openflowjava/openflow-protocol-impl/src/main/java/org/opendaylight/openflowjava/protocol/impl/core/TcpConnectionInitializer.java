@@ -15,7 +15,6 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.opendaylight.openflowjava.protocol.api.connection.ThreadConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,12 +64,6 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
     @Override
     public ListenableFuture<Void> getIsOnlineFuture() {
         return hasRun;
-    }
-
-    @Override
-    @Deprecated(since = "0.17.2", forRemoval = true)
-    public void setThreadConfig(final ThreadConfiguration threadConfig) {
-        // IGNORE
     }
 
     @Override

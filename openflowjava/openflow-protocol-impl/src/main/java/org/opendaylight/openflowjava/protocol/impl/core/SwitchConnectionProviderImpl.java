@@ -7,14 +7,11 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import java.util.Map;
 import org.eclipse.jdt.annotation.Nullable;
@@ -184,9 +181,15 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private ServerFacade createAndConfigureServer() {
         LOG.debug("Configuring ..");
 
-        checkState(connConfig != null, "Connection not configured");
+        if (connConfig == null) {
+            throw new IllegalStateException("Connection not configured");
+        }
+        final var transportProtocol = (TransportProtocol) connConfig.getTransferProtocol();
+        if (transportProtocol == null) {
+            throw new IllegalStateException("No transport protocol received in " + connConfig);
+        }
 
-        final ChannelInitializerFactory factory = new ChannelInitializerFactory();
+        final var factory = new ChannelInitializerFactory();
         factory.setSwitchConnectionHandler(switchConnectionHandler);
         factory.setSwitchIdleTimeout(connConfig.getSwitchIdleTimeout());
         factory.setTlsConfig(connConfig.getTlsConfiguration());
@@ -194,32 +197,31 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
         factory.setDeserializationFactory(deserializationFactory);
         factory.setUseBarrier(connConfig.useBarrier());
         factory.setChannelOutboundQueueSize(connConfig.getChannelOutboundQueueSize());
-        final TransportProtocol transportProtocol = (TransportProtocol) connConfig.getTransferProtocol();
         // Check if Epoll native transport is available.
         // TODO : Add option to disable Epoll.
         boolean isEpollEnabled = Epoll.isAvailable();
 
-        final ServerFacade server;
-        if (TransportProtocol.TCP.equals(transportProtocol) || TransportProtocol.TLS.equals(transportProtocol)) {
-            server = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),
-                () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
-            final TcpChannelInitializer channelInitializer = factory.createPublishingChannelInitializer();
-            ((TcpHandler) server).setChannelInitializer(channelInitializer);
-            ((TcpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
-            final EventLoopGroup workerGroupFromTcpHandler = ((TcpHandler) server).getWorkerGroup();
-            connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, isEpollEnabled);
-            connectionInitializer.setChannelInitializer(channelInitializer);
-            connectionInitializer.run();
-        } else if (TransportProtocol.UDP.equals(transportProtocol)) {
-            server = new UdpHandler(connConfig.getAddress(), connConfig.getPort(),
-                () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
-            ((UdpHandler) server).initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
-            ((UdpHandler) server).setChannelInitializer(factory.createUdpChannelInitializer());
-        } else {
-            throw new IllegalStateException("Unknown transport protocol received: " + transportProtocol);
-        }
-        server.setThreadConfig(connConfig.getThreadConfiguration());
-        return server;
+        return switch (transportProtocol) {
+            case TCP, TLS -> {
+                final var tcpHandler = new TcpHandler(connConfig.getAddress(), connConfig.getPort(),
+                    () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+                final var channelInitializer = factory.createPublishingChannelInitializer();
+                tcpHandler.setChannelInitializer(channelInitializer);
+                tcpHandler.initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
+                final var workerGroupFromTcpHandler = tcpHandler.getWorkerGroup();
+                connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, isEpollEnabled);
+                connectionInitializer.setChannelInitializer(channelInitializer);
+                connectionInitializer.run();
+                yield tcpHandler;
+            }
+            case UDP -> {
+                final var udpHandler = new UdpHandler(connConfig.getAddress(), connConfig.getPort(),
+                    () -> diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.OPERATIONAL)));
+                udpHandler.initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
+                udpHandler.setChannelInitializer(factory.createUdpChannelInitializer());
+                yield udpHandler;
+            }
+        };
     }
 
     public ServerFacade getServerFacade() {

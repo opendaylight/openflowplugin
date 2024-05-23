@@ -131,12 +131,6 @@ public final class UdpHandler implements ServerFacade {
         this.channelInitializer = channelInitializer;
     }
 
-    @Override
-    @Deprecated(since = "0.17.2", forRemoval = true)
-    public void setThreadConfig(final ThreadConfiguration threadConfig) {
-        // No-op
-    }
-
     /**
      * Initiate event loop groups.
      *
