@@ -23,35 +23,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author martin.uhlir
  */
-public class TcpConnectionInitializer implements ServerFacade, ConnectionInitializer {
+public class TcpConnectionInitializer implements ConnectionInitializer, ShutdownProvider {
     private static final Logger LOG = LoggerFactory.getLogger(TcpConnectionInitializer.class);
 
-    private final SettableFuture<Void> hasRun = SettableFuture.create();
     private final EventLoopGroup workerGroup;
-    private final boolean isEpollEnabled;
-
-    private TcpChannelInitializer channelInitializer;
-    private Bootstrap bootstrap;
+    private final Bootstrap bootstrap;
 
     /**
      * Constructor.
      *
      * @param workerGroup - shared worker group
      */
-    public TcpConnectionInitializer(final EventLoopGroup workerGroup, final boolean isEpollEnabled) {
-        this.workerGroup = requireNonNull(workerGroup, "WorkerGroup can't be null");
-        this.isEpollEnabled = isEpollEnabled;
-    }
-
-    @Override
-    public void run() {
-        bootstrap = new Bootstrap();
-        if (isEpollEnabled) {
-            bootstrap.group(workerGroup).channel(EpollSocketChannel.class).handler(channelInitializer);
-        } else {
-            bootstrap.group(workerGroup).channel(NioSocketChannel.class).handler(channelInitializer);
-        }
-        hasRun.set(null);
+    public TcpConnectionInitializer(final EventLoopGroup workerGroup, final TcpChannelInitializer channelInitializer,
+            final boolean isEpollEnabled) {
+        this.workerGroup = requireNonNull(workerGroup, "WorkerGroup cannot be null");
+        bootstrap = new Bootstrap()
+            .group(workerGroup)
+            .handler(channelInitializer)
+            .channel(isEpollEnabled ? EpollSocketChannel.class : NioSocketChannel.class);
     }
 
     @Override
@@ -62,20 +51,11 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
     }
 
     @Override
-    public ListenableFuture<Void> getIsOnlineFuture() {
-        return hasRun;
-    }
-
-    @Override
     public void initiateConnection(final String host, final int port) {
         try {
             bootstrap.connect(host, port).sync();
         } catch (InterruptedException e) {
             LOG.error("Unable to initiate connection", e);
         }
-    }
-
-    public void setChannelInitializer(final TcpChannelInitializer channelInitializer) {
-        this.channelInitializer = channelInitializer;
     }
 }

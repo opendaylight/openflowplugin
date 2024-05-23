@@ -13,5 +13,6 @@ package org.opendaylight.openflowjava.protocol.impl.core;
  * @author mirehak
  */
 public interface ServerFacade extends ShutdownProvider, OnlineProvider, Runnable {
-
+    @Override
+    void run();
 }
