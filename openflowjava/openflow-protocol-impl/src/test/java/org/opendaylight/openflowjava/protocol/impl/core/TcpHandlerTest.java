@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.unix.Errors;
 import java.io.IOException;
@@ -35,15 +34,20 @@ import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFa
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TcpHandlerTest {
+    private final InetAddress serverAddress = InetAddress.getLoopbackAddress();
 
-    private final InetAddress serverAddress = InetAddress.getLoopbackAddress() ;
-    @Mock ChannelHandlerContext mockChHndlrCtx ;
-    @Mock TcpChannelInitializer mockChannelInitializer;
-    @Mock SwitchConnectionHandler mockSwitchConnHndler ;
-    @Mock SerializationFactory mockSerializationFactory ;
-    @Mock DeserializationFactory mockDeserializationFactory ;
+    @Mock
+    ChannelHandlerContext mockChHndlrCtx;
+    @Mock
+    TcpChannelInitializer mockChannelInitializer;
+    @Mock
+    SwitchConnectionHandler mockSwitchConnHndler;
+    @Mock
+    SerializationFactory mockSerializationFactory;
+    @Mock
+    DeserializationFactory mockDeserializationFactory;
 
-    TcpHandler tcpHandler ;
+    TcpHandler tcpHandler;
 
     /**
      * Test run with null address set.
@@ -181,11 +185,8 @@ public class TcpHandlerTest {
      * Trigger the server shutdown and wait 2 seconds for completion.
      */
     private void shutdownServer() throws InterruptedException, ExecutionException {
-        ListenableFuture<Boolean> shutdownRet = tcpHandler.shutdown() ;
-        while (shutdownRet.isDone() != true) {
-            Thread.sleep(100) ;
-        }
-        assertEquals("shutdown failed", true, shutdownRet.get());
+        final var shutdownRet = tcpHandler.shutdown() ;
+        assertNull(shutdownRet.get());
     }
 
     private Boolean startupServer(final boolean isEpollEnabled) throws InterruptedException {

@@ -10,8 +10,8 @@ package org.opendaylight.openflowjava.protocol.impl.core.connection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -163,6 +163,6 @@ public class SwitchConnectionProviderImplTest {
     public void testShutdown() throws Exception {
         startUp(TransportProtocol.TCP);
         provider.startup(handler).get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
-        assertTrue("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+        assertNull("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 }

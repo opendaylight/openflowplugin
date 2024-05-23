@@ -135,13 +135,13 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     }
 
     @Override
-    public ListenableFuture<Boolean> shutdown() {
+    public ListenableFuture<Void> shutdown() {
         LOG.debug("Shutdown summoned");
         if (serverFacade == null) {
             LOG.warn("Can not shutdown - not configured or started");
             throw new IllegalStateException("SwitchConnectionProvider is not started or not configured.");
         }
-        ListenableFuture<Boolean> serverFacadeShutdownFuture = serverFacade.shutdown();
+        final var serverFacadeShutdownFuture = serverFacade.shutdown();
         Executors.shutdownAndAwaitTermination(listeningExecutorService);
         return serverFacadeShutdownFuture;
     }
@@ -156,7 +156,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
         try {
             serverFacade = createAndConfigureServer(connectionHandler);
-            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<>() {
+            Futures.addCallback(listeningExecutorService.submit(serverFacade), new FutureCallback<Object>() {
                 @Override
                 public void onFailure(final Throwable throwable) {
                     diagReg.report(new ServiceDescriptor(diagStatusIdentifier, throwable));
