@@ -209,9 +209,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
                 tcpHandler.setChannelInitializer(channelInitializer);
                 tcpHandler.initiateEventLoopGroups(connConfig.getThreadConfiguration(), isEpollEnabled);
                 final var workerGroupFromTcpHandler = tcpHandler.getWorkerGroup();
-                connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, isEpollEnabled);
-                connectionInitializer.setChannelInitializer(channelInitializer);
-                connectionInitializer.run();
+                connectionInitializer = new TcpConnectionInitializer(workerGroupFromTcpHandler, channelInitializer,
+                    isEpollEnabled);
                 yield tcpHandler;
             }
             case UDP -> {
