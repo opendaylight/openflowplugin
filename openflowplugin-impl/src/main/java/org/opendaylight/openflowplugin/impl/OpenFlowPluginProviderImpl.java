@@ -213,8 +213,7 @@ public final class OpenFlowPluginProviderImpl
             }
 
             // Set handler of incoming connections and start switch connection provider
-            switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
-            return switchConnectionProvider.startup();
+            return switchConnectionProvider.startup(connectionManager);
         }).collect(Collectors.toSet())), new FutureCallback<List<Void>>() {
             @Override
             public void onSuccess(final List<Void> result) {

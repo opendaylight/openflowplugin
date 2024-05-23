@@ -108,8 +108,7 @@ public class IntegrationTest {
         doReturn(mock(ServiceRegistration.class)).when(diagStatusService).register(any());
 
         switchConnectionProvider = new SwitchConnectionProviderImpl(diagStatusService, connConfig);
-        switchConnectionProvider.setSwitchConnectionHandler(mockPlugin);
-        switchConnectionProvider.startup().get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
+        switchConnectionProvider.startup(mockPlugin).get(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
         if (protocol.equals(TransportProtocol.TCP) || protocol.equals(TransportProtocol.TLS)) {
             final TcpHandler tcpHandler = (TcpHandler) switchConnectionProvider.getServerFacade();
             port = tcpHandler.getPort();
