@@ -107,12 +107,14 @@ public final class UdpHandler implements ServerFacade {
     }
 
     @Override
-    public ListenableFuture<Boolean> shutdown() {
-        final SettableFuture<Boolean> result = SettableFuture.create();
+    public ListenableFuture<Void> shutdown() {
+        final var result = SettableFuture.<Void>create();
         group.shutdownGracefully().addListener(downResult -> {
-            result.set(downResult.isSuccess());
-            if (downResult.cause() != null) {
-                result.setException(downResult.cause());
+            final var cause = downResult.cause();
+            if (cause != null) {
+                result.setException(cause);
+            } else {
+                result.set(null);
             }
         });
         return result;
