@@ -31,15 +31,14 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public final class UdpHandler implements ServerFacade {
-
     private static final Logger LOG = LoggerFactory.getLogger(UdpHandler.class);
+
+    private final SettableFuture<Void> isOnlineFuture = SettableFuture.create();
+    private final InetAddress startupAddress;
+    private final Runnable readyRunnable;
 
     private int port;
     private EventLoopGroup group;
-    private final InetAddress startupAddress;
-    private final Runnable readyRunnable;
-    private final SettableFuture<Boolean> isOnlineFuture = SettableFuture.create();
-
     private UdpChannelInitializer channelInitializer;
     private Class<? extends DatagramChannel> datagramChannelClass;
 
@@ -96,7 +95,7 @@ public final class UdpHandler implements ServerFacade {
             LOG.debug("Address from udpHandler: {}", address);
             LOG.info("Switch listener started and ready to accept incoming udp connections on port: {}", port);
             readyRunnable.run();
-            isOnlineFuture.set(true);
+            isOnlineFuture.set(null);
 
             // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
@@ -120,7 +119,7 @@ public final class UdpHandler implements ServerFacade {
     }
 
     @Override
-    public ListenableFuture<Boolean> getIsOnlineFuture() {
+    public ListenableFuture<Void> getIsOnlineFuture() {
         return isOnlineFuture;
     }
 

@@ -24,12 +24,11 @@ import org.slf4j.LoggerFactory;
  * @author martin.uhlir
  */
 public class TcpConnectionInitializer implements ServerFacade, ConnectionInitializer {
-
     private static final Logger LOG = LoggerFactory.getLogger(TcpConnectionInitializer.class);
 
+    private final SettableFuture<Void> hasRun = SettableFuture.create();
     private final EventLoopGroup workerGroup;
     private final boolean isEpollEnabled;
-    private final SettableFuture<Boolean> hasRun = SettableFuture.create();
 
     private TcpChannelInitializer channelInitializer;
     private Bootstrap bootstrap;
@@ -52,18 +51,18 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
         } else {
             bootstrap.group(workerGroup).channel(NioSocketChannel.class).handler(channelInitializer);
         }
-        hasRun.set(true);
+        hasRun.set(null);
     }
 
     @Override
     public ListenableFuture<Boolean> shutdown() {
-        final SettableFuture<Boolean> result = SettableFuture.create();
+        final var result = SettableFuture.<Boolean>create();
         workerGroup.shutdownGracefully();
         return result;
     }
 
     @Override
-    public ListenableFuture<Boolean> getIsOnlineFuture() {
+    public ListenableFuture<Void> getIsOnlineFuture() {
         return hasRun;
     }
 

@@ -7,12 +7,14 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.net.InetAddress;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -43,13 +45,9 @@ public class UdpHandlerTest {
     public void testWithEmptyAddress() throws Exception {
         udpHandler = new UdpHandler(null, 0, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
-        Assert.assertTrue("Wrong - start server", startupServer(false));
-        try {
-            Assert.assertTrue(udpHandler.getIsOnlineFuture().get(1500, TimeUnit.MILLISECONDS));
-        } catch (TimeoutException e) {
-            Assert.fail("Wrong - getIsOnlineFuture timed out");
-        }
-        Assert.assertFalse("Wrong - port has been set to zero", udpHandler.getPort() == 0);
+        assertTrue("Wrong - start server", startupServer(false));
+        udpHandler.getIsOnlineFuture().get(1500, TimeUnit.MILLISECONDS);
+        assertFalse("Wrong - port has been set to zero", udpHandler.getPort() == 0);
         shutdownServer();
     }
 
@@ -60,13 +58,9 @@ public class UdpHandlerTest {
     public void testWithEmptyAddressOnEpoll() throws Exception {
         udpHandler = new UdpHandler(null, 0, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
-        Assert.assertTrue("Wrong - start server", startupServer(true));
-        try {
-            Assert.assertTrue(udpHandler.getIsOnlineFuture().get(1500,TimeUnit.MILLISECONDS));
-        } catch (TimeoutException e) {
-            Assert.fail("Wrong - getIsOnlineFuture timed out");
-        }
-        Assert.assertFalse("Wrong - port has been set to zero", udpHandler.getPort() == 0);
+        assertTrue("Wrong - start server", startupServer(true));
+        udpHandler.getIsOnlineFuture().get(1500,TimeUnit.MILLISECONDS);
+        assertFalse("Wrong - port has been set to zero", udpHandler.getPort() == 0);
         shutdownServer();
     }
 
@@ -78,13 +72,9 @@ public class UdpHandlerTest {
         int port = 9874;
         udpHandler = new UdpHandler(InetAddress.getLocalHost(), port, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
-        Assert.assertTrue("Wrong - start server", startupServer(false));
-        try {
-            Assert.assertTrue(udpHandler.getIsOnlineFuture().get(1500,TimeUnit.MILLISECONDS));
-        } catch (TimeoutException e) {
-            Assert.fail("Wrong - getIsOnlineFuture timed out");
-        }
-        Assert.assertEquals("Wrong - bad port number has been set", port, udpHandler.getPort());
+        assertTrue("Wrong - start server", startupServer(false));
+        udpHandler.getIsOnlineFuture().get(1500,TimeUnit.MILLISECONDS);
+        assertEquals("Wrong - bad port number has been set", port, udpHandler.getPort());
         shutdownServer();
     }
 
@@ -96,19 +86,15 @@ public class UdpHandlerTest {
         int port = 9874;
         udpHandler = new UdpHandler(InetAddress.getLocalHost(), port, () -> { });
         udpHandler.setChannelInitializer(udpChannelInitializerMock);
-        Assert.assertTrue("Wrong - start server", startupServer(true));
-        try {
-            Assert.assertTrue(udpHandler.getIsOnlineFuture().get(1500,TimeUnit.MILLISECONDS));
-        } catch (TimeoutException e) {
-            Assert.fail("Wrong - getIsOnlineFuture timed out");
-        }
-        Assert.assertEquals("Wrong - bad port number has been set", port, udpHandler.getPort());
+        assertTrue("Wrong - start server", startupServer(true));
+        udpHandler.getIsOnlineFuture().get(1500,TimeUnit.MILLISECONDS);
+        assertEquals("Wrong - bad port number has been set", port, udpHandler.getPort());
         shutdownServer();
     }
 
     private Boolean startupServer(final boolean isEpollEnabled)
             throws InterruptedException, ExecutionException {
-        ListenableFuture<Boolean> online = udpHandler.getIsOnlineFuture();
+        final var online = udpHandler.getIsOnlineFuture();
         /**
          * Test EPoll based native transport if isEpollEnabled is true.
          * Else use Nio based transport.
@@ -126,8 +112,7 @@ public class UdpHandlerTest {
     }
 
     private void shutdownServer() throws InterruptedException, ExecutionException, TimeoutException {
-        ListenableFuture<Boolean> shutdownRet = udpHandler.shutdown() ;
-        final Boolean shutdownSucceeded = shutdownRet.get(10, TimeUnit.SECONDS);
-        Assert.assertTrue("Wrong - shutdown failed", shutdownSucceeded);
+        final var shutdownRet = udpHandler.shutdown() ;
+        assertTrue("Wrong - shutdown failed", shutdownRet.get(10, TimeUnit.SECONDS));
     }
 }

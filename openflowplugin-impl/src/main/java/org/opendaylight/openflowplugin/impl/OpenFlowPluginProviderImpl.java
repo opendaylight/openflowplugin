@@ -215,9 +215,9 @@ public final class OpenFlowPluginProviderImpl
             // Set handler of incoming connections and start switch connection provider
             switchConnectionProvider.setSwitchConnectionHandler(connectionManager);
             return switchConnectionProvider.startup();
-        }).collect(Collectors.toSet())), new FutureCallback<List<Boolean>>() {
+        }).collect(Collectors.toSet())), new FutureCallback<List<Void>>() {
             @Override
-            public void onSuccess(final List<Boolean> result) {
+            public void onSuccess(final List<Void> result) {
                 LOG.info("All switchConnectionProviders are up and running ({}).", result.size());
                 diagStatusProvider.reportStatus(ServiceState.OPERATIONAL);
                 fullyStarted.set(null);

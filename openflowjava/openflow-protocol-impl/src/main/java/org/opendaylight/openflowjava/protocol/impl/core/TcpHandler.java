@@ -48,13 +48,14 @@ public class TcpHandler implements ServerFacade {
 
     private static final Logger LOG = LoggerFactory.getLogger(TcpHandler.class);
 
-    private int port;
-    private String address;
+    private final SettableFuture<Void> isOnlineFuture = SettableFuture.create();
     private final InetAddress startupAddress;
     private final Runnable readyRunnable;
+
+    private int port;
+    private String address;
     private EventLoopGroup workerGroup;
     private EventLoopGroup bossGroup;
-    private final SettableFuture<Boolean> isOnlineFuture = SettableFuture.create();
 
     private TcpChannelInitializer channelInitializer;
 
@@ -136,7 +137,7 @@ public class TcpHandler implements ServerFacade {
             LOG.debug("address from tcphandler: {}", address);
             LOG.info("Switch listener started and ready to accept incoming tcp/tls connections on port: {}", port);
             readyRunnable.run();
-            isOnlineFuture.set(true);
+            isOnlineFuture.set(null);
 
             // This waits until this channel is closed, and rethrows the cause of the failure if this future failed.
             f.channel().closeFuture().sync();
@@ -174,7 +175,7 @@ public class TcpHandler implements ServerFacade {
     }
 
     @Override
-    public ListenableFuture<Boolean> getIsOnlineFuture() {
+    public ListenableFuture<Void> getIsOnlineFuture() {
         return isOnlineFuture;
     }
 

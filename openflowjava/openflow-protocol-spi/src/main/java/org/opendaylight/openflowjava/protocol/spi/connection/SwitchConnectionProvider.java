@@ -33,9 +33,9 @@ public interface SwitchConnectionProvider extends AutoCloseable,
      * Start listening to switches, but please don't forget to do
      * {@link #setSwitchConnectionHandler(SwitchConnectionHandler)} first.
      *
-     * @return future, triggered to true, when listening channel is up and running
+     * @return future completing when the channel has been resolved
      */
-    ListenableFuture<Boolean> startup();
+    ListenableFuture<Void> startup();
 
     /**
      * Stop listening to switches.

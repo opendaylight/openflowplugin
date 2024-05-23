@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import com.google.common.util.concurrent.ListenableFuture;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -36,7 +38,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MatchEntrySerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
-import org.opendaylight.openflowjava.protocol.impl.core.ServerFacade;
 import org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.ExperimenterActionSubType;
@@ -115,9 +116,9 @@ public class SwitchConnectionProviderImpl02Test {
     @Test
     public void testServerFacade() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
-        final ListenableFuture<Boolean> future = provider.startup();
-        final ServerFacade serverFacade = provider.getServerFacade();
-        Assert.assertNotNull("Wrong -- getServerFacade return null",serverFacade);
+        final var future = provider.startup();
+        final var serverFacade = provider.getServerFacade();
+        assertNotNull("Wrong -- getServerFacade return null", serverFacade);
     }
 
     /**
@@ -135,12 +136,10 @@ public class SwitchConnectionProviderImpl02Test {
     @Test
     public void testUnregisterWrongKeys() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
-        final ExperimenterInstructionSerializerKey testSerKey
-            = new ExperimenterInstructionSerializerKey(EncodeConstants.OF_VERSION_1_0, 42L);
-        Assert.assertFalse("Wrong -- unregisterSerializer",provider.unregisterSerializer(testSerKey));
-        final ExperimenterInstructionDeserializerKey tesDeserKey
-            = new ExperimenterInstructionDeserializerKey(EncodeConstants.OF_VERSION_1_0, 24L);
-        Assert.assertFalse("Wrong -- unregisterDeserializer",provider.unregisterDeserializer(tesDeserKey));
+        final var testSerKey = new ExperimenterInstructionSerializerKey(EncodeConstants.OF_VERSION_1_0, 42L);
+        assertFalse("Wrong -- unregisterSerializer",provider.unregisterSerializer(testSerKey));
+        final var tesDeserKey = new ExperimenterInstructionDeserializerKey(EncodeConstants.OF_VERSION_1_0, 24L);
+        assertFalse("Wrong -- unregisterDeserializer",provider.unregisterDeserializer(tesDeserKey));
     }
 
     /**
