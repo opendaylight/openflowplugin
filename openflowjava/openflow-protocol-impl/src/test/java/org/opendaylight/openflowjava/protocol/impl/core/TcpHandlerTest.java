@@ -146,14 +146,12 @@ public class TcpHandlerTest {
         int serverPort = 28001;
         Socket firstBinder = new Socket();
 
-        try {
+        try (firstBinder) {
             firstBinder.bind(new InetSocketAddress(serverAddress, serverPort));
             tcpHandler = new TcpHandler(serverAddress, serverPort, () -> { });
             tcpHandler.setChannelInitializer(mockChannelInitializer);
             tcpHandler.initiateEventLoopGroups(null, false);
             tcpHandler.run();
-        } finally {
-            firstBinder.close();
         }
     }
 
@@ -165,7 +163,7 @@ public class TcpHandlerTest {
         int serverPort = 28001;
         Socket firstBinder = new Socket();
 
-        try {
+        try (firstBinder) {
             firstBinder.bind(new InetSocketAddress(serverAddress, serverPort));
 
             tcpHandler = new TcpHandler(serverAddress, serverPort, () -> { });
@@ -176,8 +174,6 @@ public class TcpHandlerTest {
             fail("Expected BindException or Errors.NativeIoException");
         } catch (BindException | Errors.NativeIoException e) {
             // expected
-        } finally {
-            firstBinder.close();
         }
     }
 
@@ -192,8 +188,8 @@ public class TcpHandlerTest {
         assertEquals("shutdown failed", true, shutdownRet.get());
     }
 
-    private Boolean startupServer(boolean isEpollEnabled) throws InterruptedException {
-        ListenableFuture<Boolean> online = tcpHandler.getIsOnlineFuture();
+    private Boolean startupServer(final boolean isEpollEnabled) throws InterruptedException {
+        final var online = tcpHandler.getIsOnlineFuture();
         /**
          * Test EPoll based native transport if isEpollEnabled is true.
          * Else use Nio based transport.
@@ -204,10 +200,10 @@ public class TcpHandlerTest {
         while (online.isDone() != true && retry++ < 20) {
             Thread.sleep(100);
         }
-        return online.isDone() ;
+        return online.isDone();
     }
 
-    private static Boolean clientConnection(int port) throws IOException {
+    private static Boolean clientConnection(final int port) throws IOException {
         // Connect, and disconnect
         Socket socket = new Socket(InetAddress.getLoopbackAddress(), port);
         Boolean result = socket.isConnected();

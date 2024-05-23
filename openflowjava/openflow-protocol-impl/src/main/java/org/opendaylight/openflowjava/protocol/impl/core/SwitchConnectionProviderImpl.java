@@ -156,7 +156,7 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
 
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
-    public ListenableFuture<Boolean> startup() {
+    public ListenableFuture<Void> startup() {
         LOG.debug("Startup summoned");
         try {
             serverFacade = createAndConfigureServer();

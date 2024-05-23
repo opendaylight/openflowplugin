@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -94,7 +93,7 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup1() throws UnknownHostException {
         startUp(null);
-        final ListenableFuture<Boolean> future = provider.startup();
+        final var future = provider.startup();
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
@@ -109,7 +108,7 @@ public class SwitchConnectionProviderImplTest {
     public void testStartup2() throws UnknownHostException {
         startUp(null);
         provider.setSwitchConnectionHandler(handler);
-        final ListenableFuture<Boolean> future = provider.startup();
+        final var future = provider.startup();
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
@@ -123,7 +122,7 @@ public class SwitchConnectionProviderImplTest {
     @Test
     public void testStartup3() throws UnknownHostException {
         startUp(TransportProtocol.TCP);
-        final ListenableFuture<Boolean> future = provider.startup();
+        final var future = provider.startup();
 
         final var cause = assertThrows(ExecutionException.class, () -> future.get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS))
             .getCause();
@@ -139,7 +138,7 @@ public class SwitchConnectionProviderImplTest {
         startUp(TransportProtocol.TCP);
         provider.setSwitchConnectionHandler(handler);
 
-        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -150,7 +149,7 @@ public class SwitchConnectionProviderImplTest {
         startUp(TransportProtocol.TLS);
         provider.setSwitchConnectionHandler(handler);
 
-        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -161,7 +160,7 @@ public class SwitchConnectionProviderImplTest {
         startUp(TransportProtocol.UDP);
         provider.setSwitchConnectionHandler(handler);
 
-        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -172,7 +171,7 @@ public class SwitchConnectionProviderImplTest {
         startUp(TransportProtocol.TCP);
         provider.setSwitchConnectionHandler(handler);
 
-        assertTrue("Failed to start", provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
+        provider.startup().get(WAIT_TIMEOUT, TimeUnit.MILLISECONDS);
         assertTrue("Failed to stop", provider.shutdown().get(5 * WAIT_TIMEOUT, TimeUnit.MILLISECONDS));
     }
 }
