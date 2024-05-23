@@ -77,8 +77,8 @@ public class OpenFlowPluginProviderImplTest {
         when(dataBroker.newWriteOnlyTransaction()).thenReturn(writeTransaction);
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTransaction).commit();
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
-        when(switchConnectionProvider.startup(any())).thenReturn(Futures.immediateFuture(null));
-        when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));
+        when(switchConnectionProvider.startup(any())).thenReturn(Futures.immediateVoidFuture());
+        when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateVoidFuture());
         when(configurationService.getProperty(eq(ConfigurationProperty.USE_SINGLE_LAYER_SERIALIZATION.toString()),
                 any())).thenReturn(USE_SINGLE_LAYER_SERIALIZATION);
         when(configurationService.getProperty(eq(ConfigurationProperty.THREAD_POOL_MIN_THREADS.toString()), any()))

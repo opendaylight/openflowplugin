@@ -5,12 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import com.google.common.util.concurrent.ListenableFuture;
-
 
 /**
  * Shutdown provider interface.
@@ -19,5 +16,5 @@ import com.google.common.util.concurrent.ListenableFuture;
  */
 public interface ShutdownProvider {
 
-    ListenableFuture<Boolean> shutdown();
+    ListenableFuture<Void> shutdown();
 }

@@ -38,7 +38,7 @@ public interface SwitchConnectionProvider extends SerializerExtensionProvider, D
     /**
      * Stop listening to switches.
      *
-     * @return future, triggered to true, when all listening channels are down
+     * @return future completing when all channels are down
      */
-    ListenableFuture<Boolean> shutdown();
+    ListenableFuture<Void> shutdown();
 }
