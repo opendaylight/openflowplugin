@@ -9,8 +9,6 @@ package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollSocketChannel;
@@ -23,47 +21,17 @@ import org.slf4j.LoggerFactory;
  *
  * @author martin.uhlir
  */
-public class TcpConnectionInitializer implements ServerFacade, ConnectionInitializer {
+final class TcpConnectionInitializer implements ConnectionInitializer {
     private static final Logger LOG = LoggerFactory.getLogger(TcpConnectionInitializer.class);
 
-    private final SettableFuture<Void> hasRun = SettableFuture.create();
-    private final EventLoopGroup workerGroup;
-    private final boolean isEpollEnabled;
+    private final Bootstrap bootstrap;
 
-    private TcpChannelInitializer channelInitializer;
-    private Bootstrap bootstrap;
-
-    /**
-     * Constructor.
-     *
-     * @param workerGroup - shared worker group
-     */
-    public TcpConnectionInitializer(final EventLoopGroup workerGroup, final boolean isEpollEnabled) {
-        this.workerGroup = requireNonNull(workerGroup, "WorkerGroup can't be null");
-        this.isEpollEnabled = isEpollEnabled;
-    }
-
-    @Override
-    public void run() {
-        bootstrap = new Bootstrap();
-        if (isEpollEnabled) {
-            bootstrap.group(workerGroup).channel(EpollSocketChannel.class).handler(channelInitializer);
-        } else {
-            bootstrap.group(workerGroup).channel(NioSocketChannel.class).handler(channelInitializer);
-        }
-        hasRun.set(null);
-    }
-
-    @Override
-    public ListenableFuture<Boolean> shutdown() {
-        final var result = SettableFuture.<Boolean>create();
-        workerGroup.shutdownGracefully();
-        return result;
-    }
-
-    @Override
-    public ListenableFuture<Void> getIsOnlineFuture() {
-        return hasRun;
+    TcpConnectionInitializer(final EventLoopGroup workerGroup, final TcpChannelInitializer channelInitializer,
+            final boolean isEpollEnabled) {
+        bootstrap = new Bootstrap()
+            .group(requireNonNull(workerGroup, "WorkerGroup cannot be null"))
+            .handler(channelInitializer)
+            .channel(isEpollEnabled ? EpollSocketChannel.class : NioSocketChannel.class);
     }
 
     @Override
@@ -73,9 +41,5 @@ public class TcpConnectionInitializer implements ServerFacade, ConnectionInitial
         } catch (InterruptedException e) {
             LOG.error("Unable to initiate connection", e);
         }
-    }
-
-    public void setChannelInitializer(final TcpChannelInitializer channelInitializer) {
-        this.channelInitializer = channelInitializer;
     }
 }
