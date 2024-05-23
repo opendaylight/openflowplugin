@@ -27,14 +27,10 @@ import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageIntelligenceAgency;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
+import org.opendaylight.openflowplugin.impl.configuration.OSGiConfiguration;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.common.Uint16;
-import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OpenFlowPluginProviderImplTest {
@@ -59,18 +55,11 @@ public class OpenFlowPluginProviderImplTest {
     @Mock
     ClusterSingletonServiceProvider clusterSingletonServiceProvider;
     @Mock
-    ConfigurationService configurationService;
+    OSGiConfiguration configuration;
     @Mock
     MastershipChangeServiceManager mastershipChangeServiceManager;
     @Mock
     MessageIntelligenceAgency messageIntelligenceAgency;
-
-    private static final Uint16 THREAD_POOL_MIN_THREADS = Uint16.ONE;
-    private static final Uint16 THREAD_POOL_MAX_THREADS = Uint16.valueOf(32000);
-    private static final Uint32 THREAD_POOL_TIMEOUT = Uint32.valueOf(60);
-    private static final boolean USE_SINGLE_LAYER_SERIALIZATION = false;
-    private static final Uint16 DEVICE_CONNECTION_RATE_LIMIT_PER_MIN = Uint16.ZERO;
-    private static final Uint16 DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS = Uint16.valueOf(60);
 
     @Before
     public void setUp() {
@@ -79,22 +68,21 @@ public class OpenFlowPluginProviderImplTest {
         when(entityOwnershipService.registerListener(any(), any())).thenReturn(entityOwnershipListenerRegistration);
         when(switchConnectionProvider.startup()).thenReturn(Futures.immediateFuture(true));
         when(switchConnectionProvider.shutdown()).thenReturn(Futures.immediateFuture(true));
-        when(configurationService.toProviderConfig()).thenReturn(new OpenflowProviderConfigBuilder()
-            .setUseSingleLayerSerialization(USE_SINGLE_LAYER_SERIALIZATION)
-            .setThreadPoolMinThreads(THREAD_POOL_MIN_THREADS)
-            .setThreadPoolMaxThreads(new NonZeroUint16Type(THREAD_POOL_MAX_THREADS))
-            .setThreadPoolTimeout(THREAD_POOL_TIMEOUT)
-            .setDeviceConnectionRateLimitPerMin(DEVICE_CONNECTION_RATE_LIMIT_PER_MIN)
-            .setDeviceConnectionHoldTimeInSeconds(DEVICE_CONNECTION_HOLD_TIME_IN_SECONDS)
-            .build());
+
+        when(configuration.use$_$single$_$layer$_$()).thenReturn(false);
+        when(configuration.thread$_$pool$_$min$_$threads()).thenReturn(1);
+        when(configuration.thread$_$pool$_$max$_$threads()).thenReturn(32000);
+        when(configuration.thread$_$pool$_$timeout()).thenReturn(60);
+        when(configuration.device$_$connection$_$hold$_$time$_$in$_$seconds()).thenReturn(60);
+        when(configuration.device$_$connection$_$rate$_$limit$_$per$_$min()).thenReturn(0);
     }
 
     @Test
     public void testInitializeAndClose() {
-        try (var provider = new OpenFlowPluginProviderImpl(configurationService, List.of(switchConnectionProvider),
-                dataBroker, rpcProviderRegistry, notificationPublishService, clusterSingletonServiceProvider,
+        try (var provider = new OpenFlowPluginProviderImpl(List.of(switchConnectionProvider), dataBroker,
+                rpcProviderRegistry, notificationPublishService, clusterSingletonServiceProvider,
                 entityOwnershipService, mastershipChangeServiceManager, messageIntelligenceAgency,
-                ofPluginDiagstatusProvider, systemReadyMonitor)) {
+                ofPluginDiagstatusProvider, systemReadyMonitor, configuration)) {
             // Calling the onSystemBootReady() callback
             provider.onSystemBootReady();
             verify(switchConnectionProvider).startup();

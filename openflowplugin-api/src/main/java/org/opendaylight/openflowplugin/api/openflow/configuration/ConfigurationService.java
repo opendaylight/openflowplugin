@@ -18,8 +18,7 @@ import org.opendaylight.yangtools.concepts.Registration;
  * Manages OpenFlowPlugin configuration.
  */
 @NonNullByDefault
-public interface ConfigurationService extends AutoCloseable {
-
+public interface ConfigurationService {
     /**
      * Update map of properties.
      *

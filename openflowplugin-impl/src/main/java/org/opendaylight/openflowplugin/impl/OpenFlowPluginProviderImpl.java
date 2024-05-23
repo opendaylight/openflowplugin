@@ -40,7 +40,6 @@ import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistories;
 import org.opendaylight.openflowplugin.api.openflow.FlowGroupInfoHistory;
-import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionManager;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceManager;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -51,6 +50,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.Messa
 import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterManager;
+import org.opendaylight.openflowplugin.impl.configuration.OSGiConfiguration;
 import org.opendaylight.openflowplugin.impl.connection.ConnectionManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.DeviceManagerImpl;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
@@ -68,10 +68,16 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorM
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorManagerFactory;
 import org.opendaylight.openflowplugin.openflow.md.core.session.OFSessionUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
+import org.opendaylight.yangtools.yang.common.Uint16;
+import org.opendaylight.yangtools.yang.common.Uint32;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
@@ -113,20 +119,17 @@ public final class OpenFlowPluginProviderImpl
     private ConnectionManager connectionManager;
 
     @Inject
-    @Activate
-    public OpenFlowPluginProviderImpl(@Reference final ConfigurationService configurationService,
-            @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policyOption = ReferencePolicyOption.GREEDY)
-            final List<SwitchConnectionProvider> switchConnectionProviders,
-            @Reference final DataBroker dataBroker, @Reference final RpcProviderService rpcProviderRegistry,
-            @Reference final NotificationPublishService notificationPublishService,
-            @Reference final ClusterSingletonServiceProvider singletonServiceProvider,
-            @Reference final EntityOwnershipService entityOwnershipService,
-            @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
-            @Reference final MessageIntelligenceAgency messageIntelligenceAgency,
-            @Reference final DiagStatusProvider diagStatusProvider,
-            @Reference final SystemReadyMonitor systemReadyMonitor) {
-        config = configurationService.toProviderConfig();
+    public OpenFlowPluginProviderImpl(final List<SwitchConnectionProvider> switchConnectionProviders,
+            final DataBroker dataBroker, @Reference final RpcProviderService rpcProviderRegistry,
+            final NotificationPublishService notificationPublishService,
+            final ClusterSingletonServiceProvider singletonServiceProvider,
+            final EntityOwnershipService entityOwnershipService,
+            final MastershipChangeServiceManager mastershipChangeServiceManager,
+            final MessageIntelligenceAgency messageIntelligenceAgency,
+            final DiagStatusProvider diagStatusProvider, final SystemReadyMonitor systemReadyMonitor,
+            final OpenflowProviderConfig config) {
         this.switchConnectionProviders = List.copyOf(switchConnectionProviders);
+        this.config = requireNonNull(config);
         final var ppdb = new PingPongDataBroker(dataBroker);
         this.diagStatusProvider = requireNonNull(diagStatusProvider);
 
@@ -196,6 +199,33 @@ public final class OpenFlowPluginProviderImpl
         deviceManager.initialize();
         systemReadyMonitor.registerListener(this);
         LOG.info("registered onSystemBootReady() listener for OpenFlowPluginProvider");
+    }
+
+    @Activate
+    public OpenFlowPluginProviderImpl(
+            @Reference(cardinality = ReferenceCardinality.AT_LEAST_ONE, policyOption = ReferencePolicyOption.GREEDY)
+            final List<SwitchConnectionProvider> switchConnectionProviders,
+            @Reference final DataBroker dataBroker, @Reference final RpcProviderService rpcProviderRegistry,
+            @Reference final NotificationPublishService notificationPublishService,
+            @Reference final ClusterSingletonServiceProvider singletonServiceProvider,
+            @Reference final EntityOwnershipService entityOwnershipService,
+            @Reference final MastershipChangeServiceManager mastershipChangeServiceManager,
+            @Reference final MessageIntelligenceAgency messageIntelligenceAgency,
+            @Reference final DiagStatusProvider diagStatusProvider,
+            @Reference final SystemReadyMonitor systemReadyMonitor, final OSGiConfiguration configuration) {
+        this(switchConnectionProviders, dataBroker, rpcProviderRegistry, notificationPublishService,
+            singletonServiceProvider, entityOwnershipService, mastershipChangeServiceManager, messageIntelligenceAgency,
+            diagStatusProvider, systemReadyMonitor, configOf(configuration));
+    }
+
+    @Modified
+    void updateConfiguration(final OSGiConfiguration configuration) {
+        updateConfiguration(configOf(configuration));
+    }
+
+    public void updateConfiguration(final OpenflowProviderConfig config) {
+        // FIXME: implement this
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -339,5 +369,41 @@ public final class OpenFlowPluginProviderImpl
         }
     }
 
+    private static OpenflowProviderConfig configOf(final OSGiConfiguration configuration) {
+        return new OpenflowProviderConfigBuilder()
+            .setBarrierCountLimit(new NonZeroUint16Type(Uint16.valueOf(configuration.barrier$_$count$_$limit())))
+            .setBarrierIntervalTimeoutLimit(
+                new NonZeroUint32Type(Uint32.valueOf(configuration.barrier$_$interval$_$timeout$_$limit())))
+            .setBasicTimerDelay(new NonZeroUint32Type(Uint32.valueOf(configuration.basic$_$timer$_$delay())))
+            .setDeviceConnectionHoldTimeInSeconds(
+                Uint16.valueOf(configuration.device$_$connection$_$hold$_$time$_$in$_$seconds()))
+            .setDeviceConnectionRateLimitPerMin(
+                Uint16.valueOf(configuration.device$_$connection$_$rate$_$limit$_$per$_$min()))
+            .setDeviceDatastoreRemovalDelay(
+                new NonZeroUint32Type(Uint32.valueOf(configuration.device$_$datastore$_$removal$_$delay())))
+            // FIXME: what is this?
+            .setEchoReplyTimeout(null)
+            .setEnableEqualRole(configuration.enable$_$equal$_$role())
+            .setEnableFlowRemovedNotification(configuration.enable$_$flow$_$removed$_$notification())
+            .setGlobalNotificationQuota(Uint32.valueOf(configuration.global$_$notification$_$quota()))
+            .setIsFlowStatisticsPollingOn(configuration.is$_$flow$_$statistics$_$polling$_$on())
+            .setIsGroupStatisticsPollingOn(configuration.is$_$meter$_$statistics$_$polling$_$on())
+            .setIsMeterStatisticsPollingOn(configuration.is$_$meter$_$statistics$_$polling$_$on())
+            .setIsPortStatisticsPollingOn(configuration.is$_$port$_$statistics$_$polling$_$on())
+            .setIsQueueStatisticsPollingOn(configuration.is$_$queue$_$statistics$_$polling$_$on())
+            .setIsStatisticsPollingOn(configuration.is$_$statistics$_$polling$_$on())
+            .setIsStatisticsRpcEnabled(configuration.is$_$statistics$_$rpc$_$enabled())
+            .setIsTableStatisticsPollingOn(configuration.is$_$table$_$statistics$_$polling$_$on())
+            .setMaximumTimerDelay(new NonZeroUint32Type(Uint32.valueOf(configuration.maximum$_$timer$_$delay())))
+            .setRpcRequestsQuota(new NonZeroUint16Type(Uint16.valueOf(configuration.rpc$_$requests$_$quota())))
+            .setSkipTableFeatures(configuration.skip$_$table$_$features())
+            .setSwitchFeaturesMandatory(configuration.switch$_$features$_$mandatory())
+            .setThreadPoolMaxThreads(
+                new NonZeroUint16Type(Uint16.valueOf(configuration.thread$_$pool$_$max$_$threads())))
+            .setThreadPoolMinThreads(Uint16.valueOf(configuration.thread$_$pool$_$min$_$threads()))
+            .setThreadPoolTimeout(Uint32.valueOf(configuration.thread$_$pool$_$timeout()))
+            .setUseSingleLayerSerialization(configuration.use$_$single$_$layer$_$())
 
+            .build();
+    }
 }
