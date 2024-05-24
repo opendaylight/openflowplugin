@@ -41,6 +41,22 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>diagstatus-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>infrautils-util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-binding-spi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-api</artifactId>
         </dependency>
@@ -77,31 +93,19 @@
             <artifactId>yang-common-netty</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-spi</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
             <artifactId>openflow-protocol-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.infrautils</groupId>
-            <artifactId>diagstatus-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
             <artifactId>openflow-protocol-spi</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
             <artifactId>openflowjava-util</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}.openflowjava</groupId>
+            <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
             <artifactId>openflow-protocol-impl</artifactId>
         </dependency>
         <dependency>
