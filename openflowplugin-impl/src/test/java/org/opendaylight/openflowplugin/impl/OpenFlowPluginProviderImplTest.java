@@ -14,7 +14,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.util.concurrent.Futures;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,10 +95,11 @@ public class OpenFlowPluginProviderImplTest {
 
     @Test
     public void testInitializeAndClose() {
-        try (var provider = new OpenFlowPluginProviderImpl(configurationService, List.of(switchConnectionProvider),
-                dataBroker, rpcProviderRegistry, notificationPublishService, clusterSingletonServiceProvider,
-                entityOwnershipService, mastershipChangeServiceManager, messageIntelligenceAgency,
-                ofPluginDiagstatusProvider, systemReadyMonitor)) {
+        try (var provider = new OpenFlowPluginProviderImpl(configurationService, dataBroker, rpcProviderRegistry,
+                notificationPublishService, clusterSingletonServiceProvider, entityOwnershipService,
+                mastershipChangeServiceManager, messageIntelligenceAgency, ofPluginDiagstatusProvider,
+                systemReadyMonitor)) {
+            provider.bindConnectionProvider(switchConnectionProvider);
             // Calling the onSystemBootReady() callback
             provider.onSystemBootReady();
             verify(switchConnectionProvider).startup(any());
