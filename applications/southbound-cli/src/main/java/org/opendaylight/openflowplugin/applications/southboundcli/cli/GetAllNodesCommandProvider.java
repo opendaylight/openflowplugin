@@ -31,10 +31,10 @@ public class GetAllNodesCommandProvider extends OsgiCommandSupport {
             System.out.println("No node is connected yet");
         } else {
             StringBuilder stringBuilder = new StringBuilder();
-            Formatter formatter = new Formatter(stringBuilder);
             System.out.println("Number of nodes: " + ofNodeList.size());
             System.out.println(getAllLocalNodesHeaderOutput());
             System.out.println("--------------------------------------------------------------------------");
+            Formatter formatter = new Formatter(stringBuilder);
             for (OFNode ofNode : ofNodeList) {
                 System.out.println(formatter.format("%-15s %3s %-15s %n",
                         ofNode.getNodeId(), "", ofNode.getNodeName()).toString());
