@@ -100,11 +100,6 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
             return;
         }
         LOG.debug("OF Protocol message received, type:{}", bb.getByte(bb.readerIndex() + 1));
-
-        ByteBuf messageBuffer = bb.slice(bb.readerIndex(), length);
-        list.add(messageBuffer);
-        messageBuffer.retain();
-        bb.skipBytes(length);
+        list.add(bb.readRetainedSlice(length));
     }
-
 }
