@@ -24,8 +24,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
 
   <dependencies>
     <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.shell</groupId>
@@ -45,15 +45,16 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
       <artifactId>mdsal-common-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.mdsal</groupId>
-      <artifactId>yang-binding</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opendaylight.serviceutils</groupId>
       <artifactId>srm-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opendaylight.yangtools</groupId>
+      <artifactId>binding-spec</artifactId>
+    </dependency>
   </dependencies>
 
+  <!-- FIXME: this should be replaced with a single MANIFEST.MF entry, as copies unnecessary code -->
   <build>
     <plugins>
       <plugin>
