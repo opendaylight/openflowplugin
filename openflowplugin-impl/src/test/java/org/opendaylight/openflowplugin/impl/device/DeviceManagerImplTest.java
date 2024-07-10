@@ -58,6 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -142,7 +143,7 @@ public class DeviceManagerImplTest {
 
         deviceManager.setTranslatorLibrary(translatorLibrary);
         verify(dataBroker).newWriteOnlyTransaction();
-        verify(writeTransaction).merge(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
+        verify(writeTransaction).merge(eq(LogicalDatastoreType.OPERATIONAL), any(InstanceIdentifier.class), any());
         verify(writeTransaction).commit();
     }
 
@@ -180,7 +181,7 @@ public class DeviceManagerImplTest {
         deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
         verify(notificationPublishService).offerNotification(new NodeUpdatedBuilder()
                 .setId(DUMMY_NODE_ID)
-                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER))
+                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER.toIdentifier()))
                 .build());
     }
 
@@ -190,7 +191,7 @@ public class DeviceManagerImplTest {
         deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
         deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
         verify(notificationPublishService).offerNotification(new NodeRemovedBuilder()
-                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER))
+                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER.toIdentifier()))
                 .build());
     }
 
@@ -213,5 +214,4 @@ public class DeviceManagerImplTest {
         contextsField.setAccessible(true);
         return (ConcurrentHashMap<DeviceInfo, DeviceContext>) contextsField.get(deviceManager);
     }
-
 }

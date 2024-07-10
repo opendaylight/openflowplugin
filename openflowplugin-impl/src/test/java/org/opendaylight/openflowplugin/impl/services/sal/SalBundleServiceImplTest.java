@@ -50,7 +50,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 @RunWith(MockitoJUnitRunner.class)
 public class SalBundleServiceImplTest {
     private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("openflow:1"))));
+            .child(Node.class, new NodeKey(new NodeId("openflow:1"))).toIdentifier());
     private static final BundleId BUNDLE_ID = new BundleId(Uint32.ONE);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, false);
 

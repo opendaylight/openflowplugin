@@ -2,7 +2,7 @@
 <features name="openflowplugin-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name="odl-openflowplugin-southbound" version="${project.version}">
         <configfile finalname="etc/org.opendaylight.openflowplugin.cfg">mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/${project.version}/cfg/config</configfile>
-        <feature version="[9,10)">odl-mdsal-broker</feature>
-        <feature version="[6,7)">odl-infrautils-diagstatus</feature>
+        <feature version="[10,11)">odl-mdsal-broker</feature>
+        <feature version="[7,8)">odl-infrautils-diagstatus</feature>
     </feature>
 </features>

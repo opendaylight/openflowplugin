@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerGroupS
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerGroupService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
-import org.opendaylight.yangtools.yang.binding.RpcOutput;
+import org.opendaylight.yangtools.binding.RpcOutput;
 
 abstract class AbstractGroupRpc<I extends Group, O extends RpcOutput> extends AbstractDeviceRpc {
     final @NonNull MultiLayerGroupService<I, O> multi;

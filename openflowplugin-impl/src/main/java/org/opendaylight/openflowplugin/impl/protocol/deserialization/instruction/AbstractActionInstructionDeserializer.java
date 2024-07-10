@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.impl.protocol.deserialization.util.Action
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.list.ActionKey;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 
 public abstract class AbstractActionInstructionDeserializer extends AbstractInstructionDeserializer
         implements DeserializerRegistryInjector {

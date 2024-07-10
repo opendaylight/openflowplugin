@@ -8,12 +8,13 @@
 package org.opendaylight.openflowplugin.extension.api;
 
 import com.google.common.base.Preconditions;
-import java.util.HashSet;
+import com.google.common.collect.ImmutableSet;
 import java.util.Optional;
 import java.util.Set;
-import org.opendaylight.yangtools.yang.binding.Augmentable;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.DataContainer;
+import org.opendaylight.yangtools.binding.Grouping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,10 +28,9 @@ import org.slf4j.LoggerFactory;
  *
  * @param <G> grouping
  */
-public class GroupingLooseResolver<G> {
+public class GroupingLooseResolver<G extends Grouping> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupingLooseResolver.class);
 
-    private final Class<G> commonInterface;
     private final Set<Class<? extends Augmentation<?>>> classes;
 
     /**
@@ -38,9 +38,11 @@ public class GroupingLooseResolver<G> {
      *
      * @param commonInterface common interface
      */
-    public GroupingLooseResolver(Class<G> commonInterface) {
-        this.commonInterface = commonInterface;
-        classes = new HashSet<>();
+    @SafeVarargs
+    public GroupingLooseResolver(final Class<G> commonInterface, final Class<? extends Augmentation<?>>... classes) {
+        this.classes = ImmutableSet.copyOf(classes);
+        this.classes.forEach(
+            cls -> Preconditions.checkArgument(commonInterface.isAssignableFrom(cls), "oh man! I got " + cls));
     }
 
     /**
@@ -53,47 +55,25 @@ public class GroupingLooseResolver<G> {
     }
 
     /**
-     * Adds an augmentation class.
-     *
-     * @param cls equivalent augmentation class
-     * @return this for chaining
-     */
-    public GroupingLooseResolver<G> add(Class<? extends Augmentation<?>> cls) {
-        Preconditions.checkArgument(commonInterface.isAssignableFrom(cls),
-                "oh man! I got " + cls);
-        classes.add(cls);
-        return this;
-    }
-
-    /**
      * Gets the extension for the give data.
      *
      * @param data parameter(data) for getExtension
-     * @param <T> type of data
      * @return shared grouping
      */
     @SuppressWarnings("unchecked")
-    public <T extends Augmentable<T>> Optional<G> getExtension(DataObject data) {
-        // The type of 'data' should really be T for compile-time checking. Several call sites do not pass an
-        // Augmentable DataObject type which would result in a ClassCastException at runtime. This is clearly
-        // broken - those call sites need to be analyzed to determine the correct behavior in order for this method
-        // signature to be changed but for now catch ClassCastException.
-        T guessData;
-        try {
-            guessData = (T) data;
-        } catch (ClassCastException e) {
-            LOG.warn("Cannot cast to Augmentable", e);
-            return Optional.empty();
-        }
-
-        for (Class<? extends Augmentation<?>> cls : classes) {
-            Augmentation<T> potential = guessData
-                    .augmentation((Class<Augmentation<T>>) cls);
-            if (potential != null) {
-                return Optional.of((G) potential);
+    public Optional<G> getExtension(final DataContainer data) {
+        // This way look weird, but the caller may only have a Grouping view of the DataObject, hence we need to see
+        // if the object even supports augmentations.
+        if (data instanceof Augmentable augmentable) {
+            for (var cls : classes) {
+                final var aug = augmentable.augmentation(cls);
+                if (aug != null) {
+                    return Optional.of((G) aug);
+                }
             }
+        } else {
+            LOG.warn("Cannot cast {} to Augmentable", data.getClass());
         }
-
         return Optional.empty();
     }
 }

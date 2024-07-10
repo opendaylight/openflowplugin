@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -72,7 +73,7 @@ public final class NodeConnectorRefToPortTranslator {
 
         Uint32 port = null;
 
-        final InstanceIdentifier<?> value = nodeConnectorRef.getValue();
+        final InstanceIdentifier<?> value = ((DataObjectIdentifier<?>) nodeConnectorRef.getValue()).toLegacy();
         if (value instanceof KeyedInstanceIdentifier) {
             KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> identifier =
                     (KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey>) value;

@@ -5,14 +5,13 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.serialization;
 
 import io.netty.buffer.ByteBuf;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFSerializer;
 import org.opendaylight.openflowjava.protocol.api.extensibility.SerializerRegistry;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -35,8 +34,8 @@ public class SerializationFactory {
      * @param out ByteBuf for storing and sending transformed message
      * @param message POJO message
      */
-    public void messageToBuffer(final Uint8 version, final ByteBuf out, final DataObject message) {
-        OFSerializer<DataObject> serializer = registry.getSerializer(
+    public void messageToBuffer(final Uint8 version, final ByteBuf out, final DataContainer message) {
+        OFSerializer<DataContainer> serializer = registry.getSerializer(
                 new MessageTypeKey<>(version, message.implementedInterface()));
         serializer.serialize(message, out);
     }

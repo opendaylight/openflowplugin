@@ -22,7 +22,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.multipart.types.rev170112.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.reply.multipart.reply.body.MultipartReplyQueueStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.multipart.request.multipart.request.body.MultipartRequestQueueStatsBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 
 public final class SingleGetQueueStatistics extends AbstractGetQueueStatistics<MultipartReply> {
     public SingleGetQueueStatistics(final RequestContextStack requestContextStack, final DeviceContext deviceContext,

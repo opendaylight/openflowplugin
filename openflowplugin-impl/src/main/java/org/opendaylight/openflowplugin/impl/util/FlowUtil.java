@@ -35,11 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.EntryObject;
+import org.opendaylight.yangtools.binding.Key;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Key;
-import org.opendaylight.yangtools.yang.binding.KeyAware;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -120,7 +119,7 @@ public final class FlowUtil {
         // Hidden on purpose
     }
 
-    static <K extends Key<V>, V extends KeyAware<K>> Map<K, V> index(final List<V> list) {
+    static <K extends Key<V>, V extends EntryObject<V, K>> Map<K, V> index(final List<V> list) {
         return list == null ? null : BindingMap.ordered(list);
     }
 
@@ -185,12 +184,11 @@ public final class FlowUtil {
      */
     public static FlowRef buildFlowPath(final InstanceIdentifier<Node> nodePath,
                                         final Uint8 tableId, final FlowId flowId) {
-        final KeyedInstanceIdentifier<Flow, FlowKey> flowPath = nodePath
-                .augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(tableId))
-                .child(Flow.class, new FlowKey(new FlowId(flowId)));
-
-        return new FlowRef(flowPath);
+        return new FlowRef(nodePath
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey(tableId))
+            .child(Flow.class, new FlowKey(new FlowId(flowId)))
+            .toIdentifier());
     }
 
     /**
