@@ -14,7 +14,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.ConnectionAdapterImpl;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.DisconnectEventBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
