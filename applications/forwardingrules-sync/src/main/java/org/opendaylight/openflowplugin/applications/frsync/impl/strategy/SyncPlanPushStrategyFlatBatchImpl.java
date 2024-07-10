@@ -90,8 +90,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
+import org.opendaylight.yangtools.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.slf4j.Logger;
@@ -147,7 +147,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             LOG.trace("Index of last batch step: {}", batchOrder);
 
             final var rpcResultFuture = processFlatBatch.invoke(new ProcessFlatBatchInputBuilder()
-                .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent())))
+                .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent()).toIdentifier()))
                 // TODO: propagate from input
                 .setExitOnFirstError(false)
                 .setBatch(BindingMap.ordered(batchBag))

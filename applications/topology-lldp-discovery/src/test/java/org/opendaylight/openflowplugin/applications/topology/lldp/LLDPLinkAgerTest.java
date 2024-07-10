@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.topology.lldp.discovery.config.rev160511.TopologyLldpDiscoveryConfigBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -65,8 +65,9 @@ public class LLDPLinkAgerTest {
     @Before
     public void setUp() {
         lldpLinkAger = new LLDPLinkAger(getConfig(), notificationService, getConfigurationService(), eos, dataBroker);
-        Mockito.when(link.getDestination()).thenReturn(new NodeConnectorRef(
-                InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId("openflow:1")))));
+        Mockito.when(link.getDestination()).thenReturn(new NodeConnectorRef(DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+                .build()));
         Mockito.when(eos.getOwnershipState(any(Entity.class))).thenReturn(
                 Optional.of(EntityOwnershipState.IS_OWNER));
     }

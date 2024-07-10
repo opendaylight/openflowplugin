@@ -157,7 +157,7 @@ public class RoleContextImpl implements RoleContext {
         if (OFConstants.OFP_VERSION_1_3.compareTo(deviceInfo.getVersion()) <= 0) {
             final SetRoleInput setRoleInput = new SetRoleInputBuilder()
                     .setControllerRole(newRole)
-                    .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
+                    .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier().toIdentifier()))
                     .build();
 
             final ListenableFuture<RpcResult<SetRoleOutput>> setRoleOutputFuture = setRoleRpc.invoke(setRoleInput);

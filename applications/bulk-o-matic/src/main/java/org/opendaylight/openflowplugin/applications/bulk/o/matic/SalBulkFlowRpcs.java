@@ -86,6 +86,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
@@ -172,7 +173,7 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
 
     private static InstanceIdentifier<Flow> getFlowInstanceIdentifier(final BulkFlowDsItem bulkFlow) {
         final NodeRef nodeRef = bulkFlow.getNode();
-        return ((InstanceIdentifier<Node>) nodeRef.getValue()).augmentation(FlowCapableNode.class)
+        return ((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy().augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(bulkFlow.getTableId()))
                 .child(Flow.class, new FlowKey(new FlowId(bulkFlow.getFlowId())));
     }

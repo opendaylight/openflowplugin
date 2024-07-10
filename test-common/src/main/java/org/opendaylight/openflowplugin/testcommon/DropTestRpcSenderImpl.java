@@ -113,12 +113,12 @@ public final class DropTestRpcSenderImpl extends AbstractDropTest implements Dro
 
         // Construct the flow instance id
 
-        fb.setNode(new NodeRef(node));
+        fb.setNode(new NodeRef(node.toIdentifier()));
 
         // Add flow
         final var flow = fb.build();
         LOG.debug("onPacketReceived - About to write flow (via SalFlowService) {}", flow);
-        Futures.addCallback(addFlow.invoke(flow), new FutureCallback<RpcResult<AddFlowOutput>>() {
+        Futures.addCallback(addFlow.invoke(flow), new FutureCallback<>() {
             @Override
             public void onSuccess(final RpcResult<AddFlowOutput> result) {
                 countFutureSuccess();

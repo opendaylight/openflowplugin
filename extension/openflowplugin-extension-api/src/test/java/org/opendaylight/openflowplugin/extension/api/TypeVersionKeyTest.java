@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.BarrierReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.HelloMessage;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataContainer;
 
 /**
  * Unit tests for TypeVersionKey.
@@ -26,9 +26,9 @@ public class TypeVersionKeyTest {
      */
     @Test
     public void test() {
-        TypeVersionKey<? extends DataObject> key1 =
+        TypeVersionKey<? extends DataContainer> key1 =
                 new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF_VERSION_1_3);
-        TypeVersionKey<? extends DataObject> key2 =
+        TypeVersionKey<? extends DataContainer> key2 =
                 new TypeVersionKey<>(HelloMessage.class, EncodeConstants.OF_VERSION_1_3);
         Assert.assertTrue("Wrong equals()", key1.equals(key2));
         Assert.assertEquals("Wrong hashCode()", key1.hashCode(), key2.hashCode());

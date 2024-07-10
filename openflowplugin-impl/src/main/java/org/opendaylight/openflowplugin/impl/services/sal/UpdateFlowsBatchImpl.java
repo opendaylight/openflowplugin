@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.UpdateFlowsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +70,7 @@ public final class UpdateFlowsBatchImpl implements UpdateFlowsBatch {
     }
 
     private static FlowRef createFlowRef(final NodeRef nodeRef, final BatchFlowInputUpdateGrouping batchFlow) {
-        return FlowUtil.buildFlowPath((InstanceIdentifier<Node>) nodeRef.getValue(),
+        return FlowUtil.buildFlowPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
                 batchFlow.getOriginalBatchedFlow().getTableId(), batchFlow.getFlowId());
     }
 }

@@ -100,8 +100,8 @@ public class FlowCapableTopologyExporterTest {
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
         exporter.onLinkDiscovered(new LinkDiscoveredBuilder().setSource(
-                new NodeConnectorRef(sourceConnID)).setDestination(
-                        new NodeConnectorRef(destConnID)).build());
+                new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
+                        new NodeConnectorRef(destConnID.toIdentifier())).build());
 
         waitForSubmit(submitLatch);
 
@@ -145,8 +145,8 @@ public class FlowCapableTopologyExporterTest {
                       topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
-                new NodeConnectorRef(sourceConnID)).setDestination(
-                    new NodeConnectorRef(destConnID)).build());
+                new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
+                    new NodeConnectorRef(destConnID.toIdentifier())).build());
 
         waitForSubmit(submitLatch);
 
@@ -177,8 +177,8 @@ public class FlowCapableTopologyExporterTest {
                       topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
-                new NodeConnectorRef(sourceConnID)).setDestination(
-                    new NodeConnectorRef(destConnID)).build());
+                new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
+                    new NodeConnectorRef(destConnID.toIdentifier())).build());
 
         waitForSubmit(submitLatch);
 

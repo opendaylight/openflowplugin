@@ -84,13 +84,14 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
             String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
+            final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setNode(nodeRef)
                 .setBundleId(bundleId)
                 .setFlags(BUNDLE_FLAGS)
                 .setMessages(new MessagesBuilder()
                     .setMessage(List.of(new MessageBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setNode(nodeRef)
                         .setBundleInnerMessage(new BundleRemoveFlowCaseBuilder()
                             .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder(flow).build())
                             .build())
@@ -126,9 +127,10 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                     .setAddFlowCaseData(new AddFlowCaseDataBuilder(flow)
                             .build())
                     .build();
-            Message message = new MessageBuilder().setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setBundleInnerMessage(bundleInnerMessage)
-                    .build();
+            Message message = new MessageBuilder()
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setBundleInnerMessage(bundleInnerMessage)
+                .build();
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent, flow,
                     identifier, bundleId);
             SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture = SettableFuture.create();
@@ -165,20 +167,21 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                         .get();
                     if (optGroup.isPresent()) {
                         final Group group = optGroup.orElseThrow();
+                        final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
                         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
-                        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                        builder.setGroupRef(new GroupRef(nodeIdent));
+                        builder.setNode(nodeRef);
+                        builder.setGroupRef(new GroupRef(nodeIdent.toIdentifier()));
                         builder.setTransactionUri(new Uri(forwardingRulesManager.getNewTransactionId()));
                         BundleInnerMessage bundleInnerMessage = new BundleAddGroupCaseBuilder()
                                 .setAddGroupCaseData(new AddGroupCaseDataBuilder(group).build()).build();
                         Message groupMessage = new MessageBuilder()
-                                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                                .setNode(nodeRef)
                                 .setBundleInnerMessage(bundleInnerMessage)
                                 .build();
                         final List<Message> messages = new ArrayList<>(1);
                         messages.add(groupMessage);
                         AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                                .setNode(nodeRef)
                                 .setBundleId(bundleId)
                                 .setFlags(BUNDLE_FLAGS)
                                 .setMessages(new MessagesBuilder()
@@ -239,7 +242,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         public void onSuccess(final RpcResult<AddBundleMessagesOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
                         .setBundleId(bundleId)
                         .setFlags(BUNDLE_FLAGS)
                         .setMessages(new MessagesBuilder()

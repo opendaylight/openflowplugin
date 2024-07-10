@@ -48,9 +48,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 
 public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
     @SuppressWarnings({ "rawtypes" })
@@ -176,7 +176,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         assertEquals("getNodeId", expNodeId, mergedNode.getValue().getNodeId());
         InventoryNode augmentation = mergedNode.getValue().augmentation(InventoryNode.class);
         assertNotNull("Missing augmentation", augmentation);
-        assertEquals("getInventoryNodeRef", new NodeRef(invNodeID), augmentation.getInventoryNodeRef());
+        assertEquals("getInventoryNodeRef", new NodeRef(invNodeID.toIdentifier()), augmentation.getInventoryNodeRef());
     }
 
 }

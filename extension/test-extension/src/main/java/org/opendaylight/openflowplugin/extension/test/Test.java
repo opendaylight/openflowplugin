@@ -46,9 +46,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -144,7 +144,7 @@ public final class Test implements TestFlow, AutoCloseable {
             .setFlags(new FlowModFlags(false, false, false, false, true))
             .setTableId(Uint8.ZERO)
             .setFlowName("NiciraFLOW")
-            .setNode(new NodeRef(flowInstanceId))
+            .setNode(new NodeRef(flowInstanceId.toIdentifier()))
             .build());
 
         return Futures.immediateFuture(RpcResultBuilder.<TestFlowOutput>status(true).build());

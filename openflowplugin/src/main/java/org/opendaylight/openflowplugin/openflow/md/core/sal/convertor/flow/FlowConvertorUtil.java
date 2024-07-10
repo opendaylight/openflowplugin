@@ -16,8 +16,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.acti
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.IpMatch;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
+import org.opendaylight.yangtools.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**

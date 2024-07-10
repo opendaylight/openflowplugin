@@ -60,14 +60,15 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     public void remove(final InstanceIdentifier<Group> identifier, final Group group,
             final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
         nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setNode(nodeRef)
                 .setBundleId(bundleId)
                 .setFlags(BUNDLE_FLAGS)
                 .setMessages(new MessagesBuilder()
                     .setMessage(List.of(new MessageBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setNode(nodeRef)
                         .setBundleInnerMessage(new BundleRemoveGroupCaseBuilder()
                             .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(group).build())
                             .build())
@@ -91,14 +92,15 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                         final InstanceIdentifier<FlowCapableNode> nodeIdent,
                        final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
+        final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
         nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setNode(nodeRef)
                 .setBundleId(bundleId)
                 .setFlags(BUNDLE_FLAGS)
                 .setMessages(new MessagesBuilder()
                     .setMessage(List.of(new MessageBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setNode(nodeRef)
                         .setBundleInnerMessage(new BundleUpdateGroupCaseBuilder()
                             .setUpdateGroupCaseData(new UpdateGroupCaseDataBuilder(updatedGroup).build())
                             .build())
@@ -125,13 +127,14 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                 LOG.debug("Group {} already exists in the device. Ignoring the add DTCN", groupId);
                 return RpcResultBuilder.<AddBundleMessagesOutput>success().buildFuture();
             }
+            final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                .setNode(nodeRef)
                 .setBundleId(bundleId)
                 .setFlags(BUNDLE_FLAGS)
                 .setMessages(new MessagesBuilder()
                     .setMessage(List.of(new MessageBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
+                        .setNode(nodeRef)
                         .setBundleInnerMessage(new BundleAddGroupCaseBuilder()
                             .setAddGroupCaseData(new AddGroupCaseDataBuilder(group).build())
                             .build())

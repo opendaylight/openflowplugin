@@ -15,10 +15,10 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
+import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.Grouping;
 import org.opendaylight.yangtools.concepts.Immutable;
-import org.opendaylight.yangtools.yang.binding.Augmentable;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 
 /**
  * Resolver providing a bridge between a grouping and its various instantiations via augment. This is useful for
@@ -83,7 +83,7 @@ import org.opendaylight.yangtools.yang.binding.DataObject;
  * @param <T> Augmentable type
  */
 @Beta
-public final class AugmentationGroupingResolver<G extends DataObject, T extends Augmentable<T>> implements Immutable {
+public final class AugmentationGroupingResolver<G extends Grouping, T extends Augmentable<T>> implements Immutable {
     private final Class<? extends Augmentation<T>>[] augmentations;
     private final Class<G> grouping;
 
@@ -104,7 +104,7 @@ public final class AugmentationGroupingResolver<G extends DataObject, T extends 
         return Optional.empty();
     }
 
-    public static <G extends DataObject, T extends Augmentable<T>> @NonNull Builder<G, T> builder(
+    public static <G extends Grouping, T extends Augmentable<T>> @NonNull Builder<G, T> builder(
             final Class<G> groupingClass) {
         return new Builder<>(groupingClass);
     }
@@ -123,7 +123,7 @@ public final class AugmentationGroupingResolver<G extends DataObject, T extends 
         return new Factory<>((Class<? extends Augmentation<T>>[]) array);
     }
 
-    public static final class Builder<G extends DataObject, T extends Augmentable<T>> {
+    public static final class Builder<G extends Grouping, T extends Augmentable<T>> {
         private final Set<Class<? extends Augmentation<T>>> augmentations = new HashSet<>();
         private final Class<G> grouping;
 
@@ -152,7 +152,7 @@ public final class AugmentationGroupingResolver<G extends DataObject, T extends 
             this.augmentations = requireNonNull(augmentations);
         }
 
-        public <G extends DataObject> @NonNull AugmentationGroupingResolver<G, T> createResolver(
+        public <G extends Grouping> @NonNull AugmentationGroupingResolver<G, T> createResolver(
                 final Class<G> groupingClass) {
             for (Class<? extends Augmentation<T>> cls : augmentations) {
                 checkAssignable(groupingClass, cls);

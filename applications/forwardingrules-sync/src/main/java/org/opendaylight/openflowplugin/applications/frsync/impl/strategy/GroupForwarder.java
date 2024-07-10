@@ -53,8 +53,8 @@ public class GroupForwarder
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}", identifier, nodeIdent);
         return removeGroupRpc.invoke(new RemoveGroupInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setGroupRef(new GroupRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setGroupRef(new GroupRef(identifier.toIdentifier()))
             // fix group removal - no buckets allowed
             .setBuckets(null).build());
     }
@@ -64,8 +64,8 @@ public class GroupForwarder
             final Group original, final Group update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}", identifier, nodeIdent, update);
         return updateGroupRpc.invoke(new UpdateGroupInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setGroupRef(new GroupRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setGroupRef(new GroupRef(identifier.toIdentifier()))
             .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
             .setOriginalGroup(new OriginalGroupBuilder(original).build())
             .build());
@@ -76,8 +76,8 @@ public class GroupForwarder
             final Group addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}", identifier, nodeIdent, addDataObj);
         return addGroupRpc.invoke(new AddGroupInputBuilder(addDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setGroupRef(new GroupRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setGroupRef(new GroupRef(identifier.toIdentifier()))
             .build());
     }
 }

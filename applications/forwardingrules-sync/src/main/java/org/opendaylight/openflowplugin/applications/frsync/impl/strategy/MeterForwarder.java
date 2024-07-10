@@ -53,8 +53,8 @@ public class MeterForwarder
             final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter REMOVE request [Tbl id, node Id {} {}", identifier, nodeIdent);
         return removeMeter.invoke(new RemoveMeterInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setMeterRef(new MeterRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setMeterRef(new MeterRef(identifier.toIdentifier()))
             .build());
     }
 
@@ -63,8 +63,8 @@ public class MeterForwarder
             final Meter original, final Meter update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter UPDATE request [Tbl id, node Id {} {} {}", identifier, nodeIdent, update);
         return updateMeter.invoke(new UpdateMeterInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setMeterRef(new MeterRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setMeterRef(new MeterRef(identifier.toIdentifier()))
             .setUpdatedMeter(new UpdatedMeterBuilder(update).build())
             .setOriginalMeter(new OriginalMeterBuilder(original).build())
             .build());
@@ -75,8 +75,8 @@ public class MeterForwarder
             final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter ADD request [Tbl id, node Id {} {} {}", identifier, nodeIdent, addDataObj);
         return addMeter.invoke(new AddMeterInputBuilder(addDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setMeterRef(new MeterRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setMeterRef(new MeterRef(identifier.toIdentifier()))
             .build());
     }
 }

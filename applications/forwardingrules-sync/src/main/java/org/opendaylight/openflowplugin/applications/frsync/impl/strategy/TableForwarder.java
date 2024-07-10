@@ -23,8 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +51,10 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
 
         LOG.debug("Invoking SalTableService {}", nodeIdent);
         return updateTable.invoke(new UpdateTableInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setTableRef(new TableRef(iiToTable))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setTableRef(new TableRef(iiToTable.toIdentifier()))
             .setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(BindingMap.of(update)).build())
             .setOriginalTable(new OriginalTableBuilder().setTableFeatures(BindingMap.of(original)).build())
             .build());
     }
-
 }

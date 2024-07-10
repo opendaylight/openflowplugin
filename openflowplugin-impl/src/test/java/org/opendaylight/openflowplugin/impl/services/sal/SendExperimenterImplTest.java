@@ -76,7 +76,7 @@ public class SendExperimenterImplTest extends ServiceMocking {
 
     private SendExperimenterInput buildSendExperimenterInput() {
         return new SendExperimenterInputBuilder()
-            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))
+            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier().toIdentifier()))
             .setExperimenterMessageOfChoice(new DummyExperimenter())
             .build();
     }
