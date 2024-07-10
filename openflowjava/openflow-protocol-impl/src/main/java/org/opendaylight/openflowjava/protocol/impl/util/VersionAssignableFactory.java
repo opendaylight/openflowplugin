@@ -9,7 +9,7 @@ package org.opendaylight.openflowjava.protocol.impl.util;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**

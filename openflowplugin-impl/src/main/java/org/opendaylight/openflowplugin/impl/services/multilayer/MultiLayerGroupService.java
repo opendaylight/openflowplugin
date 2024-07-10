@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.Versi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GroupModInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 
 public final class MultiLayerGroupService<I extends Group, O extends DataObject> extends AbstractSimpleService<I, O> {
     private final ConvertorExecutor convertorExecutor;

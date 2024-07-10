@@ -39,8 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -55,7 +55,7 @@ public class FlatBatchGroupAdaptersTest {
     private static final NodeId NODE_ID = new NodeId("ut-node-id");
     private static final InstanceIdentifier<Node> NODE_II = InstanceIdentifier.create(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID));
-    private static final NodeRef NODE_REF = new NodeRef(NODE_II);
+    private static final NodeRef NODE_REF = new NodeRef(NODE_II.toIdentifier());
 
     @Test
     public void testAdaptFlatBatchAddGroup() {

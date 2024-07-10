@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.impl.util;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
@@ -35,6 +36,6 @@ public final class PathUtil {
      * @return node-id from given reference
      */
     public static NodeId extractNodeId(final NodeRef input) {
-        return input.getValue().firstKeyOf(Node.class).getId();
+        return ((DataObjectIdentifier<?>) input.getValue()).toLegacy().firstKeyOf(Node.class).getId();
     }
 }

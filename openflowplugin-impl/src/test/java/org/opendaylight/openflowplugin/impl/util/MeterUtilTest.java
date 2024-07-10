@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 import java.util.Collections;
@@ -30,8 +32,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -54,7 +57,8 @@ public class MeterUtilTest {
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
 
         final MeterRef meterRef = MeterUtil.buildMeterPath(nodePath, DUMMY_METER_ID);
-        final InstanceIdentifier<?> meterRefValue = meterRef.getValue();
+        final InstanceIdentifier<?> meterRefValue = assertInstanceOf(DataObjectIdentifier.class, meterRef.getValue())
+            .toLegacy();
         Assert.assertEquals(DUMMY_NODE_ID, meterRefValue.firstKeyOf(Node.class).getId());
         Assert.assertEquals(DUMMY_METER_ID, meterRefValue.firstKeyOf(Meter.class).getMeterId());
     }
