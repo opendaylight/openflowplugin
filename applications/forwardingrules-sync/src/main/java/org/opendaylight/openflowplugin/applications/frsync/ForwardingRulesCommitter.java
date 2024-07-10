@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync;
 
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 
 /**
  * Represents configuration item contract for device.

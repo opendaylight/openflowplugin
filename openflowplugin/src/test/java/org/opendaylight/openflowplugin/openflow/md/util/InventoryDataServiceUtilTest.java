@@ -19,10 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorUpdatedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpdatedBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.PortNumberValuesV10;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
@@ -84,7 +82,7 @@ public class InventoryDataServiceUtilTest {
      */
     @Test
     public void testNodeConnectorInstanceIdentifierFromDatapathIdPortno() {
-        InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifier = InventoryDataServiceUtil
+        var nodeConnectorInstanceIdentifier = InventoryDataServiceUtil
                 .nodeConnectorInstanceIdentifierFromDatapathIdPortno(Uint64.ONE, PORT_NO, OpenflowVersion.OF10);
         assertNotNull(nodeConnectorInstanceIdentifier);
     }

@@ -14,7 +14,7 @@ import org.opendaylight.openflowjava.protocol.api.extensibility.OFDeserializer;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializerRegistryImpl;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -27,10 +27,10 @@ public abstract class DefaultDeserializerFactoryTest<T extends DataContainer> {
     protected MessageCodeKey messageCodeKey;
 
     public DefaultDeserializerFactoryTest(final MessageCodeKey key) {
-        this.registry = new DeserializerRegistryImpl();
-        this.registry.init();
-        this.messageCodeKey = key;
-        this.factory = registry.getDeserializer(key);
+        registry = new DeserializerRegistryImpl();
+        registry.init();
+        messageCodeKey = key;
+        factory = registry.getDeserializer(key);
     }
 
     /**

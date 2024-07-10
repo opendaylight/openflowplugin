@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.4.0" name="odl-openflowplugin-flow-services-rest">
     <feature name="odl-openflowplugin-flow-services-rest">
-        <feature version="[7,8)">odl-restconf</feature>
+        <feature version="[8,9)">odl-restconf</feature>
     </feature>
 </features>
