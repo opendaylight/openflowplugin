@@ -27,6 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -71,7 +72,7 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static NodeRef nodeRefFromNodeKey(final NodeKey nodeKey) {
-        return new NodeRef(nodeKeyToInstanceIdentifier(nodeKey));
+        return new NodeRef(nodeKeyToInstanceIdentifier(nodeKey).toIdentifier());
     }
 
     public static InstanceIdentifier<Node> nodeKeyToInstanceIdentifier(final NodeKey nodeKey) {
@@ -119,14 +120,14 @@ public abstract class InventoryDataServiceUtil {
                 nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath));
     }
 
-    public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
+    public static DataObjectIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
             final Uint64 datapathId, final Uint32 portNo, final OpenflowVersion ofVersion) {
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
         KeyedInstanceIdentifier<Node, NodeKey> nodePath = NODES_IDENTIFIER.child(Node.class, new NodeKey(nodeId));
         return nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath);
     }
 
-    public static InstanceIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
+    public static DataObjectIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
             final Uint64 datapathId, final Uint32 portNo, final OpenflowVersion ofVersion,
             final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
         NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion);
@@ -160,6 +161,7 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static Uint64 extractDatapathId(final NodeRef ref) {
-        return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getValue().firstKeyOf(Node.class).getId());
+        return InventoryDataServiceUtil.dataPathIdFromNodeId(
+            ((DataObjectIdentifier<?>) ref.getValue()).toLegacy().firstKeyOf(Node.class).getId());
     }
 }

@@ -9,7 +9,7 @@ package org.opendaylight.openflowjava.protocol.api.keys;
 
 import static java.util.Objects.requireNonNull;
 
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 

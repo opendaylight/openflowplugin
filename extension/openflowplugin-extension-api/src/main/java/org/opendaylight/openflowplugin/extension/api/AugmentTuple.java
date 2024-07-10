@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.extension.api;
 
-import org.opendaylight.yangtools.yang.binding.Augmentable;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.Augmentation;
 
 /**
  * Wrapper over augmentation and it's type in order to ease handing over and hooking of an augmentation.
