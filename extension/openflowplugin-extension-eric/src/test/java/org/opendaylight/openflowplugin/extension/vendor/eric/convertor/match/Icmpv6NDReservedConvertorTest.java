@@ -38,8 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -114,9 +114,8 @@ public class Icmpv6NDReservedConvertorTest {
 
     @Test
     public void testSetFieldExtension()  {
-        GroupingLooseResolver<GeneralExtensionListGrouping> eqGroup =
-                new GroupingLooseResolver<>(GeneralExtensionListGrouping.class);
-        eqGroup.add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
+        final var eqGroup = new GroupingLooseResolver<>(GeneralExtensionListGrouping.class,
+            GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
         ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
             new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,

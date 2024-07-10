@@ -52,7 +52,7 @@ public final class OpenflowpluginMeterTestRpcsProvider implements AutoCloseable 
                 LOG.info("updateMeter - {}", input);
                 return null;
             }), Set.of(InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))));
+                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))).toIdentifier()));
         LOG.info("SalMeterRpcsProvider Started.");
     }
 

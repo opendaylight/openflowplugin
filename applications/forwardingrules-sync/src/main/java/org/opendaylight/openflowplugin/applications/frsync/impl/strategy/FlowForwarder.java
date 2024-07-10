@@ -63,9 +63,9 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
         final var tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             return removeFlow.invoke(new RemoveFlowInputBuilder(removeDataObj)
-                .setFlowRef(new FlowRef(identifier))
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)))
+                .setFlowRef(new FlowRef(identifier.toIdentifier()))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()))
                 // always needs to set strict flag into remove-flow input so that
                 // only a flow entry associated with a given flow object will be removed.
                 .setStrict(Boolean.TRUE)
@@ -85,8 +85,8 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
         final var tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
             return updateFlow.invoke(new UpdateFlowInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setFlowRef(new FlowRef(identifier))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setFlowRef(new FlowRef(identifier.toIdentifier()))
 
                 // always needs to set strict flag into update-flow input so that
                 // only a flow entry associated with a given flow object is updated.
@@ -108,9 +108,9 @@ public class FlowForwarder implements ForwardingRulesCommitter<Flow, AddFlowOutp
         final var tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, addDataObj)) {
             return addFlow.invoke(new AddFlowInputBuilder(addDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setFlowRef(new FlowRef(identifier))
-                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey))).build());
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setFlowRef(new FlowRef(identifier.toIdentifier()))
+                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier())).build());
         } else {
             return RpcResultBuilder.<AddFlowOutput>failed()
                 .withError(ErrorType.APPLICATION, TABLE_ID_MISMATCH)

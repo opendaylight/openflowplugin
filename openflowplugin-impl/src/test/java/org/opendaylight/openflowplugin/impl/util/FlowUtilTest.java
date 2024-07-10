@@ -7,6 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
@@ -32,8 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -53,7 +56,8 @@ public class FlowUtilTest {
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
 
         final FlowRef flowRef = FlowUtil.buildFlowPath(nodePath, DUMMY_TABLE_ID, DUMMY_FLOW_ID);
-        final InstanceIdentifier<?> flowRefValue = flowRef.getValue();
+        final InstanceIdentifier<?> flowRefValue = assertInstanceOf(DataObjectIdentifier.class, flowRef.getValue())
+            .toLegacy();
         Assert.assertEquals(DUMMY_NODE_ID, flowRefValue.firstKeyOf(Node.class).getId());
         Assert.assertEquals(DUMMY_TABLE_ID, flowRefValue.firstKeyOf(Table.class).getId());
         Assert.assertEquals(DUMMY_FLOW_ID, flowRefValue.firstKeyOf(Flow.class).getId());

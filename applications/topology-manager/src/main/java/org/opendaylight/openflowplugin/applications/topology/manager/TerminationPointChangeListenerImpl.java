@@ -140,16 +140,14 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private static TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
-                                                                    final
-                                                                    InstanceIdentifier<FlowCapableNodeConnector>
-                                                                            iiToNodeInInventory) {
+            final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
         return new TerminationPointBuilder()
-                .setTpId(terminationPointIdInTopology)
-                .addAugmentation(new InventoryNodeConnectorBuilder()
-                    .setInventoryNodeConnectorRef(
-                        new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class)))
-                    .build())
-                .build();
+            .setTpId(terminationPointIdInTopology)
+            .addAugmentation(new InventoryNodeConnectorBuilder()
+                .setInventoryNodeConnectorRef(
+                    new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class).toIdentifier()))
+                .build())
+            .build();
     }
 
     private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(

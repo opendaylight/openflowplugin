@@ -9,7 +9,7 @@ package org.opendaylight.openflowplugin.applications.frm;
 
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public interface FlowCapableNodeConnectorCommitter<D extends DataObject> extends AutoCloseable,

@@ -34,6 +34,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleInputBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -60,19 +62,19 @@ public final class FrmUtil {
     }
 
     public static String getFlowId(final FlowRef flowRef) {
-        return flowRef.getValue().firstKeyOf(Flow.class).getId().getValue();
+        return ((DataObjectReference<?>) flowRef.getValue()).toLegacy().firstKeyOf(Flow.class).getId().getValue();
     }
 
     public static String getFlowId(final InstanceIdentifier<Flow> identifier) {
-        return getFlowId(new FlowRef(identifier));
+        return getFlowId(new FlowRef(identifier.toIdentifier()));
     }
 
     public static Uint8 getTableId(final FlowTableRef flowTableRef) {
-        return flowTableRef.getValue().firstKeyOf(Table.class).getId();
+        return ((DataObjectIdentifier<?>) flowTableRef.getValue()).toLegacy().firstKeyOf(Table.class).getId();
     }
 
     public static Uint8 getTableId(final InstanceIdentifier<Flow> identifier) {
-        return getTableId(new FlowTableRef(identifier));
+        return getTableId(new FlowTableRef(identifier.toIdentifier()));
     }
 
     public static Uint64 getDpnIdFromNodeName(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
@@ -121,7 +123,7 @@ public final class FrmUtil {
     public static BundleId getActiveBundle(final InstanceIdentifier<FlowCapableNode> nodeIdent,
                                            final ForwardingRulesManager provider) {
         final Uint64 dpId = getDpnIdFromNodeName(nodeIdent);
-        final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class));
+        final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
         GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder().setNodeId(dpId).setNode(nodeRef);
         try {
             final var result = provider.getActiveBundle().invoke(input.build())

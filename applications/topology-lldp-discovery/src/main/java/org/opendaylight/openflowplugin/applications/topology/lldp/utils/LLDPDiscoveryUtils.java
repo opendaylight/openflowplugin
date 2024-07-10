@@ -39,7 +39,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -119,7 +119,7 @@ public final class LLDPDiscoveryUtils {
                     }
                 }
 
-                InstanceIdentifier<NodeConnector> srcInstanceId = InstanceIdentifier.builder(Nodes.class)
+                final var srcInstanceId = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, new NodeKey(srcNodeId))
                         .child(NodeConnector.class, new NodeConnectorKey(srcNodeConnectorId))
                         .build();
@@ -215,7 +215,7 @@ public final class LLDPDiscoveryUtils {
     private static NodeConnectorRef getNodeConnectorRefFromLink(final TpId tpId, final org.opendaylight.yang.gen.v1.urn
             .tbd.params.xml.ns.yang.network.topology.rev131021.NodeId nodeId) {
         String nodeConnectorId = tpId.getValue();
-        return new NodeConnectorRef(InstanceIdentifier.builder(Nodes.class)
+        return new NodeConnectorRef(DataObjectIdentifier.builder(Nodes.class)
             .child(Node.class,
                 new NodeKey(new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(nodeId)))
             .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId(nodeConnectorId)))

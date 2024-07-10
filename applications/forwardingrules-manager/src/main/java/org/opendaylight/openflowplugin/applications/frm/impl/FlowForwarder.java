@@ -91,9 +91,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
                 nodeConfigurator.enqueueJob(nodeId, () -> {
                     final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-                    builder.setFlowRef(new FlowRef(identifier));
-                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                    builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+                    builder.setFlowRef(new FlowRef(identifier.toIdentifier()));
+                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()));
+                    builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()));
 
                     // This method is called only when a given flow object has been
                     // removed from datastore. So FRM always needs to set strict flag
@@ -116,9 +116,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-            builder.setFlowRef(new FlowRef(identifier));
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)));
+            builder.setFlowRef(new FlowRef(identifier.toIdentifier()));
+            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()));
+            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()));
 
             // This method is called only when a given flow object has been
             // removed from datastore. So FRM always needs to set strict flag
@@ -143,10 +143,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             } else {
                 final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
                 nodeConfigurator.enqueueJob(nodeId, () -> {
-                    final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder();
-                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
-                    builder.setFlowRef(new FlowRef(identifier));
-                    builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
+                    final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder()
+                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                        .setFlowRef(new FlowRef(identifier.toIdentifier()))
+                        .setTransactionUri(new Uri(provider.getNewTransactionId()));
 
                     // This method is called only when a given flow object in datastore
                     // has been updated. So FRM always needs to set strict flag into
@@ -197,18 +197,19 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId, () -> {
+            final var flowRef = new FlowRef(identifier.toIdentifier());
             final var builder = new AddFlowInputBuilder(addDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setFlowRef(new FlowRef(identifier))
-                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey)))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setFlowRef(flowRef)
+                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()));
             final var groupId = isFlowDependentOnGroup(addDataObj);
             if (groupId != null) {
                 LOG.trace("The flow {} is dependent on group {}. Checking if the group is already present",
-                    getFlowId(new FlowRef(identifier)), groupId);
+                    getFlowId(flowRef), groupId);
                 if (isGroupExistsOnDevice(nodeIdent, groupId, provider)) {
                     LOG.trace("The dependent group {} is already programmed. Adding the flow {}", groupId,
-                        getFlowId(new FlowRef(identifier)));
+                        getFlowId(flowRef));
                     return provider.addFlow().invoke(builder.build());
                 }
 
@@ -220,8 +221,7 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 return resultFuture;
             }
 
-            LOG.trace("The flow {} is not dependent on any group. Adding the flow",
-                getFlowId(new FlowRef(identifier)));
+            LOG.trace("The flow {} is not dependent on any group. Adding the flow", getFlowId(flowRef));
             return provider.addFlow().invoke(builder.build());
         });
     }
@@ -289,8 +289,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
             final var group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
             if (group.isPresent()) {
                 return provider.addGroup().invoke(new AddGroupInputBuilder(group.orElseThrow())
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setGroupRef(new GroupRef(nodeIdent))
+                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                    .setGroupRef(new GroupRef(nodeIdent.toIdentifier()))
                     .setTransactionUri(new Uri(provider.getNewTransactionId()))
                     .build());
             }

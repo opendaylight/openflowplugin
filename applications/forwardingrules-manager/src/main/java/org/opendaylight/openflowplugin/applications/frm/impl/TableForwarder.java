@@ -22,8 +22,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,11 +62,11 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         }
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)));
+        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()));
 
         // TODO: reconsider model - this particular field is not used in service
         // implementation
-        builder.setTableRef(new TableRef(identifier));
+        builder.setTableRef(new TableRef(identifier.toIdentifier()));
 
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 

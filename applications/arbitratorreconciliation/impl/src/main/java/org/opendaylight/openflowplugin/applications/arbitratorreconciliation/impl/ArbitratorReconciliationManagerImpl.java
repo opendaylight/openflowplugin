@@ -71,6 +71,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -252,7 +253,7 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
             String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
             final var bundleIdValue = new BundleId(Uint32.valueOf(BUNDLE_ID.getAndIncrement()));
             LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
-            final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+            final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class).toIdentifier());
 
             final var openBundleMessagesFuture = Futures.transformAsync(
                 controlBundle.invoke(new ControlBundleInputBuilder()
@@ -335,7 +336,8 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     }
 
     private void registerRpc(final DeviceInfo node) {
-        final var path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(node.getNodeId()));
+        final var path = DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(node.getNodeId()))
+            .build();
         LOG.debug("The path is registered : {}", path);
         rpcRegistrations.put(node.getNodeId().getValue(), rpcProviderService.registerRpcImplementations(List.of(
             (GetActiveBundle) this::getActiveBundle,

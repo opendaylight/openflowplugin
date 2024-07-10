@@ -43,36 +43,28 @@ public final class ExtensionResolvers {
     }
 
     private static GroupingLooseResolver<GeneralExtensionListGrouping> matchExtensionResolver =
-            new GroupingLooseResolver<>(GeneralExtensionListGrouping.class)
-                    .add(GeneralAugMatchRpcAddFlow.class)
-                    .add(GeneralAugMatchRpcRemoveFlow.class)
-                    .add(GeneralAugMatchRpcUpdateFlowOriginal.class)
-                    .add(GeneralAugMatchRpcUpdateFlowUpdated.class)
-                    .add(GeneralAugMatchNodesNodeTableFlow.class)
-                    .add(GeneralAugMatchNotifPacketIn.class)
-                    .add(GeneralAugMatchNotifUpdateFlowStats.class)
-                    .add(GeneralAugMatchNotifSwitchFlowRemoved.class)
-                    .add(GeneralAugMatchPacketInMessage.class)
-                    // SetField extensions
-                    .add(GeneralAugMatchRpcAddFlowWriteActionsSetField.class)
-                    .add(GeneralAugMatchRpcAddFlowApplyActionsSetField.class)
-                    .add(GeneralAugMatchRpcRemoveFlowWriteActionsSetField.class)
-                    .add(GeneralAugMatchRpcRemoveFlowApplyActionsSetField.class)
-                    .add(GeneralAugMatchRpcUpdateFlowOriginalWriteActionsSetField.class)
-                    .add(GeneralAugMatchRpcUpdateFlowOriginalApplyActionsSetField.class)
-                    .add(GeneralAugMatchRpcUpdateFlowUpdatedWriteActionsSetField.class)
-                    .add(GeneralAugMatchRpcUpdateFlowUpdatedApplyActionsSetField.class)
-                    .add(GeneralAugMatchRpcAddGroupSetField.class)
-                    .add(GeneralAugMatchRpcRemoveGroupSetField.class)
-                    .add(GeneralAugMatchRpcUpdateGroupOriginalSetField.class)
-                    .add(GeneralAugMatchRpcUpdateGroupUpdatedSetField.class)
-                    .add(GeneralAugMatchRpcTransmitPacketSetField.class)
-                    .add(GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class)
-                    .add(GeneralAugMatchNodesNodeTableFlowApplyActionsSetField.class)
-                    .add(GeneralAugMatchNodesNodeGroupBucketsBucketActionsSetField.class)
-                    .add(GeneralAugMatchNotifFlowsStatisticsUpdateWriteActionsSetField.class)
-                    .add(GeneralAugMatchNotifFlowsStatisticsUpdateApplyActionsSetField.class)
-                    .add(GeneralAugMatchNotifGroupDescStatsUpdatedSetField.class);
+        new GroupingLooseResolver<>(GeneralExtensionListGrouping.class,
+            GeneralAugMatchRpcAddFlow.class, GeneralAugMatchRpcRemoveFlow.class,
+            GeneralAugMatchRpcUpdateFlowOriginal.class, GeneralAugMatchRpcUpdateFlowUpdated.class,
+            GeneralAugMatchNodesNodeTableFlow.class, GeneralAugMatchNotifPacketIn.class,
+            GeneralAugMatchNotifUpdateFlowStats.class, GeneralAugMatchNotifSwitchFlowRemoved.class,
+            GeneralAugMatchPacketInMessage.class,
+            // SetField extensions
+            GeneralAugMatchRpcAddFlowWriteActionsSetField.class, GeneralAugMatchRpcAddFlowApplyActionsSetField.class,
+            GeneralAugMatchRpcRemoveFlowWriteActionsSetField.class,
+            GeneralAugMatchRpcRemoveFlowApplyActionsSetField.class,
+            GeneralAugMatchRpcUpdateFlowOriginalWriteActionsSetField.class,
+            GeneralAugMatchRpcUpdateFlowOriginalApplyActionsSetField.class,
+            GeneralAugMatchRpcUpdateFlowUpdatedWriteActionsSetField.class,
+            GeneralAugMatchRpcUpdateFlowUpdatedApplyActionsSetField.class, GeneralAugMatchRpcAddGroupSetField.class,
+            GeneralAugMatchRpcRemoveGroupSetField.class, GeneralAugMatchRpcUpdateGroupOriginalSetField.class,
+            GeneralAugMatchRpcUpdateGroupUpdatedSetField.class, GeneralAugMatchRpcTransmitPacketSetField.class,
+            GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class,
+            GeneralAugMatchNodesNodeTableFlowApplyActionsSetField.class,
+            GeneralAugMatchNodesNodeGroupBucketsBucketActionsSetField.class,
+            GeneralAugMatchNotifFlowsStatisticsUpdateWriteActionsSetField.class,
+            GeneralAugMatchNotifFlowsStatisticsUpdateApplyActionsSetField.class,
+            GeneralAugMatchNotifGroupDescStatsUpdatedSetField.class);
 
     /**
      * Returns the matchExtensionResolver (covers match rpcs and inventory augmentations).

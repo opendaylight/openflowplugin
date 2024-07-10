@@ -78,8 +78,8 @@ public class LLDPSpeakerTest {
     public void setUp() throws NoSuchAlgorithmException, PacketException {
         byte[] lldpFrame = LLDPUtil.buildLldpFrame(new NodeId("openflow:1"),
                 new NodeConnectorId("openflow:1:1"), MAC_ADDRESS, Uint32.ONE);
-        packetInput = new TransmitPacketInputBuilder().setEgress(new NodeConnectorRef(ID))
-                .setNode(new NodeRef(ID.firstIdentifierOf(Node.class))).setPayload(lldpFrame).build();
+        packetInput = new TransmitPacketInputBuilder().setEgress(new NodeConnectorRef(ID.toIdentifier()))
+                .setNode(new NodeRef(ID.firstIdentifierOf(Node.class).toIdentifier())).setPayload(lldpFrame).build();
 
         doReturn(transmitPacket).when(rpcService).getRpc(TransmitPacket.class);
         doReturn(scheduledSpeakerTask).when(scheduledExecutorService)

@@ -44,7 +44,7 @@ public class FlowRemovedTranslator implements MessageTranslator
         FlowRemovedBuilder flowRemovedBld = new FlowRemovedBuilder()
                 .setMatch(translateMatch(input, deviceInfo).build())
                 .setCookie(new FlowCookie(input.getCookie()))
-                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
+                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier().toIdentifier()))
                 .setPriority(input.getPriority())
                 .setTableId(translateTableId(input));
 
@@ -79,18 +79,15 @@ public class FlowRemovedTranslator implements MessageTranslator
 
     private static RemovedFlowReason translateReason(final FlowRemoved removedFlow) {
         LOG.debug("--Entering translateReason within FlowRemovedTranslator with reason: {}", removedFlow.getReason());
-        switch (removedFlow.getReason()) {
-            case OFPRRIDLETIMEOUT:
-                return RemovedFlowReason.OFPRRIDLETIMEOUT;
-            case OFPRRHARDTIMEOUT:
-                return RemovedFlowReason.OFPRRHARDTIMEOUT;
-            case OFPRRDELETE:
-                return RemovedFlowReason.OFPRRDELETE;
-            case OFPRRGROUPDELETE:
-                return RemovedFlowReason.OFPRRGROUPDELETE;
-            default:
+        return switch (removedFlow.getReason()) {
+            case OFPRRIDLETIMEOUT -> RemovedFlowReason.OFPRRIDLETIMEOUT;
+            case OFPRRHARDTIMEOUT -> RemovedFlowReason.OFPRRHARDTIMEOUT;
+            case OFPRRDELETE -> RemovedFlowReason.OFPRRDELETE;
+            case OFPRRGROUPDELETE -> RemovedFlowReason.OFPRRGROUPDELETE;
+            default -> {
                 LOG.debug("The flow is being deleted for some unknown reason  ");
-                return RemovedFlowReason.OFPRRDELETE;
-        }
+                yield RemovedFlowReason.OFPRRDELETE;
+            }
+        };
     }
 }

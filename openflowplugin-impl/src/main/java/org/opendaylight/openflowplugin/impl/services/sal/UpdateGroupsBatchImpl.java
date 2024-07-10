@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.Up
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.update.groups.batch.input.BatchUpdateGroups;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,7 +79,7 @@ public final class UpdateGroupsBatchImpl implements UpdateGroupsBatch {
     }
 
     private static GroupRef createGroupRef(final NodeRef nodeRef, final BatchUpdateGroups batchGroup) {
-        return GroupUtil.buildGroupPath((InstanceIdentifier<Node>) nodeRef.getValue(),
+        return GroupUtil.buildGroupPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
             batchGroup.getUpdatedBatchedGroup().getGroupId());
     }
 }

@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Upda
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.OriginalFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.flow.update.UpdatedFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -52,7 +53,8 @@ final class UpdateFlowCallback implements FutureCallback<RpcResult<UpdateFlowOut
         final FlowRef flowRef = input.getFlowRef();
         if (flowRef != null) {
             final Uint8 tableId = updated.getTableId();
-            final FlowId flowId = flowRef.getValue().firstKeyOf(Flow.class).getId();
+            final FlowId flowId = ((DataObjectIdentifier<?>) flowRef.getValue()).toLegacy().firstKeyOf(Flow.class)
+                .getId();
             // FIXME: this does not look right, we probably want better integration
             flowRegistry.appendHistoryFlow(flowId, tableId, FlowGroupStatus.MODIFIED);
 

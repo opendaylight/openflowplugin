@@ -123,7 +123,7 @@ public final class ReconcileUtil {
     public static AsyncFunction<RpcResult<Void>, RpcResult<Void>> chainBarrierFlush(
             final InstanceIdentifier<Node> nodeIdent, final SendBarrier sendBarrier) {
         return input -> Futures.transformAsync(sendBarrier.invoke(new SendBarrierInputBuilder()
-            .setNode(new NodeRef(nodeIdent))
+            .setNode(new NodeRef(nodeIdent.toIdentifier()))
             .build()),
             result -> result.isSuccessful() ? Futures.immediateFuture(RpcResultBuilder.<Void>success().build())
                 : Futures.immediateFailedFuture(null),

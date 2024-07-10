@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.impl.services.AbstractSimpleService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.CommonPortWithMask;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 
 public final class SingleLayerPortService<O extends DataObject> extends AbstractSimpleService<CommonPortWithMask, O> {
 

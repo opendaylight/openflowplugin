@@ -99,13 +99,13 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-            .topology.topology.Node prepareTopologyNode(
-            final NodeId nodeIdInTopology, final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory) {
+            .topology.topology.Node prepareTopologyNode(final NodeId nodeIdInTopology,
+                final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory) {
         return new NodeBuilder()
-                .setNodeId(nodeIdInTopology)
-                .addAugmentation(new InventoryNodeBuilder()
-                    .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class)))
-                    .build())
-                .build();
+            .setNodeId(nodeIdInTopology)
+            .addAugmentation(new InventoryNodeBuilder()
+                .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class).toIdentifier()))
+                .build())
+            .build();
     }
 }
