@@ -95,7 +95,7 @@ public abstract class AbstractDirectStatisticsServiceTest {
         InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
                 .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
 
-        return new NodeRef(nodePath);
+        return new NodeRef(nodePath.toIdentifier());
     }
 
     @Before

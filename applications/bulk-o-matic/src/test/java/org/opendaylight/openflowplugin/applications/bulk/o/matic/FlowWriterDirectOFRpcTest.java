@@ -32,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
@@ -69,7 +70,7 @@ public class FlowWriterDirectOFRpcTest {
         when(mockNodes.nonnullNode()).thenReturn(nodes);
 
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
-            .read(any(LogicalDatastoreType.class), any());
+            .read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
 
         Mockito.doAnswer(invocation -> {
             ((Runnable)invocation.getArguments()[0]).run();

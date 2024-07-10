@@ -98,9 +98,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
+import org.opendaylight.yangtools.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.util.concurrent.NotificationManager;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -504,7 +504,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
             final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
                     ExperimenterMessageFromDevBuilder()
-                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
+                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier().toIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());

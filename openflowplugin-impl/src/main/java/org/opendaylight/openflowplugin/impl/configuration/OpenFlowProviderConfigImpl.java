@@ -7,12 +7,13 @@
  */
 package org.opendaylight.openflowplugin.impl.configuration;
 
+import com.google.common.base.MoreObjects;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationProperty;
 import org.opendaylight.openflowplugin.api.openflow.configuration.ConfigurationService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
-import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
+import org.opendaylight.yangtools.binding.lib.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -164,5 +165,20 @@ public class OpenFlowProviderConfigImpl extends AbstractAugmentable<OpenflowProv
     public NonZeroUint32Type getDeviceDatastoreRemovalDelay() {
         return new NonZeroUint32Type(service.<Uint32>getProperty(
             ConfigurationProperty.DEVICE_DATASTORE_REMOVAL_DELAY.toString(), Uint32::valueOf));
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        return this == obj;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this).add("service", service).toString();
     }
 }

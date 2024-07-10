@@ -219,8 +219,8 @@ public final class LLDPSpeaker implements NodeConnectorEventsObserver, Runnable,
         TransmitPacketInput packet;
         try {
             packet = new TransmitPacketInputBuilder()
-                .setEgress(new NodeConnectorRef(nodeConnectorInstanceId))
-                .setNode(new NodeRef(nodeInstanceId))
+                .setEgress(new NodeConnectorRef(nodeConnectorInstanceId.toIdentifier()))
+                .setNode(new NodeRef(nodeInstanceId.toIdentifier()))
                 .setPayload(
                     LLDPUtil.buildLldpFrame(nodeId, nodeConnectorId, srcMacAddress, outputPortNo, addressDestination))
                 .build();

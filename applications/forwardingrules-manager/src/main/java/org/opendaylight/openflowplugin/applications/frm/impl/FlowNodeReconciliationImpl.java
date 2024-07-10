@@ -205,7 +205,7 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                 reconciliationStates.put(dpnId.toString(), reconciliationState);
                 LOG.debug("FlowNode present for Datapath ID {}", dpnId);
                 OF_EVENT_LOG.debug("Bundle Reconciliation Start, Node: {}", dpnId);
-                final var nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class));
+                final var nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class).toIdentifier());
 
                 final var closeBundleInput = new ControlBundleInputBuilder().setNode(nodeRef)
                         .setBundleId(bundleIdValue).setFlags(BUNDLE_FLAGS)

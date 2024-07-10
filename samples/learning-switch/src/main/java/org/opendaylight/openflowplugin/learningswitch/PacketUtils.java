@@ -114,6 +114,6 @@ public abstract class PacketUtils {
         StringBuilder builder = new StringBuilder(nodeKey.getId().getValue()).append(':').append(port);
         NodeConnectorKey connKey = new NodeConnectorKey(new NodeConnectorId(builder.toString()));
         InstanceIdentifier<NodeConnector> portPath = nodeInstId.child(NodeConnector.class, connKey);
-        return new NodeConnectorRef(portPath);
+        return new NodeConnectorRef(portPath.toIdentifier());
     }
 }

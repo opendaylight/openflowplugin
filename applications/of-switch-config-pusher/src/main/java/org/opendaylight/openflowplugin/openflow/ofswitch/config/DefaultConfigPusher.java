@@ -76,7 +76,8 @@ public final class DefaultConfigPusher implements AutoCloseable, DataTreeChangeL
                     LoggingFutures.addErrorLogging(setConfig.invoke(new SetConfigInputBuilder()
                         .setFlag(SwitchConfigFlag.FRAGNORMAL.toString())
                         .setMissSearchLength(OFConstants.OFPCML_NO_BUFFER)
-                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)))
+                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)
+                            .toIdentifier()))
                         .build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip setting config", nodeId);

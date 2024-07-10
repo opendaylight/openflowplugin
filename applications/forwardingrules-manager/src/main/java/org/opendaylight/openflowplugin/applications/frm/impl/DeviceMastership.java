@@ -85,7 +85,7 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     public void registerReconcileNode(final RpcProviderService rpcProviderService, final ReconcileNode reconcileNode) {
         if (reg == null) {
             LOG.debug("The path is registered : {}", path);
-            reg = rpcProviderService.registerRpcImplementation(reconcileNode, ImmutableSet.of(path));
+            reg = rpcProviderService.registerRpcImplementation(reconcileNode, ImmutableSet.of(path.toIdentifier()));
         } else {
             LOG.debug("The path is already registered : {}", path);
         }

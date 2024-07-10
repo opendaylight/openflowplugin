@@ -63,8 +63,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     public void remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LoggingFutures.addErrorLogging(provider.removeMeter().invoke(new RemoveMeterInputBuilder(removeDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setMeterRef(new MeterRef(identifier))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setMeterRef(new MeterRef(identifier.toIdentifier()))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .build()), LOG, "removeMeter");
     }
@@ -73,8 +73,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     public ListenableFuture<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
             final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return provider.removeMeter().invoke(new RemoveMeterInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setMeterRef(new MeterRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setMeterRef(new MeterRef(identifier.toIdentifier()))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .build());
     }
@@ -83,8 +83,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     public void update(final InstanceIdentifier<Meter> identifier, final Meter original, final Meter update,
             final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         LoggingFutures.addErrorLogging(provider.updateMeter().invoke(new UpdateMeterInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setMeterRef(new MeterRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setMeterRef(new MeterRef(identifier.toIdentifier()))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .setUpdatedMeter(new UpdatedMeterBuilder(update).build())
             .setOriginalMeter(new OriginalMeterBuilder(original).build())
@@ -95,8 +95,8 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
             final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return provider.addMeter().invoke(new AddMeterInputBuilder(addDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setMeterRef(new MeterRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setMeterRef(new MeterRef(identifier.toIdentifier()))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .build());
     }

@@ -23,6 +23,7 @@ import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
+import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test for {@link FlowReader}.
@@ -42,7 +43,7 @@ public class FlowReaderTest {
     @Before
     public void setUp() {
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(node))).when(readOnlyTransaction)
-            .read(any(LogicalDatastoreType.class), any());
+            .read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         flowReader = FlowReader.getNewInstance(mockDataBroker, 2, 5, true, false, (short) 1, (short) 2);
     }

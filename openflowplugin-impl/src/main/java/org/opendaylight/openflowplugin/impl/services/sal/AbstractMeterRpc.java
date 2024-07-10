@@ -14,7 +14,7 @@ import org.opendaylight.openflowplugin.impl.services.multilayer.MultiLayerMeterS
 import org.opendaylight.openflowplugin.impl.services.singlelayer.SingleLayerMeterService;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.Meter;
-import org.opendaylight.yangtools.yang.binding.RpcOutput;
+import org.opendaylight.yangtools.binding.RpcOutput;
 
 abstract class AbstractMeterRpc<I extends Meter, O extends RpcOutput> extends AbstractDeviceRpc {
     final @NonNull MultiLayerMeterService<I, O> multi;

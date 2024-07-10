@@ -41,6 +41,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
@@ -168,7 +169,8 @@ public final class LLDPLinkAger implements ConfigurationListener, DataTreeChange
                 if (now.after(expires)) {
                     if (notificationService != null) {
                         LinkRemovedBuilder lrb = new LinkRemovedBuilder(link);
-                        NodeKey nodeKey = link.getDestination().getValue().firstKeyOf(Node.class);
+                        NodeKey nodeKey = ((DataObjectIdentifier<?>) link.getDestination().getValue()).toLegacy()
+                            .firstKeyOf(Node.class);
                         LOG.info("No update received for link {} from last {} milliseconds. Removing link from cache.",
                                 link, linkExpirationTime);
                         linkToDate.remove(link);

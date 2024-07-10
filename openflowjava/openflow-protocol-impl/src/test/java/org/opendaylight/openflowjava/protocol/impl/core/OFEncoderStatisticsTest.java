@@ -29,7 +29,6 @@ import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -128,7 +127,7 @@ public class OFEncoderStatisticsTest {
         when(wrapper.getListener()).thenReturn(listener);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
         doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(any(Uint8.class),
-                any(ByteBuf.class), any(DataObject.class));
+                any(ByteBuf.class), any(OfHeader.class));
 
         int count = 2;
         for (int i = 0; i < count; i++) {

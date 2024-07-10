@@ -127,9 +127,9 @@ public class FlowWriterDirectOFRpc {
                 Flow flow = BulkOMaticUtils.buildFlow(tableId, flowId, match);
 
                 AddFlowInputBuilder builder = new AddFlowInputBuilder(flow);
-                builder.setNode(new NodeRef(nodeIId));
-                builder.setFlowTable(new FlowTableRef(tableIId));
-                builder.setFlowRef(new FlowRef(flowIId));
+                builder.setNode(new NodeRef(nodeIId.toIdentifier()));
+                builder.setFlowTable(new FlowTableRef(tableIId.toIdentifier()));
+                builder.setFlowRef(new FlowRef(flowIId.toIdentifier()));
 
                 AddFlowInput addFlowInput = builder.build();
 

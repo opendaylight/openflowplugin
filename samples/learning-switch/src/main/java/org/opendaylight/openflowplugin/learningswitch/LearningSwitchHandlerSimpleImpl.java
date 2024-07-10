@@ -38,6 +38,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -124,7 +125,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         LOG.debug("Received packet via match: {}", notification.getMatch());
 
         // detect and compare node - we support one switch
-        if (!nodePath.contains(notification.getIngress().getValue())) {
+        if (!nodePath.contains(((DataObjectIdentifier<?>) notification.getIngress().getValue()).toLegacy())) {
             return;
         }
 
@@ -181,7 +182,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
             String macPath = srcMac.toString() + dstMac.toString();
             if (!coveredMacPaths.contains(macPath)) {
                 LOG.debug("covering mac path: {} by [{}]", macPath,
-                        destNodeConnector.getValue().firstKeyOf(NodeConnector.class).getId());
+                    ((DataObjectIdentifier<?>) destNodeConnector.getValue()).toLegacy().firstKeyOf(NodeConnector.class)
+                        .getId());
 
                 coveredMacPaths.add(macPath);
                 FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
@@ -205,7 +207,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         NodeConnectorKey nodeConnectorKey = new NodeConnectorKey(nodeConnectorId("0xfffffffb"));
         InstanceIdentifier<?> nodeConnectorPath = InstanceIdentifierUtils.createNodeConnectorPath(
                 nodePath, nodeConnectorKey);
-        NodeConnectorRef egressConnectorRef = new NodeConnectorRef(nodeConnectorPath);
+        NodeConnectorRef egressConnectorRef = new NodeConnectorRef(nodeConnectorPath.toIdentifier());
 
         sendPacketOut(payload, ingress, egressConnectorRef);
     }
@@ -219,7 +221,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     private void sendPacketOut(final byte[] payload, final NodeConnectorRef ingress, final NodeConnectorRef egress) {
         LoggingFutures.addErrorLogging(transmitPacket.invoke(new TransmitPacketInputBuilder()
             .setPayload(payload)
-            .setNode(new NodeRef(InstanceIdentifierUtils.getNodePath(egress.getValue())))
+            .setNode(new NodeRef(InstanceIdentifierUtils.getNodePath(
+                ((DataObjectIdentifier<?>) egress.getValue()).toLegacy()).toIdentifier()))
             .setEgress(egress)
             .setIngress(ingress)
             .build()), LOG, "transmitPacket");

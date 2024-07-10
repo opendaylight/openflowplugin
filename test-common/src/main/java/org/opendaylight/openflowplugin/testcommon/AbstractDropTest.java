@@ -37,6 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -182,7 +183,7 @@ abstract class AbstractDropTest implements Listener<PacketReceived>, AutoCloseab
             final NodeConnectorRef ncr = notification.getIngress();
 
             // Get the instance identifier for the nodeConnectorRef
-            final InstanceIdentifier<?> ncri = ncr.getValue();
+            final InstanceIdentifier<?> ncri = ((DataObjectIdentifier<?>) ncr.getValue()).toLegacy();
 
             processPacket(ncri.firstIdentifierOf(Node.class), match.build(), DROP_INSTRUCTIONS);
 

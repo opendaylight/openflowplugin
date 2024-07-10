@@ -77,8 +77,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
             nodeConfigurator.enqueueJob(nodeId, () -> {
                 final var removeGroup = new RemoveGroupInputBuilder(removeDataObj)
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                    .setGroupRef(new GroupRef(identifier))
+                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                    .setGroupRef(new GroupRef(identifier.toIdentifier()))
                     .setTransactionUri(new Uri(provider.getNewTransactionId()))
                     .build();
 
@@ -96,8 +96,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     public ListenableFuture<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
             final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
         return provider.removeGroup().invoke(new RemoveGroupInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-            .setGroupRef(new GroupRef(identifier))
+            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+            .setGroupRef(new GroupRef(identifier.toIdentifier()))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .build());
     }
@@ -114,8 +114,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
             final var updateGroupInput = new UpdateGroupInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setGroupRef(new GroupRef(identifier))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setGroupRef(new GroupRef(identifier.toIdentifier()))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
                 .setOriginalGroup(new OriginalGroupBuilder(original).build())
@@ -140,8 +140,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         final var nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addGroupInput = new AddGroupInputBuilder(addDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class)))
-                .setGroupRef(new GroupRef(identifier))
+                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setGroupRef(new GroupRef(identifier.toIdentifier()))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .build();
             final var resultFuture = provider.addGroup().invoke(addGroupInput);

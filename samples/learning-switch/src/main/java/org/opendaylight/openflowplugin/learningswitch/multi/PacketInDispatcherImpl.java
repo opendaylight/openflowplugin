@@ -12,13 +12,14 @@ import java.util.Map;
 import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class PacketInDispatcherImpl implements Listener<PacketReceived> {
     private final Map<InstanceIdentifier<Node>, Listener<PacketReceived>> handlerMapping = new HashMap<>();
 
     @Override
-    public void onNotification(PacketReceived notification) {
+    public void onNotification(final PacketReceived notification) {
         // find corresponding handler
         /*
          * Notification contains reference to ingress port
@@ -28,7 +29,7 @@ public class PacketInDispatcherImpl implements Listener<PacketReceived> {
          * by using firstIdentifierOf helper method provided by InstanceIdentifier,
          * this will effectively shorten the path to /nodes/node.
          */
-        InstanceIdentifier<?> ingressPort = notification.getIngress().getValue();
+        InstanceIdentifier<?> ingressPort = ((DataObjectIdentifier<?>) notification.getIngress().getValue()).toLegacy();
         InstanceIdentifier<Node> nodeOfPacket = ingressPort.firstIdentifierOf(Node.class);
         /**
          * We lookup up the the packet-in listener for this node.

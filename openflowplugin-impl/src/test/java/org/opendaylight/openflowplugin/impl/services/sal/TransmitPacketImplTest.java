@@ -76,9 +76,9 @@ public class TransmitPacketImplTest extends ServiceMocking {
     private TransmitPacketInput buildTransmitPacketInput() {
         return new TransmitPacketInputBuilder()
             .setBufferId(OFConstants.OFP_NO_BUFFER)
-            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))
+            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier().toIdentifier()))
             .setPayload(ULTIMATE_PAYLOAD.getBytes())
-            .setEgress(new NodeConnectorRef(pathToNodeconnector))
+            .setEgress(new NodeConnectorRef(pathToNodeconnector.toIdentifier()))
             .build();
     }
 }

@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.Ad
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.AddGroupsBatchOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,6 +69,7 @@ public final class AddGroupsBatchImpl implements AddGroupsBatch {
     }
 
     private static GroupRef createGroupRef(final NodeRef nodeRef, final Group batchGroup) {
-        return GroupUtil.buildGroupPath((InstanceIdentifier<Node>) nodeRef.getValue(), batchGroup.getGroupId());
+        return GroupUtil.buildGroupPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
+            batchGroup.getGroupId());
     }
 }

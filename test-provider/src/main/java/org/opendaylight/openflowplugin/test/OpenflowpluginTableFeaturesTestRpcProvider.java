@@ -44,7 +44,7 @@ public final class OpenflowpluginTableFeaturesTestRpcProvider implements AutoClo
                 return RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture();
             },
             Set.of(InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))));
+                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))).toIdentifier()));
         LOG.info("SalTableRpcProvider Started.");
     }
 

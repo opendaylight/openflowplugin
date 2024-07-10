@@ -45,9 +45,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -97,7 +97,8 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChan
                 final var nodeId = modification.getRootPath().path().firstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     LoggingFutures.addErrorLogging(addFlow.invoke(new AddFlowInputBuilder(createFlow())
-                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)))
+                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)
+                            .toIdentifier()))
                         .build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);

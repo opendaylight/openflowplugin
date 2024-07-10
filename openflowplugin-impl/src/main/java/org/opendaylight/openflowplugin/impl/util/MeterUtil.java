@@ -107,7 +107,7 @@ public final class MeterUtil {
                 .augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(meterId));
 
-        return new MeterRef(meterPath);
+        return new MeterRef(meterPath.toIdentifier());
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> createCumulativeFunction(

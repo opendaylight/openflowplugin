@@ -19,6 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,8 @@ public class LLDPDiscoveryListener implements Listener<PacketReceived> {
     public void onNotification(final PacketReceived lldp) {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
         if (src != null) {
-            final NodeKey nodeKey = lldp.getIngress().getValue().firstKeyOf(Node.class);
+            final NodeKey nodeKey = ((DataObjectReference<?>) lldp.getIngress().getValue()).toLegacy()
+                .firstKeyOf(Node.class);
             LOG.debug("LLDP packet received for destination node {}", nodeKey);
             if (nodeKey != null) {
                 final LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();

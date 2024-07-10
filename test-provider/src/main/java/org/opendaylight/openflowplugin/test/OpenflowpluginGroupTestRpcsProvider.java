@@ -52,7 +52,7 @@ public final class OpenflowpluginGroupTestRpcsProvider implements AutoCloseable 
                 LOG.info("updateGroup - {}", input);
                 return null;
             }), Set.of(InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))));
+                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))).toIdentifier()));
         LOG.info("SalGroupRpcsProvider Started.");
     }
 

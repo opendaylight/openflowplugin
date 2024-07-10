@@ -37,7 +37,7 @@ public class SalGroupServiceImplTest extends ServiceMocking {
     private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II =
         InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
 
-    private final NodeRef noderef = new NodeRef(NODE_II);
+    private final NodeRef noderef = new NodeRef(NODE_II.toIdentifier());
 
     @Mock
     private DeviceGroupRegistry mockedDeviceGroupRegistry;
