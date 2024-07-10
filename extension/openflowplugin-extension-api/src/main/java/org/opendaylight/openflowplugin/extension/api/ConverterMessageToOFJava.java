@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.extension.api;
 import org.opendaylight.openflowplugin.extension.api.exception.ConversionException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**

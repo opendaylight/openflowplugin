@@ -8,7 +8,7 @@
 package org.opendaylight.openflowjava.protocol.api.extensibility;
 
 import io.netty.buffer.ByteBuf;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.binding.DataContainer;
 
 /**
  * Does only-header serialization (such as oxm_ids, action_ids, instruction_ids).

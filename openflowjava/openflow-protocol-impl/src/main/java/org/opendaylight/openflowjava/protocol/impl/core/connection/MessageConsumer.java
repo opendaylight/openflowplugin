@@ -9,7 +9,7 @@
 
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 
 /**
  * Interface for a message consumer.

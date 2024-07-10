@@ -11,8 +11,8 @@ import com.google.common.base.Preconditions;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.opendaylight.yangtools.yang.binding.Augmentable;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.Augmentation;
 
 /**
  * Provides augmentation resolving upon given {@link Augmentable}.

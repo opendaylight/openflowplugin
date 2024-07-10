@@ -27,7 +27,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.er
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricOfIcmpv6NdOptionsTypeGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.EricOfIcmpv6NdReservedGrouping;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.binding.Augmentation;
 
 /**
  * Match utilities.

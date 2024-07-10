@@ -5,8 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.base.Preconditions;
@@ -51,8 +49,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927._
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927._switch.certificate.SubjectBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.ssl.connection.error.SwitchCertificate;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.system.rev130927.ssl.connection.error.SwitchCertificateBuilder;
-import org.opendaylight.yangtools.yang.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.Notification;
+import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

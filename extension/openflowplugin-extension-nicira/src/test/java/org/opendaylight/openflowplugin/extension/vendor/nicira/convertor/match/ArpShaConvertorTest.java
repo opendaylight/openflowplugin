@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.arp.sha.grouping.NxmNxArpShaBuilder;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.binding.Augmentation;
 
 /**
  * Test for {@link ArpShaConvertor}.

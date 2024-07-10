@@ -92,9 +92,9 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelay
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.Rpc;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -343,7 +343,7 @@ final class RpcContextImpl implements RpcContext {
         }
 
         rpcRegistration = rpcProviderRegistry.registerRpcImplementations(builder.build(),
-            Set.of(nodeInstanceIdentifier));
+            Set.of(nodeInstanceIdentifier.toIdentifier()));
 
         final var local = contextChainMastershipWatcher;
         if (local != null) {
