@@ -9,8 +9,8 @@ package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.openflowplugin.extension.api.path.AugmentationPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
-import org.opendaylight.yangtools.yang.binding.DataContainer;
+import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.DataContainer;
 
 /**
  * Convert message from OFJava-API model into MD-SAL model.

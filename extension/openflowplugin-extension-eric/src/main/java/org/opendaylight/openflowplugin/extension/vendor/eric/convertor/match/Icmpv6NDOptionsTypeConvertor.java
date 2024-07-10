@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.er
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.eric.match.rev180730.eric.of.icmpv6.nd.options.type.grouping.EricOfIcmpv6NdOptionsTypeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.Augmentation;
+import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**

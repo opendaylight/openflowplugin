@@ -34,9 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionList;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListKey;
-import org.opendaylight.yangtools.yang.binding.Augmentable;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap.Builder;
+import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

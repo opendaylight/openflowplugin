@@ -8,7 +8,7 @@
 package org.opendaylight.openflowplugin.applications.frsync;
 
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.yangtools.yang.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObject;
 
 /**
  * Unifying listener for data and event changes on node.

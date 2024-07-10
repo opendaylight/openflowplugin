@@ -38,10 +38,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.Rpc;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.Rpc;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -161,13 +162,13 @@ public class RpcContextImplTest {
 
     @Test
     public void testInstantiateServiceInstance() {
-        when(rpcProviderRegistry.registerRpcImplementations(any(Collection.class),
-            eq(Set.of(nodeInstanceIdentifier)))).thenReturn(registration);
+        final var set = Set.<DataObjectIdentifier<?>>of(nodeInstanceIdentifier.toIdentifier());
+        when(rpcProviderRegistry.registerRpcImplementations(any(Collection.class), eq(set))).thenReturn(registration);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(flowRegistry);
 
         rpcContext.instantiateServiceInstance();
 
-        verify(rpcProviderRegistry).registerRpcImplementations(captor.capture(), eq(Set.of(nodeInstanceIdentifier)));
+        verify(rpcProviderRegistry).registerRpcImplementations(captor.capture(), eq(set));
 
         final var map = captor.getValue();
         assertEquals(46, map.size());

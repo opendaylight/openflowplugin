@@ -222,7 +222,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     public void sendNodeRemovedNotification(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
         if (notificationCreateNodeSend.remove(instanceIdentifier)) {
             NodeRemovedBuilder builder = new NodeRemovedBuilder();
-            builder.setNodeRef(new NodeRef(instanceIdentifier));
+            builder.setNodeRef(new NodeRef(instanceIdentifier.toIdentifier()));
             LOG.info("Publishing node removed notification for {}", instanceIdentifier.firstKeyOf(Node.class).getId());
             notificationPublishService.offerNotification(builder.build());
         }
@@ -240,7 +240,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             final NodeId id = instanceIdentifier.firstKeyOf(Node.class).getId();
             NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
             builder.setId(id);
-            builder.setNodeRef(new NodeRef(instanceIdentifier));
+            builder.setNodeRef(new NodeRef(instanceIdentifier.toIdentifier()));
             LOG.info("Publishing node added notification for {}", id);
             notificationPublishService.offerNotification(builder.build());
         }

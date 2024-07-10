@@ -80,7 +80,7 @@ public class RoleContextImplTest {
         roleContext.instantiateServiceInstance();
         verify(salRoleRpc).invoke(new SetRoleInputBuilder()
                 .setControllerRole(OfpRole.BECOMEMASTER)
-                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
+                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier().toIdentifier()))
                 .build());
         verify(contextChainMastershipWatcher, timeout(SET_ROLE_TIMEOUT)).onMasterRoleAcquired(
                 deviceInfo,

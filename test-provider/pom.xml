@@ -24,12 +24,24 @@
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>mdsal-binding-api</artifactId>
+            <groupId>com.guicedee.services</groupId>
+            <artifactId>javax.inject</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- FIXME: Migrate to Karaf commands instead -->
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>3.10.101.v20150820-1432</version>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
-            <artifactId>yang-binding</artifactId>
+            <artifactId>mdsal-binding-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
@@ -48,20 +60,8 @@
             <artifactId>model-flow-statistics</artifactId>
         </dependency>
         <dependency>
-            <!-- FIXME: Migrate to Karaf commands instead -->
-            <groupId>org.eclipse.tycho</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.10.101.v20150820-1432</version>
-        </dependency>
-        <dependency>
-            <groupId>com.guicedee.services</groupId>
-            <artifactId>javax.inject</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-            <optional>true</optional>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>binding-spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
