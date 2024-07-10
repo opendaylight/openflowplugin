@@ -112,7 +112,7 @@ public class SalRoleRpcTest {
         InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
                 .child(Node.class, key)
                 .build();
-        nodeRef = new NodeRef(path);
+        nodeRef = new NodeRef(path.toIdentifier());
 
     }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -27,7 +26,6 @@ import org.opendaylight.openflowjava.protocol.api.util.EncodeConstants;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageListenerWrapper;
 import org.opendaylight.openflowjava.protocol.impl.serialization.SerializationFactory;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.DataObject;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -80,7 +78,7 @@ public class OFEncoderTest {
         when(wrapper.getListener()).thenReturn(listener);
         when(wrapper.getMsg().getVersion()).thenReturn(Uint8.valueOf(EncodeConstants.OF13_VERSION_ID));
         doThrow(new IllegalArgumentException()).when(mockSerializationFactory).messageToBuffer(any(Uint8.class),
-                any(ByteBuf.class), any(DataObject.class));
+                any(ByteBuf.class), any(OfHeader.class));
 
         ofEncoder.encode(mockChHndlrCtx, wrapper, mockOut);
 

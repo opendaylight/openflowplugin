@@ -11,6 +11,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.google.common.base.MoreObjects;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -68,8 +69,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.instruction
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModCommand;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.FlowModFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInputBuilder;
-import org.opendaylight.yangtools.yang.binding.AbstractAugmentable;
-import org.opendaylight.yangtools.yang.binding.util.BindingMap;
+import org.opendaylight.yangtools.binding.lib.AbstractAugmentable;
+import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -407,6 +408,21 @@ public class FlowConvertorTest {
         @Override
         public Instructions nonnullInstructions() {
             return Objects.requireNonNullElse(getInstructions(), InstructionsBuilder.empty());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(instructions, match);
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            return this == obj;
+        }
+
+        @Override
+        public String toString() {
+            return MoreObjects.toStringHelper(this).add("instructions", instructions).add("match", match).toString();
         }
     }
 }

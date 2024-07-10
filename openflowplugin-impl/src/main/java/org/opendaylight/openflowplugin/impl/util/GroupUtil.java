@@ -108,7 +108,7 @@ public final class GroupUtil {
                 .augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(groupId));
 
-        return new GroupRef(groupPath);
+        return new GroupRef(groupPath.toIdentifier());
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> createCumulatingFunction(

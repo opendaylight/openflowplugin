@@ -29,8 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
-import org.opendaylight.yangtools.yang.binding.DataObjectStep;
-import org.opendaylight.yangtools.yang.binding.KeyStep;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectStep;
+import org.opendaylight.yangtools.binding.ExactDataObjectStep;
+import org.opendaylight.yangtools.binding.KeyStep;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -91,10 +93,11 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         // Build Port ID from TransmitPacketInput.Ingress
         PortNumber inPortNr;
         Uint32 bufferId = OFConstants.OFP_NO_BUFFER;
-        Iterable<DataObjectStep<?>> inArgs = null;
+        Iterable<? extends ExactDataObjectStep<?>> inArgs = null;
 
-        if (source.getIngress() != null) {
-            inArgs = source.getIngress().getValue().getPathArguments();
+        final var ingress = source.getIngress();
+        if (ingress != null) {
+            inArgs = ((DataObjectIdentifier<?>) ingress.getValue()).steps();
         }
 
         if (inArgs != null && Iterables.size(inArgs) >= 3) {
@@ -110,7 +113,7 @@ public class PacketOutConvertor extends Convertor<TransmitPacketInput, PacketOut
         }
 
         final PortNumber outPort;
-        final var outArgs = source.getEgress().getValue().getPathArguments();
+        final var outArgs = ((DataObjectIdentifier<?>) source.getEgress().getValue()).steps();
         if (Iterables.size(outArgs) >= 3) {
             outPort = getPortNumber(Iterables.get(outArgs, 2), data.getVersion());
         } else {

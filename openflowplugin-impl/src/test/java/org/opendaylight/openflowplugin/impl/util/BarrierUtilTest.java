@@ -45,7 +45,7 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 public class BarrierUtilTest {
     public static final NodeKey NODE_KEY = new NodeKey(new NodeId("ut-dummy-node"));
     private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, NODE_KEY));
+            .child(Node.class, NODE_KEY).toIdentifier());
 
     @Mock
     private SendBarrier sendBarrier;
