@@ -18,7 +18,7 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 public enum ActionPath implements AugmentationPath {
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-inventory
      *    +--rw nodes
@@ -37,7 +37,7 @@ public enum ActionPath implements AugmentationPath {
     INVENTORY_FLOWNODE_TABLE_WRITE_ACTIONS(null),
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-inventory
      *    +--rw nodes
@@ -57,7 +57,7 @@ public enum ActionPath implements AugmentationPath {
     INVENTORY_FLOWNODE_TABLE_APPLY_ACTIONS(null),
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
@@ -75,7 +75,7 @@ public enum ActionPath implements AugmentationPath {
     FLOWS_STATISTICS_UPDATE_WRITE_ACTIONS(null),
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-flow-statistics
      * notifications:
@@ -93,7 +93,7 @@ public enum ActionPath implements AugmentationPath {
     FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS(null),
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-group-statistics
      * notifications:
@@ -108,7 +108,7 @@ public enum ActionPath implements AugmentationPath {
     GROUP_DESC_STATS_UPDATED_BUCKET_ACTION(null),
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-direct-statistics
      * notifications:
@@ -126,7 +126,7 @@ public enum ActionPath implements AugmentationPath {
     FLOWS_STATISTICS_RPC_WRITE_ACTIONS(null),
 
     /**
-     * openflowplugin-extension-general.yang
+     * openflowplugin-extension-general.yang.
      * <pre>
      * module: opendaylight-direct-statistics
      * notifications:
@@ -145,7 +145,7 @@ public enum ActionPath implements AugmentationPath {
 
     private final InstanceIdentifier<Extension> iid;
 
-    ActionPath(InstanceIdentifier<Extension> iid) {
+    ActionPath(final InstanceIdentifier<Extension> iid) {
         this.iid = iid;
     }
 
