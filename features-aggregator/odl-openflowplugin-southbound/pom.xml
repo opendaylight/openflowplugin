@@ -128,6 +128,18 @@
             <type>cfg</type>
             <classifier>config</classifier>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}.openflowjava</groupId>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <type>xml</type>
+            <classifier>config</classifier>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}.openflowjava</groupId>
+            <artifactId>openflowjava-blueprint-config</artifactId>
+            <type>xml</type>
+            <classifier>legacyConfig</classifier>
+        </dependency>
     </dependencies>
 
 </project>

@@ -2,8 +2,6 @@
 
 <features name="odl-openflowjava-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name='odl-openflowjava-protocol' version='${project.version}'>
-        <configfile finalname="etc/opendaylight/datastore/initial/config/default-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/config</configfile>
-        <configfile finalname="etc/opendaylight/datastore/initial/config/legacy-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/legacyConfig</configfile>
         <feature version="[13,14)">odl-yangtools-netty</feature>
         <feature version="[13,14)">odl-mdsal-model-rfc6991</feature>
         <feature version="[6,7)">odl-infrautils-diagstatus</feature>
