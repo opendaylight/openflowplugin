@@ -42,7 +42,7 @@
             <dependency>
                 <groupId>org.opendaylight.yangtools</groupId>
                 <artifactId>yangtools-artifacts</artifactId>
-                <version>14.0.3</version>
+                <version>14.0.4</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
