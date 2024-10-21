@@ -34,8 +34,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * Converts port mod, port status and port description MD-SAL messages to OF library data.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

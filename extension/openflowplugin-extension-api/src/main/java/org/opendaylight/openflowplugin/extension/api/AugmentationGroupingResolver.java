@@ -25,8 +25,7 @@ import org.opendaylight.yangtools.concepts.Immutable;
  * extracting the grouping's content from a DataObject's augmentations without knowing from which instantiation it
  * comes from.
  *
- * <p>
- * Typical use case is, given a base grouping module:
+ * <p>Typical use case is, given a base grouping module:
  * <pre>
  *     module foo;
  *
@@ -75,8 +74,7 @@ import org.opendaylight.yangtools.concepts.Immutable;
  * augmentation introduced by {@code xyzzy}. This equivalence is not expressed is generated code, in that it is
  * not apparent given {@code bar} or {@code baz} there is an augmentation which provides {@code something}.
  *
- * <p>
- * This class provides the static knowledge to ask for the contents of {@code something} given an instance of
+ * <p>This class provides the static knowledge to ask for the contents of {@code something} given an instance of
  * {@code augmentable}, without knowing which augmentation introduces it.
  *
  * @param <G> Grouping type

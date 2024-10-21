@@ -48,8 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 /**
  * Converts OF actions associated with bucket to SAL Actions.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * ActionResponseConvertorData data = new ActionResponseConvertorData(version);

@@ -175,8 +175,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts a OF library table features into the MD-SAL library table features.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

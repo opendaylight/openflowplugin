@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import com.google.common.collect.ImmutableMap;
@@ -35,8 +34,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 /**
  * Converts group related statistics messages coming from switch to MD-SAL messages.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

@@ -62,8 +62,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 /**
  * Converts SAL actions into OF Library actions.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * ActionConvertorData data = new ActionConvertorData(version);

@@ -16,9 +16,8 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * List of Openflow versions supported by the plugin.
  *
- * <p>
- * Note: If you add a version here, make sure to update
- *       org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil as well.
+ * <p>Note: If you add a version here, make sure to update
+ *          {@code org.opendaylight.openflowplugin.openflow.md.util.OpenflowPortsUtil} as well.
  */
 // FIXME: enum in api is not something what we would like to see in case it is evolving. On the other hand we have
 //        static constants for well-known versions, so this is not *that* bad.

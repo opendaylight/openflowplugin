@@ -43,8 +43,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 /**
  * Converts list of OF library config meter stats to MD-SAL config meter stats.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

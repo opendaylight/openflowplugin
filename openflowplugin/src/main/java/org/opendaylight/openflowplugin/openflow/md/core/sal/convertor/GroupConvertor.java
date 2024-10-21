@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
@@ -46,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * Decodes the SAL - Group Mod Message and encodes into a OF
  * Library for the OFPT_GROUP_MOD Message. Input:SAL Layer Group command data.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);

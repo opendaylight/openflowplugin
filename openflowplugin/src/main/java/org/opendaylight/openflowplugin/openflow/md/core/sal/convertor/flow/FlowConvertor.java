@@ -78,8 +78,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Converts the SAL Flow to OF Flow. It checks if there is a set-vlan-id (1.0) action made on OF1.3.
  * If yes its handled separately.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);

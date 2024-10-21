@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts a MD-SAL meter mod command into the OF library meter mod command.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

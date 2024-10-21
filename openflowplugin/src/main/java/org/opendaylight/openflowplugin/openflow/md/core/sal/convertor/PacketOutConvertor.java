@@ -41,8 +41,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Converts a MD-SAL packet out data into the OF library packet out input.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * XidConvertorData data = new XidConvertorData(version);

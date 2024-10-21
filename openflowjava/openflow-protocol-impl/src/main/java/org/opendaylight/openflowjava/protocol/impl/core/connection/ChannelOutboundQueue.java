@@ -32,8 +32,7 @@ import org.slf4j.LoggerFactory;
  * writes to be enqueued from any thread, it then schedules a task pipeline task,
  * which shuffles messages from the queue into the pipeline.
  *
- * <p>
- * Note this is an *Inbound* handler, as it reacts to channel writability changing,
+ * <p>Note this is an <b>Inbound</b> handler, as it reacts to channel writability changing,
  * which in the Netty vocabulary is an inbound event. This has already changed in
  * the Netty 5.0.0 API, where Handlers are unified.
  */

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
 import java.util.Arrays;
@@ -84,8 +83,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 /**
  * Converts Openflow 1.3+ specific flow match to MD-SAL format flow match.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);

@@ -38,8 +38,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * Converts GroupDesc message from library to MD SAL defined GroupDescStats.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);
