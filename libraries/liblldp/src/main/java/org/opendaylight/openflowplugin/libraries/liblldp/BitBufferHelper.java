@@ -149,8 +149,7 @@ public abstract class BitBufferHelper {
      * which size is dictated by the number of bits to be stored. The bits are
      * stored in the byte array LSB aligned.
      *
-     * <p>
-     * Ex. Read 7 bits at offset 10 0 9 10 16 17 0101000010 | 0000101 |
+     * <p>Ex. Read 7 bits at offset 10 0 9 10 16 17 0101000010 | 0000101 |
      * 1111001010010101011 will be returned as {0,0,0,0,0,1,0,1}
      *
      * @param startOffset
@@ -524,12 +523,10 @@ public abstract class BitBufferHelper {
      * Takes an LSB aligned byte array and returned the LSB numBits in a MSB
      * aligned byte array.
      *
-     * <p>
-     * It aligns the last numBits bits to the head of the byte array following
+     * <p>It aligns the last numBits bits to the head of the byte array following
      * them with numBits % 8 zero bits.
      *
-     * <p>
-     * Example: For inputbytes = [00000111][01110001] and numBits = 12 it
+     * <p>Example: For inputbytes = [00000111][01110001] and numBits = 12 it
      * returns: shiftedBytes = [01110111][00010000]
      *
      * @param numBits
@@ -594,8 +591,7 @@ public abstract class BitBufferHelper {
      * It aligns the first numBits bits to the right end of the byte array
      * preceding them with numBits % 8 zero bits.
      *
-     * <p>
-     * Example: For inputbytes = [01110111][00010000] and numBits = 12 it
+     * <p>Example: For inputbytes = [01110111][00010000] and numBits = 12 it
      * returns: shiftedBytes = [00000111][01110001]
      *
      * @param inputBytes input bytes

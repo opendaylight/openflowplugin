@@ -43,8 +43,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * Converts flow related statistics messages coming from openflow switch to MD-SAL messages.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);

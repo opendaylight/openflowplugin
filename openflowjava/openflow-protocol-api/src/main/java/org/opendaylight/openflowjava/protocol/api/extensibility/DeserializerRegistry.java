@@ -15,7 +15,6 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageCodeKey;
  * @author michal.polkorab
  */
 public interface DeserializerRegistry {
-
     /**
      * Initializes deserializers.
      */
@@ -36,8 +35,7 @@ public interface DeserializerRegistry {
      * Throws IllegalStateException when there is
      * a deserializer already registered under given key.
      *
-     * <p>
-     * If the deserializer implements {@link DeserializerRegistryInjector} interface,
+     * <p>If the deserializer implements {@link DeserializerRegistryInjector} interface,
      * the deserializer is injected with DeserializerRegistry instance.
      *
      * @param key used for deserializer lookup

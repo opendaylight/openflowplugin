@@ -27,29 +27,24 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * In case of handling multiple structures of same type (actions,
  * instructions, match entries, ... ) which are differentiated by
  * vendor / experimenter subtype, vendor has to switch / choose between
- * these subtypes.<br>
+ * these subtypes.
  *
- * <p>
- * This has to be done in this way because of unknown augmentations
+ * <p>This has to be done in this way because of unknown augmentations
  * - that's why vendor has to handle it in his own implementations.
+ *
  * @author michal.polkorab
  */
 public interface SerializerExtensionProvider {
-
     /**
      * Registers a custom serializer.
      *
-     * <p>
-     * Throws IllegalStateException when there is
-     * a serializer already registered under given key.
-     *
-     * <p>
-     * If the serializer implements {@link SerializerRegistryInjector} interface,
+     * <p>If the serializer implements {@link SerializerRegistryInjector} interface,
      * the serializer is injected with SerializerRegistry instance.
      *
      * @param <K> serializer key type
      * @param key used for serializer lookup
      * @param serializer serializer implementation
+     * @throws IllegalStateException when there is a serializer already registered under given key
      */
     <K> void registerSerializer(MessageTypeKey<K> key,
             OFGeneralSerializer serializer);

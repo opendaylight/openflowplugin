@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.flow;
 
 import java.math.BigInteger;
@@ -47,8 +46,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 /**
  * Converts Openflow 1.3+ specific instructions to MD-SAL format flow instruction.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

@@ -39,8 +39,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 /**
  * Converts Openflow 1.0 specific flow match to MD-SAL format flow match.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionDatapathIdConvertorData data = new VersionDatapathIdConvertorData(version);

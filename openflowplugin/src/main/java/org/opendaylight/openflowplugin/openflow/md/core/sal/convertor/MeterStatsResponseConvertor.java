@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 
 import java.util.ArrayList;
@@ -33,8 +32,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 /**
  * Converts list of OF library meter stats to MD-SAL meter stats.
  *
- * <p>
- * Example usage:
+ * <p>Example usage:
  * <pre>
  * {@code
  * VersionConvertorData data = new VersionConvertorData(version);

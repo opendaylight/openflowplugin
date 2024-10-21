@@ -25,24 +25,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * In case of handling multiple multiple structures of same type (actions,
  * instructions, match entries, ... ) which are differentiated by
  * vendor / experimenter subtype, vendor has to switch / choose between
- * these subtypes.<br>
+ * these subtypes.
  *
- * <p>
- * This has to be done in this way because of experimenter headers, which
+ * <p>This has to be done in this way because of experimenter headers, which
  * provide only vendor / experimenter ID. Subtype position may be different
  * for different vendors (or not present at all) - that's why vendor has to
  * handle it in his own implementations.
+ *
  * @author michal.polkorab
  */
 public interface DeserializerExtensionProvider {
-
     /**
-     * Registers deserializer.
-     * Throws IllegalStateException when there is
+     * Registers deserializer. Throws IllegalStateException when there is
      * a deserializer already registered under given key.
      *
-     * <p>
-     * If the deserializer implements {@link DeserializerRegistryInjector} interface,
+     * <p>If the deserializer implements {@link DeserializerRegistryInjector} interface,
      * the deserializer is injected with DeserializerRegistry instance.
      *
      * @param key          used for deserializer lookup

@@ -32,12 +32,10 @@ public interface OutboundQueue {
      * with a response, the object reported will be non-null. If the request's completion
      * is implied by a barrier, the object reported will be null.
      *
-     * <p>
-     * If this request fails on the remote device, {@link FutureCallback#onFailure(Throwable)}
+     * <p>If this request fails on the remote device, {@link FutureCallback#onFailure(Throwable)}
      * will be called with an instance of {@link DeviceRequestFailedException}.
      *
-     * <p>
-     * If the request fails due to local reasons, {@link FutureCallback#onFailure(Throwable)}
+     * <p>If the request fails due to local reasons, {@link FutureCallback#onFailure(Throwable)}
      * will be called with an instance of {@link OutboundQueueException}. In particular, if
      * this request failed because the device disconnected, {@link OutboundQueueException#DEVICE_DISCONNECTED}
      * will be reported.
@@ -62,12 +60,10 @@ public interface OutboundQueue {
      * with a response, the object reported will be non-null. If the request's completion
      * is implied by a barrier, the object reported will be null.
      *
-     * <p>
-     * If this request fails on the remote device, {@link FutureCallback#onFailure(Throwable)}
+     * <p>If this request fails on the remote device, {@link FutureCallback#onFailure(Throwable)}
      * will be called with an instance of {@link DeviceRequestFailedException}.
      *
-     * <p>
-     * If the request fails due to local reasons, {@link FutureCallback#onFailure(Throwable)}
+     * <p>If the request fails due to local reasons, {@link FutureCallback#onFailure(Throwable)}
      * will be called with an instance of {@link OutboundQueueException}. In particular, if
      * this request failed because the device disconnected, {@link OutboundQueueException#DEVICE_DISCONNECTED}
      * will be reported.

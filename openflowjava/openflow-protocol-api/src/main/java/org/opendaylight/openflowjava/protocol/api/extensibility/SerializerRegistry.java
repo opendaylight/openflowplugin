@@ -34,17 +34,13 @@ public interface SerializerRegistry {
     /**
      * Registers a serializer.
      *
-     * <p>
-     * Throws IllegalStateException when there is
-     * a serializer already registered under given key.
-     *
-     * <p>
-     * If the serializer implements {@link SerializerRegistryInjector} interface,
+     * <p>If the serializer implements {@link SerializerRegistryInjector} interface,
      * the serializer is injected with SerializerRegistry instance.
      *
      * @param <K> serializer key type
      * @param key used for serializer lookup
      * @param serializer serializer implementation
+     * @throws IllegalStateException when there is a serializer already registered under given key
      */
     <K> void registerSerializer(MessageTypeKey<K> key,
             OFGeneralSerializer serializer);
