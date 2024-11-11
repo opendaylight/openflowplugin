@@ -1,0 +1,8 @@
+Code-Review+2: Anil Belur <abelur@linuxfoundation.org>
+Verified+1: Anil Belur <abelur@linuxfoundation.org>
+Verified+1: ODL Required.GHA <releng+odl.required.gha@linuxfoundation.org>
+Submitted-by: Anil Belur <abelur@linuxfoundation.org>
+Submitted-at: Mon, 11 Nov 2024 03:33:58 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/114411
+Project: openflowplugin
+Branch: refs/heads/stable/scandium
