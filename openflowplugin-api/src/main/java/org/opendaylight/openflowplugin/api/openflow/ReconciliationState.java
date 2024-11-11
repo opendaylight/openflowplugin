@@ -9,12 +9,8 @@ package org.opendaylight.openflowplugin.api.openflow;
 
 import java.time.LocalDateTime;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReconciliationState {
-    private static final Logger LOG = LoggerFactory.getLogger(ReconciliationState.class);
-
     public enum ReconciliationStatus {
         STARTED,
         COMPLETED,
