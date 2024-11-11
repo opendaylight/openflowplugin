@@ -23,14 +23,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.Capabilities;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
-
-
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeviceStateUtilTest {
-
     @Mock
     private DeviceState mockedDeviceState;
 
@@ -66,12 +62,8 @@ public class DeviceStateUtilTest {
 
     @Test
     public void createNodeInstanceIdentifierTest() {
-        final NodeId nodeId = new NodeId("dummyId");
-        final KeyedInstanceIdentifier<Node, NodeKey> expectedII = InstanceIdentifier.create(Nodes.class).child(Node
-                .class, new NodeKey(nodeId));
-
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = DeviceStateUtil
-                .createNodeInstanceIdentifier(nodeId);
-        assertEquals(expectedII, nodeInstanceIdentifier);
+        final var nodeId = new NodeId("dummyId");
+        assertEquals(DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build(),
+            DeviceStateUtil.createNodeInstanceIdentifier(nodeId));
     }
 }

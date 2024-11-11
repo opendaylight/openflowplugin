@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -22,16 +21,14 @@ import org.opendaylight.openflowplugin.impl.datastore.multipart.PortStatsMultipa
 import org.opendaylight.openflowplugin.impl.datastore.multipart.QueueStatsMultipartWriter;
 import org.opendaylight.openflowplugin.impl.datastore.multipart.TableFeaturesMultipartWriter;
 import org.opendaylight.openflowplugin.impl.datastore.multipart.TableStatsMultipartWriter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Multipart writer provider factory.
  */
 public final class MultipartWriterProviderFactory {
-
     private MultipartWriterProviderFactory() {
+        // Hidden on purpose
     }
 
     /**
@@ -41,7 +38,7 @@ public final class MultipartWriterProviderFactory {
      * @return the statistics writer provider
      */
     public static MultipartWriterProvider createDefaultProvider(final DeviceContext deviceContext) {
-        final InstanceIdentifier<Node> instanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
+        final var instanceIdentifier = deviceContext.getDeviceInfo().getNodeInstanceIdentifier();
         final MultipartWriterProvider provider = new MultipartWriterProvider();
 
         //  Periodic/direct statistics writers
@@ -73,5 +70,4 @@ public final class MultipartWriterProviderFactory {
 
         return provider;
     }
-
 }

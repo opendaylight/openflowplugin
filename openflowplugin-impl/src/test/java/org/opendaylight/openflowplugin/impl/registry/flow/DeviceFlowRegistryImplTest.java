@@ -49,10 +49,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -69,7 +68,7 @@ public class DeviceFlowRegistryImplTest {
     private DeviceFlowRegistryImpl deviceFlowRegistry;
     private FlowRegistryKey key;
     private FlowDescriptor descriptor;
-    private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    private DataObjectIdentifier.WithKey<Node, NodeKey> nodeInstanceIdentifier;
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -80,7 +79,7 @@ public class DeviceFlowRegistryImplTest {
     @Before
     public void setUp() {
         nodeInstanceIdentifier =
-                InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID)));
+            DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId(NODE_ID))).build();
         when(dataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
         deviceFlowRegistry = new DeviceFlowRegistryImpl(OFConstants.OFP_VERSION_1_3, dataBroker, nodeInstanceIdentifier,
             history);
@@ -95,7 +94,7 @@ public class DeviceFlowRegistryImplTest {
 
     @Test
     public void testFill() throws Exception {
-        final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
+        final var path = nodeInstanceIdentifier.toBuilder().augmentation(FlowCapableNode.class).build();
 
         final Flow flow = new FlowBuilder()
                 .setTableId(Uint8.ONE)
@@ -128,7 +127,7 @@ public class DeviceFlowRegistryImplTest {
 
     @Test
     public void testFailedFill() throws Exception {
-        final InstanceIdentifier<FlowCapableNode> path = nodeInstanceIdentifier.augmentation(FlowCapableNode.class);
+        final var path = nodeInstanceIdentifier.toBuilder().augmentation(FlowCapableNode.class).build();
 
         fillRegistry(path, null);
 
@@ -165,10 +164,10 @@ public class DeviceFlowRegistryImplTest {
         Assert.assertEquals(1, deviceFlowRegistry.getAllFlowDescriptors().size());
     }
 
-    private Map<FlowRegistryKey, FlowDescriptor> fillRegistry(final InstanceIdentifier<FlowCapableNode> path,
+    private Map<FlowRegistryKey, FlowDescriptor> fillRegistry(final DataObjectIdentifier<FlowCapableNode> path,
                                                               final FlowCapableNode flowCapableNode) throws Exception {
         doReturn(FluentFutures.immediateFluentFuture(Optional.ofNullable(flowCapableNode))).when(readOnlyTransaction)
-            .read(any(), any(InstanceIdentifier.class));
+            .read(any(), any(DataObjectIdentifier.class));
         deviceFlowRegistry.fill().get();
         return deviceFlowRegistry.getAllFlowDescriptors();
     }

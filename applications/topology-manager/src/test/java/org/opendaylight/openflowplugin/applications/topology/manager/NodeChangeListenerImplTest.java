@@ -48,6 +48,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Node;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -92,7 +93,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         int expDeleteCalls = expDeletedIIDs.length;
         CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx1, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
@@ -135,8 +136,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
@@ -153,7 +153,6 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
     @Test
     public void testOnNodeAdded() {
-
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
                                                             nodeKey = newInvNodeKey("node1");
         InstanceIdentifier<?> invNodeID = InstanceIdentifier.create(Nodes.class).child(
@@ -171,8 +170,8 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         ArgumentCaptor<Node> mergedNode = ArgumentCaptor.forClass(Node.class);
         NodeId expNodeId = new NodeId("node1");
-        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.child(Node.class,
-                new NodeKey(expNodeId))), mergedNode.capture());
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL),
+            eq(topologyIID.child(Node.class,  new NodeKey(expNodeId)).toIdentifier()), mergedNode.capture());
         assertEquals("getNodeId", expNodeId, mergedNode.getValue().getNodeId());
         InventoryNode augmentation = mergedNode.getValue().augmentation(InventoryNode.class);
         assertNotNull("Missing augmentation", augmentation);

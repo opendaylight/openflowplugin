@@ -21,7 +21,6 @@ import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.Uninterruptibles;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.mockito.ArgumentCaptor;
@@ -43,6 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
@@ -50,18 +50,18 @@ public final class TestUtils {
     private TestUtils() {
     }
 
-    static void verifyMockTx(ReadWriteTransaction mockTx) {
+    static void verifyMockTx(final ReadWriteTransaction mockTx) {
         InOrder inOrder = inOrder(mockTx);
         inOrder.verify(mockTx, atLeast(0)).commit();
         inOrder.verify(mockTx, never()).delete(eq(LogicalDatastoreType.OPERATIONAL), any(InstanceIdentifier.class));
     }
 
     @SuppressWarnings("rawtypes")
-    static void assertDeletedIDs(InstanceIdentifier[] expDeletedIIDs,
-                                 ArgumentCaptor<InstanceIdentifier> deletedLinkIDs) {
-        Set<InstanceIdentifier> actualIIDs = new HashSet<>(deletedLinkIDs.getAllValues());
-        for (InstanceIdentifier id : expDeletedIIDs) {
-            assertTrue("Missing expected deleted IID " + id, actualIIDs.contains(id));
+    static void assertDeletedIDs(final InstanceIdentifier[] expDeletedIIDs,
+                                 final ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs) {
+        final var actualIIDs = new HashSet<>(deletedLinkIDs.getAllValues());
+        for (var id : expDeletedIIDs) {
+            assertTrue("Missing expected deleted IID " + id, actualIIDs.contains(id.toIdentifier()));
         }
     }
 
@@ -72,18 +72,18 @@ public final class TestUtils {
         }).start();
     }
 
-    static void waitForSubmit(CountDownLatch latch) {
+    static void waitForSubmit(final CountDownLatch latch) {
         assertEquals("Transaction submitted", true, Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS));
     }
 
-    static void waitForDeletes(int expDeleteCalls, final CountDownLatch latch) {
+    static void waitForDeletes(final int expDeleteCalls, final CountDownLatch latch) {
         boolean done = Uninterruptibles.awaitUninterruptibly(latch, 5, TimeUnit.SECONDS);
         if (!done) {
             fail("Expected " + expDeleteCalls + " delete calls. Actual: " + (expDeleteCalls - latch.getCount()));
         }
     }
 
-    static CountDownLatch setupStubbedSubmit(ReadWriteTransaction mockTx) {
+    static CountDownLatch setupStubbedSubmit(final ReadWriteTransaction mockTx) {
         final CountDownLatch latch = new CountDownLatch(1);
         doAnswer(invocation -> {
             latch.countDown();
@@ -94,7 +94,7 @@ public final class TestUtils {
     }
 
     @SuppressWarnings("rawtypes")
-    static void setupStubbedDeletes(ReadWriteTransaction mockTx, ArgumentCaptor<InstanceIdentifier> deletedLinkIDs,
+    static void setupStubbedDeletes(final ReadWriteTransaction mockTx, final ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs,
                                     final CountDownLatch latch) {
         doAnswer(invocation -> {
             latch.countDown();
@@ -102,45 +102,45 @@ public final class TestUtils {
         }).when(mockTx).delete(eq(LogicalDatastoreType.OPERATIONAL), deletedLinkIDs.capture());
     }
 
-    static org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey newInvNodeKey(String id) {
+    static org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey newInvNodeKey(final String id) {
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey
                 = new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey(
                     new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId(id));
         return nodeKey;
     }
 
-    static NodeConnectorKey newInvNodeConnKey(String id) {
+    static NodeConnectorKey newInvNodeConnKey(final String id) {
         return new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey(
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId(id));
     }
 
     static KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> newNodeConnID(
-            org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey,
-            org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey) {
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey nodeKey,
+            final org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey) {
         return InstanceIdentifier.create(Nodes.class)
                 .child(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class, nodeKey)
                 .child(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector.class,
                        ncKey);
     }
 
-    static Link newLink(String id, Source source, Destination dest) {
+    static Link newLink(final String id, final Source source, final Destination dest) {
         return new LinkBuilder().setLinkId(new LinkId(id)).setSource(source).setDestination(dest)
                 .withKey(new LinkKey(new LinkId(id))).build();
     }
 
-    static Destination newDestTp(String id) {
+    static Destination newDestTp(final String id) {
         return new DestinationBuilder().setDestTp(new TpId(id)).build();
     }
 
-    static Source newSourceTp(String id) {
+    static Source newSourceTp(final String id) {
         return new SourceBuilder().setSourceTp(new TpId(id)).build();
     }
 
-    static Destination newDestNode(String id) {
+    static Destination newDestNode(final String id) {
         return new DestinationBuilder().setDestNode(new NodeId(id)).build();
     }
 
-    static Source newSourceNode(String id) {
+    static Source newSourceNode(final String id) {
         return new SourceBuilder().setSourceNode(new NodeId(id)).build();
     }
 

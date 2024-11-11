@@ -14,16 +14,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterConfigStatsReply;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class MeterConfigMultipartWriter extends AbstractMultipartWriter<MeterConfigStatsReply> {
-
     private final DeviceRegistry registry;
 
     public MeterConfigMultipartWriter(final TxFacade txFacade,
-                                      final InstanceIdentifier<Node> instanceIdentifier,
+                                      final WithKey<Node, NodeKey> instanceIdentifier,
                                       final DeviceRegistry registry) {
         super(txFacade, instanceIdentifier);
         this.registry = registry;
@@ -39,9 +39,10 @@ public class MeterConfigMultipartWriter extends AbstractMultipartWriter<MeterCon
         statistics.nonnullMeterConfigStats().values()
             .forEach(stat -> {
                 writeToTransaction(
-                    getInstanceIdentifier()
+                    getInstanceIdentifier().toBuilder()
                         .augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(stat.getMeterId())),
+                        .child(Meter.class, new MeterKey(stat.getMeterId()))
+                        .build(),
                     new MeterBuilder(stat)
                         .withKey(new MeterKey(stat.getMeterId()))
                         .addAugmentation(new NodeMeterStatisticsBuilder().build())

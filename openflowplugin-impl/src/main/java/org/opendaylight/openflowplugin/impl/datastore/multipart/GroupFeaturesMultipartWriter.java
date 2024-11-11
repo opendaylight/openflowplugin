@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
@@ -14,11 +13,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.statistics.rev131111.group.features.GroupFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class GroupFeaturesMultipartWriter extends AbstractMultipartWriter<GroupFeatures> {
-
-    public GroupFeaturesMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
+    public GroupFeaturesMultipartWriter(final TxFacade txFacade, final WithKey<Node, NodeKey> instanceIdentifier) {
         super(txFacade, instanceIdentifier);
     }
 
@@ -29,13 +28,11 @@ public class GroupFeaturesMultipartWriter extends AbstractMultipartWriter<GroupF
 
     @Override
     public void storeStatistics(final GroupFeatures statistics, final boolean withParents) {
-        writeToTransaction(getInstanceIdentifier()
-                .augmentation(NodeGroupFeatures.class),
+        writeToTransaction(getInstanceIdentifier().toBuilder().augmentation(NodeGroupFeatures.class).build(),
             new NodeGroupFeaturesBuilder()
                 .setGroupFeatures(new GroupFeaturesBuilder(statistics)
                     .build())
                 .build(),
             withParents);
     }
-
 }

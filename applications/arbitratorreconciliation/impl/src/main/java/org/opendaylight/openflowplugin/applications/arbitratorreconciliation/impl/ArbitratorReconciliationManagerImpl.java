@@ -37,7 +37,6 @@ import org.opendaylight.openflowplugin.applications.reconciliation.NotificationR
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
 import org.opendaylight.serviceutils.upgrade.UpgradeState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
@@ -74,7 +73,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -248,12 +246,13 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
 
         @Override
         public Boolean call() {
-            InstanceIdentifier<FlowCapableNode> nodeIdentity = deviceInfo.getNodeInstanceIdentifier()
-                    .augmentation(FlowCapableNode.class);
-            String node = nodeIdentity.firstKeyOf(Node.class).getId().getValue();
+            final var nodeInstance = deviceInfo.getNodeInstanceIdentifier();
+
+
+            String node = nodeInstance.key().getId().getValue();
             final var bundleIdValue = new BundleId(Uint32.valueOf(BUNDLE_ID.getAndIncrement()));
             LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
-            final NodeRef nodeRef = new NodeRef(nodeIdentity.firstIdentifierOf(Node.class).toIdentifier());
+            final NodeRef nodeRef = new NodeRef(nodeInstance);
 
             final var openBundleMessagesFuture = Futures.transformAsync(
                 controlBundle.invoke(new ControlBundleInputBuilder()
@@ -336,7 +335,8 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     }
 
     private void registerRpc(final DeviceInfo node) {
-        final var path = DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(node.getNodeId()))
+        final var path = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(node.getNodeId()))
             .build();
         LOG.debug("The path is registered : {}", path);
         rpcRegistrations.put(node.getNodeId().getValue(), rpcProviderService.registerRpcImplementations(List.of(
@@ -345,8 +345,12 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     }
 
     private void deregisterRpc(final DeviceInfo node) {
-        final var path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(node.getNodeId()));
-        LOG.debug("The path is unregistered : {}", path);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("The path is unregistered : {}", DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(node.getNodeId()))
+                .build());
+        }
+
         final var reg = rpcRegistrations.remove(node.getNodeId().getValue());
         if (reg != null) {
             reg.close();

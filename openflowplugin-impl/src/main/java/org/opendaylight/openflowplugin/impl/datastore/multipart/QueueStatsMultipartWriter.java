@@ -18,20 +18,19 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.FlowCapableNodeConnectorQueueStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.QueueIdAndStatisticsMap;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.queue.statistics.rev131216.flow.capable.node.connector.queue.statistics.FlowCapableNodeConnectorQueueStatisticsBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAndStatisticsMap> {
-
     private final FeaturesReply features;
 
-
     public QueueStatsMultipartWriter(final TxFacade txFacade,
-                                     final InstanceIdentifier<Node> instanceIdentifier,
+                                     final WithKey<Node, NodeKey> instanceIdentifier,
                                      final FeaturesReply features) {
         super(txFacade, instanceIdentifier);
         this.features = features;
@@ -44,23 +43,24 @@ public class QueueStatsMultipartWriter extends AbstractMultipartWriter<QueueIdAn
 
     @Override
     public void storeStatistics(final QueueIdAndStatisticsMap statistics, final boolean withParents) {
-        final OpenflowVersion openflowVersion = OpenflowVersion.get(features.getVersion());
+        final OpenflowVersion openflowVersion = OpenflowVersion.ofVersion(features.getVersion());
 
         statistics.nonnullQueueIdAndStatisticsMap().values()
-            .forEach((stat) -> {
+            .forEach(stat -> {
                 final Uint32 port = InventoryDataServiceUtil
                         .portNumberfromNodeConnectorId(openflowVersion, stat.getNodeConnectorId());
                 final NodeConnectorId id = InventoryDataServiceUtil
                         .nodeConnectorIdfromDatapathPortNo(
                                 features.getDatapathId(),
                                 port,
-                                OpenflowVersion.get(features.getVersion()));
+                                OpenflowVersion.ofVersion(features.getVersion()));
 
                 writeToTransaction(
-                        getInstanceIdentifier()
+                        getInstanceIdentifier().toBuilder()
                                 .child(NodeConnector.class, new NodeConnectorKey(id))
                                 .augmentation(FlowCapableNodeConnector.class)
-                                .child(Queue.class, new QueueKey(stat.getQueueId())),
+                                .child(Queue.class, new QueueKey(stat.getQueueId()))
+                                .build(),
                         new QueueBuilder()
                                 .withKey(new QueueKey(stat.getQueueId()))
                                 .setQueueId(stat.getQueueId())

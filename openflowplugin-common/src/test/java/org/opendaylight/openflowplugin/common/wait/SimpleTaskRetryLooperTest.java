@@ -18,8 +18,7 @@ import org.slf4j.LoggerFactory;
  * Created by mirehak on 4/28/15.
  */
 public class SimpleTaskRetryLooperTest {
-
-    private static Logger LOG = LoggerFactory.getLogger(SimpleTaskRetryLooperTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleTaskRetryLooperTest.class);
 
     @Test
     @SuppressWarnings("checkstyle:IllegalCatch")
@@ -42,8 +41,8 @@ public class SimpleTaskRetryLooperTest {
         Assert.assertNotNull(output);
     }
 
-    private Callable<String> createStubbornService(final int retryCountToSucceed) {
-        return new Callable<String>() {
+    private static Callable<String> createStubbornService(final int retryCountToSucceed) {
+        return new Callable<>() {
             private int counter = 0;
 
             @Override

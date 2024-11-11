@@ -26,7 +26,6 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorE
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.slf4j.Logger;
@@ -134,9 +133,9 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         EventsTimeCounter.markStart(doneEventIdentifier);
         gatheringState = Service.State.RUNNING;
 
-        final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo
-                .getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
+        final var instanceIdentifier = deviceInfo.getNodeInstanceIdentifier().toBuilder()
+                .augmentation(FlowCapableNode.class)
+                .build();
 
         switch (getMultipartType()) {
             case OFPMPFLOW:

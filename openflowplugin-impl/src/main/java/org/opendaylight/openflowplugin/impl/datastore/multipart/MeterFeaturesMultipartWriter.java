@@ -9,13 +9,14 @@ package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.NodeMeterFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.statistics.rev131111.node.meter.features.MeterFeatures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class MeterFeaturesMultipartWriter extends AbstractMultipartWriter<MeterFeatures> {
-    public MeterFeaturesMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
+    public MeterFeaturesMultipartWriter(final TxFacade txFacade, final WithKey<Node, NodeKey> instanceIdentifier) {
         super(txFacade, instanceIdentifier);
     }
 
@@ -26,7 +27,7 @@ public class MeterFeaturesMultipartWriter extends AbstractMultipartWriter<MeterF
 
     @Override
     public void storeStatistics(final MeterFeatures statistics, final boolean withParents) {
-        writeToTransaction(getInstanceIdentifier().augmentation(NodeMeterFeatures.class),
+        writeToTransaction(getInstanceIdentifier().toBuilder().augmentation(NodeMeterFeatures.class).build(),
             new NodeMeterFeaturesBuilder()
                 .setMeterFeatures(statistics)
                 .build(),

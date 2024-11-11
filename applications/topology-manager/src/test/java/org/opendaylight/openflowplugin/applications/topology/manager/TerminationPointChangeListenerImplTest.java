@@ -54,6 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -105,8 +106,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         int expDeleteCalls = expDeletedIIDs.length;
         CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx1, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
@@ -157,8 +157,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
@@ -196,10 +195,10 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         ArgumentCaptor<TerminationPoint> mergedNode = ArgumentCaptor.forClass(TerminationPoint.class);
         NodeId expNodeId = new NodeId("node1");
         TpId expTpId = new TpId("tp1");
-        InstanceIdentifier<TerminationPoint> expTpPath = topologyIID.child(
+        final var expTpPath = topologyIID.child(
                 Node.class, new NodeKey(expNodeId)).child(TerminationPoint.class,
                         new TerminationPointKey(expTpId));
-        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath.toIdentifier()),
                 mergedNode.capture());
         assertEquals("getTpId", expTpId, mergedNode.getValue().getTpId());
         InventoryNodeConnector augmentation = mergedNode.getValue().augmentation(
@@ -232,8 +231,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         setupStubbedSubmit(mockTx);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
@@ -279,8 +277,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         setupStubbedSubmit(mockTx);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
