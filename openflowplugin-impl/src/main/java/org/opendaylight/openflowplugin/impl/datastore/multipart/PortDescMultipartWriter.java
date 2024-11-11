@@ -18,20 +18,21 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartReplyPortDesc> {
-
     private static final Logger OF_EVENT_LOG = LoggerFactory.getLogger("OfEventLog");
+
     private final FeaturesReply features;
 
     public PortDescMultipartWriter(final TxFacade txFacade,
-                                   final InstanceIdentifier<Node> instanceIdentifier,
+                                   final WithKey<Node, NodeKey> instanceIdentifier,
                                    final FeaturesReply features) {
         super(txFacade, instanceIdentifier);
         this.features = features;
@@ -44,22 +45,23 @@ public class PortDescMultipartWriter extends AbstractMultipartWriter<MultipartRe
 
     @Override
     public void storeStatistics(final MultipartReplyPortDesc statistics, final boolean withParents) {
-        statistics.getPorts()
+        statistics.nonnullPorts()
             .forEach(stat -> {
                 Uint32 portNumber = OpenflowPortsUtil.getProtocolPortNumber(
-                        OpenflowVersion.get(features.getVersion()),
+                        OpenflowVersion.ofVersion(features.getVersion()),
                         stat.getPortNumber());
                 final NodeConnectorId id = InventoryDataServiceUtil
                     .nodeConnectorIdfromDatapathPortNo(
                         features.getDatapathId(), portNumber,
-                        OpenflowVersion.get(features.getVersion()));
+                        OpenflowVersion.ofVersion(features.getVersion()));
                 OF_EVENT_LOG.debug("Node Connector Status, Node: {}, PortNumber: {}, PortName: {}, Status: {}",
                         features.getDatapathId(), portNumber, stat.getName(),
                         stat.getConfiguration().getPORTDOWN() ? "Down" : "Up");
 
                 writeToTransaction(
-                    getInstanceIdentifier()
-                        .child(NodeConnector.class, new NodeConnectorKey(id)),
+                    getInstanceIdentifier().toBuilder()
+                        .child(NodeConnector.class, new NodeConnectorKey(id))
+                        .build(),
                     new NodeConnectorBuilder()
                         .setId(id)
                         .addAugmentation(new FlowCapableNodeConnectorBuilder(stat).build())

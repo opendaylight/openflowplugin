@@ -119,9 +119,9 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
 
             try {
                 deviceContext.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
-                    deviceInfo
-                        .getNodeInstanceIdentifier()
-                        .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)),
+                    deviceInfo.getNodeInstanceIdentifier().toBuilder()
+                        .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId))
+                        .build(),
                         connectorBuilder.build());
             } catch (final Exception e) {
                 LOG.debug("Failed to write node {} to DS ", deviceInfo, e);
@@ -133,9 +133,7 @@ public class OF10DeviceInitializer extends AbstractDeviceInitializer {
     private static void makeEmptyFlowCapableNode(final TxFacade txFacade, final DeviceInfo deviceInfo) {
         try {
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
-                deviceInfo
-                    .getNodeInstanceIdentifier()
-                    .augmentation(FlowCapableNode.class),
+                deviceInfo.getNodeInstanceIdentifier().toBuilder().augmentation(FlowCapableNode.class).build(),
                 new FlowCapableNodeBuilder().build());
         } catch (final Exception e) {
             LOG.debug("Failed to write empty node {} to DS ", deviceInfo, e);

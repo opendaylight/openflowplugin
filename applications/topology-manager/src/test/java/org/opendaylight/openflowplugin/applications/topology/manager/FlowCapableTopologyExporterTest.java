@@ -47,6 +47,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -55,7 +57,7 @@ public class FlowCapableTopologyExporterTest {
 
     private OperationProcessor processor;
     private FlowCapableTopologyExporter exporter;
-    private InstanceIdentifier<Topology> topologyIID;
+    private WithKey<Topology, TopologyKey> topologyIID;
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
     @Mock
     private DataBroker mockDataBroker;
@@ -68,8 +70,9 @@ public class FlowCapableTopologyExporterTest {
 
         processor = new OperationProcessor(mockDataBroker);
 
-        topologyIID = InstanceIdentifier.create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
+        topologyIID = DataObjectIdentifier.builder(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")))
+                .build();
         exporter = new FlowCapableTopologyExporter(processor, topologyIID);
         executor.execute(processor);
     }
@@ -106,9 +109,9 @@ public class FlowCapableTopologyExporterTest {
         waitForSubmit(submitLatch);
 
         ArgumentCaptor<Link> mergedNode = ArgumentCaptor.forClass(Link.class);
-        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.child(
-                        Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))),
-                mergedNode.capture());
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.toBuilder()
+            .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+            .build()), mergedNode.capture());
         assertEquals("Source node ID", "sourceNode",
                 mergedNode.getValue().getSource().getSourceNode().getValue());
         assertEquals("Dest TP ID", "sourceTP",
@@ -141,8 +144,9 @@ public class FlowCapableTopologyExporterTest {
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(link))).when(mockTx)
-                .read(LogicalDatastoreType.OPERATIONAL,
-                      topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+                .read(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+                      .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+                      .build());
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
                 new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
@@ -150,8 +154,9 @@ public class FlowCapableTopologyExporterTest {
 
         waitForSubmit(submitLatch);
 
-        verify(mockTx).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
-                Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+        verify(mockTx).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+            .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+            .build());
     }
 
     @Test
@@ -173,8 +178,9 @@ public class FlowCapableTopologyExporterTest {
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
         doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(mockTx)
-                .read(LogicalDatastoreType.OPERATIONAL,
-                      topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+                .read(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+                    .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+                    .build());
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
                 new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
@@ -182,7 +188,8 @@ public class FlowCapableTopologyExporterTest {
 
         waitForSubmit(submitLatch);
 
-        verify(mockTx, never()).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
-                Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+        verify(mockTx, never()).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+            .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+            .build());
     }
 }

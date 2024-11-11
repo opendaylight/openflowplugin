@@ -10,20 +10,21 @@ package org.opendaylight.openflowplugin.impl.datastore.multipart;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.openflow.device.TxFacade;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMultipartWriter<T extends DataContainer> {
-
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartWriter.class);
 
     private final TxFacade txFacade;
-    private final InstanceIdentifier<Node> instanceIdentifier;
+    private final WithKey<Node, NodeKey> instanceIdentifier;
 
-    AbstractMultipartWriter(final TxFacade txFacade, final InstanceIdentifier<Node> instanceIdentifier) {
+    AbstractMultipartWriter(final TxFacade txFacade, final WithKey<Node, NodeKey> instanceIdentifier) {
         this.txFacade = txFacade;
         this.instanceIdentifier = instanceIdentifier;
     }
@@ -35,7 +36,7 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
      * @param data data
      * @param <O> data type
      */
-    protected <O extends DataObject> void writeToTransaction(final InstanceIdentifier<O> path,
+    protected <O extends DataObject> void writeToTransaction(final DataObjectIdentifier<O> path,
                                                              final O data,
                                                              final boolean withParents) {
         if (withParents) {
@@ -50,7 +51,7 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
      *
      * @return instance identifier
      */
-    protected InstanceIdentifier<Node> getInstanceIdentifier() {
+    protected WithKey<Node, NodeKey> getInstanceIdentifier() {
         return instanceIdentifier;
     }
 
@@ -86,6 +87,4 @@ public abstract class AbstractMultipartWriter<T extends DataContainer> {
      * @param withParents write missing parents if needed (slower)
      */
     protected abstract void storeStatistics(T statistics, boolean withParents);
-
-
 }

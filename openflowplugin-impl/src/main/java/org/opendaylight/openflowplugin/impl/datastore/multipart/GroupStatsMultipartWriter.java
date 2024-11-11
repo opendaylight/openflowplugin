@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.datastore.multipart;
 
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
@@ -18,16 +17,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class GroupStatsMultipartWriter extends AbstractMultipartWriter<GroupStatisticsReply> {
 
-    private DeviceRegistry deviceregistry;
+    private final DeviceRegistry deviceregistry;
 
     public GroupStatsMultipartWriter(final DeviceContext deviceContext,
-                                     final InstanceIdentifier<Node> instanceIdentifier) {
+                                     final WithKey<Node, NodeKey> instanceIdentifier) {
         super(deviceContext, instanceIdentifier);
-        this.deviceregistry = deviceContext;
+        deviceregistry = deviceContext;
     }
 
     @Override
@@ -40,11 +40,12 @@ public class GroupStatsMultipartWriter extends AbstractMultipartWriter<GroupStat
         statistics.nonnullGroupStats().values()
                 .forEach(stat -> {
                     writeToTransaction(
-                            getInstanceIdentifier()
+                            getInstanceIdentifier().toBuilder()
                                     .augmentation(FlowCapableNode.class)
                                     .child(Group.class, new GroupKey(stat.getGroupId()))
                                     .augmentation(NodeGroupStatistics.class)
-                                    .child(GroupStatistics.class),
+                                    .child(GroupStatistics.class)
+                                    .build(),
                             new GroupStatisticsBuilder(stat).build(),
                             withParents);
                     deviceregistry.getDeviceGroupRegistry().store(stat.getGroupId());

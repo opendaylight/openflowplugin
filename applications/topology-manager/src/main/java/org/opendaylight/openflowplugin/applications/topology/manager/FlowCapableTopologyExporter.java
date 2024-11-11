@@ -21,18 +21,19 @@ import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkRemoved;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class FlowCapableTopologyExporter {
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableTopologyExporter.class);
 
-    private final InstanceIdentifier<Topology> iiToTopology;
+    private final WithKey<Topology, TopologyKey> iiToTopology;
     private final OperationProcessor processor;
 
-    FlowCapableTopologyExporter(final OperationProcessor processor, final InstanceIdentifier<Topology> topology) {
+    FlowCapableTopologyExporter(final OperationProcessor processor, final WithKey<Topology, TopologyKey> topology) {
         this.processor = requireNonNull(processor);
         iiToTopology = requireNonNull(topology);
     }

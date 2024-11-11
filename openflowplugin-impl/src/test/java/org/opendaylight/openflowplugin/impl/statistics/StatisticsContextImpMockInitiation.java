@@ -29,8 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MultipartReply;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -52,8 +51,9 @@ public class StatisticsContextImpMockInitiation {
     StatisticsManager mockedStatisticsManager;
     ContextChainMastershipWatcher mockedMastershipWatcher;
 
-    static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_NODE_ID = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
+    static final DataObjectIdentifier.WithKey<Node, NodeKey> DUMMY_NODE_ID = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("dummyNodeId")))
+            .build();
 
     @Before
     public void initialize() {

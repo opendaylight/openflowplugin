@@ -57,9 +57,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint32Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -71,8 +70,8 @@ public class DeviceManagerImplTest {
     private static final Uint16 BARRIER_COUNT_LIMIT = Uint16.valueOf(25600);
     private static final Uint32 BARRIER_INTERVAL_NANOS = Uint32.valueOf(500);
     private static final NodeId DUMMY_NODE_ID = new NodeId("dummyNodeId");
-    private static final KeyedInstanceIdentifier<Node, NodeKey> DUMMY_IDENTIFIER  = DeviceStateUtil
-            .createNodeInstanceIdentifier(DUMMY_NODE_ID);
+    private static final DataObjectIdentifier.WithKey<Node, NodeKey> DUMMY_IDENTIFIER =
+        DeviceStateUtil.createNodeInstanceIdentifier(DUMMY_NODE_ID);
 
     @Mock
     private FluentFuture<CommitInfo> mockedFuture;
@@ -143,7 +142,7 @@ public class DeviceManagerImplTest {
 
         deviceManager.setTranslatorLibrary(translatorLibrary);
         verify(dataBroker).newWriteOnlyTransaction();
-        verify(writeTransaction).merge(eq(LogicalDatastoreType.OPERATIONAL), any(InstanceIdentifier.class), any());
+        verify(writeTransaction).merge(eq(LogicalDatastoreType.OPERATIONAL), any(DataObjectIdentifier.class), any());
         verify(writeTransaction).commit();
     }
 

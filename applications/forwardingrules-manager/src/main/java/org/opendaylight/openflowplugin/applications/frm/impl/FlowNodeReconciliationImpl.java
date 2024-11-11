@@ -302,11 +302,10 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
 
     @Override
     public ListenableFuture<Boolean> startReconciliation(final DeviceInfo node) {
-        InstanceIdentifier<FlowCapableNode> connectedNode = node.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
         // Clearing the group registry cache for the connected node if exists
         provider.getDevicesGroupRegistry().clearNodeGroups(node.toString());
-        return futureMap.computeIfAbsent(node, future -> reconcileConfiguration(connectedNode));
+        return futureMap.computeIfAbsent(node, key -> reconcileConfiguration(
+            key.getNodeInstanceIdentifier().toBuilder().augmentation(FlowCapableNode.class).build().toLegacy()));
     }
 
     @Override

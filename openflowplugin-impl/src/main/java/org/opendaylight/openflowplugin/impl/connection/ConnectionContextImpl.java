@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -296,7 +296,7 @@ public class ConnectionContextImpl implements ConnectionContext {
     private static class DeviceInfoImpl implements DeviceInfo {
 
         private final NodeId nodeId;
-        private final KeyedInstanceIdentifier<Node, NodeKey> nodeII;
+        private final DataObjectIdentifier.WithKey<Node, NodeKey> nodeII;
         private final Uint8 version;
         private final Uint64 datapathId;
         private final ServiceGroupIdentifier serviceGroupIdentifier;
@@ -304,7 +304,7 @@ public class ConnectionContextImpl implements ConnectionContext {
 
         DeviceInfoImpl(
                 final NodeId nodeId,
-                final KeyedInstanceIdentifier<Node, NodeKey> nodeII,
+                final DataObjectIdentifier.WithKey<Node, NodeKey> nodeII,
                 final Uint8 version,
                 final Uint64 datapathId,
                 final OutboundQueue outboundQueueProvider) {
@@ -322,7 +322,7 @@ public class ConnectionContextImpl implements ConnectionContext {
         }
 
         @Override
-        public KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier() {
+        public DataObjectIdentifier.WithKey<Node, NodeKey> getNodeInstanceIdentifier() {
             return nodeII;
         }
 

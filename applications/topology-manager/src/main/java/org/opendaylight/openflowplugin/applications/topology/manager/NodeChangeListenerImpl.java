@@ -89,9 +89,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
         final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().path();
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
-                    .rev131021.network.topology.topology.Node>
-                    iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
+            final var iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
             sendToTransactionChain(prepareTopologyNode(nodeIdInTopology, iiToNodeInInventory), iiToTopologyNode);
         } else {
             LOG.debug("Inventory node key is null. Data can't be written to topology");

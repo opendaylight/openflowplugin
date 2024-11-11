@@ -31,9 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.StrictStubs.class)
 public class TransactionChainManagerTest {
@@ -46,11 +45,10 @@ public class TransactionChainManagerTest {
     @Mock
     private TransactionChain transactionChain;
 
-    @Mock
-    private KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent;
+    private DataObjectIdentifier.WithKey<Node, NodeKey> nodeKeyIdent;
 
     private TransactionChainManager txChainManager;
-    private InstanceIdentifier<Node> path;
+    private DataObjectIdentifier<Node> path;
     private NodeId nodeId;
 
     @Before
@@ -58,11 +56,11 @@ public class TransactionChainManagerTest {
         final ReadTransaction readOnlyTx = mock(ReadTransaction.class);
         when(dataBroker.createTransactionChain()).thenReturn(txChain);
         nodeId = new NodeId("h2g2:42");
-        nodeKeyIdent = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        nodeKeyIdent = DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build();
         txChainManager = new TransactionChainManager(dataBroker, nodeId.getValue());
         when(txChain.newReadWriteTransaction()).thenReturn(writeTx);
 
-        path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        path = DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build();
         doReturn(CommitInfo.emptyFluentFuture()).when(writeTx).commit();
         txChainManager.activateTransactionManager();
     }

@@ -125,10 +125,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.table._case.multipart.reply.table.TableStatsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.flow.capable.node.connector.statistics.FlowCapableNodeConnectorStatistics;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -140,8 +139,9 @@ public class StatisticsGatheringUtilsTest {
     static final String DUMMY_NODE_ID_VALUE = "1";
     static final NodeId DUMMY_NODE_ID = new NodeId(DUMMY_NODE_ID_VALUE);
 
-    private final KeyedInstanceIdentifier<Node, NodeKey> dummyNodePath = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(DUMMY_NODE_ID));
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> dummyNodePath = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(DUMMY_NODE_ID))
+            .build();
     @Mock
     private DeviceContext deviceContext;
     @Mock
@@ -197,7 +197,7 @@ public class StatisticsGatheringUtilsTest {
     @Test
     public void testWriteFlowStatistics() {
         final ArgumentCaptor<LogicalDatastoreType> dataStoreType = ArgumentCaptor.forClass(LogicalDatastoreType.class);
-        final ArgumentCaptor<InstanceIdentifier> flowPath = ArgumentCaptor.forClass(InstanceIdentifier.class);
+        final ArgumentCaptor<DataObjectIdentifier> flowPath = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         final ArgumentCaptor<Flow> flow = ArgumentCaptor.forClass(Flow.class);
 
         provider.lookup(MultipartType.OFPMPFLOW).orElseThrow().write(prepareFlowStatisticsData().iterator().next(),
@@ -206,8 +206,8 @@ public class StatisticsGatheringUtilsTest {
         Mockito.verify(deviceContext).writeToTransaction(
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
         Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, dataStoreType.getValue());
-        final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
-        Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.firstKeyOf(Node.class).getId());
+        final DataObjectIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
+        Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.toLegacy().firstKeyOf(Node.class).getId());
         Assert.assertEquals(42, flow.getValue().getTableId().intValue());
     }
 
@@ -245,11 +245,13 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        final InstanceIdentifier<GroupStatistics> groupPath = dummyNodePath.augmentation(FlowCapableNode.class)
+        final var groupPath = dummyNodePath.toBuilder()
+                .augmentation(FlowCapableNode.class)
                 .child(Group.class, new GroupKey(new org.opendaylight.yang.gen.v1.urn
                         .opendaylight.group.types.rev131018.GroupId(groupIdValue)))
                 .augmentation(NodeGroupStatistics.class)
-                .child(GroupStatistics.class);
+                .child(GroupStatistics.class)
+                .build();
         verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 eq(groupPath), any(GroupStatistics.class));
     }
@@ -277,11 +279,13 @@ public class StatisticsGatheringUtilsTest {
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId storedGroupId =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId(groupIdValue);
-        final KeyedInstanceIdentifier<Group, GroupKey> groupPath =
-                dummyNodePath.augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(storedGroupId));
+        final var groupPath = dummyNodePath.toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .child(Group.class, new GroupKey(storedGroupId))
+            .build();
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
-                ArgumentMatchers.<InstanceIdentifier<?>>any());
+                ArgumentMatchers.any());
         verify(deviceGroupRegistry).store(storedGroupId);
         verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                                                  eq(groupPath), any(Group.class));
@@ -313,11 +317,13 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        final InstanceIdentifier<MeterStatistics> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
+        final var meterPath = dummyNodePath.toBuilder()
+                .augmentation(FlowCapableNode.class)
                 .child(Meter.class, new MeterKey(new org.opendaylight.yang.gen.v1.urn
                         .opendaylight.meter.types.rev130918.MeterId(meterIdValue)))
                 .augmentation(NodeMeterStatistics.class)
-                .child(MeterStatistics.class);
+                .child(MeterStatistics.class)
+                .build();
         verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                 eq(meterPath), any(MeterStatistics.class));
     }
@@ -338,11 +344,12 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        final InstanceIdentifier<FlowCapableNodeConnectorStatistics> portPath = dummyNodePath
+        final var portPath = dummyNodePath.toBuilder()
                 .child(NodeConnector.class,
                         new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnectorStatisticsData.class)
-                .child(FlowCapableNodeConnectorStatistics.class);
+                .child(FlowCapableNodeConnectorStatistics.class)
+                .build();
         verify(deviceContext).writeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL),
                 eq(portPath),
@@ -368,11 +375,12 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        final InstanceIdentifier<FlowTableStatistics> tablePath = dummyNodePath
+        final var tablePath = dummyNodePath.toBuilder()
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(Uint8.ZERO))
                 .augmentation(FlowTableStatisticsData.class)
-                .child(FlowTableStatistics.class);
+                .child(FlowTableStatistics.class)
+                .build();
         verify(deviceContext).writeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL),
                 eq(tablePath),
@@ -403,11 +411,12 @@ public class StatisticsGatheringUtilsTest {
 
         fireAndCheck(type, statsData);
 
-        final KeyedInstanceIdentifier<Queue, QueueKey> queuePath = dummyNodePath
+        final var queuePath = dummyNodePath.toBuilder()
                 .child(NodeConnector.class,
                         new NodeConnectorKey(new NodeConnectorId("openflow:" + DUMMY_NODE_ID_VALUE + ":11")))
                 .augmentation(FlowCapableNodeConnector.class)
-                .child(Queue.class, new QueueKey(new QueueId(queueIdValue)));
+                .child(Queue.class, new QueueKey(new QueueId(queueIdValue)))
+                .build();
         verify(deviceContext).writeToTransaction(
                 eq(LogicalDatastoreType.OPERATIONAL),
                 eq(queuePath),
@@ -418,8 +427,9 @@ public class StatisticsGatheringUtilsTest {
     public void testGatherStatistics_flow() throws Exception {
         final MultipartType type = MultipartType.OFPMPFLOW;
 
-        final InstanceIdentifier<FlowCapableNode> nodePath =
-                deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final var nodePath = deviceInfo.getNodeInstanceIdentifier().toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .build();
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(Uint8.ZERO);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
@@ -454,12 +464,14 @@ public class StatisticsGatheringUtilsTest {
         final FlowBuilder flowBld = new FlowBuilder()
                 .setTableId(Uint8.ZERO)
                 .setMatch(new MatchBuilder().build());
-        final KeyedInstanceIdentifier<Table, TableKey> tablePath = dummyNodePath.augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(Uint8.ZERO));
-        final KeyedInstanceIdentifier<Flow, FlowKey> flowPath =  tablePath.child(Flow.class, new FlowKey(flowId));
+        final var tablePath = dummyNodePath.toBuilder()
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(Uint8.ZERO))
+                .build();
+        final var flowPath =  tablePath.toBuilder().child(Flow.class, new FlowKey(flowId)).build();
 
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
-                ArgumentMatchers.<InstanceIdentifier<?>>any());
+                ArgumentMatchers.any());
 
         final InOrder inOrder = Mockito.inOrder(deviceContext);
         inOrder.verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
@@ -490,10 +502,12 @@ public class StatisticsGatheringUtilsTest {
 
         final org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId meterId =
                 new org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId(meterIdValue);
-        final KeyedInstanceIdentifier<Meter, MeterKey> meterPath = dummyNodePath.augmentation(FlowCapableNode.class)
-                .child(Meter.class, new MeterKey(meterId));
+        final var meterPath = dummyNodePath.toBuilder()
+                .augmentation(FlowCapableNode.class)
+                .child(Meter.class, new MeterKey(meterId))
+                .build();
         verify(deviceContext, Mockito.never()).addDeleteToTxChain(eq(LogicalDatastoreType.OPERATIONAL),
-                ArgumentMatchers.<InstanceIdentifier<?>>any());
+                ArgumentMatchers.any());
         verify(deviceMeterRegistry).store(meterId);
         verify(deviceContext).writeToTransaction(eq(LogicalDatastoreType.OPERATIONAL),
                                                  eq(meterPath), any(Meter.class));
@@ -535,8 +549,9 @@ public class StatisticsGatheringUtilsTest {
 
     @Test
     public void testDeleteAllKnownFlows() {
-        final InstanceIdentifier<FlowCapableNode> nodePath =
-                deviceInfo.getNodeInstanceIdentifier().augmentation(FlowCapableNode.class);
+        final var nodePath = deviceInfo.getNodeInstanceIdentifier().toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .build();
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(Uint8.ZERO);
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
@@ -545,7 +560,9 @@ public class StatisticsGatheringUtilsTest {
         doReturn(FluentFutures.immediateFluentFuture(flowNodeOpt)).when(readTx)
             .read(LogicalDatastoreType.OPERATIONAL, nodePath);
         StatisticsGatheringUtils.deleteAllKnownFlows(deviceContext, deviceInfo.getNodeInstanceIdentifier()
-            .augmentation(FlowCapableNode.class), deviceFlowRegistry);
+            .toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .build(), deviceFlowRegistry);
 
         verify(deviceContext).isTransactionsEnabled();
         verify(deviceContext).getReadTransaction();
