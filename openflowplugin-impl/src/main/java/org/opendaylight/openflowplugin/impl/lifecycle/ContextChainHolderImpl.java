@@ -53,14 +53,11 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsContext
 import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.mdsal.core.general.entity.rev150930.Entity;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -332,7 +329,7 @@ public final class ContextChainHolderImpl implements ContextChainHolder, MasterC
                     EntityOwnershipState ownershipState = getCurrentOwnershipStatus(entityName);
                     if (ownershipState == null || EntityOwnershipState.NO_OWNER.equals(ownershipState)) {
                         LOG.debug("Entity {} has no owner", entityName);
-                        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier =
+                        final var nodeInstanceIdentifier =
                                 DeviceStateUtil.createNodeInstanceIdentifier(new NodeId(entityName));
                         deviceManager.sendNodeRemovedNotification(nodeInstanceIdentifier);
                         LOG.info("Try to remove device {} from operational DS", entityName);

@@ -72,7 +72,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final var iiToNodeInInventory = modification.getRootPath().path();
+        final var iiToNodeInInventory = modification.path().toLegacy();
         final var nodeId = provideTopologyNodeId(iiToNodeInInventory);
         final var iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
@@ -86,12 +86,10 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private void processAddedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory = modification.getRootPath().path();
+        final var iiToNodeInInventory = modification.path().toLegacy();
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
-                    .rev131021.network.topology.topology.Node>
-                    iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
+            final var iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
             sendToTransactionChain(prepareTopologyNode(nodeIdInTopology, iiToNodeInInventory), iiToTopologyNode);
         } else {
             LOG.debug("Inventory node key is null. Data can't be written to topology");

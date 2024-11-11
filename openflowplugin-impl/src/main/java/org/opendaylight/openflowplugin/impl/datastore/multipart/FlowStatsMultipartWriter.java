@@ -20,13 +20,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.F
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.FlowStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.statistics.rev130819.flow.statistics.FlowStatisticsBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndStatisticsMapList> {
     private final DeviceRegistry registry;
 
     public FlowStatsMultipartWriter(final TxFacade txFacade,
-                                    final InstanceIdentifier<Node> instanceIdentifier,
+                                    final WithKey<Node, NodeKey> instanceIdentifier,
                                     final DeviceRegistry registry) {
         super(txFacade, instanceIdentifier);
         this.registry = registry;
@@ -56,10 +57,11 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                     final FlowKey key = new FlowKey(flowDescriptor.getFlowId());
 
                     writeToTransaction(
-                            getInstanceIdentifier()
+                            getInstanceIdentifier().toBuilder()
                                     .augmentation(FlowCapableNode.class)
                                     .child(Table.class, new TableKey(stat.getTableId()))
-                                    .child(Flow.class, key),
+                                    .child(Flow.class, key)
+                                    .build(),
                             flowBuilder
                                     .setId(key.getId())
                                     .withKey(key)
@@ -68,5 +70,4 @@ public class FlowStatsMultipartWriter extends AbstractMultipartWriter<FlowAndSta
                 }
             });
     }
-
 }

@@ -41,8 +41,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.Rpc;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -73,13 +71,15 @@ public class RpcContextImplTest {
     @Captor
     private ArgumentCaptor<Collection<Rpc<?, ?>>> captor;
 
-    private KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    private DataObjectIdentifier.WithKey<Node, NodeKey> nodeInstanceIdentifier;
     private RpcContextImpl rpcContext;
 
     @Before
     public void setup() {
         final NodeId nodeId = new NodeId("openflow:1");
-        nodeInstanceIdentifier = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        nodeInstanceIdentifier = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(nodeId))
+            .build();
 
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);

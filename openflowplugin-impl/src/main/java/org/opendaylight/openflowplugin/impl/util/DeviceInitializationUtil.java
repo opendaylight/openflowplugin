@@ -11,7 +11,6 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutionException;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionAdapter;
 import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext;
@@ -30,8 +29,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev13
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutputBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -50,11 +51,10 @@ public final class DeviceInitializationUtil {
      * @param dataBroker the data broker
      */
     public static void makeEmptyNodes(final DataBroker dataBroker) {
-        final WriteTransaction tx = dataBroker.newWriteOnlyTransaction();
-
+        final var tx = dataBroker.newWriteOnlyTransaction();
+        tx.merge(LogicalDatastoreType.OPERATIONAL, DataObjectIdentifier.builder(Nodes.class).build(),
+            new NodesBuilder().build());
         try {
-            tx.merge(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class), new NodesBuilder()
-                    .build());
             tx.commit().get();
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Creation of node failed.", e);
@@ -78,10 +78,10 @@ public final class DeviceInitializationUtil {
         for (int i = 0; i < nrOfTables; i++) {
             final Uint8 tableId = Uint8.valueOf(i);
             txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
-                    deviceInfo
-                            .getNodeInstanceIdentifier()
+                    deviceInfo.getNodeInstanceIdentifier().toBuilder()
                             .augmentation(FlowCapableNode.class)
-                            .child(Table.class, new TableKey(tableId)),
+                            .child(Table.class, new TableKey(tableId))
+                            .build(),
                     new TableBuilder()
                             .setId(tableId)
                             .addAugmentation(new FlowTableStatisticsDataBuilder().build())
@@ -97,8 +97,8 @@ public final class DeviceInitializationUtil {
      * @return ip address
      */
     public static IpAddress getIpAddress(final ConnectionContext connectionContext,
-                                         final InstanceIdentifier<Node> instanceIdentifier) {
-        final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
+                                         final WithKey<Node, NodeKey> instanceIdentifier) {
+        final String node = instanceIdentifier.key().getId().getValue();
         final InetSocketAddress address = getRemoteAddress(connectionContext, instanceIdentifier);
         if (address == null) {
             return null;
@@ -116,8 +116,8 @@ public final class DeviceInitializationUtil {
      * @return port number
      */
     public static PortNumber getPortNumber(final ConnectionContext connectionContext,
-                                           final InstanceIdentifier<Node> instanceIdentifier) {
-        final String node = PathUtil.extractNodeId(instanceIdentifier).getValue();
+                                           final WithKey<Node, NodeKey> instanceIdentifier) {
+        final String node = instanceIdentifier.key().getId().getValue();
         final InetSocketAddress address = getRemoteAddress(connectionContext, instanceIdentifier);
         if (address == null) {
             return null;
@@ -139,12 +139,12 @@ public final class DeviceInitializationUtil {
     }
 
     private static @Nullable InetSocketAddress getRemoteAddress(final ConnectionContext connectionContext,
-                                                                final InstanceIdentifier<Node> instanceIdentifier) {
+                                                                final WithKey<Node, NodeKey> instanceIdentifier) {
         final ConnectionAdapter adapter = connectionContext.getConnectionAdapter();
         final InetSocketAddress remoteAddress = adapter == null ? null : adapter.getRemoteAddress();
         if (remoteAddress == null) {
             LOG.warn("Remote address of the node {} cannot be obtained. No connection with switch.",
-                PathUtil.extractNodeId(instanceIdentifier));
+                instanceIdentifier.key().getId());
         }
         return remoteAddress;
     }

@@ -47,15 +47,16 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowCapableTopologyExporterTest {
 
     private OperationProcessor processor;
     private FlowCapableTopologyExporter exporter;
-    private InstanceIdentifier<Topology> topologyIID;
+    private WithKey<Topology, TopologyKey> topologyIID;
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
     @Mock
     private DataBroker mockDataBroker;
@@ -68,8 +69,9 @@ public class FlowCapableTopologyExporterTest {
 
         processor = new OperationProcessor(mockDataBroker);
 
-        topologyIID = InstanceIdentifier.create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
+        topologyIID = DataObjectIdentifier.builder(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")))
+                .build();
         exporter = new FlowCapableTopologyExporter(processor, topologyIID);
         executor.execute(processor);
     }
@@ -87,28 +89,29 @@ public class FlowCapableTopologyExporterTest {
                 sourceNodeKey = newInvNodeKey("sourceNode");
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey
                 sourceNodeConnKey = newInvNodeConnKey("sourceTP");
-        InstanceIdentifier<?> sourceConnID = newNodeConnID(sourceNodeKey, sourceNodeConnKey);
+        var sourceConnID = newNodeConnID(sourceNodeKey, sourceNodeConnKey);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
                 destNodeKey = newInvNodeKey("destNode");
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey
                 destNodeConnKey = newInvNodeConnKey("destTP");
-        InstanceIdentifier<?> destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
+        var destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        exporter.onLinkDiscovered(new LinkDiscoveredBuilder().setSource(
-                new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
-                        new NodeConnectorRef(destConnID.toIdentifier())).build());
+        exporter.onLinkDiscovered(new LinkDiscoveredBuilder()
+            .setSource(new NodeConnectorRef(sourceConnID))
+            .setDestination(new NodeConnectorRef(destConnID))
+            .build());
 
         waitForSubmit(submitLatch);
 
         ArgumentCaptor<Link> mergedNode = ArgumentCaptor.forClass(Link.class);
-        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.child(
-                        Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))),
-                mergedNode.capture());
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(topologyIID.toBuilder()
+            .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+            .build()), mergedNode.capture());
         assertEquals("Source node ID", "sourceNode",
                 mergedNode.getValue().getSource().getSourceNode().getValue());
         assertEquals("Dest TP ID", "sourceTP",
@@ -126,13 +129,13 @@ public class FlowCapableTopologyExporterTest {
                 sourceNodeKey = newInvNodeKey("sourceNode");
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey
                 sourceNodeConnKey = newInvNodeConnKey("sourceTP");
-        InstanceIdentifier<?> sourceConnID = newNodeConnID(sourceNodeKey, sourceNodeConnKey);
+        var sourceConnID = newNodeConnID(sourceNodeKey, sourceNodeConnKey);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
                 destNodeKey = newInvNodeKey("destNode");
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey
                 destNodeConnKey = newInvNodeConnKey("destTP");
-        InstanceIdentifier<?> destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
+        var destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
 
         Link link = newLink(sourceNodeConnKey.getId().getValue(), newSourceTp(sourceNodeConnKey.getId().getValue()),
                 newDestTp(destNodeConnKey.getId().getValue()));
@@ -141,17 +144,19 @@ public class FlowCapableTopologyExporterTest {
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(link))).when(mockTx)
-                .read(LogicalDatastoreType.OPERATIONAL,
-                      topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+                .read(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+                      .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+                      .build());
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
-                new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
-                    new NodeConnectorRef(destConnID.toIdentifier())).build());
+                new NodeConnectorRef(sourceConnID)).setDestination(
+                    new NodeConnectorRef(destConnID)).build());
 
         waitForSubmit(submitLatch);
 
-        verify(mockTx).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
-                Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+        verify(mockTx).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+            .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+            .build());
     }
 
     @Test
@@ -161,28 +166,30 @@ public class FlowCapableTopologyExporterTest {
                 sourceNodeKey = newInvNodeKey("sourceNode");
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey
                 sourceNodeConnKey = newInvNodeConnKey("sourceTP");
-        InstanceIdentifier<?> sourceConnID = newNodeConnID(sourceNodeKey, sourceNodeConnKey);
+        var sourceConnID = newNodeConnID(sourceNodeKey, sourceNodeConnKey);
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
                 destNodeKey = newInvNodeKey("destNode");
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey
                 destNodeConnKey = newInvNodeConnKey("destTP");
-        InstanceIdentifier<?> destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
+        var destConnID = newNodeConnID(destNodeKey, destNodeConnKey);
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         final CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
         doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(mockTx)
-                .read(LogicalDatastoreType.OPERATIONAL,
-                      topologyIID.child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+                .read(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+                    .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+                    .build());
 
         exporter.onLinkRemoved(new LinkRemovedBuilder().setSource(
-                new NodeConnectorRef(sourceConnID.toIdentifier())).setDestination(
-                    new NodeConnectorRef(destConnID.toIdentifier())).build());
+                new NodeConnectorRef(sourceConnID)).setDestination(
+                    new NodeConnectorRef(destConnID)).build());
 
         waitForSubmit(submitLatch);
 
-        verify(mockTx, never()).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.child(
-                Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId()))));
+        verify(mockTx, never()).delete(LogicalDatastoreType.OPERATIONAL, topologyIID.toBuilder()
+            .child(Link.class, new LinkKey(new LinkId(sourceNodeConnKey.getId())))
+            .build());
     }
 }

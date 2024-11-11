@@ -16,7 +16,7 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainHolder
 import org.opendaylight.openflowplugin.api.openflow.translator.TranslatorLibrarian;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 /**
  * This interface is responsible for instantiating DeviceContext and
@@ -24,22 +24,18 @@ import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
  * has its own device context managed by this manager.
  */
 public interface DeviceManager extends OFPManager, TranslatorLibrarian, FlowGroupInfoHistories {
-
     /**
      * invoked after all services injected.
      */
     void initialize();
 
-    ListenableFuture<?> removeDeviceFromOperationalDS(@NonNull KeyedInstanceIdentifier<Node, NodeKey> ii);
+    ListenableFuture<?> removeDeviceFromOperationalDS(@NonNull WithKey<Node, NodeKey> ii);
 
     DeviceContext createContext(@NonNull ConnectionContext connectionContext);
 
+    void sendNodeAddedNotification(@NonNull WithKey<Node, NodeKey> instanceIdentifier);
 
-    void sendNodeAddedNotification(
-            @NonNull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
-
-    void sendNodeRemovedNotification(
-            @NonNull KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier);
+    void sendNodeRemovedNotification(@NonNull WithKey<Node, NodeKey> instanceIdentifier);
 
     void setContextChainHolder(@NonNull ContextChainHolder contextChainHolder);
 }

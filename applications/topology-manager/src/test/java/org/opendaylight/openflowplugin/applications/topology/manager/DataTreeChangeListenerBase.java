@@ -21,10 +21,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
@@ -34,14 +32,14 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class DataTreeChangeListenerBase {
 
     private OperationProcessor processor;
-    protected KeyedInstanceIdentifier<Topology, TopologyKey> topologyIID;
+    protected WithKey<Topology, TopologyKey> topologyIID;
     protected TerminationPointChangeListenerImpl terminationPointListener;
     protected NodeChangeListenerImpl nodeChangeListener;
     private final ExecutorService executor = Executors.newFixedThreadPool(1);
@@ -56,8 +54,9 @@ public abstract class DataTreeChangeListenerBase {
 
         processor = new OperationProcessor(mockDataBroker);
 
-        topologyIID = InstanceIdentifier.create(NetworkTopology.class)
-                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")));
+        topologyIID = DataObjectIdentifier.builder(NetworkTopology.class)
+                .child(Topology.class, new TopologyKey(new TopologyId("flow:1")))
+                .build();
         terminationPointListener = new TerminationPointChangeListenerImpl(mockDataBroker, processor);
         nodeChangeListener = new NodeChangeListenerImpl(mockDataBroker, processor);
 
@@ -78,13 +77,12 @@ public abstract class DataTreeChangeListenerBase {
     }
 
     protected <T extends DataObject> DataTreeModification<T> setupDataTreeChange(final ModificationType type,
-                                                                                 final InstanceIdentifier<T> ii,
+                                                                                 final DataObjectIdentifier<T> ii,
                                                                                  final boolean getDataAfter) {
         final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
-        final DataTreeIdentifier<T> identifier = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, ii);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
         when(dataTreeModification.getRootNode().modificationType()).thenReturn(type);
-        when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        when(dataTreeModification.path()).thenReturn(ii);
         if (getDataAfter) {
             when(dataTreeModification.getRootNode().dataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
         }

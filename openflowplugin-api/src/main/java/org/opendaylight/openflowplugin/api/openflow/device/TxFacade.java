@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.api.openflow.device;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Handles operations with transactions.
@@ -20,7 +20,7 @@ public interface TxFacade {
     /**
      * Method creates put operation using provided data in underlying transaction chain.
      */
-    <T extends DataObject> void writeToTransaction(LogicalDatastoreType store, InstanceIdentifier<T> path, T data);
+    <T extends DataObject> void writeToTransaction(LogicalDatastoreType store, DataObjectIdentifier<T> path, T data);
 
     /**
      * Method creates put operation using provided data in underlying transaction
@@ -29,13 +29,13 @@ public interface TxFacade {
      * Use it only if you really need to create parents.
      */
     <T extends DataObject> void writeToTransactionWithParentsSlow(LogicalDatastoreType store,
-                                                                  InstanceIdentifier<T> path,
+                                                                  DataObjectIdentifier<T> path,
                                                                   T data);
 
     /**
      * Method creates delete operation for provided path in underlying transaction chain.
      */
-    <T extends DataObject> void addDeleteToTxChain(LogicalDatastoreType store, InstanceIdentifier<T> path);
+    <T extends DataObject> void addDeleteToTxChain(LogicalDatastoreType store, DataObjectIdentifier<T> path);
 
     /**
      * Method submits Transaction to DataStore.

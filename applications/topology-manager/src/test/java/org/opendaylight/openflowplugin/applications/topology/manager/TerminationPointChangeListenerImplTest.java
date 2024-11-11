@@ -54,9 +54,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public class TerminationPointChangeListenerImplTest extends DataTreeChangeListenerBase {
     @SuppressWarnings("rawtypes")
@@ -66,7 +66,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
         TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("tp1"));
 
-        final InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
+        final DataObjectIdentifier<Node> topoNodeII = topologyIID.toBuilder().child(Node.class, topoNodeKey).build();
         Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes
@@ -75,21 +75,21 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey(terminationPointKey.getTpId().getValue());
 
-        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final DataObjectIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(
                 newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
                 newLink("link2", newSourceTp("source"), newDestTp("tp1")),
                 newLink("link3", newSourceTp("source2"), newDestTp("dest2")));
-        final Topology topology = new TopologyBuilder().withKey(topologyIID.getKey())
+        final Topology topology = new TopologyBuilder().withKey(topologyIID.key())
             .setLink(BindingMap.ordered(linkList))
             .build();
 
-        final InstanceIdentifier[] expDeletedIIDs = {
-                topologyIID.child(Link.class, linkList.get(0).key()),
-                topologyIID.child(Link.class, linkList.get(1).key()),
-                topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
-                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
+        final DataObjectIdentifier[] expDeletedIIDs = {
+                topologyIID.toBuilder().child(Link.class, linkList.get(0).key()).build(),
+                topologyIID.toBuilder().child(Link.class, linkList.get(1).key()).build(),
+                topologyIID.toBuilder().child(Node.class, new NodeKey(new NodeId("node1")))
+                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1"))).build()
             };
 
         final SettableFuture<Optional<Topology>> readFuture = SettableFuture.create();
@@ -105,8 +105,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         int expDeleteCalls = expDeletedIIDs.length;
         CountDownLatch deleteLatch = new CountDownLatch(expDeleteCalls);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx1, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
@@ -132,7 +131,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
         TerminationPointKey terminationPointKey = new TerminationPointKey(new TpId("tp1"));
 
-        InstanceIdentifier<Node> topoNodeII = topologyIID.child(Node.class, topoNodeKey);
+        DataObjectIdentifier<Node> topoNodeII = topologyIID.toBuilder().child(Node.class, topoNodeKey).build();
         Node topoNode = new NodeBuilder().withKey(topoNodeKey).build();
 
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
@@ -141,12 +140,14 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey(terminationPointKey.getTpId().getValue());
 
-        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final var invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
-        final InstanceIdentifier[] expDeletedIIDs = {
-                topologyIID.child(Node.class, new NodeKey(new NodeId("node1")))
-                        .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
-            };
+        final DataObjectIdentifier[] expDeletedIIDs = {
+            topologyIID.toBuilder()
+                .child(Node.class, new NodeKey(new NodeId("node1")))
+                .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
+                .build()
+        };
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(mockTx)
@@ -157,8 +158,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 .read(LogicalDatastoreType.OPERATIONAL, topoNodeII);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
@@ -182,7 +182,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey("tp1");
 
-        InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        var invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         ReadWriteTransaction mockTx = mock(ReadWriteTransaction.class);
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
@@ -196,10 +196,11 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         ArgumentCaptor<TerminationPoint> mergedNode = ArgumentCaptor.forClass(TerminationPoint.class);
         NodeId expNodeId = new NodeId("node1");
         TpId expTpId = new TpId("tp1");
-        InstanceIdentifier<TerminationPoint> expTpPath = topologyIID.child(
-                Node.class, new NodeKey(expNodeId)).child(TerminationPoint.class,
-                        new TerminationPointKey(expTpId));
-        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
+        final var expTpPath = topologyIID.toBuilder()
+            .child(Node.class, new NodeKey(expNodeId))
+            .child(TerminationPoint.class, new TerminationPointKey(expTpId))
+            .build();
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath.toIdentifier()),
                 mergedNode.capture());
         assertEquals("getTpId", expTpId, mergedNode.getValue().getTpId());
         InventoryNodeConnector augmentation = mergedNode.getValue().augmentation(
@@ -219,7 +220,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey("tp1");
 
-        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final var invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
         Topology topology = new TopologyBuilder().withKey(topologyIID.getKey())
@@ -232,8 +233,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         setupStubbedSubmit(mockTx);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
@@ -245,15 +245,17 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         waitForDeletes(1, deleteLatch);
 
-        InstanceIdentifier<TerminationPoint> expTpPath = topologyIID.child(
-                Node.class, new NodeKey(new NodeId("node1"))).child(TerminationPoint.class,
-                        new TerminationPointKey(new TpId("tp1")));
+        DataObjectIdentifier<TerminationPoint> expTpPath = topologyIID.toBuilder()
+            .child(Node.class, new NodeKey(new NodeId("node1")))
+            .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
+            .build();
 
         verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
                 any(TerminationPoint.class));
 
-        assertDeletedIDs(new InstanceIdentifier[]{topologyIID.child(Link.class,
-                linkList.get(0).key())}, deletedLinkIDs);
+        assertDeletedIDs(new DataObjectIdentifier[] {
+            topologyIID.toBuilder().child(Link.class, linkList.get(0).key()).build()
+        }, deletedLinkIDs);
     }
 
     @SuppressWarnings("rawtypes")
@@ -266,10 +268,10 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey("tp1");
 
-        final InstanceIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final var invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
-        Topology topology = new TopologyBuilder().withKey(topologyIID.getKey())
+        Topology topology = new TopologyBuilder().withKey(topologyIID.key())
             .setLink(BindingMap.ordered(linkList))
             .build();
 
@@ -279,8 +281,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         setupStubbedSubmit(mockTx);
 
         CountDownLatch deleteLatch = new CountDownLatch(1);
-        ArgumentCaptor<InstanceIdentifier> deletedLinkIDs =
-                ArgumentCaptor.forClass(InstanceIdentifier.class);
+        ArgumentCaptor<DataObjectIdentifier> deletedLinkIDs = ArgumentCaptor.forClass(DataObjectIdentifier.class);
         setupStubbedDeletes(mockTx, deletedLinkIDs, deleteLatch);
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
@@ -292,14 +293,16 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         waitForDeletes(1, deleteLatch);
 
-        InstanceIdentifier<TerminationPoint> expTpPath = topologyIID.child(
-                Node.class, new NodeKey(new NodeId("node1"))).child(TerminationPoint.class,
-                        new TerminationPointKey(new TpId("tp1")));
+        DataObjectIdentifier<TerminationPoint> expTpPath = topologyIID.toBuilder()
+            .child(Node.class, new NodeKey(new NodeId("node1")))
+            .child(TerminationPoint.class, new TerminationPointKey(new TpId("tp1")))
+            .build();
 
         verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
                 any(TerminationPoint.class));
 
-        assertDeletedIDs(new InstanceIdentifier[]{topologyIID.child(Link.class,
-                linkList.get(0).key())}, deletedLinkIDs);
+        assertDeletedIDs(new DataObjectIdentifier[] {
+            topologyIID.toBuilder().child(Link.class, linkList.get(0).key()).build()
+        }, deletedLinkIDs);
     }
 }

@@ -10,6 +10,7 @@ package org.opendaylight.openflowplugin.applications.topology.manager;
 import static java.util.Objects.requireNonNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -22,13 +23,16 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>,
         AutoCloseable {
-    static final InstanceIdentifier<Topology> II_TO_TOPOLOGY = InstanceIdentifier.create(NetworkTopology.class)
-        .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)));
+    static final WithKey<Topology, TopologyKey> II_TO_TOPOLOGY = DataObjectIdentifier.builder(NetworkTopology.class)
+        .child(Topology.class, new TopologyKey(new TopologyId(FlowCapableTopologyProvider.TOPOLOGY_ID)))
+        .build();
 
     protected final Registration listenerRegistration;
     protected OperationProcessor operationProcessor;
@@ -47,24 +51,22 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
         listenerRegistration.close();
     }
 
-    <O extends DataObject> void sendToTransactionChain(final O node, final InstanceIdentifier<O> iiToTopologyNode) {
+    <O extends DataObject> void sendToTransactionChain(final O node, final DataObjectIdentifier<O> iiToTopologyNode) {
         operationProcessor.enqueueOperation(
             manager -> manager.mergeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTopologyNode, node, true));
     }
 
-    InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-            .topology.topology.Node> provideIIToTopologyNode(
-            final NodeId nodeIdInTopology) {
-        org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology
-                .NodeKey
-                nodeKeyInTopology
-                = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-                .topology.topology.NodeKey(
-                nodeIdInTopology);
-        return II_TO_TOPOLOGY.builder()
-                .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-                               .topology.topology.Node.class,
-                       nodeKeyInTopology).build();
+    @NonNull WithKey<
+            org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology
+            .Node,
+            org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology
+            .NodeKey> provideIIToTopologyNode(final NodeId nodeIdInTopology) {
+        return II_TO_TOPOLOGY.toBuilder()
+            .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology
+                    .topology.Node.class,
+                new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology
+                    .topology.NodeKey(nodeIdInTopology))
+            .build();
     }
 
     NodeId provideTopologyNodeId(final InstanceIdentifier<T> iiToNodeInInventory) {

@@ -100,9 +100,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.port.statistics.rev131214.FlowCapableNodeConnectorStatisticsDataBuilder;
 import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.util.concurrent.NotificationManager;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -239,7 +238,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path,
+                                                          final DataObjectIdentifier<T> path,
                                                           final T data) {
         if (initialized.get()) {
             transactionChainManager.writeToTransaction(store, path, data, false);
@@ -248,7 +247,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T extends DataObject> void writeToTransactionWithParentsSlow(final LogicalDatastoreType store,
-                                                                         final InstanceIdentifier<T> path,
+                                                                         final DataObjectIdentifier<T> path,
                                                                          final T data) {
         if (initialized.get()) {
             transactionChainManager.writeToTransaction(store, path, data, true);
@@ -257,7 +256,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
 
     @Override
     public <T extends DataObject> void addDeleteToTxChain(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path) {
+                                                          final DataObjectIdentifier<T> path) {
         if (initialized.get()) {
             transactionChainManager.addDeleteOperationToTxChain(store, path);
         }
@@ -364,13 +363,13 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         deviceInfo.getDatapathId(), portStatusMessage.getPortNo(), portStatusMessage.getName(),
                         portStatusMessage.getReason());
 
-                final KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> iiToNodeConnector = getDeviceInfo()
-                        .getNodeInstanceIdentifier()
+                final var iiToNodeConnector = getDeviceInfo().getNodeInstanceIdentifier().toBuilder()
                         .child(NodeConnector.class, new NodeConnectorKey(InventoryDataServiceUtil
                                 .nodeConnectorIdfromDatapathPortNo(
                                         deviceInfo.getDatapathId(),
                                         portStatusMessage.getPortNo(),
-                                        OpenflowVersion.get(deviceInfo.getVersion()))));
+                                        OpenflowVersion.get(deviceInfo.getVersion()))))
+                        .build();
 
                 writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
                         .withKey(iiToNodeConnector.getKey())
@@ -504,7 +503,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             messageOfChoice = messageConverter.convert(vendorData, MessagePath.MESSAGE_NOTIFICATION);
             final ExperimenterMessageFromDevBuilder experimenterMessageFromDevBld = new
                     ExperimenterMessageFromDevBuilder()
-                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier().toIdentifier()))
+                    .setNode(new NodeRef(getDeviceInfo().getNodeInstanceIdentifier()))
                     .setExperimenterMessageOfChoice(messageOfChoice);
             // publish
             notificationPublishService.offerNotification(experimenterMessageFromDevBld.build());

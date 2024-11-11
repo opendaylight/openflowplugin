@@ -28,6 +28,7 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -78,17 +79,15 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processRemovedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final InstanceIdentifier<FlowCapableNodeConnector> removedNode = modification.getRootPath().path();
+        final var removedNode = modification.path().toLegacy();
         final TpId terminationPointId = provideTopologyTerminationPointId(removedNode);
-        final InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
-                terminationPointId, removedNode);
+        final var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(terminationPointId, removedNode);
 
         if (iiToTopologyTerminationPoint != null) {
-            final InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
-                    .rev131021.network.topology.topology.Node>
-                    node = iiToTopologyTerminationPoint.firstIdentifierOf(
+            final var node = iiToTopologyTerminationPoint.toLegacy().firstIdentifierOf(
                     org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-                            .topology.topology.Node.class);
+                            .topology.topology.Node.class)
+                .toIdentifier();
             operationProcessor.enqueueOperation(manager -> {
                 Optional<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
                         .topology.topology.Node>
@@ -116,10 +115,10 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processAddedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory = modification.getRootPath().path();
+        final var iiToNodeInInventory = modification.path().toLegacy();
         TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null) {
-            InstanceIdentifier<TerminationPoint> iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
+            var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
                     terminationPointIdInTopology, iiToNodeInInventory);
             TerminationPoint point = prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory);
             sendToTransactionChain(point, iiToTopologyTerminationPoint);
@@ -150,20 +149,17 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
             .build();
     }
 
-    private InstanceIdentifier<TerminationPoint> provideIIToTopologyTerminationPoint(
+    private WithKey<TerminationPoint, TerminationPointKey> provideIIToTopologyTerminationPoint(
             final TpId terminationPointIdInTopology,
             final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null && nodeIdInTopology != null) {
-            InstanceIdentifier<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology
-                    .rev131021.network.topology.topology.Node>
-                    iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-            return iiToTopologyNode.builder()
-                    .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology)).build();
+            return provideIIToTopologyNode(nodeIdInTopology).toBuilder()
+                .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology))
+                .build();
         } else {
             LOG.debug(
-                    "Value of termination point ID in topology is null. Instance identifier to topology can't be "
-                            + "built");
+                "Value of termination point ID in topology is null. Instance identifier to topology cannot be built");
             return null;
         }
     }

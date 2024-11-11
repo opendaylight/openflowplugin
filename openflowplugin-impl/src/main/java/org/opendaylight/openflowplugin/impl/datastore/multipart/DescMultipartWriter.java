@@ -15,14 +15,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.De
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class DescMultipartWriter extends AbstractMultipartWriter<Desc> {
-
     private final ConnectionContext connectionContext;
 
     public DescMultipartWriter(final TxFacade txFacade,
-                               final InstanceIdentifier<Node> instanceIdentifier,
+                               final WithKey<Node, NodeKey> instanceIdentifier,
                                final ConnectionContext connectionContext) {
         super(txFacade, instanceIdentifier);
         this.connectionContext = connectionContext;
@@ -35,7 +35,7 @@ public class DescMultipartWriter extends AbstractMultipartWriter<Desc> {
 
     @Override
     public void storeStatistics(final Desc statistics, final boolean withParents) {
-        writeToTransaction(getInstanceIdentifier().augmentation(FlowCapableNode.class),
+        writeToTransaction(getInstanceIdentifier().toBuilder().augmentation(FlowCapableNode.class).build(),
             new FlowCapableNodeBuilder(statistics)
                 .setTable(Map.of())
                 .setMeter(Map.of())

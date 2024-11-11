@@ -28,8 +28,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -44,7 +45,7 @@ public final class FlowCapableTopologyProvider implements ClusterSingletonServic
     private static final String TOPOLOGY_PROVIDER = "ofp-topology-manager";
     static final String TOPOLOGY_ID = "flow:1";
 
-    private final InstanceIdentifier<Topology> topologyPathIID;
+    private final DataObjectIdentifier.WithKey<Topology, TopologyKey> topologyPathIID;
     private final TransactionChainManager transactionChainManager;
     private final OperationProcessor processor;
 
@@ -59,7 +60,9 @@ public final class FlowCapableTopologyProvider implements ClusterSingletonServic
             @Reference final OperationProcessor processor) {
         this.processor = requireNonNull(processor);
         final TopologyKey key = new TopologyKey(new TopologyId(TOPOLOGY_ID));
-        topologyPathIID = InstanceIdentifier.create(NetworkTopology.class).child(Topology.class, key);
+        topologyPathIID = DataObjectIdentifier.builder(NetworkTopology.class)
+            .child(Topology.class, key)
+            .build();
 
         listenerRegistration = notificationService.registerCompositeListener(
             new FlowCapableTopologyExporter(processor, topologyPathIID).toListener());
@@ -110,8 +113,9 @@ public final class FlowCapableTopologyProvider implements ClusterSingletonServic
         return new ServiceGroupIdentifier(TOPOLOGY_PROVIDER);
     }
 
-    private boolean isFlowTopologyExist(final InstanceIdentifier<Topology> path) {
+    private boolean isFlowTopologyExist(final WithKey<Topology, TopologyKey> path) {
         try {
+            // FIXME: expose exists() from manager
             Optional<Topology> ofTopology = transactionChainManager
                     .readFromTransaction(LogicalDatastoreType.OPERATIONAL, path).get();
             LOG.debug("OpenFlow topology exist in the operational data store at {}", path);

@@ -14,8 +14,10 @@ import org.opendaylight.openflowplugin.common.txchain.TransactionChainManager;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.Link;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.LinkKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +29,7 @@ final class TopologyManagerUtil {
     }
 
     static void removeAffectedLinks(final NodeId id, final TransactionChainManager manager,
-                                    final InstanceIdentifier<Topology> topology) {
+                                    final WithKey<Topology, TopologyKey> topology) {
         final Optional<Topology> topologyOptional;
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
@@ -46,7 +48,7 @@ final class TopologyManagerUtil {
     }
 
     static void removeAffectedLinks(final TpId id, final TransactionChainManager manager,
-                                    final InstanceIdentifier<Topology> topology) {
+                                    final WithKey<Topology, TopologyKey> topology) {
         final Optional<Topology> topologyOptional;
         try {
             topologyOptional = manager.readFromTransaction(LogicalDatastoreType.OPERATIONAL, topology).get();
@@ -64,7 +66,7 @@ final class TopologyManagerUtil {
         }
     }
 
-    static InstanceIdentifier<Link> linkPath(final Link link, final InstanceIdentifier<Topology> topology) {
-        return topology.child(Link.class, link.key());
+    static WithKey<Link, LinkKey> linkPath(final Link link, final WithKey<Topology, TopologyKey> topology) {
+        return topology.toBuilder().child(Link.class, link.key()).build();
     }
 }

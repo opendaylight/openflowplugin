@@ -12,7 +12,7 @@ import org.opendaylight.mdsal.singleton.api.ServiceGroupIdentifier;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -20,7 +20,6 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * API defining basic device information.
  */
 public interface DeviceInfo extends XidSequencer {
-
     /**
      * Getter.
      * @return id of encapsulated node
@@ -31,7 +30,7 @@ public interface DeviceInfo extends XidSequencer {
      * Getter.
      * @return {@link Node} instance identifier
      */
-    KeyedInstanceIdentifier<Node, NodeKey> getNodeInstanceIdentifier();
+    DataObjectIdentifier.WithKey<Node, NodeKey> getNodeInstanceIdentifier();
 
     /**
      * Getter.

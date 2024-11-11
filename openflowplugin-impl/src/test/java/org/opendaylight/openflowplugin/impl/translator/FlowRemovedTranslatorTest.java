@@ -33,8 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.v10.grouping.MatchV10Builder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowRemovedMessageBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -67,8 +66,9 @@ public class FlowRemovedTranslatorTest {
 
     @Before
     public void setUp() {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeId = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("dummyNodeId")));
+        final var nodeId = DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("dummyNodeId")))
+                .build();
 
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         translator = new FlowRemovedTranslator(convertorManager);
