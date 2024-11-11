@@ -49,7 +49,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.binding.DataContainer;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +57,6 @@ import org.slf4j.LoggerFactory;
  * Utils for gathering statistics.
  */
 public final class StatisticsGatheringUtils {
-    private static final String DATE_AND_TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     private static final Logger LOG = LoggerFactory.getLogger(StatisticsGatheringUtils.class);
     private static final String QUEUE2_REQCTX = "QUEUE2REQCTX-";
 
@@ -105,8 +104,9 @@ public final class StatisticsGatheringUtils {
                                              final TxFacade txFacade, final DeviceRegistry deviceRegistry,
                                              final DeviceInfo deviceInfo,
                                              final MultipartWriterProvider statisticsWriterProvider) {
-        final InstanceIdentifier<FlowCapableNode> instanceIdentifier = deviceInfo.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
+        final var instanceIdentifier = deviceInfo.getNodeInstanceIdentifier().toBuilder()
+                .augmentation(FlowCapableNode.class)
+                .build();
         try {
             txFacade.acquireWriteTransactionLock();
             switch (type) {
@@ -166,7 +166,7 @@ public final class StatisticsGatheringUtils {
     }
 
     public static void deleteAllKnownFlows(final TxFacade txFacade,
-                                           final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
+                                           final DataObjectIdentifier<FlowCapableNode> instanceIdentifier,
                                            final DeviceFlowRegistry deviceFlowRegistry) {
         if (!txFacade.isTransactionsEnabled()) {
             return;
@@ -183,11 +183,10 @@ public final class StatisticsGatheringUtils {
                     // we have to read actual tables with all information before we set empty Flow list,
                     // merge is expensive and not applicable for lists
                     if (flowCapNodeOpt != null && flowCapNodeOpt.isPresent()) {
-                        for (final Table tableData : flowCapNodeOpt.orElseThrow().nonnullTable().values()) {
-                            final Table table = new TableBuilder(tableData).setFlow(Map.of()).build();
-                            final InstanceIdentifier<Table> iiToTable = instanceIdentifier
-                                .child(Table.class, tableData.key());
-                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToTable, table);
+                        for (var tableData : flowCapNodeOpt.orElseThrow().nonnullTable().values()) {
+                            txFacade.writeToTransaction(LogicalDatastoreType.OPERATIONAL,
+                                instanceIdentifier.toBuilder().child(Table.class, tableData.key()).build(),
+                                new TableBuilder(tableData).setFlow(Map.of()).build());
                         }
                     }
                     return null;
@@ -198,26 +197,22 @@ public final class StatisticsGatheringUtils {
     }
 
     public static void deleteAllKnownMeters(final TxFacade txFacade,
-                                            final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
+                                            final DataObjectIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceMeterRegistry meterRegistry) {
         meterRegistry.forEach(meterId -> {
-            txFacade
-                    .addDeleteToTxChain(
-                            LogicalDatastoreType.OPERATIONAL,
-                            instanceIdentifier.child(Meter.class, new MeterKey(meterId)));
+            txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,
+                instanceIdentifier.toBuilder().child(Meter.class, new MeterKey(meterId)).build());
             meterRegistry.addMark(meterId);
         });
     }
 
     public static void deleteAllKnownGroups(final TxFacade txFacade,
-                                            final InstanceIdentifier<FlowCapableNode> instanceIdentifier,
+                                            final DataObjectIdentifier<FlowCapableNode> instanceIdentifier,
                                             final DeviceGroupRegistry groupRegistry) {
-        LOG.debug("deleteAllKnownGroups on device targetType {}", instanceIdentifier.getTargetType());
+        LOG.debug("deleteAllKnownGroups on device targetType {}", instanceIdentifier.lastStep().type());
         groupRegistry.forEach(groupId -> {
-            txFacade
-                    .addDeleteToTxChain(
-                            LogicalDatastoreType.OPERATIONAL,
-                            instanceIdentifier.child(Group.class, new GroupKey(groupId)));
+            txFacade.addDeleteToTxChain(LogicalDatastoreType.OPERATIONAL,
+                instanceIdentifier.toBuilder().child(Group.class, new GroupKey(groupId)).build());
             groupRegistry.addMark(groupId);
         });
     }
@@ -229,14 +224,12 @@ public final class StatisticsGatheringUtils {
      * @param txFacade tx manager
      */
     static void markDeviceStateSnapshotStart(final DeviceInfo deviceInfo, final TxFacade txFacade) {
-        final InstanceIdentifier<FlowCapableStatisticsGatheringStatus> statusPath = deviceInfo
-                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class);
+        final var statusPath = deviceInfo.getNodeInstanceIdentifier().toBuilder()
+            .augmentation(FlowCapableStatisticsGatheringStatus.class)
+            .build();
 
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final FlowCapableStatisticsGatheringStatus gatheringStatus = new FlowCapableStatisticsGatheringStatusBuilder()
-                .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder()
-                        .setBegin(new DateAndTime(simpleDateFormat.format(new Date())))
-                        .build())
+                .setSnapshotGatheringStatusStart(new SnapshotGatheringStatusStartBuilder().setBegin(now()).build())
                 .setSnapshotGatheringStatusEnd(null) // TODO: reconsider if really need to clean end mark here
                 .build();
         try {
@@ -258,13 +251,13 @@ public final class StatisticsGatheringUtils {
      */
     static void markDeviceStateSnapshotEnd(final DeviceInfo deviceInfo,
                                            final TxFacade txFacade, final boolean succeeded) {
-        final InstanceIdentifier<SnapshotGatheringStatusEnd> statusEndPath = deviceInfo
-                .getNodeInstanceIdentifier().augmentation(FlowCapableStatisticsGatheringStatus.class)
-                .child(SnapshotGatheringStatusEnd.class);
+        final var statusEndPath = deviceInfo.getNodeInstanceIdentifier().toBuilder()
+            .augmentation(FlowCapableStatisticsGatheringStatus.class)
+            .child(SnapshotGatheringStatusEnd.class)
+            .build();
 
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
         final SnapshotGatheringStatusEnd gatheringStatus = new SnapshotGatheringStatusEndBuilder()
-                .setEnd(new DateAndTime(simpleDateFormat.format(new Date())))
+                .setEnd(now())
                 .setSucceeded(succeeded)
                 .build();
         try {
@@ -275,5 +268,10 @@ public final class StatisticsGatheringUtils {
         }
 
         txFacade.submitTransaction();
+    }
+
+    private static DateAndTime now() {
+        // FIXME: modernize with Java 8 time utilities
+        return new DateAndTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(new Date()));
     }
 }

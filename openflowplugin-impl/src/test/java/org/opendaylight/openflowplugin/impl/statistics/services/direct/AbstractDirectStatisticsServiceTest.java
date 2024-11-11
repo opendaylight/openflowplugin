@@ -44,8 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -87,15 +86,14 @@ public abstract class AbstractDirectStatisticsServiceTest {
     protected GetFeaturesOutput getFeaturesOutput;
 
     protected NodeConnectorId nodeConnectorId;
-    protected KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    protected DataObjectIdentifier.WithKey<Node, NodeKey> nodeInstanceIdentifier;
     protected ConvertorManager convertorManager;
     protected MultipartWriterProvider multipartWriterProvider;
 
     protected static NodeRef createNodeRef(final String nodeIdValue) {
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
-
-        return new NodeRef(nodePath.toIdentifier());
+        return new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(nodeIdValue)))
+            .build());
     }
 
     @Before
@@ -103,9 +101,9 @@ public abstract class AbstractDirectStatisticsServiceTest {
         nodeConnectorId = InventoryDataServiceUtil.nodeConnectorIdfromDatapathPortNo(
                 DATAPATH_ID, PORT_NO, OpenflowVersion.get(OF_VERSION));
 
-        nodeInstanceIdentifier = InstanceIdentifier
-                .create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(NODE_ID)));
+        nodeInstanceIdentifier = DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(NODE_ID)))
+                .build();
 
         convertorManager = ConvertorManagerFactory.createDefaultManager();
         lenient().when(deviceContext.getDeviceFlowRegistry()).thenReturn(deviceFlowRegistry);

@@ -25,7 +25,9 @@ public final class PathUtil {
      * Extracts node id from instance identifier.
      * @param input instance identifier
      * @return node-id from given instance identifier
+     * @deprecated Use {@link DataObjectIdentifier.WithKey#key()} instead
      */
+    @Deprecated
     public static NodeId extractNodeId(final InstanceIdentifier<Node> input) {
         return input.firstKeyOf(Node.class).getId();
     }

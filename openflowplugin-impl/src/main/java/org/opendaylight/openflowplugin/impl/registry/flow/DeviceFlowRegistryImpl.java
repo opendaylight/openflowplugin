@@ -42,8 +42,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.GeneralAugMatchNodesNodeTableFlow;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +55,13 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     // FIXME: improve locking here
     private final List<ListenableFuture<List<Optional<FlowCapableNode>>>> lastFillFutures = new ArrayList<>();
     private final BiMap<FlowRegistryKey, FlowDescriptor> flowRegistry = Maps.synchronizedBiMap(HashBiMap.create());
-    private final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier;
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> instanceIdentifier;
     private final FlowGroupInfoHistoryAppender history;
     private final FlowRegistryKeyFactory keyFactory;
     private final DataBroker dataBroker;
 
     public DeviceFlowRegistryImpl(final Uint8 version, final DataBroker dataBroker,
-            final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier,
+            final DataObjectIdentifier.WithKey<Node, NodeKey> instanceIdentifier,
             final FlowGroupInfoHistoryAppender history) {
         this.dataBroker = requireNonNull(dataBroker);
         this.instanceIdentifier = requireNonNull(instanceIdentifier);
@@ -79,12 +78,12 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     @Override
     public ListenableFuture<List<Optional<FlowCapableNode>>> fill() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Filling flow registry with flows for node: {}", instanceIdentifier.getKey().getId().getValue());
+            LOG.debug("Filling flow registry with flows for node: {}", instanceIdentifier.key().getId().getValue());
         }
 
         // Prepare path for read transaction
         // TODO: Read only Tables, and not entire FlowCapableNode (fix Yang model)
-        final InstanceIdentifier<FlowCapableNode> path = instanceIdentifier.augmentation(FlowCapableNode.class);
+        final var path = instanceIdentifier.toBuilder().augmentation(FlowCapableNode.class).build();
 
         // First, try to fill registry with flows from DS/Configuration
         final FluentFuture<Optional<FlowCapableNode>> configFuture =
@@ -106,7 +105,7 @@ public class DeviceFlowRegistryImpl implements DeviceFlowRegistry {
     }
 
     private FluentFuture<Optional<FlowCapableNode>> fillFromDatastore(final LogicalDatastoreType logicalDatastoreType,
-                              final InstanceIdentifier<FlowCapableNode> path) {
+                              final DataObjectIdentifier<FlowCapableNode> path) {
         // Prepare read operation from datastore for path
         final FluentFuture<Optional<FlowCapableNode>> future;
         try (ReadTransaction transaction = dataBroker.newReadOnlyTransaction()) {

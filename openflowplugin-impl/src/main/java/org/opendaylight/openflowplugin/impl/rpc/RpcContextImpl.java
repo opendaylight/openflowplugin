@@ -92,9 +92,9 @@ import org.opendaylight.openflowplugin.impl.statistics.services.direct.singlelay
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.binding.Rpc;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +105,7 @@ final class RpcContextImpl implements RpcContext {
     private final MessageSpy messageSpy;
     private final Semaphore tracker;
     private final boolean isStatisticsRpcEnabled;
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier;
+    private final WithKey<Node, NodeKey> nodeInstanceIdentifier;
     private final DeviceInfo deviceInfo;
     private final DeviceContext deviceContext;
     private final ExtensionConverterProvider extensionConverterProvider;
@@ -160,12 +160,12 @@ final class RpcContextImpl implements RpcContext {
         }
 
         LOG.trace("Acquired semaphore for {}, available permits:{} ",
-            nodeInstanceIdentifier.getKey().getId().getValue(), tracker.availablePermits());
+            nodeInstanceIdentifier.key().getId().getValue(), tracker.availablePermits());
 
         final var xid = deviceInfo.reserveXidForDeviceMessage();
         if (xid == null) {
             LOG.warn("Xid cannot be reserved for new RequestContext, node:{}",
-                    nodeInstanceIdentifier.getKey().getId().getValue());
+                    nodeInstanceIdentifier.key().getId().getValue());
             tracker.release();
             return null;
         }

@@ -48,8 +48,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeUpd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.util.concurrent.QueuedNotificationManager;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +62,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     private final DeviceInitializerProvider deviceInitializerProvider;
     private final ConvertorExecutor convertorExecutor;
     private final ConcurrentMap<DeviceInfo, DeviceContext> deviceContexts = new ConcurrentHashMap<>();
-    private final Set<KeyedInstanceIdentifier<Node, NodeKey>> notificationCreateNodeSend =
-            ConcurrentHashMap.newKeySet();
+    private final Set<WithKey<Node, NodeKey>> notificationCreateNodeSend = ConcurrentHashMap.newKeySet();
     private final NotificationPublishService notificationPublishService;
     private final MessageSpy messageSpy;
     private final HashedWheelTimer hashedWheelTimer;
@@ -132,12 +131,10 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public ListenableFuture<?> removeDeviceFromOperationalDS(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> ii) {
-
+    public ListenableFuture<?> removeDeviceFromOperationalDS(final @NonNull WithKey<Node, NodeKey> ii) {
         final WriteTransaction delWtx = dataBroker.newWriteOnlyTransaction();
         delWtx.delete(LogicalDatastoreType.OPERATIONAL, ii);
         return delWtx.commit();
-
     }
 
     @Override
@@ -219,25 +216,25 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
     }
 
     @Override
-    public void sendNodeRemovedNotification(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public void sendNodeRemovedNotification(final WithKey<Node, NodeKey> instanceIdentifier) {
         if (notificationCreateNodeSend.remove(instanceIdentifier)) {
             NodeRemovedBuilder builder = new NodeRemovedBuilder();
             builder.setNodeRef(new NodeRef(instanceIdentifier.toIdentifier()));
-            LOG.info("Publishing node removed notification for {}", instanceIdentifier.firstKeyOf(Node.class).getId());
+            LOG.info("Publishing node removed notification for {}", instanceIdentifier.key().getId());
             notificationPublishService.offerNotification(builder.build());
         }
     }
 
     @Override
-    public void setContextChainHolder(@NonNull final ContextChainHolder contextChainHolder) {
+    public void setContextChainHolder(final ContextChainHolder contextChainHolder) {
         this.contextChainHolder = contextChainHolder;
     }
 
     @Override
-    public void sendNodeAddedNotification(@NonNull final KeyedInstanceIdentifier<Node, NodeKey> instanceIdentifier) {
+    public void sendNodeAddedNotification(final WithKey<Node, NodeKey> instanceIdentifier) {
         if (!notificationCreateNodeSend.contains(instanceIdentifier)) {
             notificationCreateNodeSend.add(instanceIdentifier);
-            final NodeId id = instanceIdentifier.firstKeyOf(Node.class).getId();
+            final NodeId id = instanceIdentifier.key().getId();
             NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
             builder.setId(id);
             builder.setNodeRef(new NodeRef(instanceIdentifier.toIdentifier()));

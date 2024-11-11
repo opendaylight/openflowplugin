@@ -104,10 +104,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceivedBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRole;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 import org.opendaylight.yangtools.util.concurrent.NotificationManager;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -151,7 +150,7 @@ public class DeviceContextImplTest {
     @Mock
     private ConnectionAdapter connectionAdapter;
     private final NodeId nodeId = new NodeId("h2g2:42");
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodeKeyIdent =
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> nodeKeyIdent =
             DeviceStateUtil.createNodeInstanceIdentifier(nodeId);
     @Mock
     private TranslatorLibrary translatorLibrary;
@@ -281,7 +280,7 @@ public class DeviceContextImplTest {
     @Test
     public void testInitialSubmitTransaction() {
         Mockito.doReturn(CommitInfo.emptyFluentFuture()).when(writeTx).commit();
-        final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
+        final var dummyII = DataObjectIdentifier.builder(Nodes.class).build();
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
@@ -299,7 +298,7 @@ public class DeviceContextImplTest {
 
     @Test
     public void testAddDeleteToTxChain() {
-        final InstanceIdentifier<Nodes> dummyII = InstanceIdentifier.create(Nodes.class);
+        final var dummyII = DataObjectIdentifier.builder(Nodes.class).build();
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().activateTransactionManager() ;
         ((DeviceContextImpl) deviceContext).getTransactionChainManager().initialSubmitWriteTransaction();
         deviceContext.addDeleteToTxChain(LogicalDatastoreType.CONFIGURATION, dummyII);
@@ -452,10 +451,11 @@ public class DeviceContextImplTest {
         final FlowRemovedMessageBuilder flowRemovedBld = new FlowRemovedMessageBuilder();
 
         // prepare path to flow to be removed
-        final KeyedInstanceIdentifier<Flow, FlowKey> flowToBeRemovedPath = nodeKeyIdent
+        final var flowToBeRemovedPath = nodeKeyIdent.toBuilder()
                 .augmentation(FlowCapableNode.class)
                 .child(Table.class, new TableKey(Uint8.ZERO))
-                .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")));
+                .child(Flow.class, new FlowKey(new FlowId("ut-ofp:f456")))
+                .build();
 
         deviceContext.setNotificationPublishService(mockedNotificationPublishService);
         deviceContext.processFlowRemovedMessage(flowRemovedBld.build());

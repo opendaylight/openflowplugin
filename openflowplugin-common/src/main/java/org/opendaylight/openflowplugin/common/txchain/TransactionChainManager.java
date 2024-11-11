@@ -32,7 +32,7 @@ import org.opendaylight.mdsal.common.api.CommitInfo;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.common.wait.SimpleTaskRetryLooper;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Empty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * The openflowplugin-impl.org.opendaylight.openflowplugin.impl.device
  * package protected class for controlling {@link WriteTransaction} life cycle. It listens on chains and provides
  * package-protected methods for writeToTransaction
- * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, InstanceIdentifier, DataObject)})
+ * method (wrapped {@link WriteTransaction#put(LogicalDatastoreType, DataObjectIdentifier, DataObject)})
  * and submitTransaction method (wrapped {@link WriteTransaction#commit()}).
  */
 public class TransactionChainManager implements AutoCloseable {
@@ -220,7 +220,7 @@ public class TransactionChainManager implements AutoCloseable {
     }
 
     public <T extends DataObject> void addDeleteOperationToTxChain(final LogicalDatastoreType store,
-                                                                    final InstanceIdentifier<T> path) {
+                                                                   final DataObjectIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {
@@ -233,7 +233,7 @@ public class TransactionChainManager implements AutoCloseable {
     }
 
     public <T extends DataObject> void writeToTransaction(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path,
+                                                          final DataObjectIdentifier<T> path,
                                                           final T data,
                                                           final boolean createParents) {
         synchronized (txLock) {
@@ -252,7 +252,7 @@ public class TransactionChainManager implements AutoCloseable {
     }
 
     public <T extends DataObject> void mergeToTransaction(final LogicalDatastoreType store,
-                                                          final InstanceIdentifier<T> path,
+                                                          final DataObjectIdentifier<T> path,
                                                           final T data,
                                                           final boolean createParents) {
         synchronized (txLock) {
@@ -270,8 +270,8 @@ public class TransactionChainManager implements AutoCloseable {
         }
     }
 
-    public <T extends DataObject> ListenableFuture<Optional<T>>
-        readFromTransaction(final LogicalDatastoreType store, final InstanceIdentifier<T> path) {
+    public <T extends DataObject> ListenableFuture<Optional<T>> readFromTransaction(final LogicalDatastoreType store,
+            final DataObjectIdentifier<T> path) {
         synchronized (txLock) {
             ensureTransaction();
             if (writeTx == null) {

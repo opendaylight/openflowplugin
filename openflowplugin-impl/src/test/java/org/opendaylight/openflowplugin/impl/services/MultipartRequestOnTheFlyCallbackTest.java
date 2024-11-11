@@ -60,9 +60,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.MultipartReplyFlowCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.MultipartReplyFlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.flow._case.multipart.reply.flow.FlowStatsBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -79,9 +78,8 @@ public class MultipartRequestOnTheFlyCallbackTest {
     private static final String DUMMY_EVENT_NAME = "dummy event name 1";
     private static final String DUMMY_DEVICE_ID = "dummy device id 1";
     private static final Uint32 DUMMY_XID = Uint32.valueOf(55L);
-    private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_PATH = KeyedInstanceIdentifier
-            .create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("uf-node:123")));
+    private static final DataObjectIdentifier.WithKey<Node, NodeKey> NODE_PATH =
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId("uf-node:123"))).build();
 
     @Mock
     private DeviceContext mockedDeviceContext;
@@ -210,8 +208,9 @@ public class MultipartRequestOnTheFlyCallbackTest {
                 .setMultipartReplyBody(multipartReplyFlowCaseBuilder.build())
                 .setXid(Uint32.valueOf(21));
 
-        final InstanceIdentifier<FlowCapableNode> nodePath = mockedDeviceInfo.getNodeInstanceIdentifier()
-                .augmentation(FlowCapableNode.class);
+        final var nodePath = mockedDeviceInfo.getNodeInstanceIdentifier().toBuilder()
+                .augmentation(FlowCapableNode.class)
+                .build();
         final FlowCapableNodeBuilder flowNodeBuilder = new FlowCapableNodeBuilder();
         final TableBuilder tableDataBld = new TableBuilder();
         tableDataBld.setId(tableId);

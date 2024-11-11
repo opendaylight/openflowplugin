@@ -14,14 +14,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.table.statistics.rev131215.FlowTableStatisticsDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class TableFeaturesMultipartWriter extends AbstractMultipartWriter<TableFeatures> {
-
-    public TableFeaturesMultipartWriter(final TxFacade txFacade,
-                                        final InstanceIdentifier<Node> instanceIdentifier) {
+    public TableFeaturesMultipartWriter(final TxFacade txFacade, final WithKey<Node, NodeKey> instanceIdentifier) {
         super(txFacade, instanceIdentifier);
     }
 
@@ -34,18 +33,19 @@ public class TableFeaturesMultipartWriter extends AbstractMultipartWriter<TableF
     public void storeStatistics(final TableFeatures statistics, final boolean withParents) {
         statistics.nonnullTableFeatures().values()
             .forEach(stat -> {
-                writeToTransaction(getInstanceIdentifier()
+                writeToTransaction(getInstanceIdentifier().toBuilder()
                         .augmentation(FlowCapableNode.class)
                         .child(org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features
-                                .TableFeatures.class,
-                            new TableFeaturesKey(stat.getTableId())),
+                                .TableFeatures.class, new TableFeaturesKey(stat.getTableId()))
+                        .build(),
                     stat,
                     withParents);
 
                 // Write parent for table statistics
-                writeToTransaction(getInstanceIdentifier()
+                writeToTransaction(getInstanceIdentifier().toBuilder()
                         .augmentation(FlowCapableNode.class)
-                        .child(Table.class, new TableKey(stat.getTableId())),
+                        .child(Table.class, new TableKey(stat.getTableId()))
+                        .build(),
                     new TableBuilder()
                         .setId(stat.getTableId())
                         .addAugmentation(new FlowTableStatisticsDataBuilder().build())

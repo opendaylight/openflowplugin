@@ -28,17 +28,21 @@ import org.opendaylight.openflowplugin.api.openflow.rpc.RpcContext;
 import org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific.MessageSpy;
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.NonZeroUint16Type;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfigBuilder;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RpcManagerImplTest {
-
     private static final Uint16 QUOTA_VALUE = Uint16.valueOf(5);
+    private static final DataObjectIdentifier.WithKey<Node, NodeKey> NODE_PATH =
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(new NodeId("one"))).build();
+
     private RpcManagerImpl rpcManager;
 
     @Mock
@@ -63,8 +67,6 @@ public class RpcManagerImplTest {
     private ConvertorExecutor convertorExecutor;
     @Mock
     private NotificationPublishService notificationPublishService;
-    @Mock
-    private KeyedInstanceIdentifier<Node, NodeKey> nodePath;
 
     @Before
     public void setUp() {
@@ -74,14 +76,14 @@ public class RpcManagerImplTest {
                 .build(),
                 rpcProviderRegistry, extensionConverterProvider, convertorExecutor, notificationPublishService);
 
-        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodePath);
+        Mockito.when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(NODE_PATH);
         Mockito.when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         Mockito.when(deviceContext.getMessageSpy()).thenReturn(messageSpy);
     }
 
     @Test
     public void createContext() {
-        final RpcContext context = rpcManager.createContext(deviceContext);
+        final var context = rpcManager.createContext(deviceContext);
         assertEquals(deviceInfo, context.getDeviceInfo());
     }
 

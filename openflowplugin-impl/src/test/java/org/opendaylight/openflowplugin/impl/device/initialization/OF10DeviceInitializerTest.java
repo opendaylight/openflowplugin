@@ -13,7 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Future;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,13 +35,10 @@ import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.util.DeviceStateUtil;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.CapabilitiesV10;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MultipartType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPortBuilder;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -78,20 +75,18 @@ public class OF10DeviceInitializerTest {
 
     @Before
     public void setUp() {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodeInstanceIdentifier = DeviceStateUtil
-                .createNodeInstanceIdentifier(new NodeId("openflow:1"));
+        final var nodeInstanceIdentifier = DeviceStateUtil.createNodeInstanceIdentifier(new NodeId("openflow:1"));
 
         deviceInitializer = new OF10DeviceInitializer();
         when(featuresReply.getCapabilitiesV10()).thenReturn(capabilitiesV10);
-        when(featuresReply.getPhyPort()).thenReturn(Collections
-                .singletonList(new PhyPortBuilder()
-                        .setPortNo(Uint32.valueOf(42))
-                        .build()));
+        when(featuresReply.getPhyPort()).thenReturn(List.of(new PhyPortBuilder()
+            .setPortNo(Uint32.valueOf(42))
+            .build()));
         when(connectionContext.getFeatures()).thenReturn(featuresReply);
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
-        when(deviceInfo.getNodeId()).thenReturn(nodeInstanceIdentifier.getKey().getId());
+        when(deviceInfo.getNodeId()).thenReturn(nodeInstanceIdentifier.key().getId());
         when(deviceInfo.getVersion()).thenReturn(Uint8.ONE);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);

@@ -16,14 +16,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 public class GroupDescMultipartWriter extends AbstractMultipartWriter<GroupDescStatsReply> {
-
     private final DeviceRegistry registry;
 
     public GroupDescMultipartWriter(final TxFacade txFacade,
-                                    final InstanceIdentifier<Node> instanceIdentifier,
+                                    final WithKey<Node, NodeKey> instanceIdentifier,
                                     final DeviceRegistry registry) {
         super(txFacade, instanceIdentifier);
         this.registry = registry;
@@ -39,9 +39,10 @@ public class GroupDescMultipartWriter extends AbstractMultipartWriter<GroupDescS
         statistics.nonnullGroupDescStats().values()
             .forEach(stat -> {
                 writeToTransaction(
-                    getInstanceIdentifier()
+                    getInstanceIdentifier().toBuilder()
                         .augmentation(FlowCapableNode.class)
-                        .child(Group.class, new GroupKey(stat.getGroupId())),
+                        .child(Group.class, new GroupKey(stat.getGroupId()))
+                        .build(),
                     new GroupBuilder(stat)
                         .withKey(new GroupKey(stat.getGroupId()))
                         .addAugmentation(new NodeGroupStatisticsBuilder().build())
