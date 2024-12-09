@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>13.1.4</version>
+        <version>13.1.5</version>
         <relativePath/>
     </parent>
 
@@ -21,7 +21,7 @@
             <dependency>
                 <groupId>org.opendaylight.mdsal</groupId>
                 <artifactId>mdsal-artifacts</artifactId>
-                <version>13.0.6</version>
+                <version>13.0.7</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -30,7 +30,7 @@
             <dependency>
                 <groupId>org.opendaylight.controller</groupId>
                 <artifactId>controller-artifacts</artifactId>
-                <version>9.0.5</version>
+                <version>9.0.6</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
