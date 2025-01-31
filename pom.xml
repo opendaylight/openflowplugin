@@ -39,6 +39,7 @@
         <module>test-common</module>
         <module>applications</module>
         <module>samples</module>
+        <module>srm</module>
     </modules>
 
     <profiles>
