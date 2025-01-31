@@ -33,7 +33,7 @@
       <artifactId>mdsal-binding-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opendaylight.serviceutils</groupId>
+      <groupId>org.opendaylight.openflowplugin</groupId>
       <artifactId>srm-api</artifactId>
     </dependency>
     <dependency>

@@ -13,7 +13,6 @@ import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
-import org.opendaylight.serviceutils.tools.mdsal.listener.AbstractClusteredSyncDataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.ServiceOps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.Services;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.services.Operations;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 @Singleton
 @Component
 @RequireServiceComponentRuntime
-public final class ServiceRecoveryListener extends AbstractClusteredSyncDataTreeChangeListener<Operations> {
+public final class ServiceRecoveryListener extends AbstractDataTreeChangeListener<Operations> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceRecoveryListener.class);
 
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
