@@ -20,30 +20,8 @@
             <!-- This project -->
             <dependency>
                 <groupId>org.opendaylight.openflowplugin</groupId>
-                <artifactId>openflowplugin-artifacts</artifactId>
+                <artifactId>openflowplugin-parent</artifactId>
                 <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <!-- Controller infrastructure -->
-            <dependency>
-                <groupId>org.opendaylight.controller</groupId>
-                <artifactId>controller-artifacts</artifactId>
-                <version>10.0.9</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.infrautils</groupId>
-                <artifactId>infrautils-artifacts</artifactId>
-                <version>7.1.2</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-            <dependency>
-                <groupId>org.opendaylight.serviceutils</groupId>
-                <artifactId>serviceutils-artifacts</artifactId>
-                <version>0.14.2</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -109,10 +87,8 @@
             <artifactId>openflowplugin-extension-onf</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.serviceutils</groupId>
-            <artifactId>odl-serviceutils-srm</artifactId>
-            <classifier>features</classifier>
-            <type>xml</type>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>srm-impl</artifactId>
         </dependency>
 
         <!-- config files -->
