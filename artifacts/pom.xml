@@ -237,6 +237,22 @@
                 <artifactId>arbitratorreconciliation-impl</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- SRM -->
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>srm-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>srm-impl</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>srm-shell</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- config files -->
             <dependency>
                 <groupId>${project.groupId}</groupId>
