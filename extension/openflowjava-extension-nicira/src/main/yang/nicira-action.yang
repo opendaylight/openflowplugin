@@ -7,7 +7,7 @@ module nicira-action {
     import openflow-extensible-match { prefix oxm;}
     import openflow-action {prefix ofaction; revision-date "2015-02-03";}
     import openflow-types {prefix oft;}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import ietf-inet-types { prefix "inet"; revision-date "2013-07-15"; }
 
     description
@@ -523,7 +523,7 @@ module nicira-action {
     }
 
     augment "/ofaction:action-container/ofaction:action-choice" {
-        ext:augment-identifier "ofj-aug-nx-action";
+        oce:augment-identifier "ofj-aug-nx-action";
         case action-reg-load {
             uses ofj-nx-action-reg-load-grouping;
         }

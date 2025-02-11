@@ -2,7 +2,7 @@ module opendaylight-group-statistics {
     namespace "urn:opendaylight:group:statistics";
     prefix groupstat;
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-group-types {prefix group-types;revision-date "2013-10-18";}
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
@@ -28,7 +28,7 @@ module opendaylight-group-statistics {
 
     augment "/inv:nodes/inv:node/fni:group" {
         description "Openflow group statistics into group node.";
-        ext:augment-identifier "node-group-statistics";
+        oce:augment-identifier "node-group-statistics";
         uses group-statistics;
     }
 
@@ -41,7 +41,7 @@ module opendaylight-group-statistics {
 
     augment "/inv:nodes/inv:node/fni:group" {
         description "Openflow group description into group node.";
-        ext:augment-identifier "node-group-desc-stats";
+        oce:augment-identifier "node-group-desc-stats";
         uses group-desc;
     }
 
@@ -54,7 +54,7 @@ module opendaylight-group-statistics {
 
     augment "/inv:nodes/inv:node" {
         description "Openflow group features into group node.";
-        ext:augment-identifier "node-group-features";
+        oce:augment-identifier "node-group-features";
         uses group-features;
     }
 

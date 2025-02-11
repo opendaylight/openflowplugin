@@ -4,8 +4,8 @@ module eric-match {
     namespace "urn:opendaylight:openflowjava:eric:match";
     prefix "eric-match";
 
-    import openflow-extensible-match {prefix ofoxm;}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import openflow-extensible-match { prefix ofoxm; }
+    import odl-codegen-extensions { prefix oce; }
 
     description
         "Eric openflow extensions of match.";
@@ -39,14 +39,14 @@ module eric-match {
     }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
-        ext:augment-identifier "ofj-aug-eric-match-reserved";
+        oce:augment-identifier "ofj-aug-eric-match-reserved";
         case icmpv6-nd-reserved-case-value {
             uses icmpv6-nd-reserved-grouping;
         }
     }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
-        ext:augment-identifier "ofj-aug-eric-match-options";
+        oce:augment-identifier "ofj-aug-eric-match-options";
         case icmpv6-nd-options-type-case-value {
             uses icmpv6-nd-options-type-grouping;
         }

@@ -37,5 +37,4 @@
             <artifactId>model-inventory</artifactId>
         </dependency>
     </dependencies>
-
 </project>

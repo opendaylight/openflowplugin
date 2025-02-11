@@ -4,7 +4,7 @@ module openflowplugin-extension-eric-match {
     namespace "urn:opendaylight:openflowplugin:extension:eric:match";
     prefix "openflowplugin-eric-match";
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import sal-flow {prefix sal-flow;revision-date "2013-08-19";}
@@ -52,47 +52,47 @@ module openflowplugin-extension-eric-match {
     // MATCH augmentations
     // RPCS
     augment "/sal-flow:add-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-rpc-add-flow";
+        oce:augment-identifier "eric-aug-match-rpc-add-flow";
         uses all-matches-grouping;
     }
     augment "/sal-flow:remove-flow/sal-flow:input/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-rpc-remove-flow";
+        oce:augment-identifier "eric-aug-match-rpc-remove-flow";
         uses all-matches-grouping;
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:original-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-rpc-update-flow-original";
+        oce:augment-identifier "eric-aug-match-rpc-update-flow-original";
         uses all-matches-grouping;
     }
     augment "/sal-flow:update-flow/sal-flow:input/sal-flow:updated-flow/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-rpc-update-flow-updated";
+        oce:augment-identifier "eric-aug-match-rpc-update-flow-updated";
         uses all-matches-grouping;
     }
 
     // DATA
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-nodes-node-table-flow";
+        oce:augment-identifier "eric-aug-match-nodes-node-table-flow";
         uses all-matches-grouping;
     }
     augment "/sal-packet:packet-in-message/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-packet-in-message";
+        oce:augment-identifier "eric-aug-match-packet-in-message";
         uses all-matches-grouping;
     }
 
     // NOTIFICATIONS
     augment "/sal-flow:switch-flow-removed/sal-flow:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-notif-switch-flow-removed";
+        oce:augment-identifier "eric-aug-match-notif-switch-flow-removed";
         uses all-matches-grouping;
     }
     augment "/sal-packet:packet-received/sal-packet:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-notif-packet-in";
+        oce:augment-identifier "eric-aug-match-notif-packet-in";
         uses all-matches-grouping;
     }
     augment "/odl-flow-stats:flows-statistics-update/odl-flow-stats:flow-and-statistics-map-list/odl-flow-stats:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-notif-update-flow-stats";
+        oce:augment-identifier "eric-aug-match-notif-update-flow-stats";
         uses all-matches-grouping;
     }
     augment "/odl-direct-stats:get-flow-statistics/odl-direct-stats:output/odl-direct-stats:flow-and-statistics-map-list/odl-direct-stats:match/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-rpc-get-flow-stats";
+        oce:augment-identifier "eric-aug-match-rpc-get-flow-stats";
         uses all-matches-grouping;
     }
 
@@ -100,12 +100,12 @@ module openflowplugin-extension-eric-match {
 
     // DATA
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:write-actions-case/fni:write-actions/fni:action/fni:action/fni:set-field-case/fni:set-field/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-nodes-node-table-flow-write-actions-set-field";
+        oce:augment-identifier "eric-aug-match-nodes-node-table-flow-write-actions-set-field";
         uses all-matches-grouping;
     }
 
     augment "/inv:nodes/inv:node/fni:table/fni:flow/fni:instructions/fni:instruction/fni:instruction/fni:apply-actions-case/fni:apply-actions/fni:action/fni:action/fni:set-field-case/fni:set-field/ext-gen:extension-list/ext-gen:extension" {
-        ext:augment-identifier "eric-aug-match-nodes-node-table-flow-apply-actions-set-field";
+        oce:augment-identifier "eric-aug-match-nodes-node-table-flow-apply-actions-set-field";
         uses all-matches-grouping;
     }
 }

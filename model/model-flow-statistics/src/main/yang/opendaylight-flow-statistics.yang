@@ -2,7 +2,7 @@ module opendaylight-flow-statistics {
     namespace "urn:opendaylight:flow:statistics";
     prefix flowstat;
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-flow-types {prefix flow-types;revision-date "2013-10-26";}
     import opendaylight-statistics-types {prefix stat-types;revision-date "2013-09-25";}
@@ -19,7 +19,7 @@ module opendaylight-flow-statistics {
     }
 
     augment "/inv:nodes/inv:node/flow-node:table/flow-node:flow" {
-        ext:augment-identifier "flow-statistics-data";
+        oce:augment-identifier "flow-statistics-data";
         description "Openflow flow statistics data into the flow-capable-node->table->flow";
 
         uses flow-statistics;
@@ -108,7 +108,7 @@ module opendaylight-flow-statistics {
     //Models for aggregate flow statistics collection
     augment "/inv:nodes/inv:node/flow-node:table" {
         status deprecated;
-        ext:augment-identifier "aggregate-flow-statistics-data";
+        oce:augment-identifier "aggregate-flow-statistics-data";
         uses aggregate-flow-statistics;
     }
 
