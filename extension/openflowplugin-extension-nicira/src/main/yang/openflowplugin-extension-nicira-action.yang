@@ -4,7 +4,6 @@ module openflowplugin-extension-nicira-action {
     namespace "urn:opendaylight:openflowplugin:extension:nicira:action";
     prefix "openflowplugin-nicira-action";
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
     import flow-node-inventory {prefix fni; revision-date 2013-08-19; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import sal-flow {prefix sal-flow;revision-date "2013-08-19";}

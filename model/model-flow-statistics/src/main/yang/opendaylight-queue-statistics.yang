@@ -2,8 +2,8 @@ module opendaylight-queue-statistics {
     namespace "urn:opendaylight:queue:statistics";
     prefix queuestat;
 
+    import odl-codegen-extensions { prefix oce; }
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import opendaylight-queue-types {prefix queue-types;revision-date "2013-09-25";}
@@ -23,7 +23,7 @@ module opendaylight-queue-statistics {
     //Augment queue statistics data to the flow-capable-node-connector
     augment "/inv:nodes/inv:node/inv:node-connector/flow-node:queue" {
         description "Openflow queue statistics data into the queue node.";
-        ext:augment-identifier "flow-capable-node-connector-queue-statistics-data";
+        oce:augment-identifier "flow-capable-node-connector-queue-statistics-data";
         uses flow-capable-node-connector-queue-statistics;
     }
 

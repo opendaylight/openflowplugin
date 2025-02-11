@@ -10,9 +10,9 @@
     namespace "urn:opendaylight:openflow:augments";
     prefix "aug";
 
-    import yang-ext {prefix ext;}
     import ietf-inet-types {prefix inet;}
     import ietf-yang-types {prefix yang;}
+    import odl-codegen-extensions {prefix oce;}
 
     import openflow-types {prefix oft;}
     import openflow-protocol {prefix ofproto;}
@@ -29,7 +29,7 @@
 
 // OFP_MATCH AUGMENTS
      augment "/oxm:oxm-container/oxm:match-entry-value" {
-         ext:augment-identifier "experimenter-id-match-entry";
+         oce:augment-identifier "experimenter-id-match-entry";
          case experimenter-id-case {
              container experimenter {
                  leaf experimenter {
@@ -41,7 +41,7 @@
 
 // OFP_ACTION AUGMENTS
      augment "/ofaction:action-container/ofaction:action-choice" {
-         ext:augment-identifier "experimenter-id-action";
+         oce:augment-identifier "experimenter-id-action";
          case experimenter-id-case {
              container experimenter {
                  leaf experimenter {
@@ -58,11 +58,11 @@
 
 // OFP_TABLE_FEATURES_PROPERTIES AUGMENTS
      augment "/ofproto:table-features-properties-container/ofproto:table-feature-properties" {
-         ext:augment-identifier "instruction-related-table-feature-property";
+         oce:augment-identifier "instruction-related-table-feature-property";
          uses ofinstruction:instructions-grouping;
      }
      augment "/ofproto:table-features-properties-container/ofproto:table-feature-properties" {
-         ext:augment-identifier "next-table-related-table-feature-property";
+         oce:augment-identifier "next-table-related-table-feature-property";
          list next-table-ids {
              config false;
              leaf table-id {
@@ -71,15 +71,15 @@
          }
      }
      augment "/ofproto:table-features-properties-container/ofproto:table-feature-properties" {
-         ext:augment-identifier "action-related-table-feature-property";
+         oce:augment-identifier "action-related-table-feature-property";
          uses ofaction:actions-grouping;
      }
      augment "/ofproto:table-features-properties-container/ofproto:table-feature-properties" {
-         ext:augment-identifier "oxm-related-table-feature-property";
+         oce:augment-identifier "oxm-related-table-feature-property";
          uses oxm:match-entries-grouping;
      }
      augment "/ofproto:table-features-properties-container/ofproto:table-feature-properties" {
-         ext:augment-identifier "experimenter-id-table-feature-property";
+         oce:augment-identifier "experimenter-id-table-feature-property";
          leaf experimenter {
              type oft:experimenter-id;
          }
@@ -101,13 +101,13 @@
 
 // OFP_QUEUE_PROP AUGMENTS
      augment "/ofproto:queue-prop-container/ofproto:queue-property" {
-         ext:augment-identifier "rate-queue-property";
+         oce:augment-identifier "rate-queue-property";
          leaf rate {
              type uint16;
          }
      }
      augment "/ofproto:queue-prop-container/ofproto:queue-property" {
-         ext:augment-identifier "experimenter-id-queue-property";
+         oce:augment-identifier "experimenter-id-queue-property";
          leaf experimenter {
              type oft:experimenter-id;
          }
@@ -115,7 +115,7 @@
 
 // OFP_ERROR_AUGMENTS (only experimenter till OpenFlow v1.3)
      augment "/ofproto:error-message" {
-         ext:augment-identifier "experimenter-id-error";
+         oce:augment-identifier "experimenter-id-error";
          leaf experimenter {
              type oft:experimenter-id;
          }
@@ -123,7 +123,7 @@
 
 // OFP_METER_BAND AUGMENTS
      augment "/ofproto:meter-band-container/ofproto:meter-band/ofproto:meter-band-experimenter-case/ofproto:meter-band-experimenter" {
-         ext:augment-identifier "experimenter-id-meter-band";
+         oce:augment-identifier "experimenter-id-meter-band";
          leaf experimenter {
              type oft:experimenter-id;
          }

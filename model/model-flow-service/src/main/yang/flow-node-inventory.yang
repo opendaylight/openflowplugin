@@ -2,7 +2,7 @@ module flow-node-inventory {
     namespace "urn:opendaylight:flow:inventory";
     prefix flownode;
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
     import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
     import opendaylight-port-types {prefix port;revision-date "2013-09-25";}
@@ -268,38 +268,38 @@ module flow-node-inventory {
     }
 
     augment "/inv:nodes/inv:node" {
-        ext:augment-identifier "flow-capable-node";
+        oce:augment-identifier "flow-capable-node";
         description "Top attach point of openflow node into node inventory tree.";
         uses flow-node;
     }
 
     augment "/inv:nodes/inv:node/inv:node-connector" {
-        ext:augment-identifier "flow-capable-node-connector";
+        oce:augment-identifier "flow-capable-node-connector";
         description "Openflow port into inventory tree.";
         uses flow-node-connector;
     }
 
     augment "/inv:node-updated" {
-        ext:augment-identifier "flow-capable-node-updated";
+        oce:augment-identifier "flow-capable-node-updated";
         description "Openflow node into node notification.";
         uses flow-node;
     }
 
     augment "/inv:node-updated/inv:node-connector" {
-        //ext:identical-augment "flow-capable-node-connector";
-        ext:augment-identifier "flow-capable-node-connector-update-fields";
+        // FIXME: oce:identical-augment "flow-capable-node-connector";
+        oce:augment-identifier "flow-capable-node-connector-update-fields";
         description "Openflow port into node notification.";
         uses flow-node-connector;
     }
 
     augment "/inv:node-connector-updated" {
-        ext:augment-identifier "flow-capable-node-connector-updated";
+        oce:augment-identifier "flow-capable-node-connector-updated";
         description "Openflow port into node-connector notification.";
         uses flow-node-connector;
     }
 
     augment "/inv:nodes/inv:node/table" {
-        ext:augment-identifier "flow-hash-id-mapping";
+        oce:augment-identifier "flow-hash-id-mapping";
     description "Flow is identified by match and priority on device. So Operational/DS
         has to simulate that behavior and contract between FlowId and match+priority
         identification should represent Flow hashCode. Flow has to contain only
@@ -316,7 +316,7 @@ module flow-node-inventory {
     }
 
     augment "/inv:nodes/inv:node" {
-        ext:augment-identifier "flow-capable-statistics-gathering-status";
+        oce:augment-identifier "flow-capable-statistics-gathering-status";
         description "Placeholder for timestamp of device status snapshot.
             This is contructed by asynchronous process.";
         uses snapshot-gathering-status-grouping;

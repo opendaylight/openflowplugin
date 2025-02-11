@@ -2,7 +2,7 @@ module sal-flat-batch {
     namespace "urn:opendaylight:flat-batch:service";
     prefix fbatch;
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import batch-common {prefix batch;revision-date "2016-03-22";}
     import sal-flows-batch {prefix f-batch;revision-date "2016-03-14";}
@@ -17,7 +17,6 @@ module sal-flat-batch {
     revision "2016-03-21" {
         description "Initial revision of batch flat service.";
     }
-
 
     rpc process-flat-batch {
         description "Process add/update/remove of items in batch towards openflow device.";
@@ -51,7 +50,7 @@ module sal-flat-batch {
     }
 
     augment "/process-flat-batch/input/batch/batch-choice" {
-        ext:augment-identifier "flat-batch-flow-crud-case-aug";
+        oce:augment-identifier "flat-batch-flow-crud-case-aug";
         description "Openflow add/remove/update flow operation.";
 
         case flat-batch-add-flow-case {
@@ -81,7 +80,7 @@ module sal-flat-batch {
     }
 
     augment "/process-flat-batch/input/batch/batch-choice" {
-        ext:augment-identifier "flat-batch-group-crud-case-aug";
+        oce:augment-identifier "flat-batch-group-crud-case-aug";
         description "Openflow add/remove/update group operation.";
 
         case flat-batch-add-group-case {
@@ -111,7 +110,7 @@ module sal-flat-batch {
     }
 
     augment "/process-flat-batch/input/batch/batch-choice" {
-        ext:augment-identifier "flat-batch-meter-crud-case-aug";
+        oce:augment-identifier "flat-batch-meter-crud-case-aug";
         description "Openflow add/remove/update meter operation.";
 
         case flat-batch-add-meter-case {
@@ -141,7 +140,7 @@ module sal-flat-batch {
     }
 
     augment "/process-flat-batch/output/batch-failure/batch-item-id-choice" {
-        ext:augment-identifier "flat-batch-failure-ids-aug";
+        oce:augment-identifier "flat-batch-failure-ids-aug";
         description "Openflow flat batch failures - corresponding item id.";
 
         case flat-batch-failure-flow-id-case {

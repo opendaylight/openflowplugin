@@ -2,8 +2,8 @@ module opendaylight-port-statistics {
     namespace "urn:opendaylight:port:statistics";
     prefix portstat;
 
+    import odl-codegen-extensions { prefix oce; }
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import opendaylight-statistics-types {prefix stat-types;revision-date "2013-09-25";}
     import opendaylight-multipart-types { prefix multipart; revision-date "2017-01-12"; }
@@ -21,7 +21,7 @@ module opendaylight-port-statistics {
     //Augment port statistics data to the flow-capable-node-connector
     augment "/inv:nodes/inv:node/inv:node-connector" {
         description "Openflow port statistics data into the node connector node.";
-        ext:augment-identifier "flow-capable-node-connector-statistics-data";
+        oce:augment-identifier "flow-capable-node-connector-statistics-data";
         uses flow-capable-node-connector-statistics;
     }
 

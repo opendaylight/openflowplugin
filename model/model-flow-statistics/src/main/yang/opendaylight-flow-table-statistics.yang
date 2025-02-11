@@ -3,7 +3,7 @@ module opendaylight-flow-table-statistics {
     prefix flowtablestat;
 
     import flow-capable-transaction {prefix tr; revision-date "2015-03-04";}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import opendaylight-table-types {prefix table-types;revision-date "2013-10-26";}
@@ -22,7 +22,7 @@ module opendaylight-flow-table-statistics {
 
     augment "/inv:nodes/inv:node/flow-node:table" {
         description "Openflow flow table statistics data into the table node.";
-        ext:augment-identifier "flow-table-statistics-data";
+        oce:augment-identifier "flow-table-statistics-data";
         uses flow-table-statistics;
     }
 
