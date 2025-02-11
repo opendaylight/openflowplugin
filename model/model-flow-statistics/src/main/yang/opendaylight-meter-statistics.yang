@@ -2,7 +2,7 @@ module opendaylight-meter-statistics {
     namespace "urn:opendaylight:meter:statistics";
     prefix meterstat;
 
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
+    import odl-codegen-extensions { prefix oce; }
     import opendaylight-inventory {prefix inv;revision-date "2013-08-19";}
     import flow-node-inventory {prefix flow-node;revision-date "2013-08-19";}
     import opendaylight-meter-types {prefix meter-types; revision-date "2013-09-18";}
@@ -21,7 +21,7 @@ module opendaylight-meter-statistics {
 
     augment "/inv:nodes/inv:node/flow-node:meter" {
         description "Openflow meter statistics data into the meter node.";
-        ext:augment-identifier "node-meter-statistics";
+        oce:augment-identifier "node-meter-statistics";
         container meter-statistics {
             uses meter-types:meter-statistics;
         }
@@ -29,7 +29,7 @@ module opendaylight-meter-statistics {
 
     augment "/inv:nodes/inv:node/flow-node:meter" {
         description "Openflow meter config statistics data into the meter node.";
-        ext:augment-identifier "node-meter-config-stats";
+        oce:augment-identifier "node-meter-config-stats";
         container meter-config-stats {
             uses meter-types:meter;
         }
@@ -37,7 +37,7 @@ module opendaylight-meter-statistics {
 
     augment "/inv:nodes/inv:node" {
         description "Openflow meter features data into the inventory node node.";
-        ext:augment-identifier "node-meter-features";
+        oce:augment-identifier "node-meter-features";
         container meter-features {
             uses meter-types:meter-features-reply;
         }

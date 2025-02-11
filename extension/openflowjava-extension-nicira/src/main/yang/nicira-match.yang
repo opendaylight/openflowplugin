@@ -7,9 +7,9 @@ module nicira-match {
     import openflow-extensible-match {prefix ofoxm;}
     import openflow-types {prefix oft;}
     import openflow-augments {prefix aug;}
-    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
-    import yang-ext {prefix ext; revision-date "2013-07-09";}
     import ietf-inet-types {prefix inet; revision-date "2013-07-15";}
+    import ietf-yang-types {prefix yang; revision-date "2013-07-15";}
+    import odl-codegen-extensions { prefix oce; }
 
     description
         "Nicira openflow extensions of match.";
@@ -506,7 +506,7 @@ module nicira-match {
     }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value" {
-        ext:augment-identifier "ofj-aug-nx-match";
+        oce:augment-identifier "ofj-aug-nx-match";
         case reg-case-value {
             uses ofj-nxm-nx-match-reg-grouping;
         }
@@ -594,7 +594,7 @@ module nicira-match {
     }
 
     augment "/ofoxm:oxm-container/ofoxm:match-entry-value/aug:experimenter-id-case" {
-        ext:augment-identifier "ofj-aug-nx-exp-match";
+        oce:augment-identifier "ofj-aug-nx-exp-match";
         choice nx-exp-match-entry-value {
             case nsh-flags-case-value {
                 uses ofj-nxm-nx-match-nsh-flags-grouping;
@@ -619,5 +619,4 @@ module nicira-match {
             }
         }
     }
-
 }
