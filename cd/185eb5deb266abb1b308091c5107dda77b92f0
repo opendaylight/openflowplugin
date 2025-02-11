@@ -1,0 +1,8 @@
+Verified+1: jenkins-releng ODL
+Verified+1: ODL Required.GHA <releng+odl.required.gha@linuxfoundation.org>
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Tue, 11 Feb 2025 17:34:11 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/115339
+Project: openflowplugin
+Branch: refs/heads/stable/scandium
