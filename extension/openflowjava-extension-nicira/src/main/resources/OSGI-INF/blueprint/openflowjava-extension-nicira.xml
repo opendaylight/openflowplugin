@@ -20,12 +20,6 @@
         </argument>
     </bean>
 
-    <bean id="niciraExtensionsRegistrator"
-          class="org.opendaylight.openflowjava.nx.NiciraExtensionsRegistrator"
-          destroy-method="close">
-        <argument ref="niciraExtensionCodecRegistrator"/>
-    </bean>
-
     <service ref="niciraExtensionCodecRegistrator"
              interface="org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator"/>
 </blueprint>
