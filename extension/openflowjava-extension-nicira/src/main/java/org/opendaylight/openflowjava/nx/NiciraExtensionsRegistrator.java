@@ -9,6 +9,9 @@ package org.opendaylight.openflowjava.nx;
 
 import static java.util.Objects.requireNonNull;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.openflowjava.nx.api.NiciraExtensionCodecRegistrator;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
@@ -67,11 +70,19 @@ import org.opendaylight.openflowjava.nx.codec.match.TunIpv4DstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.TunIpv4SrcCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpDstCodec;
 import org.opendaylight.openflowjava.nx.codec.match.UdpSrcCodec;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
-public class NiciraExtensionsRegistrator implements AutoCloseable {
+@Singleton
+@Component(service = { })
+public final class NiciraExtensionsRegistrator implements AutoCloseable {
     private final NiciraExtensionCodecRegistrator registrator;
 
-    public NiciraExtensionsRegistrator(final NiciraExtensionCodecRegistrator registrator) {
+    @Inject
+    @Activate
+    public NiciraExtensionsRegistrator(@Reference final NiciraExtensionCodecRegistrator registrator) {
         this.registrator = requireNonNull(registrator);
 
         registrator.registerActionDeserializer(RegLoadCodec.DESERIALIZER_KEY, NiciraActionCodecs.REG_LOAD_CODEC);
@@ -194,6 +205,8 @@ public class NiciraExtensionsRegistrator implements AutoCloseable {
         registrator.registerMatchEntryDeserializer(PktMarkCodec.DESERIALIZER_KEY, NiciraMatchCodecs.PKT_MARK_CODEC);
     }
 
+    @Deactivate
+    @PreDestroy
     @Override
     public void close() {
         registrator.unregisterActionDeserializer(RegLoadCodec.DESERIALIZER_KEY);
