@@ -9,13 +9,16 @@ package org.opendaylight.openflowplugin.extension.onf;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.List;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeDeserializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.ExperimenterIdTypeSerializerKey;
 import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.openflowplugin.api.OFConstants;
-import org.opendaylight.openflowplugin.extension.api.ExtensionConverterRegistrator;
 import org.opendaylight.openflowplugin.extension.api.OpenFlowPluginExtensionRegistratorProvider;
 import org.opendaylight.openflowplugin.extension.api.TypeVersionKey;
 import org.opendaylight.openflowplugin.extension.onf.converter.BundleAddMessageConverter;
@@ -29,33 +32,34 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.send.experimenter.input.experimenter.message.of.choice.BundleControlSal;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleControlOnf;
+import org.opendaylight.yangtools.concepts.Registration;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Main provider for ONF extensions.
  */
-public class OnfExtensionProvider {
+@Singleton
+@Component(service = { })
+public final class OnfExtensionProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(OnfExtensionProvider.class);
 
     private static final BundleControlConverter BUNDLE_CONTROL_CONVERTER = new BundleControlConverter();
     private static final BundleAddMessageConverter BUNDLE_ADD_MESSAGE_CONVERTER = new BundleAddMessageConverter();
 
-    private final SwitchConnectionProvider switchConnectionProvider;
-    private final ExtensionConverterRegistrator converterRegistrator;
+    private final List<Registration> registrations;
 
-    public OnfExtensionProvider(final SwitchConnectionProvider switchConnectionProvider,
-                                final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
-        this.switchConnectionProvider = requireNonNull(switchConnectionProvider,
-                "SwitchConnectionProvider can not be null!");
-        this.converterRegistrator = requireNonNull(converterRegistrator.getExtensionConverterRegistrator(),
-                "ExtensionConverterRegistrator can not be null!");
-    }
+    @Inject
+    @Activate
+    public OnfExtensionProvider(@Reference final SwitchConnectionProvider switchConnectionProvider,
+            @Reference final OpenFlowPluginExtensionRegistratorProvider converterRegistrator) {
+        final var extensionConverterRegistrator = requireNonNull(
+            converterRegistrator.getExtensionConverterRegistrator(), "ExtensionConverterRegistrator can not be null!");
 
-    /**
-     * Init method for registration of converters called by blueprint.
-     */
-    public void init() {
         switchConnectionProvider.registerExperimenterMessageSerializer(
             new ExperimenterIdTypeSerializerKey<>(OFConstants.OFP_VERSION_1_3,
                 OnfConstants.ONF_EXPERIMENTER, OnfConstants.ONF_ET_BUNDLE_CONTROL.toJava(),
@@ -75,15 +79,28 @@ public class OnfExtensionProvider {
                 OnfConstants.ONF_EXPERIMENTER, ErrorMessage.class),
             new OnfExperimenterErrorFactory());
 
-        converterRegistrator.registerMessageConvertor(
-            new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3), BUNDLE_CONTROL_CONVERTER);
-        converterRegistrator.registerMessageConvertor(
-            new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class), BUNDLE_CONTROL_CONVERTER);
-        converterRegistrator.registerMessageConvertor(
-            new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3), BUNDLE_ADD_MESSAGE_CONVERTER);
-        converterRegistrator.registerMessageConvertor(
-            new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class), BUNDLE_ADD_MESSAGE_CONVERTER);
+        registrations = List.of(
+            extensionConverterRegistrator.registerMessageConvertor(
+                new TypeVersionKey<>(BundleControlSal.class, OFConstants.OFP_VERSION_1_3),
+                BUNDLE_CONTROL_CONVERTER),
+            extensionConverterRegistrator.registerMessageConvertor(
+                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleControlOnf.class),
+                BUNDLE_CONTROL_CONVERTER),
+            extensionConverterRegistrator.registerMessageConvertor(
+                new TypeVersionKey<>(BundleAddMessageSal.class, OFConstants.OFP_VERSION_1_3),
+                BUNDLE_ADD_MESSAGE_CONVERTER),
+            extensionConverterRegistrator.registerMessageConvertor(
+                new MessageTypeKey<>(OFConstants.OFP_VERSION_1_3, BundleAddMessageOnf.class),
+                BUNDLE_ADD_MESSAGE_CONVERTER));
 
         LOG.info("ONF Extension Provider started.");
+    }
+
+    @PreDestroy
+    @Deactivate
+    @Override
+    public void close() {
+        registrations.forEach(Registration::close);
+        LOG.info("ONF Extension Provider stopped.");
     }
 }
