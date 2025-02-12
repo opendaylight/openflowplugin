@@ -11,6 +11,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.HashSet;
 import java.util.Set;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import org.opendaylight.openflowjava.nx.api.NiciraUtil;
 import org.opendaylight.openflowjava.nx.codec.action.ConntrackCodec;
 import org.opendaylight.openflowjava.nx.codec.action.CtClearCodec;
@@ -298,12 +301,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpDstKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfUdpSrcKey;
 import org.opendaylight.yangtools.concepts.ObjectRegistration;
-import org.opendaylight.yangtools.yang.common.Uint32;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class NiciraExtensionProvider implements AutoCloseable {
-
+@Singleton
+@Component(service = { })
+public final class NiciraExtensionProvider implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(NiciraExtensionProvider.class);
 
     private static final RegConvertor REG_CONVERTOR = new RegConvertor();
@@ -362,7 +369,9 @@ public class NiciraExtensionProvider implements AutoCloseable {
     /**
      * Register appropriate converters.
      */
-    public NiciraExtensionProvider(final OpenFlowPluginExtensionRegistratorProvider provider) {
+    @Inject
+    @Activate
+    public NiciraExtensionProvider(@Reference final OpenFlowPluginExtensionRegistratorProvider provider) {
         extensionConverterRegistrator = requireNonNull(provider.getExtensionConverterRegistrator());
         registrations = new HashSet<>();
         // src=dataStore/config
@@ -707,8 +716,12 @@ public class NiciraExtensionProvider implements AutoCloseable {
                 PKT_MARK_CONVERTOR));
         registrations.add(
                 extensionConverterRegistrator.registerMatchConvertor(PktMarkCodec.SERIALIZER_KEY, PKT_MARK_CONVERTOR));
+
+        LOG.info("Nicira Extension Provider started");
     }
 
+    @PreDestroy
+    @Deactivate
     @Override
     @SuppressWarnings("checkstyle:IllegalCatch")
     public void close() {
@@ -721,22 +734,22 @@ public class NiciraExtensionProvider implements AutoCloseable {
         });
 
         registrations.clear();
+        LOG.info("Nicira Extension Provider stopped");
     }
 
     private void registerAction13(final Class<? extends Action> actionCaseType, final ConvertorActionToOFJava<
             org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action,
             org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action>
                 actionConvertor) {
-        TypeVersionKey<? extends Action> key = new TypeVersionKey<>(actionCaseType, EncodeConstants.OF_VERSION_1_3);
-        registrations.add(extensionConverterRegistrator.registerActionConvertor(key, actionConvertor));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(
+            new TypeVersionKey<>(actionCaseType, EncodeConstants.OF_VERSION_1_3), actionConvertor));
     }
 
     private void registerAction13(final Class<? extends ActionChoice> actionCaseType,
         final ConvertorActionFromOFJava<
                 org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.Action,
                 ActionPath> actionConvertor) {
-        ActionSerializerKey<?> key = new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_3, actionCaseType,
-                (Uint32) null);
-        registrations.add(extensionConverterRegistrator.registerActionConvertor(key, actionConvertor));
+        registrations.add(extensionConverterRegistrator.registerActionConvertor(
+            new ActionSerializerKey<>(EncodeConstants.OF_VERSION_1_3, actionCaseType, null), actionConvertor));
     }
 }
