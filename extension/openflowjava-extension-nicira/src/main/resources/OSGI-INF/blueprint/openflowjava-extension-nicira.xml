@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
-           xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0"
-           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-           odl:use-default-for-reference-types="true">
-
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:odl="http://opendaylight.org/xmlns/blueprint/v1.0.0">
 
     <reference id="defaultSwitchConnProvider"
                interface="org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider"
