@@ -33,32 +33,44 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.MatchField;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.OxmClassBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * Implementation of NiciraExtensionCodecRegistrator.
  *
  * @author msunal
  */
-public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator {
-
+@Component
+public final class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodecRegistrator {
+    // FIXME: this should not be static!
     private static final Map<NiciraActionDeserializerKey, OFDeserializer<Action>> ACTION_DESERIALIZERS =
             new ConcurrentHashMap<>();
 
+    private final ActionDeserializer of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF_VERSION_1_0);
+    private final ActionDeserializer of13ActionDeserializer = new ActionDeserializer(EncodeConstants.OF_VERSION_1_3);
     private final List<SwitchConnectionProvider> providers;
-    private final ActionDeserializer of10ActionDeserializer;
-    private final ActionDeserializer of13ActionDeserializer;
+
+    @Activate
+    public NiciraExtensionCodecRegistratorImpl(
+            @Reference(target = "(type=openflow-switch-connection-provider-default-impl)")
+            final SwitchConnectionProvider defaultSwitchConnProvider,
+            @Reference(target = "(type=openflow-switch-connection-provider-legacy-impl)")
+            final SwitchConnectionProvider legacySwitchConnProvider) {
+        this(List.of(defaultSwitchConnProvider, legacySwitchConnProvider));
+    }
 
     public NiciraExtensionCodecRegistratorImpl(final List<SwitchConnectionProvider> providers) {
-        this.providers = providers;
-        of10ActionDeserializer = new ActionDeserializer(EncodeConstants.OF_VERSION_1_0);
-        of13ActionDeserializer = new ActionDeserializer(EncodeConstants.OF_VERSION_1_3);
+        this.providers = List.copyOf(providers);
         registerActionDeserializer(ActionDeserializer.OF10_DESERIALIZER_KEY, of10ActionDeserializer);
         registerActionDeserializer(ActionDeserializer.OF13_DESERIALIZER_KEY, of13ActionDeserializer);
     }
 
     private void registerActionDeserializer(final ExperimenterActionDeserializerKey key,
             final OFGeneralDeserializer deserializer) {
-        for (SwitchConnectionProvider provider : providers) {
+        for (var provider : providers) {
             provider.registerActionDeserializer(key, deserializer);
         }
     }
@@ -75,8 +87,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     @Override
     public void registerActionDeserializer(final NiciraActionDeserializerKey key,
             final OFDeserializer<Action> deserializer) {
-        if (deserializer instanceof DeserializerRegistryInjector) {
-            DeserializerRegistryInjector registryInjectable = (DeserializerRegistryInjector) deserializer;
+        if (deserializer instanceof DeserializerRegistryInjector registryInjectable) {
             if (EncodeConstants.OF_VERSION_1_0.equals(key.getVersion())) {
                 registryInjectable.injectDeserializerRegistry(of10ActionDeserializer.getDeserializerRegistry());
             }
@@ -88,7 +99,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     }
 
     private void registerActionSerializer(final ActionSerializerKey<?> key, final OFGeneralSerializer serializer) {
-        for (SwitchConnectionProvider provider : providers) {
+        for (var provider : providers) {
             provider.registerActionSerializer(key, serializer);
         }
     }
@@ -108,13 +119,13 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     }
 
     private void unregisterDeserializer(final ExperimenterDeserializerKey key) {
-        for (SwitchConnectionProvider provider : providers) {
+        for (var provider : providers) {
             provider.unregisterDeserializer(key);
         }
     }
 
     private void unregisterSerializer(final ExperimenterSerializerKey key) {
-        for (SwitchConnectionProvider provider : providers) {
+        for (var provider : providers) {
             provider.unregisterSerializer(key);
         }
     }
@@ -161,7 +172,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     @Override
     public void registerMatchEntryDeserializer(final MatchEntryDeserializerKey key,
             final OFDeserializer<MatchEntry> deserializer) {
-        for (SwitchConnectionProvider provider : providers) {
+        for (var provider : providers) {
             provider.registerMatchEntryDeserializer(key, deserializer);
         }
     }
@@ -192,7 +203,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     public void registerMatchEntrySerializer(
             final MatchEntrySerializerKey<? extends OxmClassBase, ? extends MatchField> key,
             final OFSerializer<MatchEntry> serializer) {
-        for (SwitchConnectionProvider provider : providers) {
+        for (var provider : providers) {
             provider.registerMatchEntrySerializer(key, serializer);
         }
     }
@@ -211,6 +222,7 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
         unregisterSerializer(key);
     }
 
+    @Deactivate
     @Override
     public void close() {
         // TODO Auto-generated method stub
@@ -220,5 +232,4 @@ public class NiciraExtensionCodecRegistratorImpl implements NiciraExtensionCodec
     boolean isEmptyActionDeserializers() {
         return ACTION_DESERIALIZERS.isEmpty();
     }
-
 }
