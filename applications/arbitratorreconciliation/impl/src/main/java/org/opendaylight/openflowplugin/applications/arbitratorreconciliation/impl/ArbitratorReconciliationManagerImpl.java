@@ -18,46 +18,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.binding.api.RpcService;
-import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.applications.reconciliation.NotificationRegistration;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationManager;
 import org.opendaylight.openflowplugin.applications.reconciliation.ReconciliationNotificationListener;
-import org.opendaylight.serviceutils.upgrade.UpgradeState;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupTypes;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessages;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.ControlBundleOutput;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.Messages;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.MessagesBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.add.bundle.messages.input.messages.MessageBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveFlowCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.BundleRemoveGroupCaseBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.flow._case.RemoveFlowCaseDataBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.group._case.RemoveGroupCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
@@ -77,7 +58,6 @@ import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
-import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -90,22 +70,8 @@ import org.slf4j.LoggerFactory;
 @Component(service = { })
 public final class ArbitratorReconciliationManagerImpl implements ReconciliationNotificationListener, AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(ArbitratorReconciliationManagerImpl.class);
-    private static final AtomicLong BUNDLE_ID = new AtomicLong();
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, true);
     private static final String SERVICE_NAME = "ArbitratorReconciliationManager";
-    private static final String SEPARATOR = ":";
-
-    private static final BundleRemoveFlowCase DELETE_ALL_FLOW = new BundleRemoveFlowCaseBuilder()
-        .setRemoveFlowCaseData(new RemoveFlowCaseDataBuilder()
-            .setTableId(OFConstants.OFPTT_ALL)
-            .build())
-        .build();
-    private static final BundleRemoveGroupCase DELETE_ALL_GROUP = new BundleRemoveGroupCaseBuilder()
-        .setRemoveGroupCaseData(new RemoveGroupCaseDataBuilder(new GroupBuilder()
-            .setGroupType(GroupTypes.GroupAll)
-            .setGroupId(new GroupId(OFConstants.OFPG_ALL))
-            .build()).build())
-        .build();
 
     // FIXME: use CM to control this constant
     private static final int THREAD_POOL_SIZE = 4;
@@ -118,19 +84,14 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     private final ConcurrentMap<String, Registration> rpcRegistrations = new ConcurrentHashMap<>();
 
     private final RpcProviderService rpcProviderService;
-    private final UpgradeState upgradeState;
     private final NotificationRegistration registration;
-    private final AddBundleMessages addBundleMessages;
     private final ControlBundle controlBundle;
 
     @Inject
     @Activate
     public ArbitratorReconciliationManagerImpl(@Reference final ReconciliationManager reconciliationManager,
-            @Reference final RpcProviderService rpcProviderService, @Reference final RpcService rpcService,
-            @Reference final UpgradeState upgradeState) {
+            @Reference final RpcProviderService rpcProviderService, @Reference final RpcService rpcService) {
         this.rpcProviderService = requireNonNull(rpcProviderService);
-        this.upgradeState = requireNonNull(upgradeState);
-        addBundleMessages = requireNonNull(rpcService.getRpc(AddBundleMessages.class));
         controlBundle = requireNonNull(rpcService.getRpc(ControlBundle.class));
         registration = reconciliationManager.registerService(this);
         LOG.info("ArbitratorReconciliationManager has started successfully.");
@@ -191,10 +152,6 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     @Override
     public ListenableFuture<Boolean> startReconciliation(final DeviceInfo node) {
         registerRpc(node);
-        if (upgradeState.isUpgradeInProgress()) {
-            LOG.trace("Starting arbitrator reconciliation for node {}", node.getDatapathId());
-            return reconcileConfiguration(node);
-        }
         LOG.trace("arbitrator reconciliation is disabled");
         return FluentFutures.immediateTrueFluentFuture();
     }
@@ -221,78 +178,6 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
     @Override
     public ResultState getResultState() {
         return ResultState.DONOTHING;
-    }
-
-
-    private static Messages createMessages(final NodeRef nodeRef) {
-        final var messages = List.of(
-            new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(DELETE_ALL_FLOW).build(),
-            new MessageBuilder().setNode(nodeRef).setBundleInnerMessage(DELETE_ALL_GROUP).build());
-        LOG.debug("The size of the flows and group messages created in createMessage() {}", messages.size());
-        return new MessagesBuilder().setMessage(messages).build();
-    }
-
-    private ListenableFuture<Boolean> reconcileConfiguration(final DeviceInfo node) {
-        LOG.info("Triggering arbitrator reconciliation for device {}", node.getDatapathId());
-        return Futures.submit(new ArbitratorReconciliationTask(node), executor);
-    }
-
-    private final class ArbitratorReconciliationTask implements Callable<Boolean> {
-        private final DeviceInfo deviceInfo;
-
-        ArbitratorReconciliationTask(final DeviceInfo deviceInfo) {
-            this.deviceInfo = requireNonNull(deviceInfo);
-        }
-
-        @Override
-        public Boolean call() {
-            final var nodeInstance = deviceInfo.getNodeInstanceIdentifier();
-
-
-            String node = nodeInstance.key().getId().getValue();
-            final var bundleIdValue = new BundleId(Uint32.valueOf(BUNDLE_ID.getAndIncrement()));
-            LOG.debug("Triggering arbitrator reconciliation for device :{}", node);
-            final NodeRef nodeRef = new NodeRef(nodeInstance);
-
-            final var openBundleMessagesFuture = Futures.transformAsync(
-                controlBundle.invoke(new ControlBundleInputBuilder()
-                    .setNode(nodeRef)
-                    .setBundleId(bundleIdValue)
-                    .setFlags(BUNDLE_FLAGS)
-                    .setType(BundleControlType.ONFBCTCLOSEREQUEST)
-                    .build()),
-                rpcResult -> controlBundle.invoke(new ControlBundleInputBuilder()
-                    .setNode(nodeRef)
-                    .setBundleId(bundleIdValue)
-                    .setFlags(BUNDLE_FLAGS)
-                    .setType(BundleControlType.ONFBCTOPENREQUEST)
-                    .build()), MoreExecutors.directExecutor());
-
-            final var addBundleMessagesFuture = Futures.transformAsync(openBundleMessagesFuture,
-                rpcResult -> rpcResult.isSuccessful()
-                    ? addBundleMessages.invoke(new AddBundleMessagesInputBuilder()
-                        .setNode(nodeRef)
-                        .setBundleId(bundleIdValue)
-                        .setFlags(BUNDLE_FLAGS)
-                        .setMessages(createMessages(nodeRef))
-                        .build())
-                    : FluentFutures.immediateNullFluentFuture(), MoreExecutors.directExecutor());
-            final var nodeId = getDpnIdFromNodeName(node);
-            try {
-                if (addBundleMessagesFuture.get().isSuccessful()) {
-                    bundleIdMap.put(nodeId, new BundleDetails(bundleIdValue,
-                        FluentFutures.immediateNullFluentFuture()));
-                    LOG.debug("Arbitrator reconciliation initial task has been completed for node {} ", nodeId);
-                    return true;
-                } else {
-                    LOG.error("Error while performing arbitrator reconciliation for device:{}", nodeId);
-                    return false;
-                }
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.error("Error while performing arbitrator reconciliation for device:{}", nodeId, e);
-                return false;
-            }
-        }
     }
 
     public final class CommitActiveBundleCallback implements FutureCallback<RpcResult<?>> {
@@ -363,10 +248,5 @@ public final class ArbitratorReconciliationManagerImpl implements Reconciliation
             requireNonNull(bundleId);
             requireNonNull(result);
         }
-    }
-
-    private static Uint64 getDpnIdFromNodeName(final String nodeName) {
-        String dpnId = nodeName.substring(nodeName.lastIndexOf(SEPARATOR) + 1);
-        return Uint64.valueOf(dpnId);
     }
 }

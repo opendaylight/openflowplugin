@@ -36,10 +36,6 @@
             <artifactId>reconciliation-framework</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.serviceutils</groupId>
-            <artifactId>upgrade</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.service.component.annotations</artifactId>
         </dependency>
