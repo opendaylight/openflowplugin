@@ -13,26 +13,34 @@
     <packaging>pom</packaging>
     <version>0.20.0-SNAPSHOT</version>
 
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <maven.install.skip>true</maven.install.skip>
+    </properties>
+
     <modules>
         <module>features-openflowplugin</module>
-        <module>odl-openflowplugin-flow-services-rest</module>
-        <module>odl-openflowplugin-flow-services</module>
-        <module>odl-openflowplugin-southbound</module>
-        <module>odl-openflowplugin-nsf-model</module>
-        <module>odl-openflowplugin-drop-test</module>
-        <module>odl-openflowplugin-app-table-miss-enforcer</module>
-        <module>odl-openflowplugin-app-config-pusher</module>
-        <module>odl-openflowplugin-app-topology</module>
-        <module>odl-openflowplugin-app-lldp-speaker</module>
-        <module>odl-openflowplugin-app-topology-lldp-discovery</module>
-        <module>odl-openflowplugin-app-topology-manager</module>
+        <module>odl-openflowjava-protocol</module>
+        <module>odl-openflowplugin-app-arbitratorreconciliation</module>
         <module>odl-openflowplugin-app-bulk-o-matic</module>
+        <module>odl-openflowplugin-app-config-pusher</module>
         <module>odl-openflowplugin-app-forwardingrules-manager</module>
         <module>odl-openflowplugin-app-forwardingrules-sync</module>
+        <module>odl-openflowplugin-app-lldp-speaker</module>
         <module>odl-openflowplugin-app-reconciliation-framework</module>
         <module>odl-openflowplugin-app-southbound-cli</module>
+        <module>odl-openflowplugin-app-table-miss-enforcer</module>
+        <module>odl-openflowplugin-app-topology-lldp-discovery</module>
+        <module>odl-openflowplugin-app-topology-manager</module>
+        <module>odl-openflowplugin-app-topology</module>
+        <module>odl-openflowplugin-drop-test</module>
+        <module>odl-openflowplugin-flow-services</module>
+        <module>odl-openflowplugin-flow-services-rest</module>
         <module>odl-openflowplugin-libraries</module>
-        <module>odl-openflowplugin-app-arbitratorreconciliation</module>
+        <module>odl-openflowplugin-nsf-model</module>
+        <module>odl-openflowplugin-southbound</module>
+        <module>odl-openflowplugin-eric-extensions</module>
+        <module>odl-openflowplugin-nxm-extensions</module>
+        <module>odl-openflowplugin-onf-extensions</module>
     </modules>
-
 </project>

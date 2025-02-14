@@ -275,13 +275,6 @@
                 <type>xml</type>
             </dependency>
             <dependency>
-                <groupId>${project.groupId}.openflowjava</groupId>
-                <artifactId>features-openflowjava</artifactId>
-                <version>${project.version}</version>
-                <classifier>features</classifier>
-                <type>xml</type>
-            </dependency>
-            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-flow-services-rest</artifactId>
                 <classifier>features</classifier>
@@ -367,6 +360,13 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>odl-openflowplugin-eric-extensions</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-nxm-extensions</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
@@ -374,7 +374,7 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>odl-openflowplugin-eric-extensions</artifactId>
+                <artifactId>odl-openflowplugin-onf-extensions</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
                 <version>${project.version}</version>
@@ -403,6 +403,34 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-app-arbitratorreconciliation</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>odl-openflowplugin-app-lldp-speaker</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>odl-openflowplugin-app-topology-lldp-discovery</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>odl-openflowplugin-app-topology-manager</artifactId>
+                <classifier>features</classifier>
+                <type>xml</type>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}.openflowjava</groupId>
+                <artifactId>odl-openflowjava-protocol</artifactId>
                 <classifier>features</classifier>
                 <type>xml</type>
                 <version>${project.version}</version>

@@ -28,6 +28,5 @@
         <module>openflowplugin-extension-onf</module>
         <module>openflowplugin-extension-eric</module>
         <module>test-extension</module>
-        <module>features-extension-aggregator</module>
     </modules>
 </project>

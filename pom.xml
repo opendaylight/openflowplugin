@@ -23,6 +23,8 @@
     <modules>
         <module>artifacts</module>
         <module>parent</module>
+        <module>features</module>
+        <module>model</module>
         <module>libraries</module>
         <module>openflowjava</module>
         <module>openflowplugin-api</module>
@@ -35,9 +37,7 @@
         <module>test-provider</module>
         <module>drop-test-karaf</module>
         <module>test-common</module>
-        <module>features-aggregator</module>
         <module>applications</module>
-        <module>model</module>
         <module>samples</module>
     </modules>
 
