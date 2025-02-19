@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frsync.util;
 
 import com.google.common.base.Splitter;
-import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -270,7 +269,7 @@ public class ReconcileUtilTest {
     }
 
     private static Map<Uint32, Group> createGroups(final long... groupIds) {
-        final Map<Uint32, Group> ret = Maps.newHashMapWithExpectedSize(groupIds.length);
+        final Map<Uint32, Group> ret = HashMap.newHashMap(groupIds.length);
         for (long groupId : groupIds) {
             ret.put(Uint32.valueOf(groupId), createGroup(groupId));
         }
