@@ -40,8 +40,10 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
 
     /**
      * Should be called when device is being mastered as in {@link #becomeMaster(DeviceInfo)}.
-     * <p> But before: Initial DS submit</p>
+     *
+     * <p>But before: Initial DS submit</p>
      * <b>This is special call designed only for reconciliation framework.</b>
+     *
      * @see #becomeMaster(DeviceInfo)
      * @see #isReconciliationFrameworkRegistered()
      * @param deviceInfo connected switch identification

@@ -19,10 +19,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PortStatusMessage;
 
 /**
- * <p>
  * Each OpenFlow session is tracked by a Connection Context. These attach to a particular Device Context in such a way,
  * that there is at most one primary session associated with a Device Context.
- * </p>
  */
 public interface ConnectionContext {
 
