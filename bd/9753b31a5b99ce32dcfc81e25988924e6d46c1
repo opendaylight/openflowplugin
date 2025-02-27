@@ -1,0 +1,8 @@
+Verified+1: ODL Required.GHA <releng+odl.required.gha@linuxfoundation.org>
+Verified+1: jenkins-releng ODL
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Thu, 27 Feb 2025 12:39:07 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/115525
+Project: openflowplugin
+Branch: refs/heads/master
