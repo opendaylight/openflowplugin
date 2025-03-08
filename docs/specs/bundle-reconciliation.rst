@@ -74,7 +74,7 @@ configuration change. New configuration parameter will be introduced in openflow
    # Bundle reconciliation can be enabled by making this flag to true.
    # By default bundle reconciliation is disabled and reconciliation happens
    # via normal flow/group mods.
-   # NOTE: This option will be effective with disable_reconciliation=false.
+   # NOTE: This option will be effective with disable-reconciliation=false.
    #
    # bundle-based-reconciliation-enabled=false
 
@@ -149,7 +149,7 @@ User can enable bundles reconciliation by changing the value to true in openflow
    # Bundle reconciliation can be enabled by making this flag to true.
    # By default bundle reconciliation is disabled and reconciliation happens
    # via normal flow/group mods.
-   # NOTE: This option will be effective with disable_reconciliation=false.
+   # NOTE: This option will be effective with disable-reconciliation=false.
    #
    bundle-based-reconciliation-enabled=true
 

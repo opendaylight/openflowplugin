@@ -104,7 +104,7 @@ Following new interface will be introduced from Reconciliation framework (RF).
 
 ReconciliationManager
 ---------------------
-.. code-block:: bash
+.. code-block:: java
 
      /* Application who are interested in reconciliation should use this API to register themself to the RF */
      /* NotificationRegistration will be return to the registered application, who needs to take of closing the registration */
@@ -115,7 +115,7 @@ ReconciliationManager
 
 ReconciliationNotificationListener
 ----------------------------------
-.. code-block:: bash
+.. code-block:: java
 
      /* This method will be a callback from RF to start the application reconciliation */
      ListenableFuture<Boolean> startReconciliation(DeviceInfo deviceInfo);
@@ -263,4 +263,4 @@ This feature will not require any change in User Guide.
 
 References
 ==========
-[1] `Openflowplugin reconciliation enhancements <https://wiki.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Reconciliation#Future_Enhancements>`__
+[1] `Openflowplugin reconciliation enhancements <https://wiki-archive.opendaylight.org/view/OpenDaylight_OpenFlow_Plugin:Reconciliation#Future_Enhancements>`__
