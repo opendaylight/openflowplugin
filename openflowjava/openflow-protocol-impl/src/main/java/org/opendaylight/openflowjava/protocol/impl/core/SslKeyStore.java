@@ -5,13 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.config.rev140630.PathType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,10 +21,10 @@ import org.slf4j.LoggerFactory;
  * @author michal.polkorab
  */
 public final class SslKeyStore {
-
     private static final Logger LOG = LoggerFactory.getLogger(SslKeyStore.class);
 
     private SslKeyStore() {
+        // Hidden on purpose
     }
 
     /**
@@ -42,19 +41,15 @@ public final class SslKeyStore {
             case CLASSPATH:
                 in = SslKeyStore.class.getResourceAsStream(filename);
                 if (in == null) {
-                    throw new IllegalStateException("KeyStore file not found: "
-                            + filename);
+                    throw new IllegalStateException("KeyStore file not found: " + filename);
                 }
                 break;
             case PATH:
-                LOG.debug("Current dir using System: {}",
-                        System.getProperty("user.dir"));
-                File keystorefile = new File(filename);
+                LOG.debug("Current dir using System: {}", System.getProperty("user.dir"));
                 try {
-                    in = new FileInputStream(keystorefile);
-                } catch (FileNotFoundException e) {
-                    throw new IllegalStateException("KeyStore file not found: "
-                            + filename,e);
+                    in = Files.newInputStream(Path.of(filename));
+                } catch (IOException e) {
+                    throw new IllegalStateException("KeyStore file not found: " + filename, e);
                 }
                 break;
             default:
