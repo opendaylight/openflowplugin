@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opendaylight.odlparent</groupId>
         <artifactId>single-feature-parent</artifactId>
-        <version>14.0.8</version>
+        <version>14.1.0</version>
         <relativePath/>
     </parent>
 
@@ -20,44 +20,15 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- This project -->
             <dependency>
                 <groupId>org.opendaylight.openflowplugin</groupId>
-                <artifactId>openflowplugin-artifacts</artifactId>
+                <artifactId>openflowplugin-parent</artifactId>
                 <version>${project.version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- Infrautils -->
-            <dependency>
-                <groupId>org.opendaylight.infrautils</groupId>
-                <artifactId>infrautils-artifacts</artifactId>
-                <version>7.1.2</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- YANG Tools -->
-            <dependency>
-                <groupId>org.opendaylight.yangtools</groupId>
-                <artifactId>yangtools-artifacts</artifactId>
-                <version>14.0.11</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-
-            <!-- MD-SAL -->
-            <dependency>
-                <groupId>org.opendaylight.mdsal</groupId>
-                <artifactId>mdsal-artifacts</artifactId>
-                <version>14.0.11</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
         </dependencies>
     </dependencyManagement>
-
 
     <dependencies>
         <dependency>
