@@ -372,13 +372,6 @@
                 <type>xml</type>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>${project.groupId}.openflowjava</groupId>
-                <artifactId>odl-openflowjava-protocol</artifactId>
-                <classifier>features</classifier>
-                <type>xml</type>
-                <version>${project.version}</version>
-            </dependency>
              <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>odl-openflowplugin-app-reconciliation-framework</artifactId>
