@@ -16,13 +16,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.serviceutils.upgrade.UpgradeState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.upgrade.rev180702.UpgradeConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.upgrade.rev180702.UpgradeConfigBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -43,8 +42,8 @@ public final class UpgradeStateListener implements UpgradeState, DataListener<Up
     @Activate
     public UpgradeStateListener(@Reference final DataBroker dataBroker) {
         this.dataBroker = requireNonNull(dataBroker);
-        registration = dataBroker.registerDataListener(DataTreeIdentifier.of(
-            LogicalDatastoreType.CONFIGURATION, InstanceIdentifier.create(UpgradeConfig.class)), this);
+        registration = dataBroker.registerDataListener(LogicalDatastoreType.CONFIGURATION,
+            DataObjectIdentifier.builder(UpgradeConfig.class).build(), this);
     }
 
     @PreDestroy
@@ -66,7 +65,7 @@ public final class UpgradeStateListener implements UpgradeState, DataListener<Up
 
         // FIXME: use ClusterSingletonService for these updates
         var tx = dataBroker.newWriteOnlyTransaction();
-        tx.put(LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(UpgradeConfig.class),
+        tx.put(LogicalDatastoreType.OPERATIONAL, DataObjectIdentifier.builder(UpgradeConfig.class).build(),
             new UpgradeConfigBuilder().setUpgradeInProgress(upgradeConfig).build());
 
         try {
