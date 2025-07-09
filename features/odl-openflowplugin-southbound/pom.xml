@@ -65,12 +65,6 @@
             <classifier>features</classifier>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.serviceutils</groupId>
-            <artifactId>odl-serviceutils-tools</artifactId>
-            <type>xml</type>
-            <classifier>features</classifier>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-nsf-model</artifactId>
             <classifier>features</classifier>
