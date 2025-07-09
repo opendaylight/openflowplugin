@@ -4,8 +4,8 @@
         <configfile finalname="etc/org.opendaylight.openflowplugin.cfg">mvn:org.opendaylight.openflowplugin/openflowplugin-blueprint-config/${project.version}/cfg/config</configfile>
         <configfile finalname="etc/opendaylight/datastore/initial/config/default-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/config</configfile>
         <configfile finalname="etc/opendaylight/datastore/initial/config/legacy-openflow-connection-config.xml">mvn:org.opendaylight.openflowplugin.openflowjava/openflowjava-blueprint-config/${project.version}/xml/legacyConfig</configfile>
-        <feature version="[10,11)">odl-controller-blueprint</feature>
-        <feature version="[10,11)">odl-mdsal-broker</feature>
+        <feature version="[11,12)">odl-controller-blueprint</feature>
+        <feature version="[11,12)">odl-mdsal-broker</feature>
         <feature version="[7,8)">odl-infrautils-diagstatus</feature>
     </feature>
 </features>

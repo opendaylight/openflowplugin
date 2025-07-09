@@ -5,10 +5,10 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import com.google.common.util.concurrent.FutureCallback;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.Channel;
 import java.util.function.Function;
 import org.eclipse.jdt.annotation.NonNull;
@@ -33,6 +33,8 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
      * This method is expected to be called from multiple threads concurrently
      */
     @Override
+    @SuppressFBWarnings(value = "NP_NULL_PARAM_DEREF_ALL_TARGETS_DANGEROUS",
+        justification = "null in FutureCallback.success()")
     public void commitEntry(final Uint32 xid, final OfHeader message, final FutureCallback<OfHeader> callback,
             final Function<OfHeader, Boolean> isCompletedFunction) {
         final OutboundQueueEntry entry = getEntry(xid.toJava());
@@ -113,5 +115,4 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
 
         return entries;
     }
-
 }
