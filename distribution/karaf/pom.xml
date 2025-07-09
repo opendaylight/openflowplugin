@@ -43,14 +43,6 @@
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
-    <!-- openflowplugin extension feature -->
-    <dependency>
-      <groupId>org.opendaylight.openflowplugin</groupId>
-      <artifactId>features-openflowplugin-extension</artifactId>
-      <classifier>features</classifier>
-      <type>xml</type>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <build>
