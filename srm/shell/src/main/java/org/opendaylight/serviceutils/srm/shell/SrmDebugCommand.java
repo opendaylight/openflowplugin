@@ -7,18 +7,17 @@
  */
 package org.opendaylight.serviceutils.srm.shell;
 
+import java.util.concurrent.ExecutionException;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.ServiceOps;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Implementation class of "srm:debug" Karaf shell command.
@@ -33,22 +32,12 @@ public class SrmDebugCommand implements Action {
     private DataBroker txDataBroker;
 
     @Override
-    public @Nullable Object execute() throws Exception {
+    public @Nullable Object execute() throws ExecutionException, InterruptedException {
         if (clearOps && txDataBroker != null) {
-            clearOpsDs();
+            final var tx = txDataBroker.newWriteOnlyTransaction();
+            tx.delete(LogicalDatastoreType.OPERATIONAL, DataObjectIdentifier.builder(ServiceOps.class).build());
+            tx.commit().get();
         }
         return null;
     }
-
-    private void clearOpsDs() throws Exception {
-        InstanceIdentifier<ServiceOps> path = getInstanceIdentifier();
-        @NonNull WriteTransaction tx = txDataBroker.newWriteOnlyTransaction();
-        tx.delete(LogicalDatastoreType.OPERATIONAL, path);
-        tx.commit().get();
-    }
-
-    private static InstanceIdentifier<ServiceOps> getInstanceIdentifier() {
-        return InstanceIdentifier.create(ServiceOps.class);
-    }
-
 }
