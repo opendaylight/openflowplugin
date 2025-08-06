@@ -59,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorTag;
 import org.opendaylight.yangtools.yang.common.ErrorType;
@@ -276,9 +277,9 @@ public final class DefaultReconcileService implements Reconcile, ReconcileServic
         private void increaseReconcileCount(final boolean isSuccess) {
             // FIXME: do not use SimpleDateFormat
             final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_AND_TIME_FORMAT);
-            InstanceIdentifier<ReconcileCounter> instanceIdentifier = InstanceIdentifier
-                    .builder(ReconciliationCounter.class).child(ReconcileCounter.class,
-                            new ReconcileCounterKey(nodeId)).build();
+            final var instanceIdentifier = DataObjectIdentifier.builder(ReconciliationCounter.class)
+                .child(ReconcileCounter.class, new ReconcileCounterKey(nodeId))
+                .build();
             ReadWriteTransaction tx = broker.newReadWriteTransaction();
             Optional<ReconcileCounter> count = getReconciliationCount(tx, instanceIdentifier);
             ReconcileCounterBuilder counterBuilder = new ReconcileCounterBuilder()
@@ -310,13 +311,13 @@ public final class DefaultReconcileService implements Reconcile, ReconcileServic
         }
 
         private Optional<ReconcileCounter> getReconciliationCount(final ReadWriteTransaction tx,
-                final InstanceIdentifier<ReconcileCounter> instanceIdentifier) {
+                final DataObjectIdentifier<ReconcileCounter> instanceIdentifier) {
             try {
                 return tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Exception while reading counter for node: {}", nodeId, e);
+                return Optional.empty();
             }
-            return Optional.empty();
         }
 
         private void updateReconciliationState(final ReconciliationState.ReconciliationStatus status) {
