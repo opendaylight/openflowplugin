@@ -62,8 +62,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.Ofplugin;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.ServiceOpRecover;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.ServiceOpReinstall;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -260,10 +260,11 @@ public final class RegistryControlImpl implements RegistryControl, AutoCloseable
         return Futures.immediateFuture(reinstallFailed(message));
     }
 
-    private static InstanceIdentifier<Operations> getInstanceIdentifier(
+    private static DataObjectIdentifier<Operations> getInstanceIdentifier(
             Operations operation, EntityNameBase serviceName) {
-        return InstanceIdentifier.create(ServiceOps.class)
+        return DataObjectIdentifier.builder(ServiceOps.class)
             .child(Services.class, new ServicesKey(serviceName))
-            .child(Operations.class, operation.key());
+            .child(Operations.class, operation.key())
+            .build();
     }
 }
