@@ -36,18 +36,28 @@ public final class ServiceRecoveryListener extends AbstractDataTreeChangeListene
 
     @Inject
     @Activate
-    public ServiceRecoveryListener(@Reference DataBroker dataBroker,
-                                   @Reference ServiceRecoveryRegistry serviceRecoveryRegistry) {
+    public ServiceRecoveryListener(@Reference final DataBroker dataBroker,
+            @Reference final ServiceRecoveryRegistry serviceRecoveryRegistry) {
         super(dataBroker, LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(ServiceOps.class)
                 .child(Services.class).child(Operations.class));
         this.serviceRecoveryRegistry = serviceRecoveryRegistry;
     }
 
     @Override
-    @Deprecated
-    public void add(InstanceIdentifier<Operations> instanceIdentifier, Operations operations) {
+    void add(final InstanceIdentifier<Operations> instanceIdentifier, final Operations operations) {
         LOG.info("Service Recovery operation triggered for service: {}", operations);
         recoverService(operations.getEntityType(), operations.getEntityName(), operations.getEntityId());
+    }
+
+    @Override
+    void remove(final InstanceIdentifier<Operations> instanceIdentifier, final Operations removedDataObject) {
+        // FIXME: this should be doing something, right?
+    }
+
+    @Override
+    void update(final InstanceIdentifier<Operations> instanceIdentifier, final Operations originalDataObject,
+            final Operations updatedDataObject) {
+        add(instanceIdentifier, updatedDataObject);
     }
 
     /**
@@ -59,21 +69,9 @@ public final class ServiceRecoveryListener extends AbstractDataTreeChangeListene
      * @param entityName The type entity for which recovery has to be started. eg : INTERFACE or DPN.
      * @param entityId The unique id to represent the entity to be recovered
      */
-    private void recoverService(EntityTypeBase entityType, EntityNameBase entityName, String entityId) {
+    private void recoverService(final EntityTypeBase entityType, final EntityNameBase entityName,
+            final String entityId) {
         String serviceRegistryKey = entityName.toString();
         serviceRecoveryRegistry.getRegisteredServiceRecoveryHandler(serviceRegistryKey).recoverService(entityId);
-    }
-
-    @Override
-    @Deprecated
-    public void remove(InstanceIdentifier<Operations> instanceIdentifier, Operations removedDataObject) {
-        // FIXME: this should be doing something, right?
-    }
-
-    @Override
-    @Deprecated
-    public void update(InstanceIdentifier<Operations> instanceIdentifier,
-                       Operations originalDataObject, Operations updatedDataObject) {
-        add(instanceIdentifier, updatedDataObject);
     }
 }
