@@ -16,15 +16,15 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.southboundcli.util.OFNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -45,9 +45,9 @@ public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListen
     @Inject
     @Activate
     public DefaultDpnTracker(@Reference final DataBroker dataBroker) {
-        listenerReg = dataBroker.registerTreeChangeListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
+        listenerReg = dataBroker.registerTreeChangeListener(LogicalDatastoreType.OPERATIONAL,
+            DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build(),
+            this);
     }
 
     @PreDestroy
@@ -72,22 +72,20 @@ public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListen
     @Override
     public synchronized void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (var change : changes) {
-            final var key = change.getRootPath().path();
             final var mod = change.getRootNode();
-            final var nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
             switch (mod.modificationType()) {
                 case DELETE:
-                    remove(nodeIdent, mod.dataBefore());
+                    remove(change.path(), mod.dataBefore());
                     break;
                 case SUBTREE_MODIFIED:
-                    update(nodeIdent, mod.dataBefore(), mod.dataAfter());
+                    update(change.path(), mod.dataBefore(), mod.dataAfter());
                     break;
                 case WRITE:
                     final var dataBefore = mod.dataBefore();
                     if (dataBefore == null) {
-                        add(nodeIdent, mod.dataAfter());
+                        add(change.path(), mod.dataAfter());
                     } else {
-                        update(nodeIdent, dataBefore, mod.dataAfter());
+                        update(change.path(), dataBefore, mod.dataAfter());
                     }
                     break;
                 default:
@@ -96,24 +94,24 @@ public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListen
         }
     }
 
-    private void remove(final InstanceIdentifier<FlowCapableNode> instId, final FlowCapableNode delNode) {
+    private void remove(final DataObjectIdentifier<FlowCapableNode> instId, final FlowCapableNode delNode) {
         LOG.trace("Received remove notification for {}", delNode);
-        String[] node = instId.firstKeyOf(Node.class).getId().getValue().split(SEPARATOR);
+        final var nodeId = instId.getFirstKeyOf(Node.class).getId().getValue();
+        final var node = nodeId.split(SEPARATOR);
         if (node.length < 2) {
-            LOG.error("Failed to remove Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId()
-                    .getValue());
-            return;
+            LOG.error("Failed to remove Unexpected nodeId {}", nodeId);
+        } else {
+            dpnIdToNameCache.remove(Long.parseLong(node[1]));
         }
-        dpnIdToNameCache.remove(Long.parseLong(node[1]));
     }
 
-    private void update(final InstanceIdentifier<FlowCapableNode> instId,
+    private void update(final DataObjectIdentifier<FlowCapableNode> instId,
             final FlowCapableNode dataObjectModificationBefore, final FlowCapableNode dataObjectModificationAfter) {
-
         LOG.trace("Received update notification {}", instId);
-        String[] node = instId.firstKeyOf(Node.class).getId().getValue().split(SEPARATOR);
+        final var nodeId = instId.getFirstKeyOf(Node.class).getId().getValue();
+        final var node = nodeId.split(SEPARATOR);
         if (node.length < 2) {
-            LOG.error("Failed to add Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId().getValue());
+            LOG.error("Failed to add Unexpected nodeId {}", nodeId);
             return;
         }
         long dpnId = Long.parseLong(node[1]);
@@ -125,11 +123,12 @@ public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListen
         }
     }
 
-    private void add(final InstanceIdentifier<FlowCapableNode> instId, final FlowCapableNode addNode) {
+    private void add(final DataObjectIdentifier<FlowCapableNode> instId, final FlowCapableNode addNode) {
         LOG.trace("Received ADD notification for {}", instId);
-        String[] node = instId.firstKeyOf(Node.class).getId().getValue().split(SEPARATOR);
+        final var nodeId = instId.getFirstKeyOf(Node.class).getId().getValue();
+        final var node = nodeId.split(SEPARATOR);
         if (node.length < 2) {
-            LOG.error("Failed to add Unexpected nodeId {}", instId.firstKeyOf(Node.class).getId().getValue());
+            LOG.error("Failed to add Unexpected nodeId {}", nodeId);
             return;
         }
         long dpnId = Long.parseLong(node[1]);

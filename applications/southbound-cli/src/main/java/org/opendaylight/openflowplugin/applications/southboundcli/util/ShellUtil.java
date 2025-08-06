@@ -25,7 +25,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.ReconciliationCounter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounter;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,56 +43,49 @@ public final class ShellUtil {
         if (nodeInfo == null) {
             LOG.info("No ports exist for this node with nodeId {}", nodeId);
             return null;
-        } else {
-            List<String> ports = new ArrayList<>();
-            // OFNode State is not provided by plugin, hence using null
-            if (nodeInfo.getPorts() == null) {
-                LOG.info("No ports exist for this node with nodeId {}", nodeId);
-                return null;
-            } else {
-                for (String port : nodeInfo.getPorts()) {
-                    ports.add(port);
-                }
-                return new OFNode(nodeId, nodeInfo.getNodeName(), ports);
-            }
         }
+        List<String> ports = new ArrayList<>();
+        // OFNode State is not provided by plugin, hence using null
+        if (nodeInfo.getPorts() == null) {
+            LOG.info("No ports exist for this node with nodeId {}", nodeId);
+            return null;
+        }
+        ports.addAll(nodeInfo.getPorts());
+        return new OFNode(nodeId, nodeInfo.getNodeName(), ports);
     }
 
     public static OFNode getNodeInfo(final Long nodeId, final DataBroker broker) {
         OFNode ofNode = null;
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(NODE_PREFIX + nodeId))).build();
+        final var path = DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(NODE_PREFIX + nodeId)))
+                .build();
 
         try (ReadTransaction tx = broker.newReadOnlyTransaction()) {
             Optional<Node> result = tx.read(LogicalDatastoreType.OPERATIONAL, path).get();
-            if (result.isPresent()) {
-                Node node = result.orElseThrow();
-                String name;
-                Collection<NodeConnector> nodeConnectors = node.nonnullNodeConnector().values();
-                List<String> portList = new ArrayList<>();
-                FlowCapableNode flowCapableNode = node.<FlowCapableNode>augmentation(FlowCapableNode.class);
-                if (flowCapableNode != null) {
-                    name = node.<FlowCapableNode>augmentation(FlowCapableNode.class).getDescription();
-                } else {
-                    LOG.error("Error while converting OFNode:{} to FlowCapableNode", node.getId());
-                    return null;
-                }
-                for (NodeConnector nodeConnector : nodeConnectors) {
-                    FlowCapableNodeConnector flowCapableNodeConnector =
-                            nodeConnector.augmentation(FlowCapableNodeConnector.class);
-                    if (flowCapableNodeConnector == null) {
-                        LOG.error("Error for OFNode:{} while reading nodeConnectors", node.getId());
-                        return null;
-                    } else {
-                        String portName = flowCapableNodeConnector.getName();
-                        portList.add(portName);
-                    }
-                }
-                ofNode = new OFNode(nodeId, name, portList);
-            } else {
+            if (result.isEmpty()) {
                 LOG.error("OFNode with nodeId {} not present Inventory DS", nodeId);
                 return null;
             }
+            Node node = result.orElseThrow();
+            Collection<NodeConnector> nodeConnectors = node.nonnullNodeConnector().values();
+            List<String> portList = new ArrayList<>();
+            FlowCapableNode flowCapableNode = node.augmentation(FlowCapableNode.class);
+            if (flowCapableNode == null) {
+                LOG.error("Error while converting OFNode:{} to FlowCapableNode", node.getId());
+                return null;
+            }
+            final var name = flowCapableNode.getDescription();
+            for (NodeConnector nodeConnector : nodeConnectors) {
+                FlowCapableNodeConnector flowCapableNodeConnector =
+                        nodeConnector.augmentation(FlowCapableNodeConnector.class);
+                if (flowCapableNodeConnector == null) {
+                    LOG.error("Error for OFNode:{} while reading nodeConnectors", node.getId());
+                    return null;
+                }
+                String portName = flowCapableNodeConnector.getName();
+                portList.add(portName);
+            }
+            ofNode = new OFNode(nodeId, name, portList);
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Error reading node {} from Inventory DS", nodeId, e);
         }
@@ -100,10 +93,9 @@ public final class ShellUtil {
     }
 
     public static Collection<ReconcileCounter> getReconcileCount(final DataBroker dataBroker) {
-        InstanceIdentifier<ReconciliationCounter> instanceIdentifier = InstanceIdentifier
-                .builder(ReconciliationCounter.class).build();
-        try (ReadTransaction tx = dataBroker.newReadOnlyTransaction()) {
-            final var result = tx.read(LogicalDatastoreType.OPERATIONAL, instanceIdentifier).get();
+        try (var tx = dataBroker.newReadOnlyTransaction()) {
+            final var result = tx.read(LogicalDatastoreType.OPERATIONAL,
+                DataObjectIdentifier.builder(ReconciliationCounter.class).build()).get();
             return result.map(counter -> counter.nonnullReconcileCounter().values()).orElse(List.of());
         } catch (ExecutionException | InterruptedException e) {
             LOG.error("Error reading reconciliation counter from datastore", e);
