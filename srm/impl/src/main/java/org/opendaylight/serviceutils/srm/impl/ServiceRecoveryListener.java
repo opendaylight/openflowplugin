@@ -33,12 +33,9 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @Component(service = { })
-public final class ServiceRecoveryListener implements AutoCloseable, DataTreeChangeListener<Operations>,
-        ChainableDataTreeChangeListener<Operations> {
+public final class ServiceRecoveryListener implements AutoCloseable, DataTreeChangeListener<Operations> {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceRecoveryListener.class);
 
-    private final ChainableDataTreeChangeListenerImpl<Operations> chainingDelegate =
-        new ChainableDataTreeChangeListenerImpl<>();
     private final ServiceRecoveryRegistry serviceRecoveryRegistry;
     private final Registration dataChangeListenerRegistration;
 
@@ -56,18 +53,6 @@ public final class ServiceRecoveryListener implements AutoCloseable, DataTreeCha
     @Deactivate
     public void close() {
         dataChangeListenerRegistration.close();
-    }
-
-    @Override
-    @Deprecated
-    public void addBeforeListener(final DataTreeChangeListener<Operations> listener) {
-        chainingDelegate.addBeforeListener(listener);
-    }
-
-    @Override
-    @Deprecated
-    public void addAfterListener(final DataTreeChangeListener<Operations> listener) {
-        chainingDelegate.addAfterListener(listener);
     }
 
     @Override
