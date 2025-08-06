@@ -18,6 +18,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.services.Operations;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityNameBase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityTypeBase;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -44,18 +45,18 @@ public final class ServiceRecoveryListener extends AbstractDataTreeChangeListene
     }
 
     @Override
-    void add(final InstanceIdentifier<Operations> instanceIdentifier, final Operations operations) {
+    void add(final DataObjectIdentifier<Operations> instanceIdentifier, final Operations operations) {
         LOG.info("Service Recovery operation triggered for service: {}", operations);
         recoverService(operations.getEntityType(), operations.getEntityName(), operations.getEntityId());
     }
 
     @Override
-    void remove(final InstanceIdentifier<Operations> instanceIdentifier, final Operations removedDataObject) {
+    void remove(final DataObjectIdentifier<Operations> instanceIdentifier, final Operations removedDataObject) {
         // FIXME: this should be doing something, right?
     }
 
     @Override
-    void update(final InstanceIdentifier<Operations> instanceIdentifier, final Operations originalDataObject,
+    void update(final DataObjectIdentifier<Operations> instanceIdentifier, final Operations originalDataObject,
             final Operations updatedDataObject) {
         add(instanceIdentifier, updatedDataObject);
     }

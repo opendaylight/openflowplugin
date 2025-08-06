@@ -20,6 +20,7 @@ import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
@@ -83,7 +84,7 @@ abstract class AbstractDataTreeChangeListener<T extends DataObject>
     @Override
     public final void onDataTreeChanged(final List<DataTreeModification<T>> changes) {
         for (var dataTreeModification : changes) {
-            var instanceIdentifier = dataTreeModification.getRootPath().path();
+            var instanceIdentifier = dataTreeModification.path();
             var dataObjectModification = dataTreeModification.getRootNode();
             var dataBefore = dataObjectModification.dataBefore();
             var dataAfter = dataObjectModification.dataAfter();
@@ -109,7 +110,7 @@ abstract class AbstractDataTreeChangeListener<T extends DataObject>
      * @param instanceIdentifier instance id for this data object
      * @param newDataObject      newly added object
      */
-    abstract void add(@NonNull InstanceIdentifier<T> instanceIdentifier, @NonNull T newDataObject);
+    abstract void add(@NonNull DataObjectIdentifier<T> instanceIdentifier, @NonNull T newDataObject);
 
     /**
      * Invoked when the data object has been removed.
@@ -117,7 +118,7 @@ abstract class AbstractDataTreeChangeListener<T extends DataObject>
      * @param instanceIdentifier instance id for this data object
      * @param removedDataObject  existing object being removed
      */
-    abstract void remove(@NonNull InstanceIdentifier<T> instanceIdentifier, @NonNull T removedDataObject);
+    abstract void remove(@NonNull DataObjectIdentifier<T> instanceIdentifier, @NonNull T removedDataObject);
 
     /**
      * Invoked when there is a change in the data object.
@@ -126,6 +127,6 @@ abstract class AbstractDataTreeChangeListener<T extends DataObject>
      * @param originalDataObject existing object being modified
      * @param updatedDataObject  modified data object
      */
-    abstract void update(@NonNull InstanceIdentifier<T> instanceIdentifier, @NonNull T originalDataObject,
+    abstract void update(@NonNull DataObjectIdentifier<T> instanceIdentifier, @NonNull T originalDataObject,
             @NonNull T updatedDataObject);
 }
