@@ -20,11 +20,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -47,8 +45,8 @@ import org.opendaylight.openflowplugin.impl.connection.listener.SystemNotificati
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.provider.config.rev160510.OpenflowProviderConfig;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,8 +73,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
     private final NotificationPublishService notificationPublishService;
 
     public ConnectionManagerImpl(final OpenflowProviderConfig config, final ExecutorService executorService,
-                                 final DataBroker dataBroker,
-                                 @NonNull final NotificationPublishService notificationPublishService) {
+            final DataBroker dataBroker, final NotificationPublishService notificationPublishService) {
         this.config = config;
         this.executorService = executorService;
         deviceConnectionRateLimiter = new DeviceConnectionRateLimiter(config);
@@ -166,14 +163,9 @@ public class ConnectionManagerImpl implements ConnectionManager {
         private Registration listenerRegistration;
 
         @Override
-        @SuppressWarnings({"checkstyle:IllegalCatch"})
         public void init() {
-            final var treeId = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, getWildCardPath());
-            try {
-                listenerRegistration = dataBroker.registerTreeChangeListener(treeId, this);
-            } catch (Exception e) {
-                LOG.error("DeviceConnectionStatusProvider listener registration failed", e);
-            }
+            listenerRegistration = dataBroker.registerTreeChangeListener(LogicalDatastoreType.OPERATIONAL,
+                DataObjectReference.builder(Nodes.class).child(Node.class).build(), this);
         }
 
         @Override
@@ -197,9 +189,7 @@ public class ConnectionManagerImpl implements ConnectionManager {
             for (DataTreeModification<Node> change : changes) {
                 final DataObjectModification<Node> mod = change.getRootNode();
                 switch (mod.modificationType()) {
-                    case DELETE:
-                        break;
-                    case SUBTREE_MODIFIED:
+                    case DELETE, SUBTREE_MODIFIED:
                         break;
                     case WRITE:
                         processNodeModification(change);
@@ -210,14 +200,8 @@ public class ConnectionManagerImpl implements ConnectionManager {
             }
         }
 
-        private InstanceIdentifier<Node> getWildCardPath() {
-            return InstanceIdentifier.create(Nodes.class).child(Node.class);
-        }
-
         private void processNodeModification(final DataTreeModification<Node> change) {
-            final InstanceIdentifier<Node> key = change.getRootPath().path();
-            final InstanceIdentifier<Node> nodeIdent = key.firstIdentifierOf(Node.class);
-            String[] nodeIdentity = nodeIdent.firstKeyOf(Node.class).getId().getValue().split(":");
+            String[] nodeIdentity = change.path().getFirstKeyOf(Node.class).getId().getValue().split(":");
             String nodeId = nodeIdentity[1];
             LOG.info("Clearing the device connection timer for the device {}", nodeId);
             removeDeviceLastConnectionTime(new BigInteger(nodeId));
