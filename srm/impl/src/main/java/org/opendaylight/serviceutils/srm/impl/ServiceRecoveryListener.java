@@ -22,9 +22,6 @@ import org.opendaylight.serviceutils.srm.ServiceRecoveryRegistry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.ServiceOps;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.Services;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.ops.rev180626.service.ops.services.Operations;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityNameBase;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.serviceutils.srm.types.rev180626.EntityTypeBase;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.osgi.service.component.annotations.Activate;
@@ -75,53 +72,24 @@ public final class ServiceRecoveryListener implements AutoCloseable, DataTreeCha
 
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<Operations>> changes) {
-        for (var dataTreeModification : changes) {
-            var instanceIdentifier = dataTreeModification.path();
-            var dataObjectModification = dataTreeModification.getRootNode();
-            var dataBefore = dataObjectModification.dataBefore();
-            var dataAfter = dataObjectModification.dataAfter();
-
-            switch (dataObjectModification.modificationType()) {
+        for (var change : changes) {
+            final var modification = change.getRootNode();
+            switch (modification.modificationType()) {
                 case null -> throw new NullPointerException();
-                case SUBTREE_MODIFIED -> update(instanceIdentifier, dataBefore, dataAfter);
-                case DELETE -> remove(instanceIdentifier, dataBefore);
-                case WRITE -> {
-                    if (dataBefore == null) {
-                        add(instanceIdentifier, dataAfter);
-                    } else {
-                        update(instanceIdentifier, dataBefore, dataAfter);
-                    }
+                case DELETE -> {
+                    // No-op
+                }
+                case SUBTREE_MODIFIED, WRITE -> {
+                    // Initiates recovery mechanism for a particular interface-manager entity. This method tries to
+                    // check whether there is a registered handler for the incoming service recovery request within
+                    // interface-manager and redirects the call to the respective handler if found.
+                    var operations = modification.dataAfter();
+                    LOG.info("Service Recovery operation triggered for service: {}", operations);
+                    String serviceRegistryKey = operations.getEntityName().toString();
+                    serviceRecoveryRegistry.getRegisteredServiceRecoveryHandler(serviceRegistryKey)
+                        .recoverService(operations.getEntityId());
                 }
             }
         }
-    }
-
-    private void add(final DataObjectIdentifier<Operations> instanceIdentifier, final Operations operations) {
-        LOG.info("Service Recovery operation triggered for service: {}", operations);
-        recoverService(operations.getEntityType(), operations.getEntityName(), operations.getEntityId());
-    }
-
-    private void remove(final DataObjectIdentifier<Operations> instanceIdentifier, final Operations removedDataObject) {
-        // FIXME: this should be doing something, right?
-    }
-
-    private void update(final DataObjectIdentifier<Operations> instanceIdentifier, final Operations originalDataObject,
-            final Operations updatedDataObject) {
-        add(instanceIdentifier, updatedDataObject);
-    }
-
-    /**
-     * Initiates recovery mechanism for a particular interface-manager entity. This method tries to check whether there
-     * is a registered handler for the incoming service recovery request within interface-manager and redirects the call
-     * to the respective handler if found.
-     *
-     * @param entityType The type of service recovery. eg :SERVICE or INSTANCE.
-     * @param entityName The type entity for which recovery has to be started. eg : INTERFACE or DPN.
-     * @param entityId The unique id to represent the entity to be recovered
-     */
-    private void recoverService(final EntityTypeBase entityType, final EntityNameBase entityName,
-            final String entityId) {
-        String serviceRegistryKey = entityName.toString();
-        serviceRecoveryRegistry.getRegisteredServiceRecoveryHandler(serviceRegistryKey).recoverService(entityId);
     }
 }
