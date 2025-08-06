@@ -17,14 +17,13 @@ import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowjava.protocol.impl.core.SwitchConnectionProviderImpl;
 import org.opendaylight.openflowjava.protocol.spi.connection.SwitchConnectionProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow._switch.connection.config.rev160506.SwitchConnectionConfig;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.service.component.ComponentFactory;
 import org.osgi.service.component.ComponentInstance;
@@ -52,8 +51,8 @@ public final class OSGiSwitchConnectionProviders implements DataTreeChangeListen
             @Reference(target = "(component.factory=" + SwitchConnectionProviderImpl.FACTORY_NAME + ")")
             final ComponentFactory<SwitchConnectionProvider> providerFactory) {
         this.providerFactory = requireNonNull(providerFactory);
-        reg = dataBroker.registerTreeChangeListener(DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION,
-            InstanceIdentifier.create(SwitchConnectionConfig.class)), this);
+        reg = dataBroker.registerTreeChangeListener(LogicalDatastoreType.CONFIGURATION,
+            DataObjectReference.builder(SwitchConnectionConfig.class).build(), this);
         LOG.info("MD-SAL configuration-based SwitchConnectionProviders started");
     }
 
@@ -73,12 +72,12 @@ public final class OSGiSwitchConnectionProviders implements DataTreeChangeListen
         for (var change : changes) {
             final var root = change.getRootNode();
             switch (root.modificationType()) {
+                case null -> throw new NullPointerException();
                 case DELETE -> apply.put(root.dataBefore().getInstanceName(), null);
                 case SUBTREE_MODIFIED, WRITE -> {
                     final var after = root.dataAfter();
                     apply.put(after.getInstanceName(), after);
                 }
-                default -> LOG.warn("Ignoring unhandled root {}", root);
             }
         }
 
