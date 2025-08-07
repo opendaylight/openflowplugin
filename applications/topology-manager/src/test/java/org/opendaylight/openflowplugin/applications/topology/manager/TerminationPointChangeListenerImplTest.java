@@ -223,7 +223,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         final var invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(newLink("link1", newSourceTp("tp1"), newDestTp("dest")));
-        Topology topology = new TopologyBuilder().withKey(topologyIID.getKey())
+        Topology topology = new TopologyBuilder().withKey(topologyIID.key())
             .setLink(BindingMap.ordered(linkList))
             .build();
 

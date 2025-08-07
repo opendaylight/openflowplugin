@@ -146,7 +146,7 @@ final class RpcContextImpl implements RpcContext {
 
     private void unregisterRPCs() {
         if (rpcRegistration != null) {
-            LOG.debug("Closing RPC registrations for device {}.", nodeInstanceIdentifier.getKey().getId().getValue());
+            LOG.debug("Closing RPC registrations for device {}.", nodeInstanceIdentifier.key().getId().getValue());
             rpcRegistration.close();
             rpcRegistration = null;
         }

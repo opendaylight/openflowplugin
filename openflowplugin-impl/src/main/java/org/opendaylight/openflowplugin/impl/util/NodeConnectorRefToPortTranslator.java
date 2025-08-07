@@ -79,7 +79,7 @@ public final class NodeConnectorRefToPortTranslator {
                     (KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey>) value;
 
             OpenflowVersion ofVersion = OpenflowVersion.get(version);
-            String nodeConnectorId = identifier.getKey().getId().getValue();
+            String nodeConnectorId = identifier.key().getId().getValue();
 
             port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(ofVersion, nodeConnectorId);
         }

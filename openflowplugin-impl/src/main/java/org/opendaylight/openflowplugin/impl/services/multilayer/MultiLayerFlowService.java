@@ -70,7 +70,7 @@ public final class MultiLayerFlowService<O extends DataObject> extends AbstractS
         Futures.addCallback(allFutures, new FutureCallback<List<RpcResult<O>>>() {
             @Override
             public void onSuccess(final List<RpcResult<O>> results) {
-                final ArrayList<RpcError> errors = new ArrayList();
+                final var errors = new ArrayList<RpcError>();
                 for (RpcResult<O> flowModResult : results) {
                     if (flowModResult == null) {
                         errors.add(RpcResultBuilder.newError(

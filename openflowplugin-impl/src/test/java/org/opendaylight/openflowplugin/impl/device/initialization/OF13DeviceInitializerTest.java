@@ -92,7 +92,7 @@ public class OF13DeviceInitializerTest {
         when(connectionContext.getOutboundQueueProvider()).thenReturn(outboundQueueProvider);
         when(deviceContext.getDeviceState()).thenReturn(deviceState);
         when(deviceInfo.getNodeInstanceIdentifier()).thenReturn(nodeInstanceIdentifier);
-        when(deviceInfo.getNodeId()).thenReturn(nodeInstanceIdentifier.getKey().getId());
+        when(deviceInfo.getNodeId()).thenReturn(nodeInstanceIdentifier.key().getId());
         when(deviceInfo.getVersion()).thenReturn(Uint8.ONE);
         when(deviceContext.getDeviceInfo()).thenReturn(deviceInfo);
         when(deviceContext.getMessageSpy()).thenReturn(messageSpy);

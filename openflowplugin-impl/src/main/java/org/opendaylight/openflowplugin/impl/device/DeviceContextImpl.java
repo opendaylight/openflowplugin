@@ -372,7 +372,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
                         .build();
 
                 writeToTransaction(LogicalDatastoreType.OPERATIONAL, iiToNodeConnector, new NodeConnectorBuilder()
-                        .withKey(iiToNodeConnector.getKey())
+                        .withKey(iiToNodeConnector.key())
                         .addAugmentation(new FlowCapableNodeConnectorStatisticsDataBuilder().build())
                         .addAugmentation(flowCapableNodeConnector)
                         .build());
@@ -448,13 +448,11 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             return;
         }
 
-        final ListenableFuture<?> offerNotification = notificationPublishService
-                .offerNotification(new PacketReceivedBuilder(packetIn)
-                        .setIngress(nodeConnectorRef)
-                        .setMatch(MatchUtil.transformMatch(match,
-                                org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received
-                                        .Match.class))
-                        .build());
+        final var offerNotification = notificationPublishService.offerNotification(new PacketReceivedBuilder(packetIn)
+            .setIngress(nodeConnectorRef)
+            .setMatch(MatchUtil.transformMatch(match,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match.class))
+            .build());
 
         if (NotificationPublishService.REJECTED.equals(offerNotification)) {
             LOG.debug("notification offer rejected");
@@ -628,9 +626,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
-            final ListenableFuture<?> txChainShuttingDown = transactionChainManager.shuttingDown();
-
-            Futures.addCallback(txChainShuttingDown, new FutureCallback<Object>() {
+            Futures.addCallback(transactionChainManager.shuttingDown(), new FutureCallback<Object>() {
                 @Override
                 public void onSuccess(final Object result) {
                     transactionChainManager.close();

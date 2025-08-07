@@ -84,7 +84,7 @@ public class StatisticsContextImpMockInitiation {
         when(mockedDeviceContext.getDeviceInfo()).thenReturn(mockedDeviceInfo);
         when(mockedDeviceContext.getPrimaryConnectionContext()).thenReturn(mockedConnectionContext);
         when(mockedDeviceContext.getMessageSpy()).thenReturn(mockedMessageSpy);
-        when(mockedDeviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID.getKey().getId());
+        when(mockedDeviceInfo.getNodeId()).thenReturn(DUMMY_NODE_ID.key().getId());
 
         when(mockedConnectionContext.getFeatures()).thenReturn(mockedFeatures);
         when(mockedConnectionContext.getConnectionState()).thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
