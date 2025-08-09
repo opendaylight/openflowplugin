@@ -59,8 +59,7 @@ public abstract class DataTreeChangeListenerImpl<T extends DataObject> implement
                 .NodeKey
                 nodeKeyInTopology
                 = new org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-                .topology.topology.NodeKey(
-                nodeIdInTopology);
+                    .topology.topology.NodeKey(nodeIdInTopology);
         return II_TO_TOPOLOGY.builder()
                 .child(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
                                .topology.topology.Node.class,
