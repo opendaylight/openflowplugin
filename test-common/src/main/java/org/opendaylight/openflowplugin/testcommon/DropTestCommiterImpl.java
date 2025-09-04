@@ -127,14 +127,14 @@ public final class DropTestCommiterImpl extends AbstractDropTest implements Drop
         fb.setId(new FlowId(String.valueOf(fb.hashCode()) + "." + idCounter.getAndIncrement()));
 
         // Construct the flow instance id
-        final var flowInstanceId = node.builder()
-                // That is flow capable, only FlowCapableNodes have tables
-                .augmentation(FlowCapableNode.class)
-                // In the table identified by TableKey
-                .child(Table.class, ZERO_TABLE)
-                // A flow identified by flowKey
-                .child(Flow.class, new FlowKey(fb.getId()))
-                .build();
+        final var flowInstanceId = node.toIdentifier().toBuilder()
+            // That is flow capable, only FlowCapableNodes have tables
+            .augmentation(FlowCapableNode.class)
+            // In the table identified by TableKey
+            .child(Table.class, ZERO_TABLE)
+            // A flow identified by flowKey
+            .child(Flow.class, new FlowKey(fb.getId()))
+            .build();
 
         final var flow = fb.build();
         final var transaction = dataBroker.newReadWriteTransaction();

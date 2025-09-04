@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 
 import static org.mockito.Mockito.doReturn;
@@ -21,8 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
-import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link FlowWriterSequential}.
@@ -58,14 +56,13 @@ public class FlowWriterSequentialTest {
     public void testAddFlows() {
         flowWriterSequential.addFlows(1, FLOWS_PER_DPN, 10, 10, (short) 0, (short) 1, true);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).mergeParentStructurePut(ArgumentMatchers.any(),
-                ArgumentMatchers.any(InstanceIdentifier.class), ArgumentMatchers.any());
+                ArgumentMatchers.any(DataObjectIdentifier.class), ArgumentMatchers.any());
     }
 
     @Test
     public void testDeleteFlows() {
         flowWriterSequential.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN))
-                .delete(ArgumentMatchers.any(),
-                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
+                .delete(ArgumentMatchers.any(), ArgumentMatchers.any(DataObjectIdentifier.class));
     }
 }

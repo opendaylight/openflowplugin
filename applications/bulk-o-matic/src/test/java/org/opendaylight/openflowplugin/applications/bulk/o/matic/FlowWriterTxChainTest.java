@@ -23,8 +23,7 @@ import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
-import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link FlowWriterTxChain}.
@@ -64,14 +63,13 @@ public class FlowWriterTxChainTest {
     public void testAddFlows() {
         flowWriterTxChain.addFlows(1, FLOWS_PER_DPN, 10, 10, 10, (short) 0, (short) 1, true);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN)).mergeParentStructurePut(ArgumentMatchers.any(),
-                ArgumentMatchers.any(InstanceIdentifier.class), ArgumentMatchers.any());
+                ArgumentMatchers.any(DataObjectIdentifier.class), ArgumentMatchers.any());
     }
 
     @Test
     public void testDeleteFlows() {
         flowWriterTxChain.deleteFlows(1, FLOWS_PER_DPN, 10, (short) 0, (short) 1);
         Mockito.verify(writeTransaction, Mockito.times(FLOWS_PER_DPN))
-                .delete(ArgumentMatchers.any(),
-                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
+                .delete(ArgumentMatchers.any(), ArgumentMatchers.any(DataObjectIdentifier.class));
     }
 }

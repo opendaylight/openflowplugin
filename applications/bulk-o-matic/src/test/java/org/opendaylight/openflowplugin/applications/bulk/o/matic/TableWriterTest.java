@@ -20,8 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.CommitInfo;
-import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link FlowWriterSequential}.
@@ -61,14 +60,13 @@ public class TableWriterTest {
         tableWriter.addTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
                 .mergeParentStructurePut(ArgumentMatchers.any(),
-                        ArgumentMatchers.any(InstanceIdentifier.class), ArgumentMatchers.any());
+                        ArgumentMatchers.any(DataObjectIdentifier.class), ArgumentMatchers.any());
     }
 
     @Test
     public void testDeleteTables() {
         tableWriter.deleteTables(DPN_COUNT, START_TABLE_ID, END_TABLE_ID);
         Mockito.verify(writeTransaction, Mockito.times(TABLES_PER_DPN))
-                .delete(ArgumentMatchers.any(),
-                        ArgumentMatchers.<InstanceIdentifier<DataObject>>any());
+                .delete(ArgumentMatchers.any(), ArgumentMatchers.any(DataObjectIdentifier.class));
     }
 }
