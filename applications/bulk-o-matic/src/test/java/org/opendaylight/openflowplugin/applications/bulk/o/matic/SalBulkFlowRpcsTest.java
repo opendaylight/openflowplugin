@@ -124,8 +124,8 @@ public class SalBulkFlowRpcsTest {
         final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
                 .setTableId(Uint8.TWO);
 
-        final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
-        bulkFlowDsItemBuilder.setNode(new NodeRef(nodeId.toIdentifier()));
+        final var nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
+        bulkFlowDsItemBuilder.setNode(new NodeRef(nodeId));
         final BulkFlowDsItem bulkFlowDsItem = bulkFlowDsItemBuilder.build();
 
         final List<BulkFlowDsItem> bulkFlowDsItems = new ArrayList<>();
@@ -164,8 +164,8 @@ public class SalBulkFlowRpcsTest {
             .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
 
         final BulkFlowItemBuilder bulkFlowItemBuilder = new BulkFlowItemBuilder();
-        final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
-        bulkFlowItemBuilder.setNode(new NodeRef(nodeId.toIdentifier()));
+        final var nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
+        bulkFlowItemBuilder.setNode(new NodeRef(nodeId));
         final BulkFlowItem bulkFlowItem = bulkFlowItemBuilder.build();
 
         final List<BulkFlowItem> bulkFlowItems = new ArrayList<>();
