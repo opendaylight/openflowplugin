@@ -18,7 +18,6 @@ import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +88,7 @@ public class TableWriter implements FlowCounterMBean {
                 for (short tableId = startTableId; tableId <= endTableId; tableId++) {
                     WriteTransaction wtx = dataBroker.newWriteOnlyTransaction();
                     Table table = new TableBuilder().withKey(new TableKey(Uint8.valueOf(tableId))).build();
-                    InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
+                    final var tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
 
                     if (isAdd) {
                         wtx.mergeParentStructurePut(LogicalDatastoreType.CONFIGURATION, tableIId, table);

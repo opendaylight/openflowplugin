@@ -18,7 +18,7 @@ import org.opendaylight.mdsal.binding.api.WriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Empty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,7 +171,8 @@ public class FlowWriterTxChain implements FlowCounterMBean {
         }
 
         private void writeTxToDs(final WriteTransaction writeTransaction, final String flowId,
-                final InstanceIdentifier<Flow> flowIid, final Flow flow, final Integer sourceIp, final Short tableId) {
+                final DataObjectIdentifier<Flow> flowIid, final Flow flow, final Integer sourceIp,
+                final Short tableId) {
             if (add) {
                 LOG.trace("Adding flow for flowId: {}, flowIid: {}", flowId, flowIid);
                 if (isCreateParents) {

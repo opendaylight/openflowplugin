@@ -11,15 +11,11 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Test for {@link BulkOMaticUtils}.
  */
 public class BulkOMaticUtilsTest {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BulkOMaticUtilsTest.class);
     private static final String FLOW_ID = "1";
 
     @Test

@@ -69,8 +69,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -110,7 +110,7 @@ public class SalBulkFlowRpcsTest {
         when(mockDataBroker.newReadOnlyTransaction()).thenReturn(readOnlyTransaction);
 
         lenient().doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNode))).when(readOnlyTransaction)
-            .read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
+            .read(any(LogicalDatastoreType.class), any(DataObjectIdentifier.class));
 
         doReturn(addFlow).when(mockRpcService).getRpc(AddFlow.class);
         doReturn(removeFlow).when(mockRpcService).getRpc(RemoveFlow.class);
@@ -124,8 +124,8 @@ public class SalBulkFlowRpcsTest {
         final BulkFlowDsItemBuilder bulkFlowDsItemBuilder = new BulkFlowDsItemBuilder().setFlowId(new FlowId("1"))
                 .setTableId(Uint8.TWO);
 
-        final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
-        bulkFlowDsItemBuilder.setNode(new NodeRef(nodeId.toIdentifier()));
+        final var nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
+        bulkFlowDsItemBuilder.setNode(new NodeRef(nodeId));
         final BulkFlowDsItem bulkFlowDsItem = bulkFlowDsItemBuilder.build();
 
         final List<BulkFlowDsItem> bulkFlowDsItems = new ArrayList<>();
@@ -139,7 +139,7 @@ public class SalBulkFlowRpcsTest {
 
         verify(writeTransaction).commit();
         verify(writeTransaction).mergeParentStructurePut(ArgumentMatchers.any(),
-                ArgumentMatchers.any(InstanceIdentifier.class), flowArgumentCaptor.capture());
+                ArgumentMatchers.any(DataObjectIdentifier.class), flowArgumentCaptor.capture());
 
         Flow flow = flowArgumentCaptor.getValue();
         Assert.assertEquals("1", flow.getId().getValue());
@@ -151,8 +151,7 @@ public class SalBulkFlowRpcsTest {
         final RemoveFlowsDsInput removeFlowsDsInput = removeFlowsDsInputBuilder.build();
 
         salBulkFlowService.removeFlowsDs(removeFlowsDsInput);
-        verify(writeTransaction).delete(ArgumentMatchers.any(),
-                ArgumentMatchers.<InstanceIdentifier<Flow>>any());
+        verify(writeTransaction).delete(ArgumentMatchers.any(), ArgumentMatchers.any(DataObjectIdentifier.class));
         verify(writeTransaction, times(2)).commit();
     }
 
@@ -164,8 +163,8 @@ public class SalBulkFlowRpcsTest {
             .thenReturn(RpcResultBuilder.success(new RemoveFlowOutputBuilder().build()).buildFuture());
 
         final BulkFlowItemBuilder bulkFlowItemBuilder = new BulkFlowItemBuilder();
-        final InstanceIdentifier<Node> nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
-        bulkFlowItemBuilder.setNode(new NodeRef(nodeId.toIdentifier()));
+        final var nodeId = BulkOMaticUtils.getFlowCapableNodeId("1");
+        bulkFlowItemBuilder.setNode(new NodeRef(nodeId));
         final BulkFlowItem bulkFlowItem = bulkFlowItemBuilder.build();
 
         final List<BulkFlowItem> bulkFlowItems = new ArrayList<>();
@@ -204,7 +203,7 @@ public class SalBulkFlowRpcsTest {
     @Test
     public void testFlowRpcAddTest() throws Exception {
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
-            .read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
+            .read(any(LogicalDatastoreType.class), any(DataObjectIdentifier.class));
 
         final FlowRpcAddTestInputBuilder flowRpcAddTestInputBuilder = new FlowRpcAddTestInputBuilder()
                 .setFlowCount(Uint32.ONE).setDpnId("1").setRpcBatchSize(Uint32.ONE);
@@ -256,7 +255,7 @@ public class SalBulkFlowRpcsTest {
     @Test
     public void testFlowRpcAddMultiple() throws Exception {
         doReturn(FluentFutures.immediateFluentFuture(Optional.of(mockNodes))).when(readOnlyTransaction)
-            .read(any(LogicalDatastoreType.class), any(InstanceIdentifier.class));
+            .read(any(LogicalDatastoreType.class), any(DataObjectIdentifier.class));
 
         final FlowRpcAddMultipleInputBuilder flowRpcAddMultipleInputBuilder = new FlowRpcAddMultipleInputBuilder()
                 .setFlowCount(Uint32.ONE).setRpcBatchSize(Uint32.ONE);

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -24,13 +25,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public final class FlowReader implements Runnable, FlowCounterMBean {
     private static final Logger LOG = LoggerFactory.getLogger(FlowReader.class);
+
     private final DataBroker dataBroker;
     private final Integer dpnCount;
     private final boolean verbose;
@@ -78,7 +81,7 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
                 Integer sourceIp = j + 1;
 
                 String flowId = "Flow-" + dpId + "." + tableId + "." + sourceIp;
-                InstanceIdentifier<Flow> flowIid = getFlowInstanceIdentifier(dpId, tableId, flowId);
+                final var flowIid = getFlowInstanceIdentifier(dpId, tableId, flowId);
 
                 try (ReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
                     Optional<Flow> flowOptional;
@@ -110,10 +113,14 @@ public final class FlowReader implements Runnable, FlowCounterMBean {
         LOG.info("Total Flows read: {}", flowCount);
     }
 
-    private static InstanceIdentifier<Flow> getFlowInstanceIdentifier(String dpId, short tableId, String flowId) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(dpId)))
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(Uint8.valueOf(tableId)))
-                .child(Flow.class, new FlowKey(new FlowId(flowId)));
+    private static @NonNull WithKey<Flow, FlowKey> getFlowInstanceIdentifier(String dpId, short tableId,
+            String flowId) {
+        return DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(dpId)))
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey(Uint8.valueOf(tableId)))
+            .child(Flow.class, new FlowKey(new FlowId(flowId)))
+            .build();
     }
 
     @Override

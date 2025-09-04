@@ -33,6 +33,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectName;
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -87,8 +88,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.Remo
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -165,17 +166,18 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
         return Futures.transform(handleResultFuture(Futures.allAsList(submitFuture)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
                 return RpcResultBuilder.<AddFlowsDsOutput>success().build();
-            } else {
-                return RpcResultBuilder.<AddFlowsDsOutput>failed().build();
             }
+            return RpcResultBuilder.<AddFlowsDsOutput>failed().build();
         },MoreExecutors.directExecutor());
     }
 
-    private static InstanceIdentifier<Flow> getFlowInstanceIdentifier(final BulkFlowDsItem bulkFlow) {
+    private static @NonNull WithKey<Flow, FlowKey> getFlowInstanceIdentifier(final BulkFlowDsItem bulkFlow) {
         final NodeRef nodeRef = bulkFlow.getNode();
-        return ((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy().augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(bulkFlow.getTableId()))
-                .child(Flow.class, new FlowKey(new FlowId(bulkFlow.getFlowId())));
+        return ((DataObjectIdentifier<Node>) nodeRef.getValue()).toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey(bulkFlow.getTableId()))
+            .child(Flow.class, new FlowKey(new FlowId(bulkFlow.getFlowId())))
+            .build();
     }
 
     @VisibleForTesting
@@ -187,9 +189,8 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
         return Futures.transform(handleResultFuture(Futures.allAsList(writeTransaction.commit())), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
                 return RpcResultBuilder.<RemoveFlowsDsOutput>success().build();
-            } else {
-                return RpcResultBuilder.<RemoveFlowsDsOutput>failed().build();
             }
+            return RpcResultBuilder.<RemoveFlowsDsOutput>failed().build();
         }, MoreExecutors.directExecutor());
     }
 
@@ -228,9 +229,8 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
         return Futures.transform(handleResultFuture(Futures.allAsList(bulkResults)), voidRpcResult -> {
             if (voidRpcResult.isSuccessful()) {
                 return RpcResultBuilder.<AddFlowsRpcOutput>success().build();
-            } else {
-                return RpcResultBuilder.<AddFlowsRpcOutput>failed().build();
             }
+            return RpcResultBuilder.<AddFlowsRpcOutput>failed().build();
         },MoreExecutors.directExecutor());
     }
 
@@ -284,9 +284,8 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
             voidRpcResult -> {
                 if (voidRpcResult.isSuccessful()) {
                     return RpcResultBuilder.<RemoveFlowsRpcOutput>success().build();
-                } else {
-                    return RpcResultBuilder.<RemoveFlowsRpcOutput>failed().build();
                 }
+                return RpcResultBuilder.<RemoveFlowsRpcOutput>failed().build();
             }, MoreExecutors.directExecutor());
     }
 

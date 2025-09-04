@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.bulk.o.matic;
 import static java.util.Objects.requireNonNull;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -21,7 +20,6 @@ import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
@@ -32,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.M
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,22 +71,20 @@ public class FlowWriterDirectOFRpc {
     private Set<String> getAllNodes() {
 
         Set<String> nodeIds = new HashSet<>();
-        InstanceIdentifier<Nodes> nodes = InstanceIdentifier.create(Nodes.class);
+        final var nodes = DataObjectIdentifier.builder(Nodes.class).build();
 
         try (ReadTransaction readOnlyTransaction = dataBroker.newReadOnlyTransaction()) {
             Optional<Nodes> nodesDataNode = readOnlyTransaction.read(LogicalDatastoreType.OPERATIONAL, nodes).get();
-            if (nodesDataNode.isPresent()) {
-                Collection<Node> nodesCollection = nodesDataNode.orElseThrow().nonnullNode().values();
-                if (!nodesCollection.isEmpty()) {
-                    for (Node node : nodesCollection) {
-                        LOG.info("Switch with ID {} discovered !!", node.getId().getValue());
-                        nodeIds.add(node.getId().getValue());
-                    }
-                } else {
-                    return Collections.emptySet();
-                }
-            } else {
-                return Collections.emptySet();
+            if (!nodesDataNode.isPresent()) {
+                return Set.of();
+            }
+            Collection<Node> nodesCollection = nodesDataNode.orElseThrow().nonnullNode().values();
+            if (nodesCollection.isEmpty()) {
+                return Set.of();
+            }
+            for (Node node : nodesCollection) {
+                LOG.info("Switch with ID {} discovered !!", node.getId().getValue());
+                nodeIds.add(node.getId().getValue());
             }
         } catch (InterruptedException | ExecutionException e) {
             LOG.error("Failed to read connected nodes", e);
@@ -120,15 +116,15 @@ public class FlowWriterDirectOFRpc {
                 LOG.debug("Framing AddFlowInput for flow-id {}", flowId);
 
                 Match match = BulkOMaticUtils.getMatch(i);
-                InstanceIdentifier<Node> nodeIId = BulkOMaticUtils.getFlowCapableNodeId(dpId);
-                InstanceIdentifier<Table> tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
-                InstanceIdentifier<Flow> flowIId = BulkOMaticUtils.getFlowId(tableIId, flowId);
+                final var nodeIId = BulkOMaticUtils.getFlowCapableNodeId(dpId);
+                final var tableIId = BulkOMaticUtils.getTableId(tableId, dpId);
+                final var flowIId = BulkOMaticUtils.getFlowId(tableIId, flowId);
 
                 Flow flow = BulkOMaticUtils.buildFlow(tableId, flowId, match);
 
                 AddFlowInputBuilder builder = new AddFlowInputBuilder(flow);
-                builder.setNode(new NodeRef(nodeIId.toIdentifier()));
-                builder.setFlowTable(new FlowTableRef(tableIId.toIdentifier()));
+                builder.setNode(new NodeRef(nodeIId));
+                builder.setFlowTable(new FlowTableRef(tableIId));
                 builder.setFlowRef(new FlowRef(flowIId.toIdentifier()));
 
                 AddFlowInput addFlowInput = builder.build();
