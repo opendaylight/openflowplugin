@@ -35,17 +35,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
  * Test for {@link SimplifiedConfigListener}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SimplifiedConfigListenerTest {
-
     private static final NodeId NODE_ID = new NodeId("testNode");
-    private InstanceIdentifier<FlowCapableNode> fcNodePath;
+
+    private DataObjectIdentifier<FlowCapableNode> fcNodePath;
     private SimplifiedConfigListener nodeListenerConfig;
     private final LogicalDatastoreType confgDS = LogicalDatastoreType.CONFIGURATION;
     private final LogicalDatastoreType operationalDS = LogicalDatastoreType.OPERATIONAL;
@@ -72,8 +72,10 @@ public class SimplifiedConfigListenerTest {
                 new FlowCapableNodeOdlDao(db, LogicalDatastoreType.OPERATIONAL));
 
         nodeListenerConfig = new SimplifiedConfigListener(reactor, configSnapshot, operationalDao);
-        fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
-                .augmentation(FlowCapableNode.class);
+        fcNodePath = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID))
+            .augmentation(FlowCapableNode.class)
+            .build();
 
         final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
                 DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION, fcNodePath);
@@ -97,7 +99,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }
@@ -110,7 +112,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }
@@ -123,7 +125,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }

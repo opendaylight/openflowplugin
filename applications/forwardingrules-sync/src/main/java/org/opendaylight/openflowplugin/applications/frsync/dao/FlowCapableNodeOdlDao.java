@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -20,7 +19,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,26 +30,26 @@ public class FlowCapableNodeOdlDao implements FlowCapableNodeDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(FlowCapableNodeOdlDao.class);
 
-    private static final InstanceIdentifier<Nodes> NODES_IID = InstanceIdentifier.create(Nodes.class);
     private final DataBroker dataBroker;
     private final LogicalDatastoreType logicalDatastoreType;
 
-    public FlowCapableNodeOdlDao(DataBroker dataBroker, LogicalDatastoreType logicalDatastoreType) {
+    public FlowCapableNodeOdlDao(final DataBroker dataBroker, final LogicalDatastoreType logicalDatastoreType) {
         this.dataBroker = dataBroker;
         this.logicalDatastoreType = logicalDatastoreType;
     }
 
     @Override
-    public Optional<FlowCapableNode> loadByNodeId(@NonNull NodeId nodeId) {
+    public Optional<FlowCapableNode> loadByNodeId(final NodeId nodeId) {
         try (ReadTransaction roTx = dataBroker.newReadOnlyTransaction()) {
-            final InstanceIdentifier<FlowCapableNode> path =
-                    NODES_IID.child(Node.class, new NodeKey(nodeId)).augmentation(FlowCapableNode.class);
-            return roTx.read(logicalDatastoreType, path).get(5000, TimeUnit.MILLISECONDS);
+            return roTx.read(logicalDatastoreType, DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(nodeId))
+                .augmentation(FlowCapableNode.class)
+                .build())
+                .get(5000, TimeUnit.MILLISECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
             LOG.error("error reading {}", nodeId.getValue(), e);
         }
 
         return Optional.empty();
     }
-
 }
