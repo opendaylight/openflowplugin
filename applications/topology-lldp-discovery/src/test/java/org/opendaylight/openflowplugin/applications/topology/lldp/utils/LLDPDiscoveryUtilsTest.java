@@ -18,7 +18,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link LLDPDiscoveryUtils}.
@@ -43,10 +42,10 @@ public class LLDPDiscoveryUtilsTest {
 
         NodeConnectorRef nodeConnectorRef = LLDPDiscoveryUtils.lldpToNodeConnectorRef(packetLLDP, false);
 
-        final var nodeConnector = ((DataObjectIdentifier<?>) nodeConnectorRef.getValue()).toLegacy();
+        final var nodeConnector = nodeConnectorRef.getValue();
 
-        NodeKey nodeKey = nodeConnector.firstKeyOf(Node.class);
-        NodeConnectorKey nodeConnectorKey = nodeConnector.firstKeyOf(NodeConnector.class);
+        NodeKey nodeKey = nodeConnector.getFirstKeyOf(Node.class);
+        NodeConnectorKey nodeConnectorKey = nodeConnector.getFirstKeyOf(NodeConnector.class);
 
         assertEquals(nodeKey.getId().getValue(), "openflow:2");
         assertEquals(nodeConnectorKey.getId().getValue(), "openflow:2:2");

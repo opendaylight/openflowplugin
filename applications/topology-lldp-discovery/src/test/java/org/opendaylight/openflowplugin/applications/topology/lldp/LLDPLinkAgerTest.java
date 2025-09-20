@@ -46,11 +46,6 @@ public class LLDPLinkAgerTest {
     private static final Uint32 LLDP_INTERVAL = Uint32.valueOf(5);
     private static final Uint32 LINK_EXPIRATION_TIME = Uint32.TEN;
 
-    /**
-     * We need to wait while other tasks are finished before we can check anything in LLDPAgingTask.
-     */
-    private static final int SLEEP = 100;
-
     @Mock
     private LinkDiscovered link;
     @Mock
@@ -91,7 +86,8 @@ public class LLDPLinkAgerTest {
     @Test
     public void testLLDPAgingTask() throws InterruptedException {
         lldpLinkAger.put(link);
-        Thread.sleep(SLEEP);
+        // We need to wait while other tasks are finished before we can check anything in LLDPAgingTask.
+        Thread.sleep(100);
         verify(notificationService).putNotification(any(LinkRemoved.class));
     }
 

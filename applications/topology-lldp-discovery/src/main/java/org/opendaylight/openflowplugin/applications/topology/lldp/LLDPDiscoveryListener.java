@@ -13,13 +13,11 @@ import org.opendaylight.mdsal.binding.api.NotificationPublishService;
 import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.mdsal.eos.binding.api.EntityOwnershipService;
 import org.opendaylight.openflowplugin.applications.topology.lldp.utils.LLDPDiscoveryUtils;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscovered;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
-import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +41,13 @@ public class LLDPDiscoveryListener implements Listener<PacketReceived> {
     public void onNotification(final PacketReceived lldp) {
         NodeConnectorRef src = LLDPDiscoveryUtils.lldpToNodeConnectorRef(lldp.getPayload(), true);
         if (src != null) {
-            final NodeKey nodeKey = ((DataObjectReference<?>) lldp.getIngress().getValue()).toLegacy()
-                .firstKeyOf(Node.class);
+            final NodeKey nodeKey = lldp.getIngress().getValue().firstKeyOf(Node.class);
             LOG.debug("LLDP packet received for destination node {}", nodeKey);
             if (nodeKey != null) {
-                final LinkDiscoveredBuilder ldb = new LinkDiscoveredBuilder();
-                ldb.setDestination(lldp.getIngress());
-                ldb.setSource(new NodeConnectorRef(src));
-                final LinkDiscovered ld = ldb.build();
+                final var ld = new LinkDiscoveredBuilder()
+                    .setDestination(lldp.getIngress())
+                    .setSource(new NodeConnectorRef(src))
+                    .build();
                 final boolean linkWasPresent = lldpLinkAger.isLinkPresent(ld);
                 lldpLinkAger.put(ld);
                 if (LLDPDiscoveryUtils.isEntityOwned(eos, nodeKey.getId().getValue())) {
