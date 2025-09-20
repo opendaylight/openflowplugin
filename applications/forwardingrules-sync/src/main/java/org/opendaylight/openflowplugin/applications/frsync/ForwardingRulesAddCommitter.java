@@ -5,30 +5,26 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Represents a configuration item add-contract for device.
  */
 public interface ForwardingRulesAddCommitter<D extends DataObject, A extends DataObject> {
-
     /**
-     * Method adds the DataObject which is identified by InstanceIdentifier
-     * to device.
+     * Method adds the DataObject which is identified by DataObjectIdentifier to device.
      *
      * @param identifier - the whole path to new DataObject
      * @param add        - new DataObject
      * @param nodeIdent  - Node InstanceIdentifier
      * @return RpcResult of action
      */
-    ListenableFuture<RpcResult<A>> add(InstanceIdentifier<D> identifier, D add,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
-
+    ListenableFuture<RpcResult<A>> add(DataObjectIdentifier<D> identifier, D add,
+            DataObjectIdentifier<FlowCapableNode> nodeIdent);
 }

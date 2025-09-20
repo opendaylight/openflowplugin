@@ -23,8 +23,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,17 +42,17 @@ public class TableForwarder implements ForwardingRulesUpdateCommitter<TableFeatu
     }
 
     @Override
-    public ListenableFuture<RpcResult<UpdateTableOutput>> update(final InstanceIdentifier<TableFeatures> identifier,
+    public ListenableFuture<RpcResult<UpdateTableOutput>> update(final DataObjectIdentifier<TableFeatures> identifier,
             final TableFeatures original, final TableFeatures update,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Forwarding Table Update request [Tbl id, node Id {} {}", identifier, nodeIdent);
-        final InstanceIdentifier<Table> iiToTable = nodeIdent.child(Table.class,
-                new TableKey(identifier.firstKeyOf(TableFeatures.class).getTableId()));
 
         LOG.debug("Invoking SalTableService {}", nodeIdent);
         return updateTable.invoke(new UpdateTableInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setTableRef(new TableRef(iiToTable.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setTableRef(new TableRef(nodeIdent.toBuilder()
+                .child(Table.class, new TableKey(identifier.getFirstKeyOf(TableFeatures.class).getTableId()))
+                .build()))
             .setUpdatedTable(new UpdatedTableBuilder().setTableFeatures(BindingMap.of(update)).build())
             .setOriginalTable(new OriginalTableBuilder().setTableFeatures(BindingMap.of(original)).build())
             .build());

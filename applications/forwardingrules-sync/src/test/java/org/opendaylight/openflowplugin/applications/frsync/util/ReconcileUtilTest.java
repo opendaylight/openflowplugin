@@ -46,8 +46,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -58,8 +58,8 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 @RunWith(MockitoJUnitRunner.class)
 public class ReconcileUtilTest {
     private static final NodeId NODE_ID = new NodeId("unit-node-id");
-    private static final InstanceIdentifier<Node> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(NODE_ID));
+    private static final DataObjectIdentifier<Node> NODE_IDENT =
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(NODE_ID)).build();
     private static final Splitter COMMA_SPLITTER = Splitter.on(",");
 
     @Mock

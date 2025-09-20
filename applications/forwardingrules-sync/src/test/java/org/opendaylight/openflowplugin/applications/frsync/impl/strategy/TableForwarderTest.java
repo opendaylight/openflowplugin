@@ -34,8 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -55,14 +54,14 @@ public class TableForwarderTest {
             .setTableId(tableId)
             .build();
 
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodePath = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, s1Key);
-    private final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = nodePath
-            .augmentation(FlowCapableNode.class);
-    private final KeyedInstanceIdentifier<Table, TableKey> tablePath = flowCapableNodePath
-            .child(Table.class, tableKey);
-    private final InstanceIdentifier<TableFeatures> tableFeaturesPath = flowCapableNodePath
-            .child(TableFeatures.class, tableFeaturesKey);
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> nodePath =
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, s1Key).build();
+    private final DataObjectIdentifier<FlowCapableNode> flowCapableNodePath =
+        nodePath.toBuilder().augmentation(FlowCapableNode.class).build();
+    private final DataObjectIdentifier.WithKey<Table, TableKey> tablePath =
+        flowCapableNodePath.toBuilder().child(Table.class, tableKey).build();
+    private final DataObjectIdentifier<TableFeatures> tableFeaturesPath =
+        flowCapableNodePath.toBuilder().child(TableFeatures.class, tableFeaturesKey).build();
 
     @Captor
     private ArgumentCaptor<UpdateTableInput> updateTableInputCpt;

@@ -26,11 +26,9 @@ import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.Meter;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.meters.MeterKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.RemoveFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.UpdateFlowOutput;
@@ -39,14 +37,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.Add
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.RemoveGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.UpdateGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.GroupKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.RemoveMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.UpdateMeterOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutput;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -75,8 +71,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     @Override
     public ListenableFuture<RpcResult<Void>> executeSyncStrategy(ListenableFuture<RpcResult<Void>> resultVehicle,
             final SynchronizationDiffInput diffInput, final SyncCrudCounters counters) {
-        final InstanceIdentifier<FlowCapableNode> nodeIdent = diffInput.getNodeIdent();
-        final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
+        final var nodeIdent = diffInput.getNodeIdent();
+        final var nodeId = PathUtil.digNodeId(nodeIdent);
 
         /* Tables - have to be pushed before groups */
         // TODO enable table-update when ready
@@ -118,7 +114,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
 
 
     ListenableFuture<RpcResult<Void>> addMissingFlows(final NodeId nodeId,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent,
             final Map<TableKey, ItemSyncBox<Flow>> flowsInTablesSyncBox, final SyncCrudCounters counters) {
         if (flowsInTablesSyncBox.isEmpty()) {
             LOG.trace("no tables in config for node: {} -> SKIPPING", nodeId.getValue());
@@ -133,10 +129,10 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final TableKey tableKey = flowsInTableBoxEntry.getKey();
             final ItemSyncBox<Flow> flowSyncBox = flowsInTableBoxEntry.getValue();
 
-            final KeyedInstanceIdentifier<Table, TableKey> tableIdent = nodeIdent.child(Table.class, tableKey);
+            final var tableIdent = nodeIdent.toBuilder().child(Table.class, tableKey).build();
 
             for (final Flow flow : flowSyncBox.getItemsToPush()) {
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class, flow.key());
+                final var flowIdent = tableIdent.toBuilder().child(Flow.class, flow.key()).build();
 
                 LOG.trace("adding flow {} in table {} - absent on device {} match{}",
                         flow.getId(), tableKey, nodeId, flow.getMatch());
@@ -149,8 +145,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 final Flow existingFlow = flowUpdate.getOriginal();
                 final Flow updatedFlow = flowUpdate.getUpdated();
 
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent = tableIdent.child(Flow.class,
-                        updatedFlow.key());
+                final var flowIdent = tableIdent.toBuilder().child(Flow.class, updatedFlow.key()).build();
                 LOG.trace("flow {} in table {} - needs update on device {} match{}",
                         updatedFlow.getId(), tableKey, nodeId, updatedFlow.getMatch());
 
@@ -175,7 +170,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantFlows(final NodeId nodeId,
-                                                           final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                           final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                            final Map<TableKey, ItemSyncBox<Flow>> removalPlan,
                                                            final SyncCrudCounters counters) {
         if (removalPlan.isEmpty()) {
@@ -187,13 +182,11 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         final CrudCounts flowCrudCounts = counters.getFlowCrudCounts();
 
         for (final Map.Entry<TableKey, ItemSyncBox<Flow>> flowsPerTable : removalPlan.entrySet()) {
-            final KeyedInstanceIdentifier<Table, TableKey> tableIdent =
-                    nodeIdent.child(Table.class, flowsPerTable.getKey());
+            final var tableIdent = nodeIdent.toBuilder().child(Table.class, flowsPerTable.getKey()).build();
 
             // loop flows on device and check if the are configured
             for (final Flow flow : flowsPerTable.getValue().getItemsToPush()) {
-                final KeyedInstanceIdentifier<Flow, FlowKey> flowIdent =
-                        tableIdent.child(Flow.class, flow.key());
+                final var flowIdent = tableIdent.toBuilder().child(Flow.class, flow.key()).build();
                 allResults.add(flowForwarder.remove(flowIdent, flow, nodeIdent));
                 flowCrudCounts.incRemoved();
             }
@@ -211,7 +204,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantMeters(final NodeId nodeId,
-                                                            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                            final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                             final ItemSyncBox<Meter> meterRemovalPlan,
                                                             final SyncCrudCounters counters) {
         if (meterRemovalPlan.isEmpty()) {
@@ -225,8 +218,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         for (Meter meter : meterRemovalPlan.getItemsToPush()) {
             LOG.trace("removing meter {} - absent in config {}",
                     meter.getMeterId(), nodeId);
-            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent =
-                    nodeIdent.child(Meter.class, meter.key());
+            final var meterIdent = nodeIdent.toBuilder().child(Meter.class, meter.key()).build();
             allResults.add(meterForwarder.remove(meterIdent, meter, nodeIdent));
             meterCrudCounts.incRemoved();
         }
@@ -237,7 +229,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     ListenableFuture<RpcResult<Void>> removeRedundantGroups(final NodeId nodeId,
-                                                            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                            final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                             final List<ItemSyncBox<Group>> groupsRemovalPlan,
                                                             final SyncCrudCounters counters) {
         if (groupsRemovalPlan.isEmpty()) {
@@ -278,11 +270,10 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     private ListenableFuture<RpcResult<Void>> flushRemoveGroupPortionAndBarrier(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final ItemSyncBox<Group> groupsPortion) {
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent, final ItemSyncBox<Group> groupsPortion) {
         List<ListenableFuture<RpcResult<RemoveGroupOutput>>> allResults = new ArrayList<>();
         for (Group group : groupsPortion.getItemsToPush()) {
-            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
+            final var groupIdent = nodeIdent.toBuilder().child(Group.class, group.key()).build();
             allResults.add(groupForwarder.remove(groupIdent, group, nodeIdent));
         }
 
@@ -296,7 +287,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 MoreExecutors.directExecutor());
     }
 
-    ListenableFuture<RpcResult<Void>> updateTableFeatures(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+    ListenableFuture<RpcResult<Void>> updateTableFeatures(final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                           final FlowCapableNode flowCapableNodeConfigured) {
         // CHECK if while pushing the update, updateTableInput can be null to emulate a table add
         //final List<Table> tableList = ReconcileUtil.safeTables(flowCapableNodeConfigured);
@@ -327,13 +318,13 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     private ListenableFuture<RpcResult<Void>> flushAddGroupPortionAndBarrier(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent,
             final ItemSyncBox<Group> groupsPortion) {
         final List<ListenableFuture<RpcResult<AddGroupOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateGroupOutput>>> allUpdateResults = new ArrayList<>();
 
         for (Group group : groupsPortion.getItemsToPush()) {
-            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
+            final var groupIdent = nodeIdent.toBuilder().child(Group.class, group.key()).build();
             allResults.add(groupForwarder.add(groupIdent, group, nodeIdent));
 
         }
@@ -342,7 +333,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
             final Group existingGroup = groupTuple.getOriginal();
             final Group group = groupTuple.getUpdated();
 
-            final KeyedInstanceIdentifier<Group, GroupKey> groupIdent = nodeIdent.child(Group.class, group.key());
+            final var groupIdent = nodeIdent.toBuilder().child(Group.class, group.key()).build();
             allUpdateResults.add(groupForwarder.update(groupIdent, existingGroup, group, nodeIdent));
         }
 
@@ -367,7 +358,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     ListenableFuture<RpcResult<Void>> addMissingMeters(final NodeId nodeId,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                       final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                        final ItemSyncBox<Meter> syncBox,
                                                        final SyncCrudCounters counters) {
         if (syncBox.isEmpty()) {
@@ -380,9 +371,8 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         final List<ListenableFuture<RpcResult<AddMeterOutput>>> allResults = new ArrayList<>();
         final List<ListenableFuture<RpcResult<UpdateMeterOutput>>> allUpdateResults = new ArrayList<>();
         for (Meter meter : syncBox.getItemsToPush()) {
-            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, meter.key());
-            LOG.debug("adding meter {} - absent on device {}",
-                    meter.getMeterId(), nodeId);
+            final var meterIdent = nodeIdent.toBuilder().child(Meter.class, meter.key()).build();
+            LOG.debug("adding meter {} - absent on device {}", meter.getMeterId(), nodeId);
             allResults.add(meterForwarder.add(meterIdent, meter, nodeIdent));
             meterCrudCounts.incAdded();
         }
@@ -390,7 +380,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
         for (ItemSyncBox.ItemUpdateTuple<Meter> meterTuple : syncBox.getItemsToUpdate()) {
             final Meter existingMeter = meterTuple.getOriginal();
             final Meter updated = meterTuple.getUpdated();
-            final KeyedInstanceIdentifier<Meter, MeterKey> meterIdent = nodeIdent.child(Meter.class, updated.key());
+            final var meterIdent = nodeIdent.toBuilder().child(Meter.class, updated.key()).build();
             LOG.trace("meter {} - needs update on device {}", updated.getMeterId(), nodeId);
             allUpdateResults.add(meterForwarder.update(meterIdent, existingMeter, updated, nodeIdent));
             meterCrudCounts.incUpdated();
@@ -412,7 +402,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
     }
 
     ListenableFuture<RpcResult<Void>> addMissingGroups(final NodeId nodeId,
-                                                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                                                       final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                        final List<ItemSyncBox<Group>> groupsAddPlan,
                                                        final SyncCrudCounters counters) {
         if (groupsAddPlan.isEmpty()) {

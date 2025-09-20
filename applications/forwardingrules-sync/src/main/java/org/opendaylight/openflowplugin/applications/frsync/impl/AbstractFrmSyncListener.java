@@ -31,7 +31,7 @@ public abstract class AbstractFrmSyncListener<T extends DataObject> implements N
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<T>> modifications) {
         for (DataTreeModification<T> modification : modifications) {
-            final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().path());
+            final NodeId nodeId = PathUtil.digNodeId(modification.path());
             if (LOG.isTraceEnabled()) {
                 LOG.trace("DataTreeModification of {} in {} datastore", nodeId.getValue(), dsType());
             }

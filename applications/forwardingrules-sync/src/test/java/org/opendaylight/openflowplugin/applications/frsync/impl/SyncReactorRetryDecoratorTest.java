@@ -24,17 +24,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link SyncReactorRetryDecorator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorRetryDecoratorTest {
-
     private static final NodeId NODE_ID = new NodeId("test-node");
+
     private SyncReactorRetryDecorator reactor;
-    private InstanceIdentifier<FlowCapableNode> fcNodePath;
+    private DataObjectIdentifier<FlowCapableNode> fcNodePath;
 
     @Mock
     private SyncReactor delegate;
@@ -46,9 +46,10 @@ public class SyncReactorRetryDecoratorTest {
     @Before
     public void setUp() {
         reactor = new SyncReactorRetryDecorator(delegate, reconciliationRegistry);
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(NODE_ID));
-        fcNodePath = nodePath.augmentation(FlowCapableNode.class);
+        fcNodePath = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID))
+            .augmentation(FlowCapableNode.class)
+            .build();
     }
 
     @Test

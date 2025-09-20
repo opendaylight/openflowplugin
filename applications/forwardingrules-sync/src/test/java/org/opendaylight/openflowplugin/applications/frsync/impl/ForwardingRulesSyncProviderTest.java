@@ -8,8 +8,8 @@
 package org.opendaylight.openflowplugin.applications.frsync.impl;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.RpcService;
+import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
@@ -42,7 +43,8 @@ public class ForwardingRulesSyncProviderTest {
         try (var provider = new ForwardingRulesSyncProvider(dataBroker, rpcRegistry, clusterSingletonService)) {
             verify(rpcRegistry).getRpc(UpdateTable.class);
             verify(rpcRegistry).getRpc(ProcessFlatBatch.class);
-            verify(dataBroker, times(2)).registerTreeChangeListener(any(), any());
+            verify(dataBroker).registerTreeChangeListener(eq(LogicalDatastoreType.CONFIGURATION), any(), any());
+            verify(dataBroker).registerTreeChangeListener(eq(LogicalDatastoreType.OPERATIONAL), any(), any());
         }
     }
 }

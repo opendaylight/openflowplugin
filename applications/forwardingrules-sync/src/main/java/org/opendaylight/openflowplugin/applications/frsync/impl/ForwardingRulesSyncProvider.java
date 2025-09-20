@@ -16,7 +16,6 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.mdsal.singleton.api.ClusterSingletonServiceProvider;
@@ -32,8 +31,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -56,14 +55,11 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
     private final ProcessFlatBatch processFlatBatch;
 
     /** Wildcard path to flow-capable-node augmentation of inventory node. */
-    private static final InstanceIdentifier<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
-            InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class);
+    private static final DataObjectReference<FlowCapableNode> FLOW_CAPABLE_NODE_WC_PATH =
+        DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
     /** Wildcard path to node (not flow-capable-node augmentation) of inventory node. */
-    private static final InstanceIdentifier<Node> NODE_WC_PATH =
-            InstanceIdentifier.create(Nodes.class).child(Node.class);
-
-    private final DataTreeIdentifier<FlowCapableNode> nodeConfigDataTreePath;
-    private final DataTreeIdentifier<Node> nodeOperationalDataTreePath;
+    private static final DataObjectReference<Node> NODE_WC_PATH =
+        DataObjectReference.builder(Nodes.class).child(Node.class).build();
 
     private Registration dataTreeConfigChangeListener;
     private Registration dataTreeOperationalChangeListener;
@@ -83,10 +79,6 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
                 "RPC UpdateTable not found.");
         processFlatBatch = requireNonNull(rpcRegistry.getRpc(ProcessFlatBatch.class),
                 "RPC SalFlatBatchService not found.");
-
-        nodeConfigDataTreePath = DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION,
-                FLOW_CAPABLE_NODE_WC_PATH);
-        nodeOperationalDataTreePath = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, NODE_WC_PATH);
 
         syncThreadPool = Executors.newCachedThreadPool(new ThreadFactoryBuilder()
             .setNameFormat(FRS_EXECUTOR_PREFIX + "%d")
@@ -119,10 +111,10 @@ public class ForwardingRulesSyncProvider implements AutoCloseable {
         final NodeListener<Node> nodeListenerOperational = new SimplifiedOperationalListener(reactor,
                 operationalSnapshot, configDao, reconciliationRegistry, deviceMastershipManager);
 
-        dataTreeConfigChangeListener =
-                dataService.registerTreeChangeListener(nodeConfigDataTreePath, nodeListenerConfig);
-        dataTreeOperationalChangeListener =
-                dataService.registerTreeChangeListener(nodeOperationalDataTreePath, nodeListenerOperational);
+        dataTreeConfigChangeListener = dataService.registerTreeChangeListener(LogicalDatastoreType.CONFIGURATION,
+            FLOW_CAPABLE_NODE_WC_PATH, nodeListenerConfig);
+        dataTreeOperationalChangeListener = dataService.registerTreeChangeListener(LogicalDatastoreType.OPERATIONAL,
+            NODE_WC_PATH, nodeListenerOperational);
         LOG.info("ForwardingRulesSync started");
     }
 

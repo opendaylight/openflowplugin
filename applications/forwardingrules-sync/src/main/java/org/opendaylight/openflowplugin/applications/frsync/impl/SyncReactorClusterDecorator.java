@@ -15,7 +15,7 @@ import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
  * Decorator for cluster related issues.
  */
 public class SyncReactorClusterDecorator implements SyncReactor {
-
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorClusterDecorator.class);
+
     private final SyncReactor delegate;
     private final DeviceMastershipManager deviceMastershipManager;
 
@@ -35,14 +35,13 @@ public class SyncReactorClusterDecorator implements SyncReactor {
     }
 
     @Override
-    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+    public ListenableFuture<Boolean> syncup(final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath,
                                             final SyncupEntry syncupEntry) {
         final NodeId nodeId = PathUtil.digNodeId(flowcapableNodePath);
         if (!deviceMastershipManager.isDeviceMastered(nodeId)) {
             LOG.debug("Skip syncup since not master for: {}", nodeId.getValue());
             return Futures.immediateFuture(Boolean.TRUE);
-        } else {
-            return delegate.syncup(flowcapableNodePath, syncupEntry);
         }
+        return delegate.syncup(flowcapableNodePath, syncupEntry);
     }
 }

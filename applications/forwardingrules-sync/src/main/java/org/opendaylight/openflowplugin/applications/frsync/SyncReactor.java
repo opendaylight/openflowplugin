@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frsync;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Device synchronization API.
@@ -23,5 +23,6 @@ public interface SyncReactor {
      * @param syncupEntry configured node + device reflection
      * @return synchronization outcome
      */
-    ListenableFuture<Boolean> syncup(InstanceIdentifier<FlowCapableNode> flowcapableNodePath, SyncupEntry syncupEntry);
+    ListenableFuture<Boolean> syncup(DataObjectIdentifier<FlowCapableNode> flowcapableNodePath,
+        SyncupEntry syncupEntry);
 }

@@ -19,8 +19,7 @@ import org.opendaylight.openflowplugin.applications.frsync.dao.FlowCapableNodeSn
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +53,8 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
     @Override
     protected Optional<ListenableFuture<Boolean>> processNodeModification(
             final DataTreeModification<FlowCapableNode> modification) {
-        final InstanceIdentifier<FlowCapableNode> nodePath = modification.getRootPath().path();
-        final NodeId nodeId = PathUtil.digNodeId(nodePath);
+        final var nodePath = modification.path();
+        final var nodeId = PathUtil.digNodeId(nodePath);
 
         configSnapshot.updateCache(nodeId, Optional.ofNullable(modification.getRootNode().dataAfter()));
 
@@ -84,13 +83,12 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * If node was added to config DS and it is already present in operational DS (connected) diff between current
      * new configuration and actual configuration (seen in operational) should be calculated and sent to device.
      */
-    private ListenableFuture<Boolean> onNodeAdded(final InstanceIdentifier<FlowCapableNode> nodePath,
+    private ListenableFuture<Boolean> onNodeAdded(final DataObjectIdentifier<FlowCapableNode> nodePath,
                                                   final FlowCapableNode dataAfter,
                                                   final FlowCapableNode operationalNode) {
         LOG.debug("Reconciliation {}: {}", dsType(), PathUtil.digNodeId(nodePath).getValue());
-        final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), operationalNode,
-                LogicalDatastoreType.OPERATIONAL);
-        return reactor.syncup(nodePath, syncupEntry);
+        return reactor.syncup(nodePath,
+            new SyncupEntry(dataAfter, dsType(), operationalNode, LogicalDatastoreType.OPERATIONAL));
     }
 
     /**
@@ -100,21 +98,19 @@ public class SimplifiedConfigListener extends AbstractFrmSyncListener<FlowCapabl
      * system which is updating operational store (that components is also trying to solve
      * scale/performance issues on several layers).
      */
-    private ListenableFuture<Boolean> onNodeUpdated(final InstanceIdentifier<FlowCapableNode> nodePath,
+    private ListenableFuture<Boolean> onNodeUpdated(final DataObjectIdentifier<FlowCapableNode> nodePath,
                                                     final FlowCapableNode dataBefore,
                                                     final FlowCapableNode dataAfter) {
-        final SyncupEntry syncupEntry = new SyncupEntry(dataAfter, dsType(), dataBefore, dsType());
-        return reactor.syncup(nodePath, syncupEntry);
+        return reactor.syncup(nodePath, new SyncupEntry(dataAfter, dsType(), dataBefore, dsType()));
     }
 
     /**
      * Remove values that are being deleted in the config from the switch.
      * Note, this could be probably optimized using dedicated wipe-out RPC.
      */
-    private ListenableFuture<Boolean> onNodeDeleted(final InstanceIdentifier<FlowCapableNode> nodePath,
+    private ListenableFuture<Boolean> onNodeDeleted(final DataObjectIdentifier<FlowCapableNode> nodePath,
                                                     final FlowCapableNode dataBefore) {
-        final SyncupEntry syncupEntry = new SyncupEntry(null, dsType(), dataBefore, dsType());
-        return reactor.syncup(nodePath, syncupEntry);
+        return reactor.syncup(nodePath, new SyncupEntry(null, dsType(), dataBefore, dsType()));
     }
 
     @Override

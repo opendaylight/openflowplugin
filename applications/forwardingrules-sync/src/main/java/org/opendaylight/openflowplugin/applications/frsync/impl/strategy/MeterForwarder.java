@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.OriginalMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,34 +49,34 @@ public class MeterForwarder
     }
 
     @Override
-    public ListenableFuture<RpcResult<RemoveMeterOutput>> remove(final InstanceIdentifier<Meter> identifier,
-            final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> remove(final DataObjectIdentifier<Meter> identifier,
+            final Meter removeDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter REMOVE request [Tbl id, node Id {} {}", identifier, nodeIdent);
         return removeMeter.invoke(new RemoveMeterInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setMeterRef(new MeterRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
             .build());
     }
 
     @Override
-    public ListenableFuture<RpcResult<UpdateMeterOutput>> update(final InstanceIdentifier<Meter> identifier,
-            final Meter original, final Meter update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<UpdateMeterOutput>> update(final DataObjectIdentifier<Meter> identifier,
+            final Meter original, final Meter update, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter UPDATE request [Tbl id, node Id {} {} {}", identifier, nodeIdent, update);
         return updateMeter.invoke(new UpdateMeterInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setMeterRef(new MeterRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
             .setUpdatedMeter(new UpdatedMeterBuilder(update).build())
             .setOriginalMeter(new OriginalMeterBuilder(original).build())
             .build());
     }
 
     @Override
-    public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
-            final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> add(final DataObjectIdentifier<Meter> identifier,
+            final Meter addDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Received the Meter ADD request [Tbl id, node Id {} {} {}", identifier, nodeIdent, addDataObj);
         return addMeter.invoke(new AddMeterInputBuilder(addDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setMeterRef(new MeterRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
             .build());
     }
 }

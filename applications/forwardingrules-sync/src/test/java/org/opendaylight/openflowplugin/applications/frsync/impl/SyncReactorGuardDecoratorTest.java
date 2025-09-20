@@ -22,17 +22,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link SyncReactorGuardDecorator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorGuardDecoratorTest {
-
     private static final NodeId NODE_ID = new NodeId("test-node");
+
     private SyncReactorGuardDecorator reactor;
-    private InstanceIdentifier<FlowCapableNode> fcNodePath;
+    private DataObjectIdentifier<FlowCapableNode> fcNodePath;
 
     @Mock
     private SyncReactor delegate;
@@ -46,9 +46,10 @@ public class SyncReactorGuardDecoratorTest {
     @Before
     public void setUp() {
         reactor = new SyncReactorGuardDecorator(delegate);
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(NODE_ID));
-        fcNodePath = nodePath.augmentation(FlowCapableNode.class);
+        fcNodePath = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID))
+            .augmentation(FlowCapableNode.class)
+            .build();
 
         final Node operationalNode = Mockito.mock(Node.class);
         Mockito.lenient().when(operationalNode.getId()).thenReturn(NODE_ID);

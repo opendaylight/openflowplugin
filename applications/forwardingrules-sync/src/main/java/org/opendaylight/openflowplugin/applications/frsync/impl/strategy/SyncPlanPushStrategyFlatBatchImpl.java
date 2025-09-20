@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
 import org.opendaylight.openflowplugin.applications.frsync.util.ItemSyncBox;
-import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.ReconcileUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncCrudCounters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatch;
@@ -88,6 +87,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.OriginalBatchedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.input.update.grouping.UpdatedBatchedGroupBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
 import org.opendaylight.yangtools.binding.util.BindingMap;
@@ -147,7 +147,7 @@ public class SyncPlanPushStrategyFlatBatchImpl implements SyncPlanPushStrategy {
             LOG.trace("Index of last batch step: {}", batchOrder);
 
             final var rpcResultFuture = processFlatBatch.invoke(new ProcessFlatBatchInputBuilder()
-                .setNode(new NodeRef(PathUtil.digNodePath(diffInput.getNodeIdent()).toIdentifier()))
+                .setNode(new NodeRef(diffInput.getNodeIdent().trimTo(Node.class)))
                 // TODO: propagate from input
                 .setExitOnFirstError(false)
                 .setBatch(BindingMap.ordered(batchBag))

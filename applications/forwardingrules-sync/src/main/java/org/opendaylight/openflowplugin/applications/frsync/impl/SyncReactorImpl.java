@@ -37,7 +37,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -58,7 +58,7 @@ public class SyncReactorImpl implements SyncReactor {
     }
 
     @Override
-    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+    public ListenableFuture<Boolean> syncup(final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                             final SyncupEntry syncupEntry) {
         final NodeId nodeId = PathUtil.digNodeId(nodeIdent);
         FlowCapableNode configTree = syncupEntry.getAfter();

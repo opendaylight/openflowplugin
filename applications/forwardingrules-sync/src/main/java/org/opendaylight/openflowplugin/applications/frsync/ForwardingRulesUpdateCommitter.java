@@ -10,17 +10,16 @@ package org.opendaylight.openflowplugin.applications.frsync;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Represents a configuration item update-contract for device.
  */
 public interface ForwardingRulesUpdateCommitter<D extends DataObject, U extends DataObject> {
-
     /**
      * Method updates the original DataObject to the update DataObject
-     * in device. Both are identified by same InstanceIdentifier
+     * in device. Both are identified by same DataObjectIdentifier
      *
      * @param identifier - the whole path to DataObject
      * @param original   - original DataObject (for update)
@@ -28,8 +27,6 @@ public interface ForwardingRulesUpdateCommitter<D extends DataObject, U extends 
      * @param nodeIdent  - Node InstanceIdentifier
      * @return RpcResult of action
      */
-    ListenableFuture<RpcResult<U>> update(InstanceIdentifier<D> identifier, D original, D update,
-                                InstanceIdentifier<FlowCapableNode> nodeIdent);
-
-
+    ListenableFuture<RpcResult<U>> update(DataObjectIdentifier<D> identifier, D original, D update,
+        DataObjectIdentifier<FlowCapableNode> nodeIdent);
 }

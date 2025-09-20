@@ -23,7 +23,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -102,12 +101,9 @@ public class SimplifiedOperationalListenerTest {
         final var nodePath = DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(NODE_ID)).build();
         fcNodePath = nodePath.toBuilder().augmentation(FlowCapableNode.class).build();
 
-        final DataTreeIdentifier<Node> dataTreeIdentifier =
-                DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, nodePath);
-
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.when(operationalNode.getId()).thenReturn(NODE_ID);
-        Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
+        Mockito.when(dataTreeModification.path()).thenReturn(nodePath);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
         Mockito.when(operationalNode.augmentation(FlowCapableNode.class)).thenReturn(fcOperationalNode);
     }
@@ -219,7 +215,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verify(roTx).close();
     }
 
@@ -234,7 +230,7 @@ public class SimplifiedOperationalListenerTest {
 
         nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verify(roTx).close();
     }
 

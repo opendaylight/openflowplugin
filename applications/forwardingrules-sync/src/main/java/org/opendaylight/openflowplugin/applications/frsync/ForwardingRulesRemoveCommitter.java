@@ -5,22 +5,20 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frsync;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Represents a configuration item remove-contract for device.
  */
 public interface ForwardingRulesRemoveCommitter<D extends DataObject, R extends DataObject> {
-
     /**
-     * Method removes DataObject which is identified by InstanceIdentifier
+     * Method removes DataObject which is identified by DataObjectIdentifier
      * from device.
      *
      * @param identifier - the whole path to DataObject
@@ -28,7 +26,6 @@ public interface ForwardingRulesRemoveCommitter<D extends DataObject, R extends 
      * @param nodeIdent  - Node InstanceIdentifier
      * @return RpcResult of action
      */
-    ListenableFuture<RpcResult<R>> remove(InstanceIdentifier<D> identifier, D del,
-            InstanceIdentifier<FlowCapableNode> nodeIdent);
-
+    ListenableFuture<RpcResult<R>> remove(DataObjectIdentifier<D> identifier, D del,
+        DataObjectIdentifier<FlowCapableNode> nodeIdent);
 }

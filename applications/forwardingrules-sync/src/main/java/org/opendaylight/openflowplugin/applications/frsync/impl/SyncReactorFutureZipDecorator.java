@@ -18,14 +18,14 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.SemaphoreKeeperGuavaImpl;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Enriches {@link SyncReactorFutureDecorator} with state compression.
  */
 public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
-    private final Map<InstanceIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
-    private final SemaphoreKeeper<InstanceIdentifier<FlowCapableNode>> semaphoreKeeper =
+    private final Map<DataObjectIdentifier<FlowCapableNode>, SyncupEntry> compressionQueue = new HashMap<>();
+    private final SemaphoreKeeper<DataObjectIdentifier<FlowCapableNode>> semaphoreKeeper =
             new SemaphoreKeeperGuavaImpl<>(1, true);
 
     public SyncReactorFutureZipDecorator(final SyncReactor delegate, final Executor executor) {
@@ -33,7 +33,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     @Override
-    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+    public ListenableFuture<Boolean> syncup(final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath,
             final SyncupEntry syncupEntry) {
         Semaphore guard = null;
         try {
@@ -52,14 +52,13 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
     }
 
     @Override
-    protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-            final SyncupEntry syncupEntry) {
+    protected ListenableFuture<Boolean> doSyncupInFuture(
+            final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath, final SyncupEntry syncupEntry) {
         final var lastCompressionState = removeLastCompressionState(flowcapableNodePath);
         if (lastCompressionState == null) {
             return Futures.immediateFuture(Boolean.TRUE);
-        } else {
-            return super.doSyncupInFuture(flowcapableNodePath, lastCompressionState);
         }
+        return super.doSyncupInFuture(flowcapableNodePath, lastCompressionState);
     }
 
     /**
@@ -67,7 +66,7 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
      * coming - update the entry in compression queue (zip). Create new (no entry in queue for device) or replace
      * entry (config vs. operational is coming) in queue otherwise.
      */
-    private boolean updateCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+    private boolean updateCompressionState(final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath,
             final SyncupEntry syncupEntry) {
         final var previousEntry = compressionQueue.get(flowcapableNodePath);
         if (previousEntry != null && syncupEntry.isOptimizedConfigDelta()) {
@@ -78,13 +77,13 @@ public class SyncReactorFutureZipDecorator extends SyncReactorFutureDecorator {
         return previousEntry == null;
     }
 
-    private void updateOptimizedConfigDelta(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+    private void updateOptimizedConfigDelta(final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath,
             final SyncupEntry actual, final SyncupEntry previous) {
         compressionQueue.put(flowcapableNodePath, new SyncupEntry(actual.getAfter(), actual.getDsTypeAfter(),
             previous.getBefore(), previous.getDsTypeBefore()));
     }
 
-    private SyncupEntry removeLastCompressionState(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath) {
+    private SyncupEntry removeLastCompressionState(final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath) {
         Semaphore guard = null;
         try {
             guard = semaphoreKeeper.summonGuardAndAcquire(flowcapableNodePath);

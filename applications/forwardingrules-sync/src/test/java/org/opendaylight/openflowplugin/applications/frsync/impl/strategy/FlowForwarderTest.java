@@ -54,9 +54,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -78,12 +77,13 @@ public class FlowForwarderTest {
             .setMatch(emptyMatch)
             .build();
 
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodePath = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, s1Key);
-    private final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = nodePath
-            .augmentation(FlowCapableNode.class);
-    private final InstanceIdentifier<Table> tableII = flowCapableNodePath.child(Table.class, tableKey);
-    private final InstanceIdentifier<Flow> flowPath = tableII.child(Flow.class, flowKey);
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> nodePath =
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, s1Key).build();
+    private final DataObjectIdentifier<FlowCapableNode> flowCapableNodePath =
+        nodePath.toBuilder().augmentation(FlowCapableNode.class).build();
+    private final DataObjectIdentifier<Table> tableII =
+        flowCapableNodePath.toBuilder().child(Table.class, tableKey).build();
+    private final DataObjectIdentifier<Flow> flowPath = tableII.toBuilder().child(Flow.class, flowKey).build();
 
     private FlowForwarder flowForwarder;
 

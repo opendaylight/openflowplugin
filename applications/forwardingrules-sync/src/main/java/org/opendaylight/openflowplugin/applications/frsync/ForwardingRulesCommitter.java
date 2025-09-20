@@ -17,4 +17,3 @@ public interface ForwardingRulesCommitter<D extends DataObject, A extends DataOb
     U extends DataObject> extends ForwardingRulesAddCommitter<D, A>,
         ForwardingRulesRemoveCommitter<D, R>, ForwardingRulesUpdateCommitter<D, U> {
 }
-

@@ -43,8 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -65,11 +64,12 @@ public class GroupForwarderTest {
             .setBuckets(new BucketsBuilder().build())
             .build();
 
-    private final KeyedInstanceIdentifier<Node, NodeKey> nodePath = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, s1Key);
-    private final InstanceIdentifier<FlowCapableNode> flowCapableNodePath = nodePath
-            .augmentation(FlowCapableNode.class);
-    private final InstanceIdentifier<Group> groupPath = flowCapableNodePath.child(Group.class, groupKey);
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> nodePath =
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, s1Key).build();
+    private final DataObjectIdentifier<FlowCapableNode> flowCapableNodePath =
+        nodePath.toBuilder().augmentation(FlowCapableNode.class).build();
+    private final DataObjectIdentifier<Group> groupPath =
+        flowCapableNodePath.toBuilder().child(Group.class, groupKey).build();
 
     @Mock
     private RpcService rpcConsumerRegistry;

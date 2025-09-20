@@ -15,14 +15,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.me
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Wraps all the required inputs (diffs) for synchronization strategy execution.
  */
 public class SynchronizationDiffInput {
-
-    private final InstanceIdentifier<FlowCapableNode> nodeIdent;
+    private final DataObjectIdentifier<FlowCapableNode> nodeIdent;
     private final List<ItemSyncBox<Group>> groupsToAddOrUpdate;
     private final ItemSyncBox<Meter> metersToAddOrUpdate;
     private final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate;
@@ -30,7 +29,7 @@ public class SynchronizationDiffInput {
     private final ItemSyncBox<Meter> metersToRemove;
     private final List<ItemSyncBox<Group>> groupsToRemove;
 
-    public SynchronizationDiffInput(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+    public SynchronizationDiffInput(final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                     final List<ItemSyncBox<Group>> groupsToAddOrUpdate,
                                     final ItemSyncBox<Meter> metersToAddOrUpdate,
                                     final Map<TableKey, ItemSyncBox<Flow>> flowsToAddOrUpdate,
@@ -46,7 +45,7 @@ public class SynchronizationDiffInput {
         this.groupsToRemove = groupsToRemove;
     }
 
-    public InstanceIdentifier<FlowCapableNode> getNodeIdent() {
+    public DataObjectIdentifier<FlowCapableNode> getNodeIdent() {
         return nodeIdent;
     }
 

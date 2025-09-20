@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,11 +44,11 @@ import org.slf4j.LoggerFactory;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorFutureZipDecoratorTest {
-
     private static final Logger LOG = LoggerFactory.getLogger(SyncReactorFutureZipDecoratorTest.class);
     private static final NodeId NODE_ID = new NodeId("testNode");
+
     private SyncReactorFutureZipDecorator reactor;
-    private InstanceIdentifier<FlowCapableNode> fcNodePath;
+    private DataObjectIdentifier<FlowCapableNode> fcNodePath;
     private ListeningExecutorService syncThreadPool;
     private final LogicalDatastoreType configDS = LogicalDatastoreType.CONFIGURATION;
     private final LogicalDatastoreType operationalDS = LogicalDatastoreType.OPERATIONAL;
@@ -67,8 +67,10 @@ public class SyncReactorFutureZipDecoratorTest {
                 .build());
         syncThreadPool = MoreExecutors.listeningDecorator(executorService);
         reactor = new SyncReactorFutureZipDecorator(delegate, syncThreadPool);
-        fcNodePath = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(NODE_ID))
-                .augmentation(FlowCapableNode.class);
+        fcNodePath = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID))
+            .augmentation(FlowCapableNode.class)
+            .build();
     }
 
     @Test

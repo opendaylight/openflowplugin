@@ -18,7 +18,7 @@ import org.opendaylight.openflowplugin.applications.frsync.SyncReactor;
 import org.opendaylight.openflowplugin.applications.frsync.util.PathUtil;
 import org.opendaylight.openflowplugin.applications.frsync.util.SyncupEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public class SyncReactorFutureDecorator implements SyncReactor {
     }
 
     @Override
-    public ListenableFuture<Boolean> syncup(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
+    public ListenableFuture<Boolean> syncup(final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath,
             final SyncupEntry syncupEntry) {
         final var nodeId = PathUtil.digNodeId(flowcapableNodePath);
         return Futures.submit(() -> {
@@ -50,8 +50,8 @@ public class SyncReactorFutureDecorator implements SyncReactor {
         }, executor);
     }
 
-    protected ListenableFuture<Boolean> doSyncupInFuture(final InstanceIdentifier<FlowCapableNode> flowcapableNodePath,
-            final SyncupEntry syncupEntry) {
+    protected ListenableFuture<Boolean> doSyncupInFuture(
+            final DataObjectIdentifier<FlowCapableNode> flowcapableNodePath, final SyncupEntry syncupEntry) {
         return delegate.syncup(flowcapableNodePath, syncupEntry);
     }
 }

@@ -35,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -121,9 +121,9 @@ public final class ReconcileUtil {
      * @return async barrier result
      */
     public static AsyncFunction<RpcResult<Void>, RpcResult<Void>> chainBarrierFlush(
-            final InstanceIdentifier<Node> nodeIdent, final SendBarrier sendBarrier) {
+            final DataObjectIdentifier<Node> nodeIdent, final SendBarrier sendBarrier) {
         return input -> Futures.transformAsync(sendBarrier.invoke(new SendBarrierInputBuilder()
-            .setNode(new NodeRef(nodeIdent.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent))
             .build()),
             result -> result.isSuccessful() ? Futures.immediateFuture(RpcResultBuilder.<Void>success().build())
                 : Futures.immediateFailedFuture(null),

@@ -58,7 +58,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -71,9 +71,10 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public class SyncPlanPushStrategyFlatBatchImplTest {
 
     private static final NodeId NODE_ID = new NodeId("ut-node-id");
-    private static final InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
+    private static final DataObjectIdentifier<FlowCapableNode> NODE_IDENT = DataObjectIdentifier.builder(Nodes.class)
             .child(Node.class, new NodeKey(NODE_ID))
-            .augmentation(FlowCapableNode.class);
+            .augmentation(FlowCapableNode.class)
+            .build();
     @Mock
     private ProcessFlatBatch processFlatBatch;
     @Mock

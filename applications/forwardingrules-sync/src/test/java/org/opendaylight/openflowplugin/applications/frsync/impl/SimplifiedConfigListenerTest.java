@@ -20,7 +20,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -77,11 +76,8 @@ public class SimplifiedConfigListenerTest {
             .augmentation(FlowCapableNode.class)
             .build();
 
-        final DataTreeIdentifier<FlowCapableNode> dataTreeIdentifier =
-                DataTreeIdentifier.of(LogicalDatastoreType.CONFIGURATION, fcNodePath);
-
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
-        Mockito.when(dataTreeModification.getRootPath()).thenReturn(dataTreeIdentifier);
+        Mockito.when(dataTreeModification.path()).thenReturn(fcNodePath);
         Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
     }
 
@@ -99,7 +95,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }
@@ -112,7 +108,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }
@@ -125,7 +121,7 @@ public class SimplifiedConfigListenerTest {
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
 
-        Mockito.verify(reactor).syncup(fcNodePath.toLegacy(), syncupEntry);
+        Mockito.verify(reactor).syncup(fcNodePath, syncupEntry);
         Mockito.verifyNoMoreInteractions(reactor);
         Mockito.verify(roTx).close();
     }

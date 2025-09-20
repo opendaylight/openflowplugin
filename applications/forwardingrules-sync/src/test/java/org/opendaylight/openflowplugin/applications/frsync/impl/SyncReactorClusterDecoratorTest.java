@@ -21,17 +21,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * Test for {@link SyncReactorClusterDecorator}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SyncReactorClusterDecoratorTest {
-
     private static final NodeId NODE_ID = new NodeId("test-node");
+
     private SyncReactorClusterDecorator reactor;
-    private InstanceIdentifier<FlowCapableNode> fcNodePath;
+    private DataObjectIdentifier<FlowCapableNode> fcNodePath;
 
     @Mock
     private SyncReactor delegate;
@@ -44,9 +44,9 @@ public class SyncReactorClusterDecoratorTest {
     public void setUp() {
         reactor = new SyncReactorClusterDecorator(delegate, deviceMastershipManager);
 
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(NODE_ID));
-        fcNodePath = nodePath.augmentation(FlowCapableNode.class);
+        fcNodePath = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID)).augmentation(FlowCapableNode.class)
+            .build();
     }
 
     @Test
@@ -67,5 +67,4 @@ public class SyncReactorClusterDecoratorTest {
 
         Mockito.verifyNoMoreInteractions(delegate);
     }
-
 }

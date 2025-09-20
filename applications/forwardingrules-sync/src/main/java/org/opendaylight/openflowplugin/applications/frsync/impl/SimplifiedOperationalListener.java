@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -150,18 +150,18 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
 
         if (nodeConfiguration.isPresent()) {
             LOG.debug("Reconciliation {}: {}", dsType(), nodeId.getValue());
-            final InstanceIdentifier<FlowCapableNode> nodePath = InstanceIdentifier.create(Nodes.class)
+            final var nodePath = DataObjectIdentifier.builder(Nodes.class)
                     .child(Node.class, new NodeKey(ModificationUtil.nodeId(modification)))
-                    .augmentation(FlowCapableNode.class);
+                    .augmentation(FlowCapableNode.class)
+                    .build();
             final FlowCapableNode fcOperationalNode = ModificationUtil.flowCapableNodeAfter(modification);
             final SyncupEntry syncupEntry = new SyncupEntry(nodeConfiguration.orElseThrow(),
                 LogicalDatastoreType.CONFIGURATION, fcOperationalNode, dsType());
             return Optional.of(reactor.syncup(nodePath, syncupEntry));
-        } else {
-            LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());
-            reconciliationRegistry.unregisterIfRegistered(nodeId);
-            return skipModification(modification);
         }
+        LOG.debug("Config not present for reconciliation: {}", nodeId.getValue());
+        reconciliationRegistry.unregisterIfRegistered(nodeId);
+        return skipModification(modification);
     }
 
     /**
@@ -171,7 +171,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
      * @return status of modification
      */
     private boolean isConsistentForReconcile(final DataTreeModification<Node> modification) {
-        final NodeId nodeId = PathUtil.digNodeId(modification.getRootPath().path());
+        final NodeId nodeId = PathUtil.digNodeId(modification.path());
         final FlowCapableStatisticsGatheringStatus gatheringStatus = modification.getRootNode().dataAfter()
                 .augmentation(FlowCapableStatisticsGatheringStatus.class);
 

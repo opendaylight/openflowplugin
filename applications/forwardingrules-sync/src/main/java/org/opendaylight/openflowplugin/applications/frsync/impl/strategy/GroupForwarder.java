@@ -26,7 +26,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.Group
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,35 +49,35 @@ public class GroupForwarder
     }
 
     @Override
-    public ListenableFuture<RpcResult<RemoveGroupOutput>> remove(final InstanceIdentifier<Group> identifier,
-            final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> remove(final DataObjectIdentifier<Group> identifier,
+            final Group removeDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Table REMOVE request [Tbl id, node Id {} {}", identifier, nodeIdent);
         return removeGroupRpc.invoke(new RemoveGroupInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setGroupRef(new GroupRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
             // fix group removal - no buckets allowed
             .setBuckets(null).build());
     }
 
     @Override
-    public ListenableFuture<RpcResult<UpdateGroupOutput>> update(final InstanceIdentifier<Group> identifier,
-            final Group original, final Group update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<UpdateGroupOutput>> update(final DataObjectIdentifier<Group> identifier,
+            final Group original, final Group update, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group UPDATE request [Tbl id, node Id {} {} {}", identifier, nodeIdent, update);
         return updateGroupRpc.invoke(new UpdateGroupInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setGroupRef(new GroupRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
             .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
             .setOriginalGroup(new OriginalGroupBuilder(original).build())
             .build());
     }
 
     @Override
-    public ListenableFuture<RpcResult<AddGroupOutput>> add(final InstanceIdentifier<Group> identifier,
-            final Group addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<AddGroupOutput>> add(final DataObjectIdentifier<Group> identifier,
+            final Group addDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.trace("Forwarding Group ADD request [Tbl id, node Id {} {} {}", identifier, nodeIdent, addDataObj);
         return addGroupRpc.invoke(new AddGroupInputBuilder(addDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setGroupRef(new GroupRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
             .build());
     }
 }

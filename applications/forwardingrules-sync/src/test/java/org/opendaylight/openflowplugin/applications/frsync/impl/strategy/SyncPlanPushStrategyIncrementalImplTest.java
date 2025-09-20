@@ -55,8 +55,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -69,8 +69,10 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public class SyncPlanPushStrategyIncrementalImplTest {
 
     private static final NodeId NODE_ID = new NodeId("unit-nodeId");
-    private static final InstanceIdentifier<FlowCapableNode> NODE_IDENT = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(NODE_ID)).augmentation(FlowCapableNode.class);
+    private static final DataObjectIdentifier<FlowCapableNode> NODE_IDENT = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID))
+            .augmentation(FlowCapableNode.class)
+            .build();
 
     private SyncPlanPushStrategyIncrementalImpl syncPlanPushStrategy;
 
