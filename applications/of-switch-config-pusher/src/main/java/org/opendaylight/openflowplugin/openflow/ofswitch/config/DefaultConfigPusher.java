@@ -17,7 +17,6 @@ import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -30,8 +29,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -54,9 +54,9 @@ public final class DefaultConfigPusher implements AutoCloseable, DataTreeChangeL
             @Reference final DeviceOwnershipService deviceOwnershipService) {
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
         setConfig = rpcService.getRpc(SetConfig.class);
-        reg = dataBroker.registerTreeChangeListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
+        reg = dataBroker.registerTreeChangeListener(LogicalDatastoreType.OPERATIONAL,
+            DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build(),
+            this);
         LOG.info("DefaultConfigPusher has started.");
     }
 
@@ -71,13 +71,12 @@ public final class DefaultConfigPusher implements AutoCloseable, DataTreeChangeL
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
             if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
-                final var nodeId = modification.getRootPath().path().firstKeyOf(Node.class).getId().getValue();
+                final var nodeId = modification.path().getFirstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     LoggingFutures.addErrorLogging(setConfig.invoke(new SetConfigInputBuilder()
                         .setFlag(SwitchConfigFlag.FRAGNORMAL.toString())
                         .setMissSearchLength(OFConstants.OFPCML_NO_BUFFER)
-                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)
-                            .toIdentifier()))
+                        .setNode(new NodeRef(((DataObjectIdentifier<?>) modification.path()).trimTo(Node.class)))
                         .build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip setting config", nodeId);

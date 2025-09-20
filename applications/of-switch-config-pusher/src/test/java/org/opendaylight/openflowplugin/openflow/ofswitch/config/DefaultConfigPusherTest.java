@@ -26,10 +26,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -40,8 +38,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfig;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.module.config.rev141015.SetConfigInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.SwitchConfigFlag;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
 /**
@@ -50,8 +48,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultConfigPusherTest {
     private DefaultConfigPusher defaultConfigPusher;
-    private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("testnode:1")));
+    private static final DataObjectIdentifier<Node> NODE_IID = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("testnode:1")))
+            .build();
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -74,12 +73,10 @@ public class DefaultConfigPusherTest {
     @Before
     public void setUp() {
         doReturn(RpcResultBuilder.success().buildFuture()).when(setConfig).invoke(any());
-        doReturn(reg).when(dataBroker).registerTreeChangeListener(any(), any());
+        doReturn(reg).when(dataBroker).registerTreeChangeListener(any(), any(), any());
         doReturn(setConfig).when(rpcService).getRpc(any());
         defaultConfigPusher = new DefaultConfigPusher(dataBroker, rpcService, deviceOwnershipService);
-        final var identifier = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
-            NODE_IID.augmentation(FlowCapableNode.class));
-        when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        when(dataTreeModification.path()).thenReturn(NODE_IID.toBuilder().augmentation(FlowCapableNode.class).build());
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataTreeModification.getRootNode().modificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
