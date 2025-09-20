@@ -29,8 +29,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.I
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.service.component.annotations.Activate;
@@ -117,7 +117,7 @@ public final class DropTestCommiterImpl extends AbstractDropTest implements Drop
     }
 
     @Override
-    protected void processPacket(final InstanceIdentifier<Node> node, final Match match,
+    protected void processPacket(final DataObjectIdentifier<Node> node, final Match match,
             final Instructions instructions) {
 
         // Finally build our flow
@@ -127,7 +127,7 @@ public final class DropTestCommiterImpl extends AbstractDropTest implements Drop
         fb.setId(new FlowId(String.valueOf(fb.hashCode()) + "." + idCounter.getAndIncrement()));
 
         // Construct the flow instance id
-        final var flowInstanceId = node.toIdentifier().toBuilder()
+        final var flowInstanceId = node.toBuilder()
             // That is flow capable, only FlowCapableNodes have tables
             .augmentation(FlowCapableNode.class)
             // In the table identified by TableKey
