@@ -8,6 +8,7 @@
 
 package org.opendaylight.openflowplugin.learningswitch;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.TableKey;
@@ -20,8 +21,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.binding.BindingInstanceIdentifier;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.binding.PropertyIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -87,11 +86,8 @@ public final class InstanceIdentifierUtils {
     /**
      * Extracts NodeConnectorKey from node connector path.
      */
-    public static NodeConnectorKey getNodeConnectorKey(final BindingInstanceIdentifier nodeConnectorPath) {
-        return switch (nodeConnectorPath) {
-            case DataObjectIdentifier<?> doi -> doi.toLegacy().firstKeyOf(NodeConnector.class);
-            case PropertyIdentifier<?, ?> pi -> throw new IllegalArgumentException("Unexpected " + pi);
-        };
+    public static @NonNull NodeConnectorKey getNodeConnectorKey(final BindingInstanceIdentifier nodeConnectorPath) {
+        return nodeConnectorPath.getFirstKeyOf(NodeConnector.class);
     }
 
     public static InstanceIdentifier<NodeConnector> createNodeConnectorPath(final InstanceIdentifier<Node> nodeKey,
