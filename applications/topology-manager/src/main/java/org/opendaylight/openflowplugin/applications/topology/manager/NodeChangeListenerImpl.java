@@ -21,7 +21,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -40,8 +41,10 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
             @Reference final OperationProcessor operationProcessor) {
         // TODO: listener on FlowCapableNode. what if node id in Node.class is changed (it won't be caught by this
         // listener)
-        super(operationProcessor, dataBroker,
-              InstanceIdentifier.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build());
+        super(operationProcessor, dataBroker, DataObjectReference.builder(Nodes.class)
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .build());
     }
 
     @Override
@@ -72,7 +75,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private void processRemovedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final var iiToNodeInInventory = modification.path().toLegacy();
+        final var iiToNodeInInventory = modification.path();
         final var nodeId = provideTopologyNodeId(iiToNodeInInventory);
         final var iiToTopologyRemovedNode = provideIIToTopologyNode(nodeId);
         if (iiToTopologyRemovedNode != null) {
@@ -86,7 +89,7 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
     }
 
     private void processAddedNode(final DataTreeModification<FlowCapableNode> modification) {
-        final var iiToNodeInInventory = modification.path().toLegacy();
+        final var iiToNodeInInventory = modification.path();
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
             final var iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
@@ -98,11 +101,11 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
 
     private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
             .topology.topology.Node prepareTopologyNode(final NodeId nodeIdInTopology,
-                final InstanceIdentifier<FlowCapableNode> iiToNodeInInventory) {
+                final DataObjectIdentifier<FlowCapableNode> iiToNodeInInventory) {
         return new NodeBuilder()
             .setNodeId(nodeIdInTopology)
             .addAugmentation(new InventoryNodeBuilder()
-                .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.firstIdentifierOf(Node.class).toIdentifier()))
+                .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.trimTo(Node.class)))
                 .build())
             .build();
     }

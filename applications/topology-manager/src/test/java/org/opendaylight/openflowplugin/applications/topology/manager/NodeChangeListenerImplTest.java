@@ -174,7 +174,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         assertEquals("getNodeId", expNodeId, mergedNode.getValue().getNodeId());
         InventoryNode augmentation = mergedNode.getValue().augmentation(InventoryNode.class);
         assertNotNull("Missing augmentation", augmentation);
-        assertEquals("getInventoryNodeRef", new NodeRef(invNodeID.toIdentifier()), augmentation.getInventoryNodeRef());
+        assertEquals("getInventoryNodeRef", new NodeRef(invNodeID), augmentation.getInventoryNodeRef());
     }
 
 }

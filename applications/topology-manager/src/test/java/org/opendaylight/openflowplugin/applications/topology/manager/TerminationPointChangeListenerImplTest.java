@@ -200,13 +200,13 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
             .child(Node.class, new NodeKey(expNodeId))
             .child(TerminationPoint.class, new TerminationPointKey(expTpId))
             .build();
-        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath.toIdentifier()),
+        verify(mockTx).mergeParentStructureMerge(eq(LogicalDatastoreType.OPERATIONAL), eq(expTpPath),
                 mergedNode.capture());
         assertEquals("getTpId", expTpId, mergedNode.getValue().getTpId());
         InventoryNodeConnector augmentation = mergedNode.getValue().augmentation(
                 InventoryNodeConnector.class);
         assertNotNull("Missing augmentation", augmentation);
-        assertEquals("getInventoryNodeConnectorRef", new NodeConnectorRef(invNodeConnID.toIdentifier()),
+        assertEquals("getInventoryNodeConnectorRef", new NodeConnectorRef(invNodeConnID),
                 augmentation.getInventoryNodeConnectorRef());
     }
 

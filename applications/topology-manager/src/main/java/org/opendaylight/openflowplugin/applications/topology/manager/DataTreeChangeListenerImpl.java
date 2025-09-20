@@ -11,6 +11,7 @@ import static java.util.Objects.requireNonNull;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -25,8 +26,8 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataTreeChangeListener<T>,
         AutoCloseable {
@@ -40,7 +41,7 @@ abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataT
     @SuppressFBWarnings(value = "MC_OVERRIDABLE_METHOD_CALL_IN_CONSTRUCTOR",
         justification = "'this' passed to registerDataTreeChangeListener")
     DataTreeChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
-            final InstanceIdentifier<T> ii) {
+            final DataObjectReference<T> ii) {
         this.operationProcessor = requireNonNull(operationProcessor);
         listenerRegistration = dataBroker.registerDataTreeChangeListener(
             DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, ii), this);
@@ -60,7 +61,7 @@ abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataT
         return II_TO_TOPOLOGY.toBuilder().child(Node.class, new NodeKey(nodeIdInTopology)).build();
     }
 
-    final NodeId provideTopologyNodeId(final InstanceIdentifier<T> iiToNodeInInventory) {
+    final @Nullable NodeId provideTopologyNodeId(final DataObjectIdentifier<T> iiToNodeInInventory) {
         final var key = iiToNodeInInventory.firstKeyOf(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819
             .nodes.Node.class);
         return key == null ? null : new NodeId(key.getId().getValue());

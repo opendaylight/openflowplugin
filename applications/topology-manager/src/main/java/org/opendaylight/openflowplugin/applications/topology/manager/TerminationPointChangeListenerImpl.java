@@ -20,7 +20,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnectorBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -28,8 +27,9 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -46,9 +46,11 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     @Activate
     public TerminationPointChangeListenerImpl(@Reference final DataBroker dataBroker,
             @Reference final OperationProcessor operationProcessor) {
-        super(operationProcessor, dataBroker,
-              InstanceIdentifier.builder(Nodes.class).child(Node.class).child(NodeConnector.class)
-                      .augmentation(FlowCapableNodeConnector.class).build());
+        super(operationProcessor, dataBroker, DataObjectReference.builder(Nodes.class)
+            .child(Node.class)
+            .child(NodeConnector.class)
+            .augmentation(FlowCapableNodeConnector.class)
+            .build());
     }
 
     @Override
@@ -79,15 +81,13 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processRemovedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final var removedNode = modification.path().toLegacy();
+        final var removedNode = modification.path();
         final TpId terminationPointId = provideTopologyTerminationPointId(removedNode);
         final var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(terminationPointId, removedNode);
 
         if (iiToTopologyTerminationPoint != null) {
-            final var node = iiToTopologyTerminationPoint.toLegacy().firstIdentifierOf(
-                    org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-                            .topology.topology.Node.class)
-                .toIdentifier();
+            final var node = iiToTopologyTerminationPoint.trimTo(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang
+                .network.topology.rev131021.network.topology.topology.Node.class);
             operationProcessor.enqueueOperation(manager -> {
                 Optional<org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
                         .topology.topology.Node>
@@ -115,7 +115,7 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private void processAddedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final var iiToNodeInInventory = modification.path().toLegacy();
+        final var iiToNodeInInventory = modification.path();
         TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null) {
             var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
@@ -139,38 +139,31 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
     }
 
     private static TerminationPoint prepareTopologyTerminationPoint(final TpId terminationPointIdInTopology,
-            final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
+            final DataObjectIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
         return new TerminationPointBuilder()
             .setTpId(terminationPointIdInTopology)
             .addAugmentation(new InventoryNodeConnectorBuilder()
-                .setInventoryNodeConnectorRef(
-                    new NodeConnectorRef(iiToNodeInInventory.firstIdentifierOf(NodeConnector.class).toIdentifier()))
+                .setInventoryNodeConnectorRef(new NodeConnectorRef(iiToNodeInInventory.trimTo(NodeConnector.class)))
                 .build())
             .build();
     }
 
     private WithKey<TerminationPoint, TerminationPointKey> provideIIToTopologyTerminationPoint(
             final TpId terminationPointIdInTopology,
-            final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
+            final DataObjectIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
         NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (terminationPointIdInTopology != null && nodeIdInTopology != null) {
             return provideIIToTopologyNode(nodeIdInTopology).toBuilder()
                 .child(TerminationPoint.class, new TerminationPointKey(terminationPointIdInTopology))
                 .build();
-        } else {
-            LOG.debug(
-                "Value of termination point ID in topology is null. Instance identifier to topology cannot be built");
-            return null;
         }
-    }
-
-    private static TpId provideTopologyTerminationPointId(
-            final InstanceIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
-        NodeConnectorKey inventoryNodeConnectorKey = iiToNodeInInventory.firstKeyOf(NodeConnector.class);
-        if (inventoryNodeConnectorKey != null) {
-            return new TpId(inventoryNodeConnectorKey.getId().getValue());
-        }
+        LOG.debug("Value of termination point ID in topology is null. Instance identifier to topology cannot be built");
         return null;
     }
 
+    private static TpId provideTopologyTerminationPointId(
+            final DataObjectIdentifier<FlowCapableNodeConnector> iiToNodeInInventory) {
+        final var inventoryNodeConnectorKey = iiToNodeInInventory.firstKeyOf(NodeConnector.class);
+        return inventoryNodeConnectorKey == null ? null : new TpId(inventoryNodeConnectorKey.getId().getValue());
+    }
 }

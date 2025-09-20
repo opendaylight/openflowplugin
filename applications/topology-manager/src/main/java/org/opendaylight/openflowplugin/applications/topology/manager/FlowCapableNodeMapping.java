@@ -26,10 +26,6 @@ import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPoint;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.node.TerminationPointBuilder;
-import org.opendaylight.yangtools.binding.BindingInstanceIdentifier;
-import org.opendaylight.yangtools.binding.DataObjectReference;
-import org.opendaylight.yangtools.binding.EntryObject;
-import org.opendaylight.yangtools.binding.Key;
 
 public final class FlowCapableNodeMapping {
     private FlowCapableNodeMapping() {
@@ -37,20 +33,15 @@ public final class FlowCapableNodeMapping {
     }
 
     public static NodeKey getNodeKey(final NodeRef ref) {
-        return firstKeyOf(ref.getValue(), Node.class);
+        return ref.getValue().firstKeyOf(Node.class);
     }
 
     public static NodeKey getNodeKey(final NodeConnectorRef ref) {
-        return firstKeyOf(ref.getValue(), Node.class);
+        return ref.getValue().firstKeyOf(Node.class);
     }
 
     public static NodeConnectorKey getNodeConnectorKey(final NodeConnectorRef ref) {
-        return firstKeyOf(ref.getValue(), NodeConnector.class);
-    }
-
-    private static <T extends EntryObject<T, K>, K extends Key<T>> K firstKeyOf(final BindingInstanceIdentifier id,
-            final Class<T> clazz) {
-        return ((DataObjectReference<?>) id).toLegacy().firstKeyOf(clazz);
+        return ref.getValue().firstKeyOf(NodeConnector.class);
     }
 
     public static NodeId toTopologyNodeId(
