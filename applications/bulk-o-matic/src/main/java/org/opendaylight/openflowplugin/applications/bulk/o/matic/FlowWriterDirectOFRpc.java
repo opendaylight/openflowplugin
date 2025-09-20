@@ -125,7 +125,7 @@ public class FlowWriterDirectOFRpc {
                 AddFlowInputBuilder builder = new AddFlowInputBuilder(flow);
                 builder.setNode(new NodeRef(nodeIId));
                 builder.setFlowTable(new FlowTableRef(tableIId));
-                builder.setFlowRef(new FlowRef(flowIId.toIdentifier()));
+                builder.setFlowRef(new FlowRef(flowIId));
 
                 AddFlowInput addFlowInput = builder.build();
 
