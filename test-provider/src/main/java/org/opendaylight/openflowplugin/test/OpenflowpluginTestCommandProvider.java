@@ -164,6 +164,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._4.match.UdpMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.protocol.match.fields.PbbBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.vlan.match.fields.VlanIdBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
@@ -213,8 +214,8 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         return new NodeBuilder().setId(new NodeId(nodeId != null ? nodeId : OpenflowpluginTestActivator.NODE_ID));
     }
 
-    private static InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
+    private static DataObjectIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, node.key()).build();
     }
 
     private static FlowBuilder createTestFlow(final NodeBuilder nodeBuilder, final String flowTypeArg,

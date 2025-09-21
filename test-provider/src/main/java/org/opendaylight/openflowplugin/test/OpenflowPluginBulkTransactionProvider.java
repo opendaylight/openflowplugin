@@ -96,8 +96,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.MetadataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv6MatchBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -466,8 +466,8 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
         writeFlow(ci, tf, tf1, tf2, tf3, tn);
     }
 
-    private static @NonNull InstanceIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
+    private static @NonNull DataObjectIdentifier<Node> nodeBuilderToInstanceId(final NodeBuilder node) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, node.key()).build();
     }
 
     @SuppressWarnings("checkstyle:MethodName")
@@ -600,28 +600,32 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
             default -> throw new IllegalArgumentException("Invalid flowtype: " + flowtype);
         };
 
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
+        final var path1 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
-                .child(Flow.class, tf.key());
+                .child(Flow.class, tf.key())
+                .build();
         modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
+        final var path2 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf1.getTableId()))
-                .child(Flow.class, tf1.key());
+                .child(Flow.class, tf1.key())
+                .build();
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
 
-        InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
+        final var path3 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf2.getTableId()))
-                .child(Flow.class, tf2.key());
+                .child(Flow.class, tf2.key())
+                .build();
         modification.delete(LogicalDatastoreType.OPERATIONAL, path3);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path3);
-        InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
+        final var path4 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, tn.key())
                 .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf3.getTableId()))
-                .child(Flow.class, tf3.key());
+                .child(Flow.class, tf3.key())
+                .build();
         modification.delete(LogicalDatastoreType.OPERATIONAL, path4);
         modification.delete(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(tn));
         modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
@@ -643,18 +647,20 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
     private void writeFlow(final CommandInterpreter ci, final FlowBuilder flow, final FlowBuilder flow1,
                            final FlowBuilder flow2, final FlowBuilder flow3, final NodeBuilder nodeBuilder) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
+        final var path1 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key());
+                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key())
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path1, flow.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
-        InstanceIdentifier<Flow> path2 = InstanceIdentifier.create(Nodes.class)
+        final var path2 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.key());
+                .child(Table.class, new TableKey(flow1.getTableId())).child(Flow.class, flow1.key())
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path2, flow1.build());
@@ -662,9 +668,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, flow1.build());
 
-        InstanceIdentifier<Flow> path3 = InstanceIdentifier.create(Nodes.class)
+        final var path3 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.key());
+                .child(Table.class, new TableKey(flow2.getTableId())).child(Flow.class, flow2.key())
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path3, flow2.build());
@@ -672,9 +679,10 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path3, flow2.build());
 
-        InstanceIdentifier<Flow> path4 = InstanceIdentifier.create(Nodes.class)
+        final var path4 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.key());
+                .child(Table.class, new TableKey(flow3.getTableId())).child(Flow.class, flow3.key())
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeBuilderToInstanceId(nodeBuilder),
                 nodeBuilder.build());
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path4, flow3.build());

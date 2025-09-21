@@ -20,8 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
@@ -51,8 +51,9 @@ public final class OpenflowpluginTestRpcProvider implements AutoCloseable {
             (UpdateFlow) input -> {
                 LOG.info("updateFlow - {}", input);
                 return null;
-            }), Set.of(InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))).toIdentifier()));
+            }), Set.of(DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))
+                .build()));
     }
 
     @PreDestroy
