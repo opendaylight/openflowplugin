@@ -70,7 +70,7 @@ public final class ReconcileCommand implements Action {
 
     private void printInProgressNodes(final ReconcileOutput reconcileOutput) {
         final var inprogressNodes = reconcileOutput.getInprogressNodes();
-        if (inprogressNodes.size() > 0) {
+        if (inprogressNodes != null && !inprogressNodes.isEmpty()) {
             final var stringBuilder = new StringBuilder();
             try (var formatter = new Formatter(stringBuilder)) {
                 session.getConsole().println(getReconcileHeaderOutput());
