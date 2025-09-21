@@ -45,9 +45,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.instru
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -79,7 +79,7 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChan
         addFlow = rpcService.getRpc(AddFlow.class);
         listenerRegistration = dataBroker.registerTreeChangeListener(
             DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)),
+                DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build()),
             this);
     }
 
@@ -94,11 +94,10 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChan
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
             if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
-                final var nodeId = modification.getRootPath().path().firstKeyOf(Node.class).getId().getValue();
+                final var nodeId = modification.path().getFirstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     LoggingFutures.addErrorLogging(addFlow.invoke(new AddFlowInputBuilder(createFlow())
-                        .setNode(new NodeRef(modification.getRootPath().path().firstIdentifierOf(Node.class)
-                            .toIdentifier()))
+                        .setNode(new NodeRef(modification.path().trimTo(Node.class)))
                         .build()), LOG, "addFlow");
                 } else {
                     LOG.debug("Node {} is not owned by this controller, so skip adding LLDP table miss flow", nodeId);

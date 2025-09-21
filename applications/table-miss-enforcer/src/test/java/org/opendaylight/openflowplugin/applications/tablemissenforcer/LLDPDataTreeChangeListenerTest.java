@@ -29,10 +29,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.Action;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.action.action.OutputActionCase;
@@ -48,8 +46,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
@@ -58,8 +56,8 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPDataTreeChangeListenerTest {
-    private static final InstanceIdentifier<Node> NODE_IID = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("testnode:1")));
+    private static final DataObjectIdentifier<Node> NODE_IID = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("testnode:1"))).build();
     @Mock
     private DataBroker dataBroker;
     @Mock
@@ -85,9 +83,7 @@ public class LLDPDataTreeChangeListenerTest {
         doReturn(RpcResultBuilder.success().buildFuture()).when(addFlow).invoke(any());
         doReturn(addFlow).when(rpcService).getRpc(any());
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(dataBroker, deviceOwnershipService, rpcService);
-        final DataTreeIdentifier<FlowCapableNode> identifier = DataTreeIdentifier.of(
-                LogicalDatastoreType.OPERATIONAL, NODE_IID.augmentation(FlowCapableNode.class));
-        when(dataTreeModification.getRootPath()).thenReturn(identifier);
+        when(dataTreeModification.path()).thenReturn(NODE_IID.toBuilder().augmentation(FlowCapableNode.class).build());
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
         when(dataTreeModification.getRootNode().modificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
