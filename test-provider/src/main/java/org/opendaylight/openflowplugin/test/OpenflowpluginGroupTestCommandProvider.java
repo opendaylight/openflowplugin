@@ -70,8 +70,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -109,8 +109,8 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
         testNode = builder.build();
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
+    private static DataObjectIdentifier<Node> nodeToInstanceId(final Node node) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, node.key()).build();
     }
 
     private GroupBuilder createTestGroup(String actionType, String groupType, final String groupMod) {
@@ -518,8 +518,9 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
         }
         GroupBuilder gbuilder = createTestGroup(ci.nextArgument(), ci.nextArgument(), "add");
         ReadWriteTransaction modification = requireNonNull(dataBroker).newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
-                .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()));
+        final var path1 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, testNode.key())
+                .augmentation(FlowCapableNode.class).child(Group.class, new GroupKey(gbuilder.getGroupId()))
+                .build();
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
@@ -551,9 +552,10 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
 
     private void writeGroup(final CommandInterpreter ci, final Group group) {
         ReadWriteTransaction modification = requireNonNull(dataBroker).newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
+        final var path1 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group.getGroupId()));
+                .child(Group.class, new GroupKey(group.getGroupId()))
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
