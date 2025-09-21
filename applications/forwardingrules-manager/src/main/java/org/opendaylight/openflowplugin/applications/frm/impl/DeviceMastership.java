@@ -20,9 +20,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNode;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,17 +34,16 @@ public class DeviceMastership implements ClusterSingletonService, AutoCloseable 
     private final ServiceGroupIdentifier identifier;
     private final AtomicBoolean deviceMastered = new AtomicBoolean(false);
     private final AtomicBoolean isDeviceInOperDS = new AtomicBoolean(false);
-    private final InstanceIdentifier<FlowCapableNode> fcnIID;
-    private final KeyedInstanceIdentifier<Node, NodeKey> path;
+    private final DataObjectIdentifier.WithKey<Node, NodeKey> path;
+    private final DataObjectIdentifier<FlowCapableNode> fcnIID;
 
     private Registration reg;
 
     public DeviceMastership(final NodeId nodeId) {
         this.nodeId = nodeId;
         identifier = new ServiceGroupIdentifier(nodeId.getValue());
-        fcnIID = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId))
-                .augmentation(FlowCapableNode.class);
-        path = InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(nodeId));
+        path = DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build();
+        fcnIID = path.toBuilder().augmentation(FlowCapableNode.class).build();
     }
 
     @Override

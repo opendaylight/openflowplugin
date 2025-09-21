@@ -31,7 +31,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundle;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 /**
  * It represent a central point for whole module. Implementation Flow Provider
@@ -49,7 +49,7 @@ public interface ForwardingRulesManager extends ConfigurationListener {
      *            - the key of the node
      * @return boolean - true if device is connected
      */
-    boolean isNodeActive(InstanceIdentifier<FlowCapableNode> ident);
+    boolean isNodeActive(DataObjectIdentifier<FlowCapableNode> ident);
 
     /**
      * Method returns information : "is Node with send InstanceIdentifier present in
@@ -59,7 +59,7 @@ public interface ForwardingRulesManager extends ConfigurationListener {
      *            - the key of the node
      * @return boolean - true if device is present in operational data store
      */
-    boolean checkNodeInOperationalDataStore(InstanceIdentifier<FlowCapableNode> ident);
+    boolean checkNodeInOperationalDataStore(DataObjectIdentifier<FlowCapableNode> ident);
 
     /**
      * Method returns generated transaction ID, which is unique for every
@@ -179,12 +179,11 @@ public interface ForwardingRulesManager extends ConfigurationListener {
     int getReconciliationRetryCount();
 
     /**
-     * Method checks if *this* instance of openflowplugin is owner of the given
-     * openflow node.
+     * Method checks if *this* instance of openflowplugin is owner of the given openflow node.
      *
      * @return True if owner, else false
      */
-    boolean isNodeOwner(InstanceIdentifier<FlowCapableNode> ident);
+    boolean isNodeOwner(DataObjectIdentifier<FlowCapableNode> ident);
 
     /**
      * Content definition method and prevent code duplicity.

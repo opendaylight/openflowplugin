@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.applications.frm.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -22,9 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.checkerframework.checker.lock.qual.Holding;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -41,8 +38,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.frm.reconciliation.service.rev180227.ReconcileNodeOutputBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -55,11 +53,11 @@ import org.slf4j.LoggerFactory;
 public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapableNode>, AutoCloseable,
         MastershipChangeService {
     private static final Logger LOG = LoggerFactory.getLogger(DeviceMastershipManager.class);
-    private static final InstanceIdentifier<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE = InstanceIdentifier
-            .builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
+    private static final DataObjectReference<FlowCapableNode> II_TO_FLOW_CAPABLE_NODE =
+        DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
 
     private final ConcurrentHashMap<NodeId, DeviceMastership> deviceMasterships = new ConcurrentHashMap<>();
-    private final Set<InstanceIdentifier<FlowCapableNode>> activeNodes = ConcurrentHashMap.newKeySet();
+    private final Set<DataObjectIdentifier<FlowCapableNode>> activeNodes = ConcurrentHashMap.newKeySet();
     private final ReentrantLock lock = new ReentrantLock();
     private final FlowNodeReconciliation reconcliationAgent;
     private final RpcProviderService rpcProviderService;
@@ -74,9 +72,9 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
                                    final RpcProviderService rpcProviderService) {
         this.reconcliationAgent = reconcliationAgent;
         this.rpcProviderService = rpcProviderService;
-        listenerRegistration = dataBroker.registerTreeChangeListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)), this);
+        listenerRegistration = dataBroker.registerTreeChangeListener(LogicalDatastoreType.OPERATIONAL,
+            DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build(),
+            this);
         mastershipChangeServiceRegistration = mastershipChangeServiceManager.register(this);
     }
 
@@ -85,9 +83,10 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
     }
 
     public boolean isNodeActive(final NodeId nodeId) {
-        return activeNodes.contains(InstanceIdentifier.create(Nodes.class)
+        return activeNodes.contains(DataObjectIdentifier.builder(Nodes.class)
             .child(Node.class, new NodeKey(nodeId))
-            .augmentation(FlowCapableNode.class));
+            .augmentation(FlowCapableNode.class)
+            .build());
     }
 
     @VisibleForTesting
@@ -98,9 +97,9 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (DataTreeModification<FlowCapableNode> change : changes) {
-            final InstanceIdentifier<FlowCapableNode> key = change.getRootPath().path();
-            final DataObjectModification<FlowCapableNode> mod = change.getRootNode();
-            final InstanceIdentifier<FlowCapableNode> nodeIdent = key.firstIdentifierOf(FlowCapableNode.class);
+            final var key = change.path();
+            final var mod = change.getRootNode();
+            final var nodeIdent = key.trimTo(FlowCapableNode.class);
 
             switch (mod.modificationType()) {
                 case DELETE:
@@ -122,14 +121,14 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
         }
     }
 
-    public void remove(final InstanceIdentifier<FlowCapableNode> identifier, final FlowCapableNode del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final DataObjectIdentifier<FlowCapableNode> identifier, final FlowCapableNode del,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Node removed: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
+                LOG.debug("Node removed: {}", nodeIdent.getFirstKeyOf(Node.class).getId().getValue());
             }
 
-            if (!nodeIdent.isWildcarded() && activeNodes.remove(nodeIdent)) {
+            if (activeNodes.remove(nodeIdent)) {
                 lock.lock();
                 try {
                     reconcliationAgent.flowNodeDisconnected(nodeIdent);
@@ -141,14 +140,14 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
         }
     }
 
-    public void add(final InstanceIdentifier<FlowCapableNode> identifier, final FlowCapableNode add,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void add(final DataObjectIdentifier<FlowCapableNode> identifier, final FlowCapableNode add,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Node added: {}", nodeIdent.firstKeyOf(Node.class).getId().getValue());
+                LOG.debug("Node added: {}", nodeIdent.getFirstKeyOf(Node.class).getId().getValue());
             }
 
-            if (!nodeIdent.isWildcarded() && activeNodes.add(nodeIdent)) {
+            if (activeNodes.add(nodeIdent)) {
                 lock.lock();
                 try {
                     setNodeOperationalStatus(nodeIdent, true);
@@ -171,15 +170,14 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
         }
     }
 
-    private static boolean compareInstanceIdentifierTail(final InstanceIdentifier<?> identifier1,
-            final InstanceIdentifier<?> identifier2) {
-        return Iterables.getLast(identifier1.getPathArguments())
-                .equals(Iterables.getLast(identifier2.getPathArguments()));
+    private static boolean compareInstanceIdentifierTail(final DataObjectIdentifier<?> identifier1,
+            final DataObjectReference<?> identifier2) {
+        return identifier1.lastStep().equals(identifier2.lastStep());
     }
 
     @Holding("lockObj")
-    private void setNodeOperationalStatus(final InstanceIdentifier<FlowCapableNode> nodeIid, final boolean status) {
-        final var nodeId = nodeIid.firstKeyOf(Node.class).getId();
+    private void setNodeOperationalStatus(final DataObjectIdentifier<FlowCapableNode> nodeIid, final boolean status) {
+        final var nodeId = nodeIid.getFirstKeyOf(Node.class).getId();
         if (nodeId == null) {
             return;
         }
@@ -204,7 +202,7 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
         LOG.debug("Triggering reconciliation for node: {}", nodeId);
 
         final var nodeDpn = new NodeBuilder().setId(new NodeId("openflow:" + nodeId)).build();
-        final var connectedNode = InstanceIdentifier.builder(Nodes.class)
+        final var connectedNode = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, nodeDpn.key()).augmentation(FlowCapableNode.class)
                 .build();
         final var rpcResult = SettableFuture.<RpcResult<ReconcileNodeOutput>>create();

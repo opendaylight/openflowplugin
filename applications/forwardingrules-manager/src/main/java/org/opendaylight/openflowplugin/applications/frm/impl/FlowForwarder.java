@@ -50,12 +50,12 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRe
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.service.rev130918.AddGroupOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.GroupRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.group.types.rev131018.groups.Group;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -79,10 +79,10 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Flow> identifier, final Flow removeDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final DataObjectIdentifier<Flow> identifier, final Flow removeDataObj,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
 
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
+        final TableKey tableKey = identifier.getFirstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             BundleId bundleId = getActiveBundle(nodeIdent, provider);
             if (bundleId != null) {
@@ -91,9 +91,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
                 nodeConfigurator.enqueueJob(nodeId, () -> {
                     final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-                    builder.setFlowRef(new FlowRef(identifier.toIdentifier()));
-                    builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()));
-                    builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()));
+                    builder.setFlowRef(new FlowRef(identifier));
+                    builder.setNode(new NodeRef(nodeIdent.trimTo(Node.class)));
+                    builder.setFlowTable(new FlowTableRef(nodeIdent.toBuilder().child(Table.class, tableKey).build()));
 
                     // This method is called only when a given flow object has been
                     // removed from datastore. So FRM always needs to set strict flag
@@ -111,14 +111,14 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     // TODO: Pull this into ForwardingRulesCommiter and override it here
 
     @Override
-    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeWithResult(final InstanceIdentifier<Flow> identifier,
-            final Flow removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        final TableKey tableKey = identifier.firstKeyOf(Table.class);
+    public ListenableFuture<RpcResult<RemoveFlowOutput>> removeWithResult(final DataObjectIdentifier<Flow> identifier,
+            final Flow removeDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
+        final TableKey tableKey = identifier.getFirstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, removeDataObj)) {
             final RemoveFlowInputBuilder builder = new RemoveFlowInputBuilder(removeDataObj);
-            builder.setFlowRef(new FlowRef(identifier.toIdentifier()));
-            builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()));
-            builder.setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()));
+            builder.setFlowRef(new FlowRef(identifier));
+            builder.setNode(new NodeRef(nodeIdent.trimTo(Node.class)));
+            builder.setFlowTable(new FlowTableRef(nodeIdent.toBuilder().child(Table.class, tableKey).build()));
 
             // This method is called only when a given flow object has been
             // removed from datastore. So FRM always needs to set strict flag
@@ -132,8 +132,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public void update(final InstanceIdentifier<Flow> identifier, final Flow original, final Flow update,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void update(final DataObjectIdentifier<Flow> identifier, final Flow original, final Flow update,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
 
         final TableKey tableKey = identifier.firstKeyOf(Table.class);
         if (tableIdValidationPrecondition(tableKey, update)) {
@@ -144,8 +144,8 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                 final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
                 nodeConfigurator.enqueueJob(nodeId, () -> {
                     final UpdateFlowInputBuilder builder = new UpdateFlowInputBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-                        .setFlowRef(new FlowRef(identifier.toIdentifier()))
+                        .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+                        .setFlowRef(new FlowRef(identifier))
                         .setTransactionUri(new Uri(provider.getNewTransactionId()));
 
                     // This method is called only when a given flow object in datastore
@@ -163,16 +163,15 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
                             LOG.trace("The dependent group {} is already programmed. Updating the flow {}", groupId,
                                     getFlowId(identifier));
                             return provider.updateFlow().invoke(builder.build());
-                        } else {
-                            LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
-                            ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
-                                    groupId);
-                            SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture = SettableFuture.create();
-                            Futures.addCallback(groupFuture,
-                                    new UpdateFlowCallBack(builder.build(), nodeId, resultFuture, groupId),
-                                    MoreExecutors.directExecutor());
-                            return resultFuture;
                         }
+                        LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
+                        ListenableFuture<RpcResult<AddGroupOutput>> groupFuture = pushDependentGroup(nodeIdent,
+                                groupId);
+                        SettableFuture<RpcResult<UpdateFlowOutput>> resultFuture = SettableFuture.create();
+                        Futures.addCallback(groupFuture,
+                                new UpdateFlowCallBack(builder.build(), nodeId, resultFuture, groupId),
+                                MoreExecutors.directExecutor());
+                        return resultFuture;
                     }
 
                     LOG.trace("The flow {} is not dependent on any group. Updating the flow",
@@ -184,9 +183,9 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Flow> identifier,
-            final Flow addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        final var tableKey = identifier.firstKeyOf(Table.class);
+    public ListenableFuture<? extends RpcResult<?>> add(final DataObjectIdentifier<Flow> identifier,
+            final Flow addDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
+        final var tableKey = identifier.getFirstKeyOf(Table.class);
         if (!tableIdValidationPrecondition(tableKey, addDataObj)) {
             return Futures.immediateFuture(null);
         }
@@ -197,11 +196,11 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
 
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId, () -> {
-            final var flowRef = new FlowRef(identifier.toIdentifier());
+            final var flowRef = new FlowRef(identifier);
             final var builder = new AddFlowInputBuilder(addDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
                 .setFlowRef(flowRef)
-                .setFlowTable(new FlowTableRef(nodeIdent.child(Table.class, tableKey).toIdentifier()))
+                .setFlowTable(new FlowTableRef(nodeIdent.toBuilder().child(Table.class, tableKey).build()))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()));
             final var groupId = isFlowDependentOnGroup(addDataObj);
             if (groupId != null) {
@@ -227,17 +226,21 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     @Override
-    public void createStaleMarkEntity(final InstanceIdentifier<Flow> identifier, final Flow del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final DataObjectIdentifier<Flow> identifier, final Flow del,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for flow {} ", nodeIdent, del);
         StaleFlow staleFlow = makeStaleFlow(identifier, del, nodeIdent);
         persistStaleFlow(staleFlow, nodeIdent);
     }
 
     @Override
-    protected InstanceIdentifier<Flow> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
-                .child(Table.class).child(Flow.class);
+    protected DataObjectReference<Flow> getWildCardPath() {
+        return DataObjectReference.builder(Nodes.class)
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class)
+            .child(Flow.class)
+            .build();
     }
 
     private static boolean tableIdValidationPrecondition(final TableKey tableKey, final Flow flow) {
@@ -251,18 +254,18 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
         return true;
     }
 
-    private static StaleFlow makeStaleFlow(final InstanceIdentifier<Flow> identifier, final Flow del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        StaleFlowBuilder staleFlowBuilder = new StaleFlowBuilder(del);
-        return staleFlowBuilder.setId(del.getId()).build();
+    private static StaleFlow makeStaleFlow(final DataObjectIdentifier<Flow> identifier, final Flow del,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
+        return new StaleFlowBuilder(del).setId(del.getId()).build();
     }
 
-    private void persistStaleFlow(final StaleFlow staleFlow, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private void persistStaleFlow(final StaleFlow staleFlow, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         final var writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, nodeIdent
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, nodeIdent.toBuilder()
             .child(Table.class, new TableKey(staleFlow.getTableId()))
             .child(org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.StaleFlow.class,
-                new StaleFlowKey(new FlowId(staleFlow.getId()))), staleFlow);
+                new StaleFlowKey(new FlowId(staleFlow.getId())))
+            .build(), staleFlow);
         writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo result) {
@@ -277,20 +280,20 @@ public class FlowForwarder extends AbstractListeningCommiter<Flow> {
     }
 
     private ListenableFuture<RpcResult<AddGroupOutput>> pushDependentGroup(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
 
         //TODO This read to the DS might have a performance impact.
         //if the dependent group is not installed than we should just cache the parent group,
         //till we receive the dependent group DTCN and then push it.
 
-        InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
+        final var groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
         LOG.info("Reading the group from config inventory: {}", groupId);
         try (var readTransaction = provider.getReadTransaction()) {
             final var group = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent).get();
             if (group.isPresent()) {
                 return provider.addGroup().invoke(new AddGroupInputBuilder(group.orElseThrow())
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-                    .setGroupRef(new GroupRef(nodeIdent.toIdentifier()))
+                    .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+                    .setGroupRef(new GroupRef(nodeIdent))
                     .setTransactionUri(new Uri(provider.getNewTransactionId()))
                     .build());
             }

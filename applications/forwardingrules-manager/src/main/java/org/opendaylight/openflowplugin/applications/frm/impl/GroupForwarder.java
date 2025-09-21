@@ -39,7 +39,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.slf4j.Logger;
@@ -60,16 +61,17 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    protected InstanceIdentifier<Group> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class)
+    protected DataObjectReference<Group> getWildCardPath() {
+        return DataObjectReference.builder(Nodes.class)
             .child(Node.class)
             .augmentation(FlowCapableNode.class)
-            .child(Group.class);
+            .child(Group.class)
+            .build();
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Group> identifier, final Group removeDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final DataObjectIdentifier<Group> identifier, final Group removeDataObj,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         BundleId bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             provider.getBundleGroupListener().remove(identifier, removeDataObj, nodeIdent, bundleId);
@@ -77,8 +79,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
             final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
             nodeConfigurator.enqueueJob(nodeId, () -> {
                 final var removeGroup = new RemoveGroupInputBuilder(removeDataObj)
-                    .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-                    .setGroupRef(new GroupRef(identifier.toIdentifier()))
+                    .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+                    .setGroupRef(new GroupRef(identifier))
                     .setTransactionUri(new Uri(provider.getNewTransactionId()))
                     .build();
 
@@ -93,18 +95,18 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
 
     // TODO: Pull this into ForwardingRulesCommiter and override it here
     @Override
-    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeWithResult(final InstanceIdentifier<Group> identifier,
-            final Group removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<RemoveGroupOutput>> removeWithResult(final DataObjectIdentifier<Group> identifier,
+            final Group removeDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         return provider.removeGroup().invoke(new RemoveGroupInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setGroupRef(new GroupRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setGroupRef(new GroupRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .build());
     }
 
     @Override
-    public void update(final InstanceIdentifier<Group> identifier, final Group original, final Group update,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void update(final DataObjectIdentifier<Group> identifier, final Group original, final Group update,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         final var bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             provider.getBundleGroupListener().update(identifier, original, update, nodeIdent, bundleId);
@@ -114,8 +116,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
             final var updateGroupInput = new UpdateGroupInputBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-                .setGroupRef(new GroupRef(identifier.toIdentifier()))
+                .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+                .setGroupRef(new GroupRef(identifier))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .setUpdatedGroup(new UpdatedGroupBuilder(update).build())
                 .setOriginalGroup(new OriginalGroupBuilder(original).build())
@@ -130,8 +132,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    public ListenableFuture<? extends RpcResult<?>> add(final InstanceIdentifier<Group> identifier,
-            final Group addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<? extends RpcResult<?>> add(final DataObjectIdentifier<Group> identifier,
+            final Group addDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         final var bundleId = getActiveBundle(nodeIdent, provider);
         if (bundleId != null) {
             return provider.getBundleGroupListener().add(identifier, addDataObj, nodeIdent, bundleId);
@@ -140,8 +142,8 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
         final var nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addGroupInput = new AddGroupInputBuilder(addDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-                .setGroupRef(new GroupRef(identifier.toIdentifier()))
+                .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+                .setGroupRef(new GroupRef(identifier))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .build();
             final var resultFuture = provider.addGroup().invoke(addGroupInput);
@@ -152,13 +154,14 @@ public class GroupForwarder extends AbstractListeningCommiter<Group> {
     }
 
     @Override
-    public void createStaleMarkEntity(final InstanceIdentifier<Group> identifier, final Group del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final DataObjectIdentifier<Group> identifier, final Group del,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for Group {} ", nodeIdent, del);
         final var staleGroup = new StaleGroupBuilder(del).setGroupId(del.getGroupId()).build();
         final var writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION,
-            nodeIdent.child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId()))), staleGroup);
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, nodeIdent.toBuilder()
+            .child(StaleGroup.class, new StaleGroupKey(new GroupId(staleGroup.getGroupId())))
+            .build(), staleGroup);
         writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo result) {

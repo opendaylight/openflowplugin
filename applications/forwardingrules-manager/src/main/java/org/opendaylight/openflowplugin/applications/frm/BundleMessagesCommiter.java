@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.frm;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -13,11 +12,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.AddBundleMessagesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public interface BundleMessagesCommiter<D extends DataObject> {
-
     /**
      * Method removes DataObject which is identified by InstanceIdentifier from
      * device.
@@ -29,7 +27,7 @@ public interface BundleMessagesCommiter<D extends DataObject> {
      * @param nodeIdent
      *            Node InstanceIdentifier
      */
-    void remove(InstanceIdentifier<D> identifier, D del, InstanceIdentifier<FlowCapableNode> nodeIdent,
+    void remove(DataObjectIdentifier<D> identifier, D del, DataObjectIdentifier<FlowCapableNode> nodeIdent,
             BundleId bundleId);
 
     /**
@@ -45,8 +43,8 @@ public interface BundleMessagesCommiter<D extends DataObject> {
      * @param nodeIdent
      *            Node InstanceIdentifier
      */
-    void update(InstanceIdentifier<D> identifier, D original, D update,
-            InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId);
+    void update(DataObjectIdentifier<D> identifier, D original, D update,
+        DataObjectIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId);
 
     /**
      * Method adds the DataObject which is identified by InstanceIdentifier to
@@ -61,7 +59,6 @@ public interface BundleMessagesCommiter<D extends DataObject> {
      * @return A future associated with RPC task. {@code null} is set to the future
      *         if this method does not invoke RPC.
      */
-    ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(InstanceIdentifier<D> identifier, D add,
-                                                     InstanceIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId);
-
+    ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(DataObjectIdentifier<D> identifier, D add,
+        DataObjectIdentifier<FlowCapableNode> nodeIdent, BundleId bundleId);
 }

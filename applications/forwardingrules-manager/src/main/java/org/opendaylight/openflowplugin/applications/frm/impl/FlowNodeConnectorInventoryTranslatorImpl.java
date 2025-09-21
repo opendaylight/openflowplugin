@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static java.util.Objects.requireNonNull;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import java.math.BigInteger;
@@ -22,8 +21,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +32,8 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
         implements FlowNodeConnectorInventoryTranslator {
     private static final Logger LOG = LoggerFactory.getLogger(FlowNodeConnectorInventoryTranslatorImpl.class);
     private static final String SEPARATOR = ":";
-    private static final InstanceIdentifier<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR =
-        InstanceIdentifier.builder(Nodes.class)
+    private static final DataObjectReference<FlowCapableNodeConnector> II_TO_FLOW_CAPABLE_NODE_CONNECTOR =
+        DataObjectReference.builder(Nodes.class)
             .child(Node.class)
             .child(NodeConnector.class)
             .augmentation(FlowCapableNodeConnector.class)
@@ -51,11 +51,12 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
     }
 
     @Override
-    protected InstanceIdentifier<FlowCapableNodeConnector> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class)
+    protected DataObjectReference<FlowCapableNodeConnector> getWildCardPath() {
+        return DataObjectReference.builder(Nodes.class)
                 .child(Node.class)
                 .child(NodeConnector.class)
-                .augmentation(FlowCapableNodeConnector.class);
+                .augmentation(FlowCapableNodeConnector.class)
+                .build();
     }
 
     @Override
@@ -67,12 +68,11 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
     }
 
     @Override
-    public void remove(final InstanceIdentifier<FlowCapableNodeConnector> identifier,
-            final FlowCapableNodeConnector del, final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    public void remove(final DataObjectIdentifier<FlowCapableNodeConnector> identifier,
+            final FlowCapableNodeConnector del, final DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector removed");
-            String nodeConnectorIdentifier = nodeConnIdent.firstKeyOf(NodeConnector.class)
-                    .getId().getValue();
+            String nodeConnectorIdentifier = nodeConnIdent.getFirstKeyOf(NodeConnector.class).getId().getValue();
             BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
             dpnToPortMultiMap.remove(dpId, nodeConnectorIdentifier);
@@ -80,9 +80,9 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
     }
 
     @Override
-    public void update(final InstanceIdentifier<FlowCapableNodeConnector> identifier,
+    public void update(final DataObjectIdentifier<FlowCapableNodeConnector> identifier,
             final FlowCapableNodeConnector original, final FlowCapableNodeConnector update,
-            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+            final DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector updated");
             // Don't need to do anything as we are not considering updates here
@@ -90,12 +90,11 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
     }
 
     @Override
-    public void add(final InstanceIdentifier<FlowCapableNodeConnector> identifier, final FlowCapableNodeConnector add,
-            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    public void add(final DataObjectIdentifier<FlowCapableNodeConnector> identifier, final FlowCapableNodeConnector add,
+            final DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         if (compareInstanceIdentifierTail(identifier, II_TO_FLOW_CAPABLE_NODE_CONNECTOR)) {
             LOG.debug("Node Connector added");
-            String nodeConnectorIdentifier = nodeConnIdent
-                    .firstKeyOf(NodeConnector.class).getId().getValue();
+            String nodeConnectorIdentifier = nodeConnIdent.getFirstKeyOf(NodeConnector.class).getId().getValue();
             BigInteger dpId = getDpIdFromPortName(nodeConnectorIdentifier);
 
             if (!dpnToPortMultiMap.containsEntry(dpId, nodeConnectorIdentifier)) {
@@ -106,10 +105,9 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
         }
     }
 
-    private static boolean compareInstanceIdentifierTail(final InstanceIdentifier<?> identifier1,
-                                  final InstanceIdentifier<?> identifier2) {
-        return Iterables.getLast(identifier1.getPathArguments())
-                .equals(Iterables.getLast(identifier2.getPathArguments()));
+    private static boolean compareInstanceIdentifierTail(final DataObjectIdentifier<?> identifier1,
+                                  final DataObjectReference<?> identifier2) {
+        return identifier1.lastStep().equals(identifier2.lastStep());
     }
 
     @Override

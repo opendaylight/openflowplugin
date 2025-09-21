@@ -33,7 +33,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.met
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.meter.update.UpdatedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterRef;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,37 +55,40 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    protected InstanceIdentifier<Meter> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
-                .child(Meter.class);
+    protected DataObjectReference<Meter> getWildCardPath() {
+        return DataObjectReference.builder(Nodes.class)
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .child(Meter.class)
+            .build();
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Meter> identifier, final Meter removeDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final DataObjectIdentifier<Meter> identifier, final Meter removeDataObj,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LoggingFutures.addErrorLogging(provider.removeMeter().invoke(new RemoveMeterInputBuilder(removeDataObj)
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-                .setMeterRef(new MeterRef(identifier.toIdentifier()))
+                .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+                .setMeterRef(new MeterRef(identifier))
                 .setTransactionUri(new Uri(provider.getNewTransactionId()))
                 .build()), LOG, "removeMeter");
     }
 
     @Override
-    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeWithResult(final InstanceIdentifier<Meter> identifier,
-            final Meter removeDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<RemoveMeterOutput>> removeWithResult(final DataObjectIdentifier<Meter> identifier,
+            final Meter removeDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         return provider.removeMeter().invoke(new RemoveMeterInputBuilder(removeDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setMeterRef(new MeterRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .build());
     }
 
     @Override
-    public void update(final InstanceIdentifier<Meter> identifier, final Meter original, final Meter update,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void update(final DataObjectIdentifier<Meter> identifier, final Meter original, final Meter update,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LoggingFutures.addErrorLogging(provider.updateMeter().invoke(new UpdateMeterInputBuilder()
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setMeterRef(new MeterRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .setUpdatedMeter(new UpdatedMeterBuilder(update).build())
             .setOriginalMeter(new OriginalMeterBuilder(original).build())
@@ -92,24 +96,25 @@ public class MeterForwarder extends AbstractListeningCommiter<Meter> {
     }
 
     @Override
-    public ListenableFuture<RpcResult<AddMeterOutput>> add(final InstanceIdentifier<Meter> identifier,
-            final Meter addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<AddMeterOutput>> add(final DataObjectIdentifier<Meter> identifier,
+            final Meter addDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         return provider.addMeter().invoke(new AddMeterInputBuilder(addDataObj)
-            .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
-            .setMeterRef(new MeterRef(identifier.toIdentifier()))
+            .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
+            .setMeterRef(new MeterRef(identifier))
             .setTransactionUri(new Uri(provider.getNewTransactionId()))
             .build());
     }
 
     @Override
-    public void createStaleMarkEntity(final InstanceIdentifier<Meter> identifier, final Meter del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final DataObjectIdentifier<Meter> identifier, final Meter del,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Creating Stale-Mark entry for the switch {} for meter {} ", nodeIdent, del);
 
         final var staleMeter = new StaleMeterBuilder(del).setMeterId(del.getMeterId()).build();
         final var writeTransaction = dataBroker.newWriteOnlyTransaction();
-        writeTransaction.put(LogicalDatastoreType.CONFIGURATION,
-            nodeIdent.child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId()))), staleMeter);
+        writeTransaction.put(LogicalDatastoreType.CONFIGURATION, nodeIdent.toBuilder()
+            .child(StaleMeter.class, new StaleMeterKey(new MeterId(staleMeter.getMeterId())))
+            .build(), staleMeter);
         writeTransaction.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo result) {
