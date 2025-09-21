@@ -23,6 +23,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -38,8 +39,10 @@ public class NodeListenerTest extends AbstractFRMTest {
     public void addRemoveNodeTest() throws Exception {
         addFlowCapableNode(NODE_KEY);
 
-        InstanceIdentifier<FlowCapableNode> nodeII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class);
+        var nodeII = DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, NODE_KEY)
+                .augmentation(FlowCapableNode.class)
+                .build();
         boolean nodeActive = getForwardingRulesManager().isNodeActive(nodeII);
         assertTrue(nodeActive);
         removeNode();

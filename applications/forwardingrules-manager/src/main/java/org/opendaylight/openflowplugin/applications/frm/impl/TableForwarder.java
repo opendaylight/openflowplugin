@@ -22,8 +22,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.tab
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.table.update.UpdatedTableBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.TableRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,20 +37,23 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    protected InstanceIdentifier<TableFeatures> getWildCardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class)
-                .child(TableFeatures.class);
+    protected DataObjectReference<TableFeatures> getWildCardPath() {
+        return DataObjectReference.builder(Nodes.class)
+            .child(Node.class)
+            .augmentation(FlowCapableNode.class)
+            .child(TableFeatures.class)
+            .build();
     }
 
     @Override
-    public void remove(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void remove(final DataObjectIdentifier<TableFeatures> identifier, final TableFeatures removeDataObj,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         // DO Nothing
     }
 
     @Override
-    public void update(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures original,
-            final TableFeatures update, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void update(final DataObjectIdentifier<TableFeatures> identifier, final TableFeatures original,
+            final TableFeatures update, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("Received the Table Update request [Tbl id, node Id, original, upd {} {} {} {}", identifier,
                 nodeIdent, original, update);
 
@@ -62,11 +66,11 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
         }
         final UpdateTableInputBuilder builder = new UpdateTableInputBuilder();
 
-        builder.setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()));
+        builder.setNode(new NodeRef(nodeIdent.trimTo(Node.class)));
 
         // TODO: reconsider model - this particular field is not used in service
         // implementation
-        builder.setTableRef(new TableRef(identifier.toIdentifier()));
+        builder.setTableRef(new TableRef(identifier));
 
         builder.setTransactionUri(new Uri(provider.getNewTransactionId()));
 
@@ -84,20 +88,20 @@ public class TableForwarder extends AbstractListeningCommiter<TableFeatures> {
     }
 
     @Override
-    public ListenableFuture<RpcResult<?>> add(final InstanceIdentifier<TableFeatures> identifier,
-            final TableFeatures addDataObj, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<?>> add(final DataObjectIdentifier<TableFeatures> identifier,
+            final TableFeatures addDataObj, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         return Futures.immediateFuture(null);
     }
 
     @Override
-    public void createStaleMarkEntity(final InstanceIdentifier<TableFeatures> identifier, final TableFeatures del,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public void createStaleMarkEntity(final DataObjectIdentifier<TableFeatures> identifier, final TableFeatures del,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         LOG.debug("NO-OP");
     }
 
     @Override
-    public ListenableFuture<RpcResult<?>> removeWithResult(final InstanceIdentifier<TableFeatures> identifier,
-            final TableFeatures del, final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public ListenableFuture<RpcResult<?>> removeWithResult(final DataObjectIdentifier<TableFeatures> identifier,
+            final TableFeatures del, final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         return Futures.immediateFuture(null);
     }
 }

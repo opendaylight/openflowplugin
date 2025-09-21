@@ -57,7 +57,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.rf.state.rev170713.ResultState;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -208,14 +208,14 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     }
 
     @Override
-    public boolean isNodeActive(final InstanceIdentifier<FlowCapableNode> ident) {
-        return deviceMastershipManager.isNodeActive(ident.firstKeyOf(Node.class).getId());
+    public boolean isNodeActive(final DataObjectIdentifier<FlowCapableNode> ident) {
+        return deviceMastershipManager.isNodeActive(ident.getFirstKeyOf(Node.class).getId());
     }
 
     @Override
-    public boolean checkNodeInOperationalDataStore(final InstanceIdentifier<FlowCapableNode> ident) {
+    public boolean checkNodeInOperationalDataStore(final DataObjectIdentifier<FlowCapableNode> ident) {
         boolean result = false;
-        InstanceIdentifier<Node> nodeIid = ident.firstIdentifierOf(Node.class);
+        final var nodeIid = ident.trimTo(Node.class);
         try (var transaction = dataService.newReadOnlyTransaction()) {
             var future = transaction.exists(LogicalDatastoreType.OPERATIONAL, nodeIid);
             if (future.get()) {
@@ -372,8 +372,8 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     }
 
     @Override
-    public boolean isNodeOwner(final InstanceIdentifier<FlowCapableNode> ident) {
-        return ident != null && deviceMastershipManager.isDeviceMastered(ident.firstKeyOf(Node.class).getId());
+    public boolean isNodeOwner(final DataObjectIdentifier<FlowCapableNode> ident) {
+        return ident != null && deviceMastershipManager.isDeviceMastered(ident.getFirstKeyOf(Node.class).getId());
     }
 
     @VisibleForTesting

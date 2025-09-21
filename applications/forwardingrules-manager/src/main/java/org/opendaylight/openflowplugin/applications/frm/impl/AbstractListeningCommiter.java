@@ -12,7 +12,6 @@ import static java.util.Objects.requireNonNull;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -22,8 +21,9 @@ import org.opendaylight.openflowplugin.applications.frm.NodeConfigurator;
 import org.opendaylight.serviceutils.srm.RecoverableListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,10 +58,10 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
         LOG.trace("Received data changes :{}", requireNonNull(changes, "Changes may not be null!"));
 
         for (DataTreeModification<T> change : changes) {
-            final InstanceIdentifier<T> key = change.getRootPath().path();
-            final DataObjectModification<T> mod = change.getRootNode();
-            final InstanceIdentifier<FlowCapableNode> nodeIdent =
-                    key.firstIdentifierOf(FlowCapableNode.class);
+            final var key = change.path();
+            final var mod = change.getRootNode();
+            final var nodeIdent = key.trimTo(FlowCapableNode.class);
+
             try {
                 if (preConfigurationCheck(nodeIdent)) {
                     switch (mod.modificationType()) {
@@ -122,12 +122,12 @@ public abstract class AbstractListeningCommiter<T extends DataObject>
     }
 
     /**
-     * Method return wildCardPath for Listener registration
-     * and for identify the correct KeyInstanceIdentifier from data.
+     * Method return wildCardPath for Listener registration and for identify the correct KeyInstanceIdentifier from
+     * data.
      */
-    protected abstract InstanceIdentifier<T> getWildCardPath();
+    protected abstract DataObjectReference<T> getWildCardPath();
 
-    private boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    private boolean preConfigurationCheck(final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         requireNonNull(nodeIdent, "FlowCapableNode identifier can not be null!");
         // In single node cluster, node should be in local cache before we get any flow/group/meter
         // data change event from data store. So first check should pass.

@@ -54,7 +54,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.remove.flow._case.RemoveFlowCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -77,14 +77,14 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Flow> identifier,
+    public void remove(final DataObjectIdentifier<Flow> identifier,
                        final Flow flow,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                       final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                        final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         nodeConfigurator.enqueueJob(nodeId, () -> {
-            String node = nodeIdent.firstKeyOf(Node.class).getId().getValue();
-            final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
+            String node = nodeIdent.getFirstKeyOf(Node.class).getId().getValue();
+            final var nodeRef = new NodeRef(nodeIdent.trimTo(Node.class));
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                 .setNode(nodeRef)
                 .setBundleId(bundleId)
@@ -107,20 +107,18 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
     }
 
     @Override
-    public void update(final InstanceIdentifier<Flow> identifier,
+    public void update(final DataObjectIdentifier<Flow> identifier,
                        final Flow originalFlow,
                        final Flow updatedFlow,
-                       final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                       final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                        final BundleId bundleId) {
         remove(identifier, originalFlow, nodeIdent, bundleId);
         add(identifier, updatedFlow, nodeIdent, bundleId);
     }
 
     @Override
-    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Flow> identifier,
-                                                                    final Flow flow,
-                                                                    final InstanceIdentifier<FlowCapableNode> nodeIdent,
-                                                                    final BundleId bundleId) {
+    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final DataObjectIdentifier<Flow> identifier,
+            final Flow flow, final DataObjectIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         return nodeConfigurator.enqueueJob(nodeId, () -> {
             BundleInnerMessage bundleInnerMessage = new BundleAddFlowCaseBuilder()
@@ -128,7 +126,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                             .build())
                     .build();
             Message message = new MessageBuilder()
-                .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
                 .setBundleInnerMessage(bundleInnerMessage)
                 .build();
             ListenableFuture<RpcResult<AddBundleMessagesOutput>> groupFuture = pushDependentGroup(nodeIdent, flow,
@@ -142,10 +140,8 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
     }
 
     private ListenableFuture<RpcResult<AddBundleMessagesOutput>> pushDependentGroup(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent,
-            final Flow updatedFlow,
-            final InstanceIdentifier<Flow> identifier,
-            final BundleId bundleId) {
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent, final Flow updatedFlow,
+            final DataObjectIdentifier<Flow> identifier, final BundleId bundleId) {
         //TODO This read to the DS might have a performance impact.
         //if the dependent group is not installed than we should just cache the parent group,
         //till we receive the dependent group DTCN and then push it.
@@ -160,17 +156,17 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
                 resultFuture = Futures.immediateFuture(RpcResultBuilder.<AddBundleMessagesOutput>success().build());
             } else {
                 LOG.trace("The dependent group {} isn't programmed yet. Pushing the group", groupId);
-                InstanceIdentifier<Group> groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
+                final var groupIdent = buildGroupInstanceIdentifier(nodeIdent, groupId);
                 LOG.info("Reading the group from config inventory: {}", groupId);
                 try (ReadTransaction readTransaction = forwardingRulesManager.getReadTransaction()) {
                     Optional<Group> optGroup = readTransaction.read(LogicalDatastoreType.CONFIGURATION, groupIdent)
                         .get();
                     if (optGroup.isPresent()) {
                         final Group group = optGroup.orElseThrow();
-                        final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
+                        final var nodeRef = new NodeRef(nodeIdent.trimTo(Node.class));
                         final AddGroupInputBuilder builder = new AddGroupInputBuilder(group);
                         builder.setNode(nodeRef);
-                        builder.setGroupRef(new GroupRef(nodeIdent.toIdentifier()));
+                        builder.setGroupRef(new GroupRef(nodeIdent));
                         builder.setTransactionUri(new Uri(forwardingRulesManager.getNewTransactionId()));
                         BundleInnerMessage bundleInnerMessage = new BundleAddGroupCaseBuilder()
                                 .setAddGroupCaseData(new AddGroupCaseDataBuilder(group).build()).build();
@@ -218,7 +214,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
     }
 
     private final class BundleFlowCallBack implements FutureCallback<RpcResult<AddBundleMessagesOutput>> {
-        private final InstanceIdentifier<FlowCapableNode> nodeIdent;
+        private final DataObjectIdentifier<FlowCapableNode> nodeIdent;
         private final BundleId bundleId;
         private final Message messages;
         private final String nodeId;
@@ -226,8 +222,8 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         private final Uint8 tableId;
         private final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture;
 
-        BundleFlowCallBack(final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId,
-                final Message messages, final InstanceIdentifier<Flow> identifier,
+        BundleFlowCallBack(final DataObjectIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId,
+                final Message messages, final DataObjectIdentifier<Flow> identifier,
                 final SettableFuture<RpcResult<AddBundleMessagesOutput>> resultFuture) {
             this.nodeIdent = nodeIdent;
             this.bundleId = bundleId;
@@ -242,7 +238,7 @@ public class BundleFlowForwarder implements BundleMessagesCommiter<Flow> {
         public void onSuccess(final RpcResult<AddBundleMessagesOutput> rpcResult) {
             if (rpcResult.isSuccessful()) {
                 AddBundleMessagesInput addBundleMessagesInput = new AddBundleMessagesInputBuilder()
-                        .setNode(new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier()))
+                        .setNode(new NodeRef(nodeIdent.trimTo(Node.class)))
                         .setBundleId(bundleId)
                         .setFlags(BUNDLE_FLAGS)
                         .setMessages(new MessagesBuilder()

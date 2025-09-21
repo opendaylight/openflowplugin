@@ -10,12 +10,12 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.FlowCapableNodeConnectorCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 
 public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         implements FlowCapableNodeConnectorCommitter<T> {
@@ -25,10 +25,9 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
         requireNonNull(changes, "Changes may not be null!");
 
         for (DataTreeModification<T> change : changes) {
-            final InstanceIdentifier<T> key = change.getRootPath().path();
-            final DataObjectModification<T> mod = change.getRootNode();
-            final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent = key
-                    .firstIdentifierOf(FlowCapableNodeConnector.class);
+            final var key = change.path();
+            final var mod = change.getRootNode();
+            final var nodeConnIdent = key.trimTo(FlowCapableNodeConnector.class);
 
             if (preConfigurationCheck(nodeConnIdent)) {
                 switch (mod.modificationType()) {
@@ -57,9 +56,9 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
      * Method return wildCardPath for Listener registration and for identify the
      * correct KeyInstanceIdentifier from data.
      */
-    protected abstract InstanceIdentifier<T> getWildCardPath();
+    protected abstract DataObjectReference<T> getWildCardPath();
 
-    private static boolean preConfigurationCheck(final InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
+    private static boolean preConfigurationCheck(final DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent) {
         requireNonNull(nodeConnIdent, "FlowCapableNodeConnector ident can not be null!");
         return true;
     }
