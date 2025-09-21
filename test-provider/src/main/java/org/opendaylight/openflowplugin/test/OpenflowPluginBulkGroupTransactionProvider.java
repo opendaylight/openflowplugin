@@ -90,8 +90,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -518,8 +518,8 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
         }
     }
 
-    private static InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
+    private static DataObjectIdentifier<Node> nodeToInstanceId(final Node node) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, node.key()).build();
     }
 
     @SuppressWarnings("checkstyle:MethodName")
@@ -585,16 +585,18 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
     private void writeGroup(final CommandInterpreter ci, final Group group, final Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
 
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
+        final var path1 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group.getGroupId()));
+                .child(Group.class, new GroupKey(group.getGroupId()))
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12),
                 testNode12);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, group);
 
-        InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
+        final var path2 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group1.getGroupId()));
+                .child(Group.class, new GroupKey(group1.getGroupId()))
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode12),
                 testNode12);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, group1);
@@ -613,14 +615,16 @@ public final class OpenflowPluginBulkGroupTransactionProvider implements Command
 
     private void deleteGroup(final CommandInterpreter ci, final Group group, final Group group1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Group> path1 = InstanceIdentifier.create(Nodes.class)
+        final var path1 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group.getGroupId()));
+                .child(Group.class, new GroupKey(group.getGroupId()))
+                .build();
         modification.delete(LogicalDatastoreType.OPERATIONAL, path1);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
-        InstanceIdentifier<Group> path2 = InstanceIdentifier.create(Nodes.class)
+        final var path2 = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, testNode12.key()).augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(group1.getGroupId()));
+                .child(Group.class, new GroupKey(group1.getGroupId()))
+                .build();
         modification.delete(LogicalDatastoreType.OPERATIONAL, path2);
         modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {

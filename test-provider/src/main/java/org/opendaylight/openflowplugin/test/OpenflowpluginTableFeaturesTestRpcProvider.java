@@ -18,8 +18,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTable;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.service.rev131026.UpdateTableOutputBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,8 +43,9 @@ public final class OpenflowpluginTableFeaturesTestRpcProvider implements AutoClo
                 LOG.info("updateTable - {}", input);
                 return RpcResultBuilder.success(new UpdateTableOutputBuilder().build()).buildFuture();
             },
-            Set.of(InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID))).toIdentifier()));
+            Set.of(DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId(OpenflowpluginTestActivator.NODE_ID)))
+                .build()));
         LOG.info("SalTableRpcProvider Started.");
     }
 

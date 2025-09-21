@@ -36,8 +36,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.band.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.MeterBandHeadersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.MeterBandHeaderBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.meter.band.headers.meter.band.header.MeterBandTypesBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.osgi.service.component.annotations.Activate;
@@ -72,8 +72,8 @@ public final class OpenflowpluginMeterTestCommandProvider implements CommandProv
         testNode = new NodeBuilder().setId(new NodeId(OpenflowpluginTestActivator.NODE_ID)).build();
     }
 
-    private static @NonNull InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
+    private static @NonNull DataObjectIdentifier<Node> nodeToInstanceId(final Node node) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, node.key()).build();
     }
 
     private MeterBuilder createTestMeter() {
@@ -165,8 +165,9 @@ public final class OpenflowpluginMeterTestCommandProvider implements CommandProv
         }
         createTestMeter();
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
-                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId()));
+        final var path1 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, testNode.key())
+                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(testMeter.getMeterId()))
+                .build();
         modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
@@ -197,57 +198,65 @@ public final class OpenflowpluginMeterTestCommandProvider implements CommandProv
 
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
         switch (count) {
-            case 1:
+            case 1 -> {
                 createTestMeters("1", "remove");
-                InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class)
+                final var path1 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
                 createTestMeters("2", "remove");
-                InstanceIdentifier<Meter> path2 = InstanceIdentifier.create(Nodes.class)
+                final var path2 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path2);
-
-                break;
-            case 2:
+            }
+            case 2 -> {
                 createTestMeters("3", "remove");
-                InstanceIdentifier<Meter> path3 = InstanceIdentifier.create(Nodes.class)
+                final var path3 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path3);
                 createTestMeters("4", "remove");
-                InstanceIdentifier<Meter> path4 = InstanceIdentifier.create(Nodes.class)
+                final var path4 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path4);
-                break;
-            case 3:
+            }
+            case 3 -> {
                 createTestMeters("5", "remove");
-                InstanceIdentifier<Meter> path5 = InstanceIdentifier.create(Nodes.class)
+                final var path5 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path5);
                 createTestMeters("6", "remove");
-                InstanceIdentifier<Meter> path6 = InstanceIdentifier.create(Nodes.class)
+                final var path6 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path6);
-                break;
-            case 4:
+            }
+            case 4 -> {
                 createTestMeters("7", "remove");
-                InstanceIdentifier<Meter> path7 = InstanceIdentifier.create(Nodes.class)
+                final var path7 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter1.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path7);
                 createTestMeters("8", "remove");
-                InstanceIdentifier<Meter> path8 = InstanceIdentifier.create(Nodes.class)
+                final var path8 = DataObjectIdentifier.builder(Nodes.class)
                         .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()));
+                        .child(Meter.class, new MeterKey(testMeter2.getMeterId()))
+                        .build();
                 modification.delete(LogicalDatastoreType.CONFIGURATION, path8);
-                break;
-            default:
-                break;
+            }
+            default -> {
+                // No-op
+            }
         }
 
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
@@ -320,8 +329,9 @@ public final class OpenflowpluginMeterTestCommandProvider implements CommandProv
 
     private void writeMeter(final CommandInterpreter ci, final Meter meter) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
-                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
+        final var path1 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, testNode.key())
+                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()))
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
@@ -340,13 +350,15 @@ public final class OpenflowpluginMeterTestCommandProvider implements CommandProv
 
     private void writeMeter(final CommandInterpreter ci, final Meter meter, final Meter meter1) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        InstanceIdentifier<Meter> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
-                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()));
+        final var path1 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, testNode.key())
+                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter.getMeterId()))
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, meter);
-        InstanceIdentifier<Meter> path2 = InstanceIdentifier.create(Nodes.class).child(Node.class, testNode.key())
-                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter1.getMeterId()));
+        final var path2 = DataObjectIdentifier.builder(Nodes.class).child(Node.class, testNode.key())
+                .augmentation(FlowCapableNode.class).child(Meter.class, new MeterKey(meter1.getMeterId()))
+                .build();
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, nodeToInstanceId(testNode),
                 testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path2, meter1);

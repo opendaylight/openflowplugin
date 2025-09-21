@@ -62,9 +62,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeatureProperties;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.table.features.table.properties.TableFeaturePropertiesKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -94,8 +93,8 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
         testNode = new NodeBuilder().setId(new NodeId(OpenflowpluginTestActivator.NODE_ID)).build();
     }
 
-    private static @NonNull InstanceIdentifier<Node> nodeToInstanceId(final Node node) {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class, node.key());
+    private static @NonNull DataObjectIdentifier<Node> nodeToInstanceId(final Node node) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, node.key()).build();
     }
 
     private static TableFeaturesBuilder createTestTableFeatures(final String tableFeatureTypeArg) {
@@ -384,9 +383,11 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
     private void writeTableFeatures(final CommandInterpreter ci, final TableFeatures tableFeatures) {
         ReadWriteTransaction modification = requireNonNull(dataBroker).newReadWriteTransaction();
 
-        KeyedInstanceIdentifier<TableFeatures, TableFeaturesKey> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, testNode.key()).augmentation(FlowCapableNode.class)
-                        .child(TableFeatures.class, new TableFeaturesKey(tableFeatures.getTableId()));
+        final var path1 = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, testNode.key())
+            .augmentation(FlowCapableNode.class)
+            .child(TableFeatures.class, new TableFeaturesKey(tableFeatures.getTableId()))
+            .build();
 
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, nodeToInstanceId(testNode), testNode);
         modification.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, path1, tableFeatures);
