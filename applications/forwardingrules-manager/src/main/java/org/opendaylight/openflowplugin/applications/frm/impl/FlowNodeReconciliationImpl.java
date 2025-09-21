@@ -398,15 +398,8 @@ public class FlowNodeReconciliationImpl implements FlowNodeReconciliation {
                         boolean okToInstall = true;
                         Buckets buckets = group.getBuckets();
                         Collection<Bucket> bucketList = buckets == null ? null : buckets.nonnullBucket().values();
-                        if (bucketList == null) {
-                            bucketList = Collections.<Bucket>emptyList();
-                        }
                         for (Bucket bucket : bucketList) {
-                            Collection<Action> actions = bucket.nonnullAction().values();
-                            if (actions == null) {
-                                actions = Collections.<Action>emptyList();
-                            }
-                            for (Action action : actions) {
+                            for (Action action : bucket.nonnullAction().values()) {
                                 // chained-port
                                 if (action.getAction().implementedInterface().getName()
                                         .equals("org.opendaylight.yang.gen.v1.urn.opendaylight"
