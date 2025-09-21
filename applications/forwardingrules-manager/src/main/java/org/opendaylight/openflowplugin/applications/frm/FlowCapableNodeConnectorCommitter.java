@@ -10,7 +10,7 @@ package org.opendaylight.openflowplugin.applications.frm;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 public interface FlowCapableNodeConnectorCommitter<D extends DataObject> extends AutoCloseable,
         DataTreeChangeListener<D> {
@@ -22,8 +22,8 @@ public interface FlowCapableNodeConnectorCommitter<D extends DataObject> extends
      * @param del - DataObject for removing
      * @param nodeConnIdent NodeConnector InstanceIdentifier
      */
-    void remove(InstanceIdentifier<D> identifier, D del,
-                InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent);
+    void remove(DataObjectIdentifier<D> identifier, D del,
+        DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent);
 
     /**
      * Method updates the original DataObject to the update DataObject
@@ -34,8 +34,8 @@ public interface FlowCapableNodeConnectorCommitter<D extends DataObject> extends
      * @param update - changed DataObject (contain updates)
      * @param nodeConnIdent NodeConnector InstanceIdentifier
      */
-    void update(InstanceIdentifier<D> identifier, D original, D update,
-                InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent);
+    void update(DataObjectIdentifier<D> identifier, D original, D update,
+        DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent);
 
     /**
      * Method adds the DataObject which is identified by InstanceIdentifier
@@ -45,7 +45,6 @@ public interface FlowCapableNodeConnectorCommitter<D extends DataObject> extends
      * @param add - new DataObject
      * @param nodeConnIdent NodeConnector InstanceIdentifier
      */
-    void add(InstanceIdentifier<D> identifier, D add,
-             InstanceIdentifier<FlowCapableNodeConnector> nodeConnIdent);
+    void add(DataObjectIdentifier<D> identifier, D add, DataObjectIdentifier<FlowCapableNodeConnector> nodeConnIdent);
 
 }

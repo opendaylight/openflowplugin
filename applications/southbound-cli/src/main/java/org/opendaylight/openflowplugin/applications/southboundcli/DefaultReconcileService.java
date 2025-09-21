@@ -60,7 +60,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.reconciliation.service.rev180227.reconciliation.counter.ReconcileCounterKey;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorTag;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
@@ -248,9 +247,10 @@ public final class DefaultReconcileService implements Reconcile, ReconcileServic
         public void run() {
             updateReconciliationState(STARTED);
             final var reconOutput = flowNodeReconciliation.reconcileConfiguration(
-                InstanceIdentifier.create(Nodes.class)
+                DataObjectIdentifier.builder(Nodes.class)
                     .child(Node.class, nodeKey)
-                    .augmentation(FlowCapableNode.class));
+                    .augmentation(FlowCapableNode.class)
+                    .build());
             try {
                 final boolean rpcResult = reconOutput.get();
                 increaseReconcileCount(rpcResult);

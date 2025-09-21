@@ -35,8 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflowplugin.app.arbitrator.reconcile.service.rev180227.GetActiveBundleInputBuilder;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.binding.DataObjectReference;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -53,32 +51,32 @@ public final class FrmUtil {
         // Hidden on purpose
     }
 
-    public static NodeId getNodeIdFromNodeIdentifier(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        return nodeIdent.firstKeyOf(Node.class).getId();
+    public static NodeId getNodeIdFromNodeIdentifier(final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
+        return nodeIdent.getFirstKeyOf(Node.class).getId();
     }
 
-    public static String getNodeIdValueFromNodeIdentifier(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
+    public static String getNodeIdValueFromNodeIdentifier(final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
         return getNodeIdFromNodeIdentifier(nodeIdent).getValue();
     }
 
     public static String getFlowId(final FlowRef flowRef) {
-        return ((DataObjectReference<?>) flowRef.getValue()).toLegacy().firstKeyOf(Flow.class).getId().getValue();
+        return flowRef.getValue().getFirstKeyOf(Flow.class).getId().getValue();
     }
 
-    public static String getFlowId(final InstanceIdentifier<Flow> identifier) {
-        return getFlowId(new FlowRef(identifier.toIdentifier()));
+    public static String getFlowId(final DataObjectIdentifier<Flow> identifier) {
+        return getFlowId(new FlowRef(identifier));
     }
 
     public static Uint8 getTableId(final FlowTableRef flowTableRef) {
-        return ((DataObjectIdentifier<?>) flowTableRef.getValue()).toLegacy().firstKeyOf(Table.class).getId();
+        return flowTableRef.getValue().getFirstKeyOf(Table.class).getId();
     }
 
-    public static Uint8 getTableId(final InstanceIdentifier<Flow> identifier) {
-        return getTableId(new FlowTableRef(identifier.toIdentifier()));
+    public static Uint8 getTableId(final DataObjectIdentifier<Flow> identifier) {
+        return getTableId(new FlowTableRef(identifier));
     }
 
-    public static Uint64 getDpnIdFromNodeName(final InstanceIdentifier<FlowCapableNode> nodeIdent) {
-        String nodeId = nodeIdent.firstKeyOf(Node.class).getId().getValue();
+    public static Uint64 getDpnIdFromNodeName(final DataObjectIdentifier<FlowCapableNode> nodeIdent) {
+        String nodeId = nodeIdent.getFirstKeyOf(Node.class).getId().getValue();
         return Uint64.valueOf(nodeId.substring(nodeId.lastIndexOf(SEPARATOR) + 1));
     }
 
@@ -109,37 +107,34 @@ public final class FrmUtil {
         return null;
     }
 
-    public static InstanceIdentifier<Group> buildGroupInstanceIdentifier(
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
-        NodeId nodeId = getNodeIdFromNodeIdentifier(nodeIdent);
-        InstanceIdentifier<Group> groupInstanceId = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId))
-                .augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(new GroupId(groupId)))
-                .build();
-        return groupInstanceId;
+    public static DataObjectIdentifier<Group> buildGroupInstanceIdentifier(
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent, final Uint32 groupId) {
+        return  DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(getNodeIdFromNodeIdentifier(nodeIdent)))
+            .augmentation(FlowCapableNode.class)
+            .child(Group.class, new GroupKey(new GroupId(groupId)))
+            .build();
     }
 
-    public static BundleId getActiveBundle(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+    public static BundleId getActiveBundle(final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                            final ForwardingRulesManager provider) {
         final Uint64 dpId = getDpnIdFromNodeName(nodeIdent);
-        final NodeRef nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
+        final NodeRef nodeRef = new NodeRef(nodeIdent.trimTo(Node.class));
         GetActiveBundleInputBuilder input = new GetActiveBundleInputBuilder().setNodeId(dpId).setNode(nodeRef);
         try {
             final var result = provider.getActiveBundle().invoke(input.build())
                 .get(RPC_RESULT_TIMEOUT, TimeUnit.MILLISECONDS);
-            if (!result.isSuccessful()) {
-                LOG.trace("Error while retrieving active bundle present for node {}", dpId);
-            } else {
+            if (result.isSuccessful()) {
                 return result.getResult().getResult();
             }
+            LOG.trace("Error while retrieving active bundle present for node {}", dpId);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             LOG.error("Error while retrieving active bundle present for node {} is {}", dpId , e.getMessage());
         }
         return null;
     }
 
-    public static boolean isGroupExistsOnDevice(final InstanceIdentifier<FlowCapableNode> nodeIdent,
+    public static boolean isGroupExistsOnDevice(final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                                                 final Uint32 groupId,
                                                 final ForwardingRulesManager provider) {
         String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);

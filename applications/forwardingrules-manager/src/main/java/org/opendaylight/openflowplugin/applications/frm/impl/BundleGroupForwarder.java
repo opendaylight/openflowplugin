@@ -36,7 +36,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.bundle.service.rev170124.bundle.inner.message.grouping.bundle.inner.message.bundle.update.group._case.UpdateGroupCaseDataBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -57,10 +57,10 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     }
 
     @Override
-    public void remove(final InstanceIdentifier<Group> identifier, final Group group,
-            final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+    public void remove(final DataObjectIdentifier<Group> identifier, final Group group,
+            final DataObjectIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-        final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
+        final var nodeRef = new NodeRef(nodeIdent.trimTo(Node.class));
         nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                 .setNode(nodeRef)
@@ -86,13 +86,13 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     }
 
     @Override
-    public void update(final InstanceIdentifier<Group> identifier,
+    public void update(final DataObjectIdentifier<Group> identifier,
                        final Group originalGroup,
                        final Group updatedGroup,
-                        final InstanceIdentifier<FlowCapableNode> nodeIdent,
+                       final DataObjectIdentifier<FlowCapableNode> nodeIdent,
                        final BundleId bundleId) {
         final String nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
-        final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
+        final var nodeRef = new NodeRef(nodeIdent.trimTo(Node.class));
         nodeConfigurator.enqueueJob(nodeId, () -> {
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                 .setNode(nodeRef)
@@ -118,8 +118,8 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
     }
 
     @Override
-    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final InstanceIdentifier<Group> identifier,
-            final Group group, final InstanceIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
+    public ListenableFuture<RpcResult<AddBundleMessagesOutput>> add(final DataObjectIdentifier<Group> identifier,
+            final Group group, final DataObjectIdentifier<FlowCapableNode> nodeIdent, final BundleId bundleId) {
         final var nodeId = getNodeIdValueFromNodeIdentifier(nodeIdent);
         final var groupId = group.getGroupId().getValue();
         return nodeConfigurator.enqueueJob(nodeId, () -> {
@@ -127,7 +127,7 @@ public class BundleGroupForwarder implements BundleMessagesCommiter<Group> {
                 LOG.debug("Group {} already exists in the device. Ignoring the add DTCN", groupId);
                 return RpcResultBuilder.<AddBundleMessagesOutput>success().buildFuture();
             }
-            final var nodeRef = new NodeRef(nodeIdent.firstIdentifierOf(Node.class).toIdentifier());
+            final var nodeRef = new NodeRef(nodeIdent.trimTo(Node.class));
             final var addBundleMessagesInput = new AddBundleMessagesInputBuilder()
                 .setNode(nodeRef)
                 .setBundleId(bundleId)
