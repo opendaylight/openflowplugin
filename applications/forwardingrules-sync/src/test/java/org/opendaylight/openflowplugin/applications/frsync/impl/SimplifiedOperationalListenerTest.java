@@ -22,7 +22,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -68,8 +69,6 @@ public class SimplifiedOperationalListenerTest {
     @Mock
     private DataTreeModification<Node> dataTreeModification;
     @Mock
-    private DataObjectModification<Node> operationalModification;
-    @Mock
     private FlowCapableNode configNode;
     @Mock
     private Node operationalNode;
@@ -104,7 +103,6 @@ public class SimplifiedOperationalListenerTest {
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.when(operationalNode.getId()).thenReturn(NODE_ID);
         Mockito.when(dataTreeModification.path()).thenReturn(nodePath);
-        Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
         Mockito.when(operationalNode.augmentation(FlowCapableNode.class)).thenReturn(fcOperationalNode);
     }
 
@@ -123,8 +121,10 @@ public class SimplifiedOperationalListenerTest {
 
     @Test
     public void testOnDataTreeChangedDeletePhysical() {
+        final DataObjectDeleted<Node> operationalModification = Mockito.mock();
         Mockito.when(operationalModification.dataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.dataAfter()).thenReturn(null);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
 
         nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
@@ -134,11 +134,13 @@ public class SimplifiedOperationalListenerTest {
 
     @Test
     public void testOnDataTreeChangedDeleteLogical() {
+        final DataObjectDeleted<Node> operationalModification = Mockito.mock();
         Mockito.when(operationalModification.dataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalNode.getNodeConnector()).thenReturn(nodeConnector);
         Mockito.when(operationalNodeEmpty.getId()).thenReturn(NODE_ID);
         Mockito.when(operationalModification.dataAfter()).thenReturn(operationalNodeEmpty);
         Mockito.when(operationalNodeEmpty.getNodeConnector()).thenReturn(null);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
 
         nodeListenerOperational.onDataTreeChanged(List.of(dataTreeModification));
 
@@ -271,13 +273,17 @@ public class SimplifiedOperationalListenerTest {
     }
 
     private void operationalAdd() {
+        final DataObjectWritten<Node> operationalModification = Mockito.mock();
         Mockito.when(operationalModification.dataBefore()).thenReturn(null);
         Mockito.when(operationalModification.dataAfter()).thenReturn(operationalNode);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
     }
 
     private void operationalUpdate() {
+        final DataObjectWritten<Node> operationalModification = Mockito.mock();
         Mockito.when(operationalModification.dataBefore()).thenReturn(operationalNode);
         Mockito.when(operationalModification.dataAfter()).thenReturn(operationalNode);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(operationalModification);
     }
 
     private SyncupEntry loadConfigDSAndPrepareSyncupEntry(final FlowCapableNode after,
