@@ -35,9 +35,12 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNode;
@@ -53,7 +56,6 @@ import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 
 public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
-    @SuppressWarnings({ "rawtypes" })
     @Test
     public void testOnNodeRemoved() {
         NodeKey topoNodeKey = new NodeKey(new NodeId("node1"));
@@ -74,7 +76,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
             .setLink(BindingMap.ordered(linkList))
             .build();
 
-        final DataObjectIdentifier[] expDeletedIIDs = {
+        final DataObjectIdentifier<?>[] expDeletedIIDs = {
                 topologyIID.toBuilder().child(Link.class, linkList.get(0).key()).build(),
                 topologyIID.toBuilder().child(Link.class, linkList.get(1).key()).build(),
                 topologyIID.toBuilder().child(Node.class, new NodeKey(new NodeId("node1"))).build()
@@ -97,7 +99,12 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID, false);
+        final DataTreeModification<FlowCapableNode> dataTreeModification = mock();
+        final DataObjectDeleted<FlowCapableNode> dataObjectModification = mock();
+        doReturn(DELETE).when(dataObjectModification).modificationType();
+        doReturn(dataObjectModification).when(dataTreeModification).getRootNode();
+        doReturn(invNodeID).when(dataTreeModification).path();
+
         nodeChangeListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch1);
@@ -140,7 +147,12 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeID, false);
+        final DataTreeModification<FlowCapableNode> dataTreeModification = mock();
+        final DataObjectDeleted<FlowCapableNode> dataObjectModification = mock();
+        doReturn(DELETE).when(dataObjectModification).modificationType();
+        doReturn(dataObjectModification).when(dataTreeModification).getRootNode();
+        doReturn(invNodeID).when(dataTreeModification).path();
+
         nodeChangeListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch);
@@ -152,8 +164,7 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
     @Test
     public void testOnNodeAdded() {
-        org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey
-                                                            nodeKey = newInvNodeKey("node1");
+        final var nodeKey = newInvNodeKey("node1");
         var invNodeID = DataObjectIdentifier.builder(Nodes.class)
             .child(org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node.class, nodeKey)
             .build();
@@ -162,7 +173,12 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeID, false);
+        final DataTreeModification<FlowCapableNode> dataTreeModification = mock();
+        final DataObjectWritten<FlowCapableNode> dataObjectModification = mock();
+        doReturn(WRITE).when(dataObjectModification).modificationType();
+        doReturn(dataObjectModification).when(dataTreeModification).getRootNode();
+        doReturn(invNodeID).when(dataTreeModification).path();
+
         nodeChangeListener.onDataTreeChanged(List.of(dataTreeModification));
 
         waitForSubmit(submitLatch);
@@ -176,5 +192,4 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
         assertNotNull("Missing augmentation", augmentation);
         assertEquals("getInventoryNodeRef", new NodeRef(invNodeID), augmentation.getInventoryNodeRef());
     }
-
 }

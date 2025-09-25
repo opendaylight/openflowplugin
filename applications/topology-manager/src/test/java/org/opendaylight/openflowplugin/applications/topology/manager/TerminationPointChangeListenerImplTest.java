@@ -39,10 +39,17 @@ import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TpId;
@@ -59,7 +66,6 @@ import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 
 public class TerminationPointChangeListenerImplTest extends DataTreeChangeListenerBase {
-    @SuppressWarnings("rawtypes")
     @Test
     public void testOnNodeConnectorRemoved() {
 
@@ -75,7 +81,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey ncKey =
                 newInvNodeConnKey(terminationPointKey.getTpId().getValue());
 
-        final DataObjectIdentifier<?> invNodeConnID = newNodeConnID(nodeKey, ncKey);
+        final var invNodeConnID = newNodeConnID(nodeKey, ncKey);
 
         List<Link> linkList = Arrays.asList(
                 newLink("link1", newSourceTp("tp1"), newDestTp("dest")),
@@ -110,8 +116,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         doReturn(mockTx1).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID, false);
-        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(setupDataDeleted(invNodeConnID)));
 
         waitForSubmit(submitLatch1);
 
@@ -124,7 +129,6 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         verifyMockTx(mockTx1);
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void testOnNodeConnectorRemovedWithNoTopology() {
 
@@ -163,8 +167,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, invNodeConnID, false);
-        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(setupDataDeleted(invNodeConnID)));
 
         waitForSubmit(submitLatch);
 
@@ -188,12 +191,11 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         CountDownLatch submitLatch = setupStubbedSubmit(mockTx);
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID, true);
-        terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
+        terminationPointListener.onDataTreeChanged(List.of(setupDataWritten(invNodeConnID, true)));
 
         waitForSubmit(submitLatch);
 
-        ArgumentCaptor<TerminationPoint> mergedNode = ArgumentCaptor.forClass(TerminationPoint.class);
+        final var mergedNode = ArgumentCaptor.forClass(TerminationPoint.class);
         NodeId expNodeId = new NodeId("node1");
         TpId expTpId = new TpId("tp1");
         final var expTpPath = topologyIID.toBuilder()
@@ -210,7 +212,6 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
                 augmentation.getInventoryNodeConnectorRef());
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void testOnNodeConnectorUpdatedWithLinkStateDown() {
 
@@ -238,7 +239,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID, false);
+        final var dataTreeModification = setupDataWritten(invNodeConnID, false);
         when(dataTreeModification.getRootNode().dataAfter())
                 .thenReturn(provideFlowCapableNodeConnector(true, false));
         terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
@@ -258,7 +259,6 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         }, deletedLinkIDs);
     }
 
-    @SuppressWarnings("rawtypes")
     @Test
     public void testOnNodeConnectorUpdatedWithPortDown() {
 
@@ -286,7 +286,7 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
 
         doReturn(mockTx).when(mockTxChain).newReadWriteTransaction();
 
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, invNodeConnID, false);
+        final var dataTreeModification = setupDataWritten(invNodeConnID, false);
         when(dataTreeModification.getRootNode().dataAfter())
                 .thenReturn(provideFlowCapableNodeConnector(false, true));
         terminationPointListener.onDataTreeChanged(List.of(dataTreeModification));
@@ -304,5 +304,38 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
         assertDeletedIDs(new DataObjectIdentifier[] {
             topologyIID.toBuilder().child(Link.class, linkList.get(0).key()).build()
         }, deletedLinkIDs);
+    }
+
+    private static FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown,
+            final boolean isPortDown) {
+        return new FlowCapableNodeConnectorBuilder()
+            .setState(new StateBuilder().setLinkDown(isLinkDown).build())
+            .setConfiguration(new PortConfig(true, true, true, isPortDown))
+            .build();
+    }
+
+    private static DataTreeModification<FlowCapableNodeConnector> setupDataDeleted(
+            final DataObjectIdentifier<NodeConnector> ii) {
+        final DataObjectDeleted<FlowCapableNodeConnector> root = mock();
+        doReturn(DELETE).when(root).modificationType();
+
+        final DataTreeModification<FlowCapableNodeConnector> ret = mock();
+        doReturn(root).when(ret).getRootNode();
+        doReturn(ii.toBuilder().augmentation(FlowCapableNodeConnector.class).build()).when(ret).path();
+        return ret;
+    }
+
+    private static DataTreeModification<FlowCapableNodeConnector> setupDataWritten(
+            final DataObjectIdentifier<NodeConnector> ii, final boolean getDataAfter) {
+        final DataObjectWritten<FlowCapableNodeConnector> root = mock();
+        doReturn(WRITE).when(root).modificationType();
+        if (getDataAfter) {
+            when(root.dataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
+        }
+
+        final DataTreeModification<FlowCapableNodeConnector> ret = mock();
+        doReturn(root).when(ret).getRootNode();
+        doReturn(ii.toBuilder().augmentation(FlowCapableNodeConnector.class).build()).when(ret).path();
+        return ret;
     }
 }

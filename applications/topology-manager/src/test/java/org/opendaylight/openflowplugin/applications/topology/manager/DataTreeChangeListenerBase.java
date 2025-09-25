@@ -8,8 +8,6 @@
 package org.opendaylight.openflowplugin.applications.topology.manager;
 
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -19,19 +17,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
-import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnectorBuilder;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.flow.capable.port.StateBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.TopologyId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.Topology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.TopologyKey;
-import org.opendaylight.yangtools.binding.DataObject;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
@@ -66,25 +56,5 @@ public abstract class DataTreeChangeListenerBase {
     @After
     public void tearDown() {
         executor.shutdownNow();
-    }
-
-    protected FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown,
-            final boolean isPortDown) {
-        return new FlowCapableNodeConnectorBuilder()
-            .setState(new StateBuilder().setLinkDown(isLinkDown).build())
-            .setConfiguration(new PortConfig(true, true, true, isPortDown))
-            .build();
-    }
-
-    protected <T extends DataObject> DataTreeModification<T> setupDataTreeChange(final ModificationType type,
-            final DataObjectIdentifier<T> ii, final boolean getDataAfter) {
-        final var dataTreeModification = mock(DataTreeModification.class);
-        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
-        when(dataTreeModification.getRootNode().modificationType()).thenReturn(type);
-        when(dataTreeModification.path()).thenReturn(ii);
-        if (getDataAfter) {
-            when(dataTreeModification.getRootNode().dataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
-        }
-        return dataTreeModification;
     }
 }

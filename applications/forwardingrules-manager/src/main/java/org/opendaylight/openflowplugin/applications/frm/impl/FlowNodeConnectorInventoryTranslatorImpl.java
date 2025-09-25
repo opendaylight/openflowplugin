@@ -14,7 +14,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import java.math.BigInteger;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.openflowplugin.applications.frm.FlowNodeConnectorInventoryTranslator;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -46,8 +45,8 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
 
     public FlowNodeConnectorInventoryTranslatorImpl(final DataBroker dataBroker) {
         requireNonNull(dataBroker, "DataBroker can not be null!");
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, getWildCardPath()), this);
+        listenerRegistration = dataBroker.registerLegacyTreeChangeListener(
+            LogicalDatastoreType.OPERATIONAL, getWildCardPath(), this);
     }
 
     @Override
