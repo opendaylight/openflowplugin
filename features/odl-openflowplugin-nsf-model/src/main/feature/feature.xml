@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="odl-openflowplugin-nsf-model-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name="odl-openflowplugin-nsf-model" version="${project.version}">
-        <feature version="[14,15)">odl-mdsal-model-draft-clemm-netmod-yang-network-topo-01-minimal</feature>
-        <feature version="[14,15)">odl-mdsal-model-odl-l2-types</feature>
+        <feature version="[15,16)">odl-mdsal-model-draft-clemm-netmod-yang-network-topo-01-minimal</feature>
+        <feature version="[15,16)">odl-mdsal-model-odl-l2-types</feature>
     </feature>
 </features>
