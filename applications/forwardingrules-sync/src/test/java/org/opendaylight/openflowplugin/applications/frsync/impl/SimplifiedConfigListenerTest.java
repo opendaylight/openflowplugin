@@ -19,7 +19,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -56,8 +58,6 @@ public class SimplifiedConfigListenerTest {
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
-    private DataObjectModification<FlowCapableNode> configModification;
-    @Mock
     private FlowCapableNode dataBefore;
     @Mock
     private FlowCapableNode dataAfter;
@@ -78,7 +78,7 @@ public class SimplifiedConfigListenerTest {
 
         Mockito.when(db.newReadOnlyTransaction()).thenReturn(roTx);
         Mockito.when(dataTreeModification.path()).thenReturn(fcNodePath);
-        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+//        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
     }
 
     @Test
@@ -88,6 +88,9 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedAdd() {
+        final DataObjectWritten<FlowCapableNode> configModification = Mockito.mock();
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+
         Mockito.when(configModification.dataBefore()).thenReturn(null);
         Mockito.when(configModification.dataAfter()).thenReturn(dataAfter);
         final SyncupEntry syncupEntry =
@@ -102,8 +105,11 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedUpdate() {
+        final DataObjectModified<FlowCapableNode> configModification = Mockito.mock();
         Mockito.when(configModification.dataBefore()).thenReturn(dataBefore);
         Mockito.when(configModification.dataAfter()).thenReturn(dataAfter);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(dataAfter, confgDS, dataBefore, confgDS);
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
@@ -115,8 +121,11 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedDelete() {
+        final DataObjectDeleted<FlowCapableNode> configModification = Mockito.mock();
         Mockito.when(configModification.dataBefore()).thenReturn(dataBefore);
         Mockito.when(configModification.dataAfter()).thenReturn(null);
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+
         final SyncupEntry syncupEntry = loadOperationalDSAndPrepareSyncupEntry(null, confgDS, dataBefore, confgDS);
 
         nodeListenerConfig.onDataTreeChanged(List.of(dataTreeModification));
@@ -128,6 +137,9 @@ public class SimplifiedConfigListenerTest {
 
     @Test
     public void testOnDataTreeChangedSkip() {
+        final DataObjectDeleted<FlowCapableNode> configModification = Mockito.mock();
+        Mockito.when(dataTreeModification.getRootNode()).thenReturn(configModification);
+
         Mockito.doReturn(FluentFutures.immediateFluentFuture(Optional.empty())).when(roTx)
             .read(LogicalDatastoreType.OPERATIONAL, fcNodePath);
 

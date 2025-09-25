@@ -27,8 +27,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.openflowplugin.applications.deviceownershipservice.DeviceOwnershipService;
@@ -69,7 +69,7 @@ public class LLDPDataTreeChangeListenerTest {
     @Mock
     private DataTreeModification<FlowCapableNode> dataTreeModification;
     @Mock
-    private DataObjectModification<FlowCapableNode> dataObjectModification;
+    private DataObjectWritten<FlowCapableNode> dataObjectModification;
     @Mock
     private DeviceOwnershipService deviceOwnershipService;
     @Captor
