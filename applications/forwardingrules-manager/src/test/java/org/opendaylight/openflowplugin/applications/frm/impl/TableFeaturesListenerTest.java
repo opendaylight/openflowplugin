@@ -29,7 +29,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeatures;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.table.types.rev131026.table.features.TableFeaturesKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,9 +51,10 @@ public class TableFeaturesListenerTest extends AbstractFRMTest {
         addTable(tableKey);
 
         TableFeatures tableFeaturesData = new TableFeaturesBuilder().withKey(tableFeaturesKey).build();
-        InstanceIdentifier<TableFeatures> tableFeaturesII = InstanceIdentifier.create(Nodes.class)
+        final var tableFeaturesII = DataObjectIdentifier.builder(Nodes.class)
                 .child(Node.class, NODE_KEY).augmentation(FlowCapableNode.class)
-                .child(TableFeatures.class, tableFeaturesKey);
+                .child(TableFeatures.class, tableFeaturesKey)
+                .build();
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableFeaturesII, tableFeaturesData);
         assertCommit(writeTx.commit());
@@ -78,8 +79,9 @@ public class TableFeaturesListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
         final Table table = new TableBuilder().withKey(tableKey).build();
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
-        InstanceIdentifier<Table> tableII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+        final var tableII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Table.class, tableKey)
+            .build();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, tableII, table);
         assertCommit(writeTx.commit());
     }

@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -49,8 +49,8 @@ public class GroupListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId(Uint32.valueOf(255)));
-        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
+        var groupII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Group.class, groupKey).build();
         Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -63,8 +63,8 @@ public class GroupListenerTest extends AbstractFRMTest {
         assertEquals("DOM-0", addGroupCalls.get(0).getTransactionUri().getValue());
 
         groupKey = new GroupKey(new GroupId(Uint32.valueOf(256)));
-        groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
+        groupII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Group.class, groupKey).build();
         group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, groupII, group);
@@ -80,8 +80,8 @@ public class GroupListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId(Uint32.valueOf(255)));
-        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
+        final var groupII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Group.class, groupKey).build();
         Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -109,8 +109,9 @@ public class GroupListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         GroupKey groupKey = new GroupKey(new GroupId(Uint32.valueOf(255)));
-        InstanceIdentifier<Group> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Group.class, groupKey);
+        final var groupII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+                .augmentation(FlowCapableNode.class).child(Group.class, groupKey)
+                .build();
         Group group = new GroupBuilder().withKey(groupKey).setGroupName("Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -137,8 +138,8 @@ public class GroupListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         StaleGroupKey groupKey = new StaleGroupKey(new GroupId(Uint32.valueOf(255)));
-        InstanceIdentifier<StaleGroup> groupII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(StaleGroup.class, groupKey);
+        final var groupII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(StaleGroup.class, groupKey).build();
         StaleGroup group = new StaleGroupBuilder().withKey(groupKey).setGroupName("Stale_Group1").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();

@@ -24,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NodeListenerTest extends AbstractFRMTest {
@@ -58,7 +57,7 @@ public class NodeListenerTest extends AbstractFRMTest {
     private void removeNode() throws ExecutionException, InterruptedException {
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.delete(LogicalDatastoreType.OPERATIONAL,
-                InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY));
+                DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY).build());
         writeTx.commit().get();
     }
 }

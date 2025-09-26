@@ -32,7 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.service.rev130918.AddMeterInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.MeterId;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -51,8 +51,8 @@ public class MeterListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId(Uint32.valueOf(2000)));
-        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
+        var meterII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Meter.class, meterKey).build();
         Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -64,8 +64,8 @@ public class MeterListenerTest extends AbstractFRMTest {
         assertEquals("DOM-0", addMeterCalls.get(0).getTransactionUri().getValue());
 
         meterKey = new MeterKey(new MeterId(Uint32.valueOf(2001)));
-        meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
+        meterII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Meter.class, meterKey).build();
         meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_two").setBarrier(true).build();
         writeTx = getDataBroker().newWriteOnlyTransaction();
         writeTx.put(LogicalDatastoreType.CONFIGURATION, meterII, meter);
@@ -82,8 +82,8 @@ public class MeterListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId(Uint32.valueOf(2000)));
-        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
+        final var meterII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Meter.class, meterKey).build();
         Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").setBarrier(false).build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -110,8 +110,8 @@ public class MeterListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         MeterKey meterKey = new MeterKey(new MeterId(Uint32.valueOf(2000)));
-        InstanceIdentifier<Meter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(Meter.class, meterKey);
+        final var meterII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(Meter.class, meterKey).build();
         Meter meter = new MeterBuilder().withKey(meterKey).setMeterName("meter_one").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
@@ -137,8 +137,8 @@ public class MeterListenerTest extends AbstractFRMTest {
         addFlowCapableNode(NODE_KEY);
 
         StaleMeterKey meterKey = new StaleMeterKey(new MeterId(Uint32.valueOf(2000)));
-        InstanceIdentifier<StaleMeter> meterII = InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY)
-                .augmentation(FlowCapableNode.class).child(StaleMeter.class, meterKey);
+        final var meterII = DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY)
+            .augmentation(FlowCapableNode.class).child(StaleMeter.class, meterKey).build();
         StaleMeter meter = new StaleMeterBuilder().withKey(meterKey).setMeterName("stale_meter_one").build();
 
         WriteTransaction writeTx = getDataBroker().newWriteOnlyTransaction();
