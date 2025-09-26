@@ -14,7 +14,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NetworkTopology;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
@@ -43,8 +42,8 @@ abstract class DataTreeChangeListenerImpl<T extends DataObject> implements DataT
     DataTreeChangeListenerImpl(final OperationProcessor operationProcessor, final DataBroker dataBroker,
             final DataObjectReference<T> ii) {
         this.operationProcessor = requireNonNull(operationProcessor);
-        listenerRegistration = dataBroker.registerDataTreeChangeListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, ii), this);
+        // FIXME: integrate the two subclasses with Cluster Singleton Service and switch to normal registration
+        listenerRegistration = dataBroker.registerLegacyTreeChangeListener(LogicalDatastoreType.OPERATIONAL, ii, this);
     }
 
     @Override
