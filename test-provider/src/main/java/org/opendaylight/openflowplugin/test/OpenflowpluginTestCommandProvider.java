@@ -167,7 +167,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -2530,10 +2529,12 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
         } else {
             tf = createTestFlow(tn, flowtype, ci.nextArgument());
         }
-        final InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class).child(Node.class, tn.key())
-                .augmentation(FlowCapableNode.class).child(Table.class, new TableKey(tf.getTableId()))
-                .child(Flow.class, tf.key());
-        modification.delete(LogicalDatastoreType.CONFIGURATION, path1);
+        modification.delete(LogicalDatastoreType.CONFIGURATION, DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, tn.key())
+            .augmentation(FlowCapableNode.class)
+            .child(Table.class, new TableKey(tf.getTableId()))
+            .child(Flow.class, tf.key())
+            .build());
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo notUsed) {
@@ -2568,12 +2569,15 @@ public class OpenflowpluginTestCommandProvider implements CommandProvider, AutoC
 
     private void writeFlow(final CommandInterpreter ci, final FlowBuilder flow, final NodeBuilder nodeBuilder) {
         final ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        final InstanceIdentifier<Flow> path1 = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, nodeBuilder.key()).augmentation(FlowCapableNode.class)
-                .child(Table.class, new TableKey(flow.getTableId())).child(Flow.class, flow.key());
         modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION,
                 nodeBuilderToInstanceId(nodeBuilder), nodeBuilder.build());
-        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION, path1, flow.build());
+        modification.mergeParentStructureMerge(LogicalDatastoreType.CONFIGURATION,
+            DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, nodeBuilder.key())
+                .augmentation(FlowCapableNode.class)
+                .child(Table.class, new TableKey(flow.getTableId()))
+                .child(Flow.class, flow.key())
+                .build(), flow.build());
         modification.commit().addCallback(new FutureCallback<CommitInfo>() {
             @Override
             public void onSuccess(final CommitInfo notUsed) {
