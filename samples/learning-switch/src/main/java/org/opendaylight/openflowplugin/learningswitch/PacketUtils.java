@@ -9,16 +9,8 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import java.util.Arrays;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 public abstract class PacketUtils {
-
     /**
      * size of MAC address in octets (6*8 = 48 bits).
      */
@@ -104,16 +96,5 @@ public abstract class PacketUtils {
             mac = new MacAddress(sb.substring(1));
         }
         return mac;
-    }
-
-    /**
-     * Returns the port wrapped into {@link NodeConnectorRef}.
-     */
-    public static NodeConnectorRef createNodeConnRef(final InstanceIdentifier<Node> nodeInstId, final NodeKey nodeKey,
-            final String port) {
-        StringBuilder builder = new StringBuilder(nodeKey.getId().getValue()).append(':').append(port);
-        NodeConnectorKey connKey = new NodeConnectorKey(new NodeConnectorId(builder.toString()));
-        InstanceIdentifier<NodeConnector> portPath = nodeInstId.child(NodeConnector.class, connKey);
-        return new NodeConnectorRef(portPath.toIdentifier());
     }
 }

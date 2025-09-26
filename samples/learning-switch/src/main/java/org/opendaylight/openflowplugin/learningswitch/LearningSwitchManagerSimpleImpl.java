@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.NotificationService;
 import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -18,8 +17,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,11 +46,12 @@ public final class LearningSwitchManagerSimpleImpl implements DataTreeChangeList
             rpcService.getRpc(TransmitPacket.class), this);
         packetInRegistration = notificationService.registerListener(PacketReceived.class, learningSwitchHandler);
 
-        dataTreeChangeListenerRegistration = dataBroker.registerDataTreeChangeListener(DataTreeIdentifier.of(
-            LogicalDatastoreType.OPERATIONAL, InstanceIdentifier.create(Nodes.class)
+        dataTreeChangeListenerRegistration = dataBroker.registerLegacyTreeChangeListener(
+            LogicalDatastoreType.OPERATIONAL, DataObjectReference.builder(Nodes.class)
                 .child(Node.class)
                 .augmentation(FlowCapableNode.class)
-                .child(Table.class)), new WakeupOnNode(learningSwitchHandler));
+                .child(Table.class)
+                .build(), new WakeupOnNode(learningSwitchHandler));
         LOG.debug("start() <--");
     }
 

@@ -38,7 +38,7 @@ public class WakeupOnNode implements DataTreeChangeListener<Table> {
                 if (table != null) {
                     LOG.trace("table: {}", table);
                     if (requiredTableId.equals(table.getId())) {
-                        learningSwitchHandler.onSwitchAppeared(modification.getRootPath().path());
+                        learningSwitchHandler.onSwitchAppeared(modification.path());
                     }
                 }
             }

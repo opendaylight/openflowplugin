@@ -9,10 +9,9 @@ package org.opendaylight.openflowplugin.learningswitch;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 public interface FlowCommitWrapper {
-
     /**
      * Starts and commits data change transaction which  modifies provided flow path with supplied body.
      *
@@ -20,6 +19,5 @@ public interface FlowCommitWrapper {
      * @param flowBody the flow body
      * @return transaction commit
      */
-    ListenableFuture<?> writeFlowToConfig(InstanceIdentifier<Flow> flowPath, Flow flowBody);
-
+    ListenableFuture<?> writeFlowToConfig(DataObjectIdentifier<Flow> flowPath, Flow flowBody);
 }

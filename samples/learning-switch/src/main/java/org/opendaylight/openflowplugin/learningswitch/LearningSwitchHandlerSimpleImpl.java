@@ -23,7 +23,6 @@ import org.opendaylight.mdsal.binding.api.NotificationService.Listener;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.Flow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.table.FlowKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowCookie;
@@ -39,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.Pa
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -64,8 +62,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     private final AtomicLong flowIdInc = new AtomicLong();
     private final AtomicLong flowCookieInc = new AtomicLong(0x2a00000000000000L);
 
-    private InstanceIdentifier<Node> nodePath;
-    private volatile InstanceIdentifier<Table> tablePath;
+    private DataObjectIdentifier<Node> nodePath;
+    private volatile DataObjectIdentifier<Table> tablePath;
 
     private Map<MacAddress, NodeConnectorRef> mac2portMapping;
     private final Set<String> coveredMacPaths = new HashSet<>();
@@ -79,7 +77,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     }
 
     @Override
-    public synchronized void onSwitchAppeared(final InstanceIdentifier<Table> appearedTablePath) {
+    public synchronized void onSwitchAppeared(final DataObjectIdentifier<Table> appearedTablePath) {
         if (isLearning) {
             LOG.debug("already learning a node, skipping {}", nodeId.getValue());
             return;
@@ -96,14 +94,14 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         isLearning = true;
 
         tablePath = appearedTablePath;
-        nodePath = tablePath.firstIdentifierOf(Node.class);
-        nodeId = nodePath.firstKeyOf(Node.class).getId();
+        nodePath = tablePath.trimTo(Node.class);
+        nodeId = nodePath.getFirstKeyOf(Node.class).getId();
         mac2portMapping = new HashMap<>();
 
         // start forwarding all packages to controller
         FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
         FlowKey flowKey = new FlowKey(flowId);
-        InstanceIdentifier<Flow> flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
+        final var flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
 
         Uint16 priority = Uint16.ZERO;
         // create flow in table with id = 0, priority = 4 (other params are
@@ -125,7 +123,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         LOG.debug("Received packet via match: {}", notification.getMatch());
 
         // detect and compare node - we support one switch
-        if (!nodePath.contains(((DataObjectIdentifier<?>) notification.getIngress().getValue()).toLegacy())) {
+        if (!nodePath.toLegacy().contains(
+            ((DataObjectIdentifier<?>) notification.getIngress().getValue()).toLegacy())) {
             return;
         }
 
@@ -182,16 +181,13 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
             String macPath = srcMac.toString() + dstMac.toString();
             if (!coveredMacPaths.contains(macPath)) {
                 LOG.debug("covering mac path: {} by [{}]", macPath,
-                    ((DataObjectIdentifier<?>) destNodeConnector.getValue()).toLegacy().firstKeyOf(NodeConnector.class)
-                        .getId());
+                    destNodeConnector.getValue().getFirstKeyOf(NodeConnector.class).getId());
 
                 coveredMacPaths.add(macPath);
                 FlowId flowId = new FlowId(String.valueOf(flowIdInc.getAndIncrement()));
                 FlowKey flowKey = new FlowKey(flowId);
-                /**
-                 * Path to the flow we want to program.
-                 */
-                InstanceIdentifier<Flow> flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
+                // Path to the flow we want to program.
+                final var flowPath = InstanceIdentifierUtils.createFlowPath(tablePath, flowKey);
 
                 Uint8 tableId = InstanceIdentifierUtils.getTableId(tablePath);
                 FlowBuilder srcToDstFlow = FlowUtils.createDirectMacToMacFlow(tableId, DIRECT_FLOW_PRIORITY, srcMac,
@@ -205,9 +201,8 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
 
     private void flood(final byte[] payload, final NodeConnectorRef ingress) {
         NodeConnectorKey nodeConnectorKey = new NodeConnectorKey(nodeConnectorId("0xfffffffb"));
-        InstanceIdentifier<?> nodeConnectorPath = InstanceIdentifierUtils.createNodeConnectorPath(
-                nodePath, nodeConnectorKey);
-        NodeConnectorRef egressConnectorRef = new NodeConnectorRef(nodeConnectorPath.toIdentifier());
+        final var nodeConnectorPath = InstanceIdentifierUtils.createNodeConnectorPath(nodePath, nodeConnectorKey);
+        NodeConnectorRef egressConnectorRef = new NodeConnectorRef(nodeConnectorPath);
 
         sendPacketOut(payload, ingress, egressConnectorRef);
     }
@@ -221,8 +216,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
     private void sendPacketOut(final byte[] payload, final NodeConnectorRef ingress, final NodeConnectorRef egress) {
         LoggingFutures.addErrorLogging(transmitPacket.invoke(new TransmitPacketInputBuilder()
             .setPayload(payload)
-            .setNode(new NodeRef(InstanceIdentifierUtils.getNodePath(
-                ((DataObjectIdentifier<?>) egress.getValue()).toLegacy()).toIdentifier()))
+            .setNode(new NodeRef(InstanceIdentifierUtils.getNodePath((DataObjectIdentifier<?>) egress.getValue())))
             .setEgress(egress)
             .setIngress(ingress)
             .build()), LOG, "transmitPacket");

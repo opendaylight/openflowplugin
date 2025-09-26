@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.learningswitch;
 
 import org.eclipse.jdt.annotation.NonNull;
@@ -21,11 +20,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.binding.BindingInstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 public final class InstanceIdentifierUtils {
-
     private InstanceIdentifierUtils() {
         //hiding constructor for util class
     }
@@ -35,10 +34,8 @@ public final class InstanceIdentifierUtils {
      *
      * @param nodeId the NodeId
      */
-    public static InstanceIdentifier<Node> createNodePath(final NodeId nodeId) {
-        return InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, new NodeKey(nodeId))
-                .build();
+    public static @NonNull WithKey<Node, NodeKey> createNodePath(final NodeId nodeId) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build();
     }
 
     /**
@@ -46,8 +43,8 @@ public final class InstanceIdentifierUtils {
      *
      * @param nodeChild child of node, from which we want node path.
      */
-    public static InstanceIdentifier<Node> getNodePath(final InstanceIdentifier<?> nodeChild) {
-        return nodeChild.firstIdentifierOf(Node.class);
+    public static @NonNull DataObjectIdentifier<Node> getNodePath(final DataObjectIdentifier<?> nodeChild) {
+        return nodeChild.trimTo(Node.class);
     }
 
     /**
@@ -56,22 +53,21 @@ public final class InstanceIdentifierUtils {
      * @param nodePath the node path
      * @param tableKey the table yey
      */
-    public static InstanceIdentifier<Table> createTablePath(final InstanceIdentifier<Node> nodePath,
+    public static @NonNull WithKey<Table, TableKey> createTablePath(final DataObjectIdentifier<Node> nodePath,
             final TableKey tableKey) {
-        return nodePath.augmentation(FlowCapableNode.class).child(Table.class, tableKey);
+        return nodePath.toBuilder().augmentation(FlowCapableNode.class).child(Table.class, tableKey).build();
     }
 
     /**
-     * Creates a path for particular flow, by appending flow-specific information
-     * to table path.
+     * Creates a path for particular flow, by appending flow-specific information to table path.
      *
      * @param tablePath the table path
      * @param flowKey the flow key
      * @return path to flow
      */
-    public static InstanceIdentifier<Flow> createFlowPath(final InstanceIdentifier<Table> tablePath,
+    public static @NonNull WithKey<Flow, FlowKey> createFlowPath(final DataObjectIdentifier<Table> tablePath,
             final FlowKey flowKey) {
-        return tablePath.child(Flow.class, flowKey);
+        return tablePath.toBuilder().child(Flow.class, flowKey).build();
     }
 
     /**
@@ -79,8 +75,8 @@ public final class InstanceIdentifierUtils {
      *
      * @param tablePath the table path
      */
-    public static Uint8 getTableId(final InstanceIdentifier<Table> tablePath) {
-        return tablePath.firstKeyOf(Table.class).getId();
+    public static @NonNull Uint8 getTableId(final DataObjectIdentifier<Table> tablePath) {
+        return tablePath.getFirstKeyOf(Table.class).getId();
     }
 
     /**
@@ -90,8 +86,8 @@ public final class InstanceIdentifierUtils {
         return nodeConnectorPath.getFirstKeyOf(NodeConnector.class);
     }
 
-    public static InstanceIdentifier<NodeConnector> createNodeConnectorPath(final InstanceIdentifier<Node> nodeKey,
-            final NodeConnectorKey nodeConnectorKey) {
-        return nodeKey.child(NodeConnector.class,nodeConnectorKey);
+    public static @NonNull WithKey<NodeConnector, NodeConnectorKey> createNodeConnectorPath(
+            final DataObjectIdentifier<Node> nodeKey, final NodeConnectorKey nodeConnectorKey) {
+        return nodeKey.toBuilder().child(NodeConnector.class, nodeConnectorKey).build();
     }
 }

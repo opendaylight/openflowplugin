@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.ethernet.match.fields.EthernetSourceBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatch;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -63,8 +62,7 @@ public final class FlowUtils {
                         .build())
                 .build();
 
-        Uri outputPort = ((DataObjectIdentifier<?>) dstPort.getValue()).toLegacy().firstKeyOf(NodeConnector.class)
-            .getId();
+        Uri outputPort = dstPort.getValue().getFirstKeyOf(NodeConnector.class).getId();
 
         Action outputToControllerAction = new ActionBuilder()
                 .setOrder(0)

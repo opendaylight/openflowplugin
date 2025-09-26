@@ -8,14 +8,13 @@
 package org.opendaylight.openflowplugin.learningswitch;
 
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.tables.Table;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 
 public interface LearningSwitchHandler {
-
     /**
      * Invoked when a switch appears.
      *
      * @param tablePath the table path
      */
-    void onSwitchAppeared(InstanceIdentifier<Table> tablePath);
+    void onSwitchAppeared(DataObjectIdentifier<Table> tablePath);
 }
