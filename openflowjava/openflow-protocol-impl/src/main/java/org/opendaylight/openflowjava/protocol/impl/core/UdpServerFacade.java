@@ -14,10 +14,12 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.IoHandlerFactory;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.epoll.EpollIoHandler;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import java.net.InetSocketAddress;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
@@ -48,16 +50,19 @@ final class UdpServerFacade extends ServerFacade {
         final var threadCount = threadConfig == null ? 0 : threadConfig.getWorkerThreadCount();
 
         // Captured by bindFuture callback below
-        final EventLoopGroup group;
+        final IoHandlerFactory ioFactory;
+
         if (Epoll.isAvailable() && epollEnabled) {
             // Epoll
             bootstrap.channel(EpollDatagramChannel.class);
-            group = new EpollEventLoopGroup(threadCount);
+            ioFactory = EpollIoHandler.newFactory();
         } else {
             // NIO
             bootstrap.channel(NioDatagramChannel.class);
-            group = new NioEventLoopGroup(threadCount);
+            ioFactory = NioIoHandler.newFactory();
         }
+
+        final var group = new MultiThreadIoEventLoopGroup(threadCount, ioFactory);
         bootstrap.group(group);
 
         // Attempt to bind the address

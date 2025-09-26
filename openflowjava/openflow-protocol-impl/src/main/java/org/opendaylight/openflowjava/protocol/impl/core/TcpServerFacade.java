@@ -18,12 +18,14 @@ import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.IoHandlerFactory;
+import io.netty.channel.MultiThreadIoEventLoopGroup;
 import io.netty.channel.WriteBufferWaterMark;
 import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.epoll.EpollIoHandler;
 import io.netty.channel.epoll.EpollServerSocketChannel;
 import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioIoHandler;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
@@ -100,33 +102,27 @@ final class TcpServerFacade extends ServerFacade implements ConnectionInitialize
          * executing tasks.
          */
         final var threadConfig = connConfig.getThreadConfiguration();
-        final var childIoRatio = 100;
 
         // Captured by bindFuture callback below
-        final EventLoopGroup parentGroup;
-        final EventLoopGroup childGroup;
+
+        final IoHandlerFactory ioFactory;
         if (Epoll.isAvailable() && epollEnabled) {
             // Epoll
             serverBootstrap.channel(EpollServerSocketChannel.class);
             bootstrap.channel(EpollSocketChannel.class);
-
-            parentGroup = new EpollEventLoopGroup(threadConfig == null ? 0 : threadConfig.getBossThreadCount());
-            final var tmp = new EpollEventLoopGroup(threadConfig == null ? 0 : threadConfig.getWorkerThreadCount());
-            tmp.setIoRatio(childIoRatio);
-            childGroup = tmp;
+            ioFactory = EpollIoHandler.newFactory();
         } else {
             // NIO
             serverBootstrap.channel(NioServerSocketChannel.class);
             bootstrap.channel(NioSocketChannel.class);
-
-            parentGroup = threadConfig == null ? new NioEventLoopGroup()
-                : new NioEventLoopGroup(threadConfig.getBossThreadCount());
-
-            final var tmp = threadConfig == null ? new NioEventLoopGroup()
-                : new NioEventLoopGroup(threadConfig.getWorkerThreadCount());
-            tmp.setIoRatio(childIoRatio);
-            childGroup = tmp;
+            ioFactory = NioIoHandler.newFactory();
         }
+
+        final var parentGroup = new MultiThreadIoEventLoopGroup(
+            threadConfig == null ? 0 : threadConfig.getBossThreadCount(), ioFactory);
+        final var childGroup = new MultiThreadIoEventLoopGroup(
+            threadConfig == null ? 0 : threadConfig.getWorkerThreadCount(), ioFactory);
+
         serverBootstrap.group(parentGroup, childGroup);
         bootstrap.group(childGroup);
 
