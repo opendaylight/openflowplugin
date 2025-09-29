@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
@@ -78,7 +77,7 @@ public final class NodeConnectorInventoryEventTranslator<T extends DataObject>
     }
 
     @Override
-    public void onDataTreeChanged(@NonNull final List<DataTreeModification<T>> modifications) {
+    public void onDataTreeChanged(final List<DataTreeModification<T>> modifications) {
         for (var modification : modifications) {
             LOG.trace("Node connectors in inventory changed -> {}", modification.getRootNode().modificationType());
             switch (modification.getRootNode().modificationType()) {
