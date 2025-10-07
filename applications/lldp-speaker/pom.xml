@@ -12,6 +12,10 @@
     <artifactId>lldp-speaker</artifactId>
     <packaging>bundle</packaging>
 
+    <properties>
+        <odlparent.dependency.enforce>true</odlparent.dependency.enforce>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.opendaylight.infrautils</groupId>
@@ -19,7 +23,15 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
+            <artifactId>mdsal-common-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.mdsal.binding.model.ietf</groupId>
+            <artifactId>rfc6991-ietf-yang-types</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.libraries</groupId>
@@ -28,7 +40,7 @@
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-inventory</artifactId>
+            <artifactId>model-flow-base</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.openflowplugin.model</groupId>
@@ -41,6 +53,14 @@
         <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>topology-lldp-discovery</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-inventory</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>concepts</artifactId>
         </dependency>
     </dependencies>
 </project>
