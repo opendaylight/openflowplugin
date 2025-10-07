@@ -69,17 +69,16 @@ public abstract class DataTreeChangeListenerBase {
     }
 
     protected FlowCapableNodeConnector provideFlowCapableNodeConnector(final boolean isLinkDown,
-                                                                       final boolean isPortDown) {
-        FlowCapableNodeConnectorBuilder builder = new FlowCapableNodeConnectorBuilder();
-        builder.setState(new StateBuilder().setLinkDown(isLinkDown).build());
-        builder.setConfiguration(new PortConfig(true, true, true, isPortDown));
-        return builder.build();
+            final boolean isPortDown) {
+        return new FlowCapableNodeConnectorBuilder()
+            .setState(new StateBuilder().setLinkDown(isLinkDown).build())
+            .setConfiguration(new PortConfig(true, true, true, isPortDown))
+            .build();
     }
 
     protected <T extends DataObject> DataTreeModification<T> setupDataTreeChange(final ModificationType type,
-                                                                                 final DataObjectIdentifier<T> ii,
-                                                                                 final boolean getDataAfter) {
-        final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
+            final DataObjectIdentifier<T> ii, final boolean getDataAfter) {
+        final var dataTreeModification = mock(DataTreeModification.class);
         when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
         when(dataTreeModification.getRootNode().modificationType()).thenReturn(type);
         when(dataTreeModification.path()).thenReturn(ii);
