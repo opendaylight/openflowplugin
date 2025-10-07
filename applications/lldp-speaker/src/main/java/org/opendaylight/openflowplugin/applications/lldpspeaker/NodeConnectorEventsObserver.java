@@ -5,34 +5,33 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.applications.lldpspeaker;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 /**
- * NodeConnectorEventsObserver can be added to NodeConnectorInventoryEventTranslator to receive events
- * when node connector added or removed.
+ * An observer of {@link NodeConnector}s changing their logical state.
  */
 public interface NodeConnectorEventsObserver {
     /**
-     * This method is called when new node connector is added to inventory or when existing
-     * node connector changed it's status to UP. This method can be called multiple times for
-     * the same creation event.
+     * This method is called when new node connector is added to inventory or when existing node connector changed
+     * its status to UP.
      *
      * @param nodeConnectorInstanceId Object that uniquely identify added node connector
      * @param flowConnector object containing almost all of details about node connector
      */
-    void nodeConnectorAdded(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId,
-                                   FlowCapableNodeConnector flowConnector);
+    void onNodeConnectorUp(@NonNull WithKey<NodeConnector, NodeConnectorKey> nodeConnectorInstanceId,
+        @NonNull FlowCapableNodeConnector flowConnector);
 
     /**
-     * This method is called when some node connector is removed from inventory or when existing
-     * node connector changed it's status to DOWN. This method can be called multiple times for
-     * the same removal event.
+     * This method is called when some node connector is removed from inventory or when existing node connector changed
+     * its status to DOWN.
+     *
      * @param nodeConnectorInstanceId Object that uniquely identify added node connector
      */
-    void nodeConnectorRemoved(InstanceIdentifier<NodeConnector> nodeConnectorInstanceId);
+    void onNodeConnectorDown(@NonNull WithKey<NodeConnector, NodeConnectorKey> nodeConnectorInstanceId);
 }

@@ -38,12 +38,13 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeCon
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow.applications.lldp.speaker.rev141023.OperStatus;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
@@ -52,8 +53,8 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LLDPSpeakerTest {
-    private static final InstanceIdentifier<NodeConnector> ID = TestUtils.createNodeConnectorId("openflow:1",
-            "openflow:1:1");
+    private static final WithKey<NodeConnector, NodeConnectorKey> ID =
+        TestUtils.createNodeConnectorId("openflow:1", "openflow:1:1");
     private static final MacAddress MAC_ADDRESS = new MacAddress("01:23:45:67:89:AB");
     private static final FlowCapableNodeConnector FLOW_CAPABLE_NODE_CONNECTOR =
             TestUtils.createFlowCapableNodeConnector(MAC_ADDRESS, 1L).build();
@@ -64,7 +65,7 @@ public class LLDPSpeakerTest {
     @Mock
     private ScheduledExecutorService scheduledExecutorService;
     @Mock
-    private ScheduledFuture scheduledSpeakerTask;
+    private ScheduledFuture<?> scheduledSpeakerTask;
     @Mock
     private DeviceOwnershipService deviceOwnershipService;
     @Mock
@@ -78,8 +79,11 @@ public class LLDPSpeakerTest {
     public void setUp() throws NoSuchAlgorithmException, PacketException {
         byte[] lldpFrame = LLDPUtil.buildLldpFrame(new NodeId("openflow:1"),
                 new NodeConnectorId("openflow:1:1"), MAC_ADDRESS, Uint32.ONE);
-        packetInput = new TransmitPacketInputBuilder().setEgress(new NodeConnectorRef(ID.toIdentifier()))
-                .setNode(new NodeRef(ID.firstIdentifierOf(Node.class).toIdentifier())).setPayload(lldpFrame).build();
+        packetInput = new TransmitPacketInputBuilder()
+            .setEgress(new NodeConnectorRef(ID))
+            .setNode(new NodeRef(ID.trimTo(Node.class)))
+            .setPayload(lldpFrame)
+            .build();
 
         doReturn(transmitPacket).when(rpcService).getRpc(TransmitPacket.class);
         doReturn(scheduledSpeakerTask).when(scheduledExecutorService)
@@ -99,7 +103,7 @@ public class LLDPSpeakerTest {
         lldpSpeaker.changeOperationalStatus(OperStatus.STANDBY);
         // Add node connector - LLDP packet should be transmitted through
         // packetProcessingService
-        lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+        lldpSpeaker.onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
 
         // Execute one iteration of periodic task - LLDP packet should be
         // transmitted second time
@@ -118,7 +122,7 @@ public class LLDPSpeakerTest {
     public void testNodeConnectorAdd() {
         // Add node connector - LLDP packet should be transmitted through
         // packetProcessingService
-        lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+        lldpSpeaker.onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
 
 
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(false);
@@ -138,10 +142,10 @@ public class LLDPSpeakerTest {
     @Test
     public void testNodeConnectorRemoval() {
         // Prepare for test - add node connector first
-        lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+        lldpSpeaker.onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
 
         // Trigger removal of packet
-        lldpSpeaker.nodeConnectorRemoved(ID);
+        lldpSpeaker.onNodeConnectorDown(ID);
 
         // Run one iteration of LLDP flood
         lldpSpeaker.run();
@@ -161,7 +165,7 @@ public class LLDPSpeakerTest {
         // Add node connector - LLDP packet should be transmitted through
         // packetProcessingService
         for (int i = 0; i < 10; i++) {
-            lldpSpeaker.nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+            lldpSpeaker.onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
         }
 
         // Check packet transmission
@@ -178,7 +182,7 @@ public class LLDPSpeakerTest {
         FlowCapableNodeConnector fcnc = TestUtils
                 .createFlowCapableNodeConnector()
                 .setPortNumber(new PortNumberUni("LOCAL")).build();
-        lldpSpeaker.nodeConnectorAdded(ID, fcnc);
+        lldpSpeaker.onNodeConnectorUp(ID, fcnc);
 
         // Verify that nothing happened for local port
         verify(transmitPacket, never()).invoke(any(TransmitPacketInput.class));

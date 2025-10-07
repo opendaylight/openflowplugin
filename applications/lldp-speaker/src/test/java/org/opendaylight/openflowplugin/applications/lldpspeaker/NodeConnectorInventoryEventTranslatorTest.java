@@ -16,135 +16,120 @@ import static org.opendaylight.mdsal.binding.api.DataObjectModification.Modifica
 import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
-import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
-import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 
 /**
  * Tests for {@link NodeConnectorInventoryEventTranslator}.
  */
-@RunWith(MockitoJUnitRunner.class)
-public class NodeConnectorInventoryEventTranslatorTest {
-    private static final InstanceIdentifier<NodeConnector> ID = TestUtils
-            .createNodeConnectorId("openflow:1", "openflow:1:1");
-    private static final InstanceIdentifier<FlowCapableNodeConnector> NODE_CONNECTOR_INSTANCE_IDENTIFIER = ID
-            .augmentation(FlowCapableNodeConnector.class);
-    private static final FlowCapableNodeConnector FLOW_CAPABLE_NODE_CONNECTOR = TestUtils
-            .createFlowCapableNodeConnector().build();
+@ExtendWith(MockitoExtension.class)
+class NodeConnectorInventoryEventTranslatorTest {
+    private static final WithKey<NodeConnector, NodeConnectorKey> ID =
+        TestUtils.createNodeConnectorId("openflow:1", "openflow:1:1");
+    private static final DataObjectIdentifier<FlowCapableNodeConnector> NODE_CONNECTOR_INSTANCE_IDENTIFIER =
+        ID.toBuilder().augmentation(FlowCapableNodeConnector.class).build();
+    private static final FlowCapableNodeConnector FLOW_CAPABLE_NODE_CONNECTOR =
+        TestUtils.createFlowCapableNodeConnector().build();
 
     @Mock
     private NodeConnectorEventsObserver eventsObserver;
     @Mock
     private NodeConnectorEventsObserver eventsObserver2;
+    @Mock
+    private DataBroker dataBroker;
 
     private NodeConnectorInventoryEventTranslator translator;
 
-    @Before
-    public void setUp() {
-        translator = new NodeConnectorInventoryEventTranslator(mock(DataBroker.class), eventsObserver, eventsObserver2);
+    @BeforeEach
+    void beforeEach() {
+        translator = new NodeConnectorInventoryEventTranslator(dataBroker, eventsObserver, eventsObserver2);
+    }
+
+    @AfterEach
+    void afterEach() {
+        translator.close();
     }
 
     /**
-     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
-     * for each FlowCapableNodeConnector item added in
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called for each
+     * {@link FlowCapableNodeConnector} item added in
      * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
      */
     @Test
-    public void testNodeConnectorCreation() {
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, NODE_CONNECTOR_INSTANCE_IDENTIFIER,
-                                                                        FLOW_CAPABLE_NODE_CONNECTOR);
-        translator.onDataTreeChanged(List.of(dataTreeModification));
-        verify(eventsObserver).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+    void testNodeConnectorCreation() {
+        translator.onDataTreeChanged(List.of(
+            newWrite(NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR)));
+        verify(eventsObserver).onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
     }
 
     /**
      * Test that checks that nothing is called when port appeared in inventory in link down state.
      */
     @Test
-    public void testNodeConnectorCreationLinkDown() {
-        FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, ID, fcnc);
-        translator.onDataTreeChanged(List.of(dataTreeModification));
+    void testNodeConnectorCreationLinkDown() {
+        translator.onDataTreeChanged(List.of(
+            newWrite(NODE_CONNECTOR_INSTANCE_IDENTIFIER,
+                TestUtils.createFlowCapableNodeConnector(true, false).build())));
         verifyNoInteractions(eventsObserver);
+        translator.onDataTreeChanged(List.of(newDeletion(NODE_CONNECTOR_INSTANCE_IDENTIFIER)));
     }
 
     /**
      * Test that checks that nothing is called when port appeared in inventory in admin down state.
      */
     @Test
-    public void testNodeConnectorCreationAdminDown() {
-        FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
-        DataTreeModification dataTreeModification = setupDataTreeChange(WRITE, ID, fcnc);
-        translator.onDataTreeChanged(List.of(dataTreeModification));
+    void testNodeConnectorCreationAdminDown() {
+        translator.onDataTreeChanged(List.of(
+            newWrite(NODE_CONNECTOR_INSTANCE_IDENTIFIER,
+                TestUtils.createFlowCapableNodeConnector(false, true).build())));
         verifyNoInteractions(eventsObserver);
+        translator.onDataTreeChanged(List.of(newDeletion(NODE_CONNECTOR_INSTANCE_IDENTIFIER)));
     }
 
     /**
-     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
-     * for each FlowCapableNodeConnector item that have link down state removed in
-     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
+     * Test that checks that admin-down/status-up is not reported.
      */
     @Test
-    public void testNodeConnectorUpdateToLinkDown() {
-        FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(true, false).build();
-        DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED,
-                                                                        NODE_CONNECTOR_INSTANCE_IDENTIFIER, fcnc);
-        translator.onDataTreeChanged(List.of(dataTreeModification));
-        verify(eventsObserver).nodeConnectorRemoved(ID);
+    void testNodeConnectorUpdateToLinkDown() {
+        // FIXME| Sooo ... this is not what a DataBroker woult reprt as the first event:
+        translator.onDataTreeChanged(List.of(
+            newWrite(NODE_CONNECTOR_INSTANCE_IDENTIFIER,
+                TestUtils.createFlowCapableNodeConnector(true, false).build())));
+        verifyNoInteractions(eventsObserver);
+
+        translator.onDataTreeChanged(List.of(
+            newModification(NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR)));
+        verify(eventsObserver).onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
     }
 
     /**
-     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
-     * for each FlowCapableNodeConnector item with administrative down state removed in
-     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
+     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called for each
+     * {@link FlowCapableNodeConnector} item with administrative down state removed in
+     * a {@link org.opendaylight.mdsal.binding.api.DataTreeModification}.
      */
     @Test
-    public void testNodeConnectorUpdateToAdminDown() {
-        FlowCapableNodeConnector fcnc = TestUtils.createFlowCapableNodeConnector(false, true).build();
-        DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED,
-                                                                        NODE_CONNECTOR_INSTANCE_IDENTIFIER, fcnc);
-        translator.onDataTreeChanged(List.of(dataTreeModification));
-        verify(eventsObserver).nodeConnectorRemoved(ID);
-    }
+    void testNodeConnectorUpdateToAdminDown() {
+        translator.onDataTreeChanged(List.of(
+            newWrite(NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR)));
+        verify(eventsObserver).onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
 
-    /**
-     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorAdded} is called
-     * for each FlowCapableNodeConnector item with administrative up and link up state added in
-     * {@link org.opendaylight.md}.
-     */
-    @Test
-    public void testNodeConnectorUpdateToUp() {
-        DataTreeModification dataTreeModification = setupDataTreeChange(SUBTREE_MODIFIED,
-                                                                        NODE_CONNECTOR_INSTANCE_IDENTIFIER,
-                                                                        FLOW_CAPABLE_NODE_CONNECTOR);
-        translator.onDataTreeChanged(List.of(dataTreeModification));
-        verify(eventsObserver).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
-    }
-
-    /**
-     * Test that checks if {@link NodeConnectorEventsObserver#nodeConnectorRemoved} is called
-     * for each FlowCapableNodeConnector path that
-     * {@link org.opendaylight.mdsal.binding.api.DataTreeModification} return.
-     */
-    @Test
-    public void testNodeConnectorRemoval() {
-        DataTreeModification dataTreeModification = setupDataTreeChange(DELETE, NODE_CONNECTOR_INSTANCE_IDENTIFIER,
-                                                                        null);
-        // Invoke NodeConnectorInventoryEventTranslator and check result
-        translator.onDataTreeChanged(List.of(dataTreeModification));
-        verify(eventsObserver).nodeConnectorRemoved(ID);
+        translator.onDataTreeChanged(List.of(
+            newModification(NODE_CONNECTOR_INSTANCE_IDENTIFIER,
+                TestUtils.createFlowCapableNodeConnector(false, true).build())));
+        verify(eventsObserver).onNodeConnectorDown(ID);
     }
 
     /**
@@ -153,33 +138,48 @@ public class NodeConnectorInventoryEventTranslatorTest {
      * observers are registered for notifications.
      */
     @Test
-    public void testMultipleObserversNotified() {
-        // Create prerequisites
-        InstanceIdentifier<NodeConnector> id2 = TestUtils.createNodeConnectorId("openflow:1", "openflow:1:2");
-        InstanceIdentifier<FlowCapableNodeConnector> iiToConnector2 = id2.augmentation(FlowCapableNodeConnector.class);
+    void testMultipleObserversNotified() {
         // Invoke onDataTreeChanged and check that both observers notified
         translator.onDataTreeChanged(List.of(
-            setupDataTreeChange(WRITE, NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR),
-            setupDataTreeChange(DELETE, iiToConnector2, null)));
-        verify(eventsObserver).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
-        verify(eventsObserver).nodeConnectorRemoved(id2);
-        verify(eventsObserver2).nodeConnectorAdded(ID, FLOW_CAPABLE_NODE_CONNECTOR);
-        verify(eventsObserver2).nodeConnectorRemoved(id2);
+            newWrite(NODE_CONNECTOR_INSTANCE_IDENTIFIER, FLOW_CAPABLE_NODE_CONNECTOR)));
+        verify(eventsObserver).onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+        verify(eventsObserver2).onNodeConnectorUp(ID, FLOW_CAPABLE_NODE_CONNECTOR);
+
+        translator.onDataTreeChanged(List.of(newDeletion(NODE_CONNECTOR_INSTANCE_IDENTIFIER)));
+        verify(eventsObserver).onNodeConnectorDown(ID);
+        verify(eventsObserver2).onNodeConnectorDown(ID);
     }
 
-    @Test
-    public void tearDown() {
-        translator.close();
+    private static DataTreeModification<FlowCapableNodeConnector> newDeletion(
+            final DataObjectIdentifier<FlowCapableNodeConnector> ii) {
+        return setupDataTreeChange(DELETE, ii);
     }
 
-    private static <T extends DataObject> DataTreeModification setupDataTreeChange(final ModificationType type,
-            final InstanceIdentifier<T> ii, final FlowCapableNodeConnector connector) {
-        final DataTreeModification dataTreeModification = mock(DataTreeModification.class);
-        when(dataTreeModification.getRootNode()).thenReturn(mock(DataObjectModification.class));
-        DataTreeIdentifier<T> identifier = DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, ii);
-        when(dataTreeModification.getRootNode().modificationType()).thenReturn(type);
-        when(dataTreeModification.getRootPath()).thenReturn(identifier);
-        when(dataTreeModification.getRootNode().dataAfter()).thenReturn(connector);
+    private static DataTreeModification<FlowCapableNodeConnector> newModification(
+            final DataObjectIdentifier<FlowCapableNodeConnector> ii, final FlowCapableNodeConnector connector) {
+        return setupWithDataAfter(SUBTREE_MODIFIED, ii, connector);
+    }
+
+    private static DataTreeModification<FlowCapableNodeConnector> newWrite(
+            final DataObjectIdentifier<FlowCapableNodeConnector> ii, final FlowCapableNodeConnector connector) {
+        return setupWithDataAfter(WRITE, ii, connector);
+    }
+
+    private static DataTreeModification<FlowCapableNodeConnector> setupWithDataAfter(final ModificationType type,
+            final DataObjectIdentifier<FlowCapableNodeConnector> ii, final FlowCapableNodeConnector connector) {
+        final var ret = setupDataTreeChange(type, ii);
+        when(ret.getRootNode().dataAfter()).thenReturn(connector);
+        return ret;
+    }
+
+    private static DataTreeModification<FlowCapableNodeConnector> setupDataTreeChange(final ModificationType type,
+            final DataObjectIdentifier<FlowCapableNodeConnector> ii) {
+        final DataObjectModification<FlowCapableNodeConnector> root = mock();
+        when(root.modificationType()).thenReturn(type);
+
+        final DataTreeModification<FlowCapableNodeConnector> dataTreeModification = mock();
+        when(dataTreeModification.getRootNode()).thenReturn(root);
+        when(dataTreeModification.path()).thenReturn(ii);
         return dataTreeModification;
     }
 }
