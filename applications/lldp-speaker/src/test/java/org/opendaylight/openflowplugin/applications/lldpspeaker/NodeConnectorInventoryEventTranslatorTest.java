@@ -133,8 +133,8 @@ class NodeConnectorInventoryEventTranslatorTest {
     }
 
     /**
-     * Test that if {@link NodeConnectorEventsObserver#nodeConnectorAdded} and.
-     * @{NodeConnectorEventsObserver#nodeConnectorRemoved} are called for each observer when multiple
+     * Test that if {@link NodeConnectorEventsObserver#nodeConnectorAdded} and
+     * {@link NodeConnectorEventsObserver#nodeConnectorRemoved} are called for each observer when multiple
      * observers are registered for notifications.
      */
     @Test
