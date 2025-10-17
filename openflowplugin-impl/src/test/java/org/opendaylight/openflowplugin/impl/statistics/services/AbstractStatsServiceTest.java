@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
@@ -102,8 +101,8 @@ public abstract class AbstractStatsServiceTest {
     }
 
     protected static NodeRef createNodeRef(final String nodeIdValue) {
-        InstanceIdentifier<Node> nodePath = InstanceIdentifier.create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(nodeIdValue)));
-        return new NodeRef(nodePath.toIdentifier());
+        return new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(nodeIdValue)))
+            .build());
     }
 }

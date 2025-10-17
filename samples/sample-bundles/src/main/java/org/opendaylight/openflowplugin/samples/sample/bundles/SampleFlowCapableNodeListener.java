@@ -19,7 +19,6 @@ import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -71,9 +70,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleControlType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
+import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -109,12 +108,11 @@ public final class SampleFlowCapableNodeListener implements DataTreeChangeListen
         addBundleMessages = rpcService.getRpc(AddBundleMessages.class);
         LOG.debug("inSessionInitialized() passing");
 
-        final InstanceIdentifier<FlowCapableNode> path = InstanceIdentifier.create(Nodes.class).child(Node.class)
-                .augmentation(FlowCapableNode.class);
-        final DataTreeIdentifier<FlowCapableNode> identifier =
-                DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL, path);
-
-        listenerReg = dataBroker.registerTreeChangeListener(identifier, SampleFlowCapableNodeListener.this);
+        listenerReg = dataBroker.registerTreeChangeListener(LogicalDatastoreType.OPERATIONAL,
+            DataObjectReference.builder(Nodes.class)
+                .child(Node.class)
+                .augmentation(FlowCapableNode.class)
+                .build(), this);
     }
 
     @PreDestroy
@@ -129,10 +127,10 @@ public final class SampleFlowCapableNodeListener implements DataTreeChangeListen
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
             if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
-                final var nodePath = modification.getRootPath().path().firstIdentifierOf(Node.class);
+                final var nodePath = modification.path().trimTo(Node.class);
                 LOG.info("Node connected:  {}", nodePath);
 
-                final var nodeRef = new NodeRef(nodePath.toIdentifier());
+                final var nodeRef = new NodeRef(nodePath);
 
                 final var openBundleInput = new ControlBundleInputBuilder()
                         .setNode(nodeRef)

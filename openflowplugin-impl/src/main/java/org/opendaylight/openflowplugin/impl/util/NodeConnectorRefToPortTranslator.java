@@ -17,15 +17,12 @@ import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.util.InventoryDataServiceUtil;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorRef;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnector;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.NodeConnectorKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.InPortCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.in.port._case.InPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketIn;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -66,20 +63,15 @@ public final class NodeConnectorRefToPortTranslator {
      * @param version Openflow version
      * @return port number
      */
-    @SuppressWarnings("unchecked")
     @Nullable
     public static Uint32 fromNodeConnectorRef(@NonNull final NodeConnectorRef nodeConnectorRef, final Uint8 version) {
         requireNonNull(nodeConnectorRef);
 
         Uint32 port = null;
 
-        final InstanceIdentifier<?> value = ((DataObjectIdentifier<?>) nodeConnectorRef.getValue()).toLegacy();
-        if (value instanceof KeyedInstanceIdentifier) {
-            KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> identifier =
-                    (KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey>) value;
-
+        if (nodeConnectorRef.getValue() instanceof WithKey<?, ?> value) {
             OpenflowVersion ofVersion = OpenflowVersion.get(version);
-            String nodeConnectorId = identifier.key().getId().getValue();
+            String nodeConnectorId = ((NodeConnectorKey) value.key()).getId().getValue();
 
             port = InventoryDataServiceUtil.portNumberfromNodeConnectorId(ofVersion, nodeConnectorId);
         }

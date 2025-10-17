@@ -102,8 +102,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Up
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.OriginalBatchedMeterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.input.update.grouping.UpdatedBatchedMeterBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -116,9 +116,10 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessFlatBatchImplTest {
     private static final NodeId NODE_ID = new NodeId("ut-node-id");
-    private static final InstanceIdentifier<Node> NODE_II = InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(NODE_ID));
-    private static final NodeRef NODE_REF = new NodeRef(NODE_II.toIdentifier());
+    private static final DataObjectIdentifier<Node> NODE_II = DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(NODE_ID))
+            .build();
+    private static final NodeRef NODE_REF = new NodeRef(NODE_II);
 
     @Mock
     private AddFlowsBatch addFlowsBatch;

@@ -44,13 +44,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.BundleId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.common.grouping.BundleProperty;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SalBundleServiceImplTest {
-    private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("openflow:1"))).toIdentifier());
+    private static final NodeRef NODE_REF = new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+            .build());
     private static final BundleId BUNDLE_ID = new BundleId(Uint32.ONE);
     private static final BundleFlags BUNDLE_FLAGS = new BundleFlags(true, false);
 

@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.extension.test;
 
-import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
@@ -46,9 +45,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlow;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.test.rev130819.TestFlowOutput;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.concepts.Registration;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -91,11 +90,11 @@ public final class Test implements TestFlow, AutoCloseable {
 
     @Override
     public ListenableFuture<RpcResult<TestFlowOutput>> invoke(final TestFlowInput input) {
-        // Construct the flow instance id
-        final InstanceIdentifier<Node> flowInstanceId = InstanceIdentifier
-                .builder(Nodes.class) // File under nodes
-                // A particular node identified by nodeKey
-                .child(Node.class, new NodeKey(new NodeId("openflow:1"))).build();
+        // Construct the flow instance id, filed under nodes
+        final var flowInstanceId = DataObjectIdentifier.builder(Nodes.class)
+            // A particular node identified by nodeKey
+            .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+            .build();
 
         pushFlowViaRpc(new AddFlowInputBuilder()
             .setPriority(Uint16.TWO)
@@ -144,10 +143,10 @@ public final class Test implements TestFlow, AutoCloseable {
             .setFlags(new FlowModFlags(false, false, false, false, true))
             .setTableId(Uint8.ZERO)
             .setFlowName("NiciraFLOW")
-            .setNode(new NodeRef(flowInstanceId.toIdentifier()))
+            .setNode(new NodeRef(flowInstanceId))
             .build());
 
-        return Futures.immediateFuture(RpcResultBuilder.<TestFlowOutput>status(true).build());
+        return RpcResultBuilder.<TestFlowOutput>status(true).buildFuture();
     }
 
     private void pushFlowViaRpc(final AddFlowInput addFlowInput) {

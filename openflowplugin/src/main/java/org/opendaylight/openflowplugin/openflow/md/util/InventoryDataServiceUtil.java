@@ -28,26 +28,15 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.node.No
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class InventoryDataServiceUtil {
     private static final Splitter COLON_SPLITTER = Splitter.on(":");
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryDataServiceUtil.class);
 
-    /*
-     * Get an InstanceIdentifier for the Nodes class that is the root of the
-     * inventory tree We use this alot, so its worth keeping around
-     */
-    private static final InstanceIdentifier<Nodes> NODES_IDENTIFIER = InstanceIdentifier.create(Nodes.class);
-
-    public static InstanceIdentifier<Node> identifierFromDatapathId(final Uint64 datapathId) {
-        NodeKey nodeKey = nodeKeyFromDatapathId(datapathId);
-        return NODES_IDENTIFIER.child(Node.class, nodeKey);
+    public static @NonNull WithKey<Node, NodeKey> identifierFromDatapathId(final Uint64 datapathId) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, nodeKeyFromDatapathId(datapathId)).build();
     }
 
     public static NodeKey nodeKeyFromDatapathId(final Uint64 datapathId) {
@@ -72,11 +61,11 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static NodeRef nodeRefFromNodeKey(final NodeKey nodeKey) {
-        return new NodeRef(nodeKeyToInstanceIdentifier(nodeKey).toIdentifier());
+        return new NodeRef(nodeKeyToInstanceIdentifier(nodeKey));
     }
 
-    public static InstanceIdentifier<Node> nodeKeyToInstanceIdentifier(final NodeKey nodeKey) {
-        return NODES_IDENTIFIER.child(Node.class, nodeKey);
+    public static @NonNull WithKey<Node, NodeKey> nodeKeyToInstanceIdentifier(final NodeKey nodeKey) {
+        return DataObjectIdentifier.builder(Nodes.class).child(Node.class, nodeKey).build();
     }
 
     public static NodeConnectorId nodeConnectorIdfromDatapathPortNo(final Uint64 datapathid, final Uint32 portNo,
@@ -115,23 +104,25 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static NodeConnectorRef nodeConnectorRefFromDatapathIdPortno(final Uint64 datapathId, final Uint32 portNo,
-            final OpenflowVersion ofVersion, final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+            final OpenflowVersion ofVersion, final WithKey<Node, NodeKey> nodePath) {
         return new NodeConnectorRef(
                 nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath));
     }
 
-    public static DataObjectIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
+    public static @NonNull WithKey<NodeConnector, NodeConnectorKey> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
             final Uint64 datapathId, final Uint32 portNo, final OpenflowVersion ofVersion) {
         NodeId nodeId = nodeIdFromDatapathId(datapathId);
-        KeyedInstanceIdentifier<Node, NodeKey> nodePath = NODES_IDENTIFIER.child(Node.class, new NodeKey(nodeId));
-        return nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion, nodePath);
+        return nodeConnectorInstanceIdentifierFromDatapathIdPortno(datapathId, portNo, ofVersion,
+            DataObjectIdentifier.builder(Nodes.class).child(Node.class, new NodeKey(nodeId)).build());
     }
 
-    public static DataObjectIdentifier<NodeConnector> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
+    public static @NonNull WithKey<NodeConnector, NodeConnectorKey> nodeConnectorInstanceIdentifierFromDatapathIdPortno(
             final Uint64 datapathId, final Uint32 portNo, final OpenflowVersion ofVersion,
-            final KeyedInstanceIdentifier<Node, NodeKey> nodePath) {
+            final WithKey<Node, NodeKey> nodePath) {
         NodeConnectorId nodeConnectorId = nodeConnectorIdfromDatapathPortNo(datapathId, portNo, ofVersion);
-        return nodePath.child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId)).toIdentifier();
+        return nodePath.toBuilder()
+            .child(NodeConnector.class, new NodeConnectorKey(nodeConnectorId))
+            .build();
     }
 
     public static NodeConnectorUpdatedBuilder nodeConnectorUpdatedBuilderFromDatapathIdPortNo(

@@ -40,8 +40,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.ConnectionCookie;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint16;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -204,12 +204,10 @@ public class PacketOutConvertorTest {
     }
 
     private static NodeConnectorRef createNodeConnRef(final String nodeId, final NodeConnectorKey nodeConKey) {
-        InstanceIdentifier<NodeConnector> path = InstanceIdentifier
-                .builder(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId(nodeId)))
-                .child(NodeConnector.class, nodeConKey).build();
-
-        return new NodeConnectorRef(path.toIdentifier());
+        return new NodeConnectorRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(nodeId)))
+            .child(NodeConnector.class, nodeConKey)
+            .build());
     }
 
     private static NodeConnectorKey createNodeConnKey(final String nodeId, final String port) {
@@ -219,11 +217,9 @@ public class PacketOutConvertorTest {
     }
 
     private static NodeRef createNodeRef(final String nodeId) {
-        NodeKey key = new NodeKey(new NodeId(nodeId));
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, key)
-                .build();
-        return new NodeRef(path.toIdentifier());
+        return new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId(nodeId)))
+            .build());
     }
 
     private PacketOutInput convert(final TransmitPacketInput transmitPacketInput, final XidConvertorData data) {

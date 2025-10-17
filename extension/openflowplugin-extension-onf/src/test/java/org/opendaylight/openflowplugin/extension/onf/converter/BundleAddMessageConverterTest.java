@@ -60,8 +60,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.on
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.bundle.property.grouping.bundle.property.entry.bundle.property.experimenter.BundlePropertyExperimenterData;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.onf.rev170124.experimenter.input.experimenter.data.of.choice.BundleAddMessageOnf;
 import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -70,8 +70,9 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 public class BundleAddMessageConverterTest {
 
     private final BundleAddMessageConverter converter = new BundleAddMessageConverter();
-    private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, new NodeKey(new NodeId("openflow:1"))).toIdentifier());
+    private static final NodeRef NODE_REF = new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(new NodeId("openflow:1")))
+            .build());
     private static final GroupId GROUP_ID = new GroupId(Uint32.ONE);
 
     @Before
