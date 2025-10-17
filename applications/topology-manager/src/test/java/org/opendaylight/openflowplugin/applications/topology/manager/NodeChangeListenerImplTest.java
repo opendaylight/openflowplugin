@@ -13,8 +13,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.DELETE;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestNode;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeKey;
@@ -101,7 +99,6 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         final DataTreeModification<FlowCapableNode> dataTreeModification = mock();
         final DataObjectDeleted<FlowCapableNode> dataObjectModification = mock();
-        doReturn(DELETE).when(dataObjectModification).modificationType();
         doReturn(dataObjectModification).when(dataTreeModification).getRootNode();
         doReturn(invNodeID).when(dataTreeModification).path();
 
@@ -149,7 +146,6 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         final DataTreeModification<FlowCapableNode> dataTreeModification = mock();
         final DataObjectDeleted<FlowCapableNode> dataObjectModification = mock();
-        doReturn(DELETE).when(dataObjectModification).modificationType();
         doReturn(dataObjectModification).when(dataTreeModification).getRootNode();
         doReturn(invNodeID).when(dataTreeModification).path();
 
@@ -175,7 +171,6 @@ public class NodeChangeListenerImplTest extends DataTreeChangeListenerBase {
 
         final DataTreeModification<FlowCapableNode> dataTreeModification = mock();
         final DataObjectWritten<FlowCapableNode> dataObjectModification = mock();
-        doReturn(WRITE).when(dataObjectModification).modificationType();
         doReturn(dataObjectModification).when(dataTreeModification).getRootNode();
         doReturn(invNodeID).when(dataTreeModification).path();
 

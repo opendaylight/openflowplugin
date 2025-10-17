@@ -17,7 +17,7 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
@@ -126,7 +126,7 @@ public final class SampleFlowCapableNodeListener implements DataTreeChangeListen
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
-            if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
+            if (modification.getRootNode() instanceof DataObjectWritten<?>) {
                 final var nodePath = modification.path().trimTo(Node.class);
                 LOG.info("Node connected:  {}", nodePath);
 

@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModification.WithDataAfter;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -65,12 +67,15 @@ public final class NodeConnectorInventoryEventTranslator
             @SuppressWarnings("unchecked")
             final var nodeConnectorInstanceId = (WithKey<NodeConnector, NodeConnectorKey>)
                 modification.path().trimTo(NodeConnector.class);
-            final var rootNode = modification.getRootNode();
-            LOG.trace("Node connectors in inventory changed -> {}", rootNode.modificationType());
 
-            switch (rootNode.modificationType()) {
-                case SUBTREE_MODIFIED, WRITE -> {
-                    final var flowConnector = rootNode.dataAfter();
+            switch (modification.getRootNode()) {
+                case DataObjectDeleted<?> deleted -> {
+                    LOG.trace("Node connectors in inventory removed");
+                    removeNodeConnector(nodeConnectorInstanceId);
+                }
+                case WithDataAfter<FlowCapableNodeConnector> present -> {
+                    LOG.trace("Node connectors in inventory updated");
+                    final var flowConnector = present.dataAfter();
                     if (isPortDown(flowConnector)) {
                         removeNodeConnector(nodeConnectorInstanceId);
                     } else if (nodeConnectors.add(nodeConnectorInstanceId)) {
@@ -79,9 +84,6 @@ public final class NodeConnectorInventoryEventTranslator
                         }
                     }
                 }
-                case DELETE -> removeNodeConnector(nodeConnectorInstanceId);
-                default ->
-                    throw new IllegalStateException("Unhandled modification type: " + rootNode.modificationType());
             }
         }
     }
