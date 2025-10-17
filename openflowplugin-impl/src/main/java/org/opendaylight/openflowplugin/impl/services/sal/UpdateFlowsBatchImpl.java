@@ -70,7 +70,7 @@ public final class UpdateFlowsBatchImpl implements UpdateFlowsBatch {
     }
 
     private static FlowRef createFlowRef(final NodeRef nodeRef, final BatchFlowInputUpdateGrouping batchFlow) {
-        return FlowUtil.buildFlowPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
+        return FlowUtil.buildFlowPath((DataObjectIdentifier<Node>) nodeRef.getValue(),
                 batchFlow.getOriginalBatchedFlow().getTableId(), batchFlow.getFlowId());
     }
 }

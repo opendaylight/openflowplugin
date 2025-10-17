@@ -35,10 +35,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.Upd
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flows.service.rev160314.batch.flow.output.list.grouping.BatchFailedFlowsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.EntryObject;
 import org.opendaylight.yangtools.binding.Key;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -182,13 +182,13 @@ public final class FlowUtil {
      * @param flowId   path to {@link Flow} under {@link Table}
      * @return instance identifier assembled for given node, table and flow
      */
-    public static FlowRef buildFlowPath(final InstanceIdentifier<Node> nodePath,
+    public static FlowRef buildFlowPath(final DataObjectIdentifier<Node> nodePath,
                                         final Uint8 tableId, final FlowId flowId) {
-        return new FlowRef(nodePath
+        return new FlowRef(nodePath.toBuilder()
             .augmentation(FlowCapableNode.class)
             .child(Table.class, new TableKey(tableId))
             .child(Flow.class, new FlowKey(new FlowId(flowId)))
-            .toIdentifier());
+            .build());
     }
 
     /**

@@ -33,8 +33,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.Up
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.UpdateMetersBatchOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -102,12 +101,11 @@ public final class MeterUtil {
      * @param meterId meter Id
      * @return instance identifier assembled for given node and meter
      */
-    public static MeterRef buildMeterPath(final InstanceIdentifier<Node> nodePath, final MeterId meterId) {
-        final KeyedInstanceIdentifier<Meter, MeterKey> meterPath = nodePath
-                .augmentation(FlowCapableNode.class)
-                .child(Meter.class, new MeterKey(meterId));
-
-        return new MeterRef(meterPath.toIdentifier());
+    public static MeterRef buildMeterPath(final DataObjectIdentifier<Node> nodePath, final MeterId meterId) {
+        return new MeterRef(nodePath.toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .child(Meter.class, new MeterKey(meterId))
+            .build());
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedMetersOutput>>> createCumulativeFunction(

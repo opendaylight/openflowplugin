@@ -67,8 +67,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FeaturesReply;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.GetFeaturesOutput;
 import org.opendaylight.yangtools.binding.DataObject;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier.WithKey;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -83,13 +83,16 @@ public class SalFlowServiceImplTest {
     private static final String DUMMY_FLOW_ID = "dummyFlowID";
     private static final Uint8 DUMMY_TABLE_ID = Uint8.ZERO;
 
-    private static final KeyedInstanceIdentifier<Node, NodeKey> NODE_II =
-        InstanceIdentifier.create(Nodes.class).child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)));
+    private static final WithKey<Node, NodeKey> NODE_II = DataObjectIdentifier.builder(Nodes.class)
+        .child(Node.class, new NodeKey(new NodeId(DUMMY_NODE_ID)))
+        .build();
 
-    private static final KeyedInstanceIdentifier<Table, TableKey> TABLE_II =
-        NODE_II.augmentation(FlowCapableNode.class).child(Table.class, new TableKey(DUMMY_TABLE_ID));
+    private static final WithKey<Table, TableKey> TABLE_II = NODE_II.toBuilder()
+        .augmentation(FlowCapableNode.class)
+        .child(Table.class, new TableKey(DUMMY_TABLE_ID))
+        .build();
 
-    private final NodeRef noderef = new NodeRef(NODE_II.toIdentifier());
+    private final NodeRef noderef = new NodeRef(NODE_II);
 
     @Mock
     private RequestContextStack mockedRequestContextStack;
@@ -303,7 +306,7 @@ public class SalFlowServiceImplTest {
         when(mockedUpdateFlowInput1.getUpdatedFlow()).thenReturn(mockedUpdateFlow1);
 
         FlowRef mockedFlowRef = mock(FlowRef.class);
-        doReturn(TABLE_II.child(Flow.class, new FlowKey(new FlowId(DUMMY_FLOW_ID))).toIdentifier())
+        doReturn(TABLE_II.toBuilder().child(Flow.class, new FlowKey(new FlowId(DUMMY_FLOW_ID))).build())
             .when(mockedFlowRef).getValue();
         when(mockedUpdateFlowInput.getFlowRef()).thenReturn(mockedFlowRef);
         when(mockedUpdateFlowInput1.getFlowRef()).thenReturn(mockedFlowRef);

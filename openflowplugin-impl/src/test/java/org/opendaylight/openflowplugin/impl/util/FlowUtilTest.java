@@ -36,7 +36,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -51,11 +50,9 @@ public class FlowUtilTest {
 
     @Test
     public void testBuildFlowPath() {
-        final InstanceIdentifier<Node> nodePath = InstanceIdentifier
-                .create(Nodes.class)
-                .child(Node.class, new NodeKey(DUMMY_NODE_ID));
-
-        final FlowRef flowRef = FlowUtil.buildFlowPath(nodePath, DUMMY_TABLE_ID, DUMMY_FLOW_ID);
+        final FlowRef flowRef = FlowUtil.buildFlowPath(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(DUMMY_NODE_ID))
+            .build(), DUMMY_TABLE_ID, DUMMY_FLOW_ID);
         final var flowRefValue = assertInstanceOf(DataObjectIdentifier.class, flowRef.getValue());
         Assert.assertEquals(DUMMY_NODE_ID, flowRefValue.getFirstKeyOf(Node.class).getId());
         Assert.assertEquals(DUMMY_TABLE_ID, flowRefValue.getFirstKeyOf(Table.class).getId());

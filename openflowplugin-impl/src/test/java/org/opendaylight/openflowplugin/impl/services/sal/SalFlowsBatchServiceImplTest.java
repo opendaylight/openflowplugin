@@ -56,8 +56,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint16;
@@ -71,7 +71,7 @@ public class SalFlowsBatchServiceImplTest {
     public static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     public static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
     public static final NodeRef NODE_REF = new NodeRef(
-        InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY).toIdentifier());
+        DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY).build());
     public static final String FLOW_ID_VALUE_1 = "ut-dummy-flow1";
     public static final String FLOW_ID_VALUE_2 = "ut-dummy-flow2";
 

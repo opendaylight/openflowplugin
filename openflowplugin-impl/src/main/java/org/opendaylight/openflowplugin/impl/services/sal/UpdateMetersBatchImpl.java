@@ -78,7 +78,7 @@ public final class UpdateMetersBatchImpl implements UpdateMetersBatch {
     }
 
     private static MeterRef createMeterRef(final NodeRef nodeRef, final BatchUpdateMeters batchMeter) {
-        return MeterUtil.buildMeterPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
+        return MeterUtil.buildMeterPath((DataObjectIdentifier<Node>) nodeRef.getValue(),
                 batchMeter.getUpdatedBatchedMeter().getMeterId());
     }
 }

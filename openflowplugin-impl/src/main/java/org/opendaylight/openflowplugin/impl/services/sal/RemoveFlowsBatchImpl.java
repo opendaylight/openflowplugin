@@ -66,7 +66,7 @@ public final class RemoveFlowsBatchImpl implements RemoveFlowsBatch {
     }
 
     private static FlowRef createFlowRef(final NodeRef nodeRef, final BatchFlowInputGrouping batchFlow) {
-        return FlowUtil.buildFlowPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
+        return FlowUtil.buildFlowPath((DataObjectIdentifier<Node>) nodeRef.getValue(),
                 batchFlow.getTableId(), batchFlow.getFlowId());
     }
 }

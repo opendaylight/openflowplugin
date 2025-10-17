@@ -34,7 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.Nodes;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.NodeKey;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 
@@ -44,8 +44,9 @@ import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 @RunWith(MockitoJUnitRunner.class)
 public class BarrierUtilTest {
     public static final NodeKey NODE_KEY = new NodeKey(new NodeId("ut-dummy-node"));
-    private static final NodeRef NODE_REF = new NodeRef(InstanceIdentifier.create(Nodes.class)
-            .child(Node.class, NODE_KEY).toIdentifier());
+    private static final NodeRef NODE_REF = new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, NODE_KEY)
+            .build());
 
     @Mock
     private SendBarrier sendBarrier;

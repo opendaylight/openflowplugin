@@ -69,7 +69,6 @@ public final class AddGroupsBatchImpl implements AddGroupsBatch {
     }
 
     private static GroupRef createGroupRef(final NodeRef nodeRef, final Group batchGroup) {
-        return GroupUtil.buildGroupPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
-            batchGroup.getGroupId());
+        return GroupUtil.buildGroupPath((DataObjectIdentifier<Node>) nodeRef.getValue(), batchGroup.getGroupId());
     }
 }

@@ -34,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.batch.meter.output.list.grouping.BatchFailedMetersOutputKey;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -52,9 +51,10 @@ public class MeterUtilTest {
 
     @Test
     public void testBuildGroupPath() {
-        final InstanceIdentifier<Node> nodePath = InstanceIdentifier
-                .create(Nodes.class)
-                .child(Node.class, new NodeKey(DUMMY_NODE_ID));
+        final var nodePath = DataObjectIdentifier
+                .builder(Nodes.class)
+                .child(Node.class, new NodeKey(DUMMY_NODE_ID))
+                .build();
 
         final MeterRef meterRef = MeterUtil.buildMeterPath(nodePath, DUMMY_METER_ID);
         final var meterRefValue = assertInstanceOf(DataObjectIdentifier.class, meterRef.getValue());

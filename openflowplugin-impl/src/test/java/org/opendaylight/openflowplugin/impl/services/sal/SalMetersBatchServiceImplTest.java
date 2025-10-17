@@ -56,8 +56,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.re
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.remove.meters.batch.input.BatchRemoveMetersBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMeters;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meters.service.rev160316.update.meters.batch.input.BatchUpdateMetersBuilder;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -70,7 +70,7 @@ public class SalMetersBatchServiceImplTest {
     public static final NodeId NODE_ID = new NodeId("ut-dummy-node");
     public static final NodeKey NODE_KEY = new NodeKey(NODE_ID);
     public static final NodeRef NODE_REF =
-            new NodeRef(InstanceIdentifier.create(Nodes.class).child(Node.class, NODE_KEY).toIdentifier());
+            new NodeRef(DataObjectIdentifier.builder(Nodes.class).child(Node.class, NODE_KEY).build());
 
     @Mock
     private AddMeter addMeter;

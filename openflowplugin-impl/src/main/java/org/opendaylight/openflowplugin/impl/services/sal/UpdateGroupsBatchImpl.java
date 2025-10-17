@@ -79,7 +79,7 @@ public final class UpdateGroupsBatchImpl implements UpdateGroupsBatch {
     }
 
     private static GroupRef createGroupRef(final NodeRef nodeRef, final BatchUpdateGroups batchGroup) {
-        return GroupUtil.buildGroupPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
+        return GroupUtil.buildGroupPath((DataObjectIdentifier<Node>) nodeRef.getValue(),
             batchGroup.getUpdatedBatchedGroup().getGroupId());
     }
 }

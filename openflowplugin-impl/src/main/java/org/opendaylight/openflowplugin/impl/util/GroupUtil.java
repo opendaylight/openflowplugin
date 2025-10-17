@@ -34,8 +34,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.ba
 import org.opendaylight.yang.gen.v1.urn.opendaylight.groups.service.rev160315.batch.group.output.list.grouping.BatchFailedGroupsOutputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcError;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -103,12 +102,11 @@ public final class GroupUtil {
      * @param groupId - group Id
      * @return instance identifier assembled for given node and group
      */
-    public static GroupRef buildGroupPath(final InstanceIdentifier<Node> nodePath, final GroupId groupId) {
-        final KeyedInstanceIdentifier<Group, GroupKey> groupPath = nodePath
-                .augmentation(FlowCapableNode.class)
-                .child(Group.class, new GroupKey(groupId));
-
-        return new GroupRef(groupPath.toIdentifier());
+    public static GroupRef buildGroupPath(final DataObjectIdentifier<Node> nodePath, final GroupId groupId) {
+        return new GroupRef(nodePath.toBuilder()
+            .augmentation(FlowCapableNode.class)
+            .child(Group.class, new GroupKey(groupId))
+            .build());
     }
 
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedGroupsOutput>>> createCumulatingFunction(
@@ -131,8 +129,7 @@ public final class GroupUtil {
      */
     public static List<Uint32> extractGroupActionsSupportBitmap(final List<ActionType> actionsSupported) {
         List<Uint32> supportActionByGroups = new ArrayList<>();
-        for (org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType supportedActions
-                : actionsSupported) {
+        for (var supportedActions : actionsSupported) {
             long supportActionBitmap = 0;
             supportActionBitmap |= supportedActions.getOFPATOUTPUT() ? 1 : 0;
             supportActionBitmap |= supportedActions.getOFPATCOPYTTLOUT() ? 1 << 11 : 0;

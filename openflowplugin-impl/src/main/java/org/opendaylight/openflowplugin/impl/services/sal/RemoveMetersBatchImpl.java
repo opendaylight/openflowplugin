@@ -69,7 +69,6 @@ public final class RemoveMetersBatchImpl  implements RemoveMetersBatch {
     }
 
     private static MeterRef createMeterRef(final NodeRef nodeRef, final Meter batchMeter) {
-        return MeterUtil.buildMeterPath(((DataObjectIdentifier<Node>) nodeRef.getValue()).toLegacy(),
-            batchMeter.getMeterId());
+        return MeterUtil.buildMeterPath((DataObjectIdentifier<Node>) nodeRef.getValue(), batchMeter.getMeterId());
     }
 }

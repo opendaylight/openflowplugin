@@ -34,7 +34,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ActionType;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.util.BindingMap;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.ErrorType;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
@@ -54,9 +53,9 @@ public class GroupUtilTest {
 
     @Test
     public void testBuildGroupPath() {
-        final InstanceIdentifier<Node> nodePath = InstanceIdentifier
-                .create(Nodes.class)
-                .child(Node.class, new NodeKey(DUMMY_NODE_ID));
+        final var nodePath = DataObjectIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(DUMMY_NODE_ID))
+                .build();
 
         final GroupRef groupRef = GroupUtil.buildGroupPath(nodePath, DUMMY_GROUP_ID);
         final var groupRefValue = assertInstanceOf(DataObjectIdentifier.class, groupRef.getValue());
