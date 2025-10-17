@@ -12,6 +12,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNode;
@@ -21,7 +24,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.N
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.topology.inventory.rev131030.InventoryNodeBuilder;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.NodeId;
 import org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network.topology.topology.NodeBuilder;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.binding.DataObjectReference;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -49,20 +51,13 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
 
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
-        for (DataTreeModification<FlowCapableNode> modification : modifications) {
-            switch (modification.getRootNode().modificationType()) {
-                case WRITE:
-                    processAddedNode(modification);
-                    break;
-                case SUBTREE_MODIFIED:
+        for (var modification : modifications) {
+            switch (modification.getRootNode()) {
+                case DataObjectWritten<?> written -> processAddedNode(modification);
+                case DataObjectDeleted<?> deleted -> processRemovedNode(modification);
+                case DataObjectModified<?> modified -> {
                     // NOOP
-                    break;
-                case DELETE:
-                    processRemovedNode(modification);
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            "Unhandled modification type: {}" + modification.getRootNode().modificationType());
+                }
             }
         }
     }
@@ -93,20 +88,14 @@ public final class NodeChangeListenerImpl extends DataTreeChangeListenerImpl<Flo
         final NodeId nodeIdInTopology = provideTopologyNodeId(iiToNodeInInventory);
         if (nodeIdInTopology != null) {
             final var iiToTopologyNode = provideIIToTopologyNode(nodeIdInTopology);
-            sendToTransactionChain(prepareTopologyNode(nodeIdInTopology, iiToNodeInInventory), iiToTopologyNode);
+            sendToTransactionChain(new NodeBuilder()
+                .setNodeId(nodeIdInTopology)
+                .addAugmentation(new InventoryNodeBuilder()
+                    .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.trimTo(Node.class)))
+                    .build())
+                .build(), iiToTopologyNode);
         } else {
             LOG.debug("Inventory node key is null. Data can't be written to topology");
         }
-    }
-
-    private static org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang.network.topology.rev131021.network
-            .topology.topology.Node prepareTopologyNode(final NodeId nodeIdInTopology,
-                final DataObjectIdentifier<FlowCapableNode> iiToNodeInInventory) {
-        return new NodeBuilder()
-            .setNodeId(nodeIdInTopology)
-            .addAugmentation(new InventoryNodeBuilder()
-                .setInventoryNodeRef(new NodeRef(iiToNodeInInventory.trimTo(Node.class)))
-                .build())
-            .build();
     }
 }

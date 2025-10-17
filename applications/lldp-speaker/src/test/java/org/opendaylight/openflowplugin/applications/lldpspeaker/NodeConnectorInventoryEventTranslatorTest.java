@@ -11,9 +11,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.DELETE;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.SUBTREE_MODIFIED;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
 import org.opendaylight.mdsal.binding.api.DataObjectModification;
-import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataObjectModified;
 import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
@@ -156,34 +152,32 @@ class NodeConnectorInventoryEventTranslatorTest {
     private static DataTreeModification<FlowCapableNodeConnector> newDeletion(
             final DataObjectIdentifier<FlowCapableNodeConnector> ii) {
         final DataObjectDeleted<FlowCapableNodeConnector> root = mock();
-        return setupDataTreeChange(root, DELETE, ii);
+        return setupDataTreeChange(root,ii);
     }
 
     private static DataTreeModification<FlowCapableNodeConnector> newModification(
             final DataObjectIdentifier<FlowCapableNodeConnector> ii, final FlowCapableNodeConnector connector) {
         final DataObjectModified<FlowCapableNodeConnector> root = mock();
-        return setupWithDataAfter(root, SUBTREE_MODIFIED, ii, connector);
+        return setupWithDataAfter(root, ii, connector);
     }
 
     private static DataTreeModification<FlowCapableNodeConnector> newWrite(
             final DataObjectIdentifier<FlowCapableNodeConnector> ii, final FlowCapableNodeConnector connector) {
         final DataObjectWritten<FlowCapableNodeConnector> root = mock();
-        return setupWithDataAfter(root, WRITE, ii, connector);
+        return setupWithDataAfter(root, ii, connector);
     }
 
     private static DataTreeModification<FlowCapableNodeConnector> setupWithDataAfter(
-            final DataObjectModification.WithDataAfter<FlowCapableNodeConnector> root, final ModificationType type,
+            final DataObjectModification.WithDataAfter<FlowCapableNodeConnector> root,
             final DataObjectIdentifier<FlowCapableNodeConnector> ii, final FlowCapableNodeConnector connector) {
-        final var ret = setupDataTreeChange(root, type, ii);
+        final var ret = setupDataTreeChange(root, ii);
         when(root.dataAfter()).thenReturn(connector);
         return ret;
     }
 
     private static DataTreeModification<FlowCapableNodeConnector> setupDataTreeChange(
-            final DataObjectModification<FlowCapableNodeConnector> root, final ModificationType type,
+            final DataObjectModification<FlowCapableNodeConnector> root,
             final DataObjectIdentifier<FlowCapableNodeConnector> ii) {
-        when(root.modificationType()).thenReturn(type);
-
         final DataTreeModification<FlowCapableNodeConnector> dataTreeModification = mock();
         when(dataTreeModification.getRootNode()).thenReturn(root);
         when(dataTreeModification.path()).thenReturn(ii);

@@ -14,6 +14,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -53,26 +56,6 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
             .build());
     }
 
-    @Override
-    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNodeConnector>> modifications) {
-        for (DataTreeModification<FlowCapableNodeConnector> modification : modifications) {
-            switch (modification.getRootNode().modificationType()) {
-                case WRITE:
-                    processAddedTerminationPoints(modification);
-                    break;
-                case SUBTREE_MODIFIED:
-                    processUpdatedTerminationPoints(modification);
-                    break;
-                case DELETE:
-                    processRemovedTerminationPoints(modification);
-                    break;
-                default:
-                    throw new IllegalArgumentException(
-                            "Unhandled modification type: {}" + modification.getRootNode().modificationType());
-            }
-        }
-    }
-
     @Deactivate
     @PreDestroy
     @Override
@@ -80,10 +63,23 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
         super.close();
     }
 
-    private void processRemovedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final var removedNode = modification.path();
-        final TpId terminationPointId = provideTopologyTerminationPointId(removedNode);
-        final var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(terminationPointId, removedNode);
+    @Override
+    public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNodeConnector>> modifications) {
+        for (var modification : modifications) {
+            switch (modification.getRootNode()) {
+                case DataObjectWritten<FlowCapableNodeConnector> written ->
+                    processAddedTerminationPoints(modification.path(), written.dataAfter());
+                case DataObjectModified<FlowCapableNodeConnector> modified ->
+                    processUpdatedTerminationPoints(modification.path());
+                case DataObjectDeleted<FlowCapableNodeConnector> deleted ->
+                    processRemovedTerminationPoints(modification.path());
+            }
+        }
+    }
+
+    private void processRemovedTerminationPoints(final DataObjectIdentifier<FlowCapableNodeConnector> path) {
+        final TpId terminationPointId = provideTopologyTerminationPointId(path);
+        final var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(terminationPointId, path);
 
         if (iiToTopologyTerminationPoint != null) {
             final var node = iiToTopologyTerminationPoint.trimTo(org.opendaylight.yang.gen.v1.urn.tbd.params.xml.ns.yang
@@ -110,19 +106,18 @@ public class TerminationPointChangeListenerImpl extends DataTreeChangeListenerIm
         }
     }
 
-    private void processUpdatedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
+    private void processUpdatedTerminationPoints(final DataObjectIdentifier<FlowCapableNodeConnector> path) {
         // TODO Auto-generated method stub
     }
 
-    private void processAddedTerminationPoints(final DataTreeModification<FlowCapableNodeConnector> modification) {
-        final var iiToNodeInInventory = modification.path();
-        TpId terminationPointIdInTopology = provideTopologyTerminationPointId(iiToNodeInInventory);
+    private void processAddedTerminationPoints(final DataObjectIdentifier<FlowCapableNodeConnector> path,
+            final FlowCapableNodeConnector flowCapNodeConnector) {
+        TpId terminationPointIdInTopology = provideTopologyTerminationPointId(path);
         if (terminationPointIdInTopology != null) {
-            var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(
-                    terminationPointIdInTopology, iiToNodeInInventory);
-            TerminationPoint point = prepareTopologyTerminationPoint(terminationPointIdInTopology, iiToNodeInInventory);
+            var iiToTopologyTerminationPoint = provideIIToTopologyTerminationPoint(terminationPointIdInTopology, path);
+            TerminationPoint point = prepareTopologyTerminationPoint(terminationPointIdInTopology, path);
             sendToTransactionChain(point, iiToTopologyTerminationPoint);
-            removeLinks(modification.getRootNode().dataAfter(), point);
+            removeLinks(flowCapNodeConnector, point);
         } else {
             LOG.debug("Inventory node connector key is null. Data can't be written to topology termination point");
         }
