@@ -23,7 +23,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.ta
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.service.rev130819.AddFlowOutput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.FlowRef;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.Uint8;
 import org.slf4j.Logger;
@@ -57,8 +56,7 @@ final class AddFlowCallback implements FutureCallback<RpcResult<AddFlowOutput>> 
         final FlowRef flowRef = input.getFlowRef();
         if (flowRef != null) {
             final Uint8 tableId = input.getTableId();
-            final FlowId flowId = ((DataObjectIdentifier<?>) flowRef.getValue()).toLegacy().firstKeyOf(Flow.class)
-                .getId();
+            final FlowId flowId = flowRef.getValue().getFirstKeyOf(Flow.class).getId();
             flowDescriptor = FlowDescriptorFactory.create(tableId, flowId);
 
             // FIXME: this looks like an atomic operation
