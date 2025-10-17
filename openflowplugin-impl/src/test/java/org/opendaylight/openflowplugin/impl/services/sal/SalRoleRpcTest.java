@@ -43,7 +43,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.OfpR
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleInputBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.role.service.rev150727.SetRoleOutput;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.RpcResult;
 import org.opendaylight.yangtools.yang.common.RpcResultBuilder;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -108,12 +108,9 @@ public class SalRoleRpcTest {
         Mockito.when(mockDeviceContext.getPrimaryConnectionContext().getConnectionState())
                 .thenReturn(ConnectionContext.CONNECTION_STATE.WORKING);
 
-        NodeKey key = new NodeKey(testNodeId);
-        InstanceIdentifier<Node> path = InstanceIdentifier.builder(Nodes.class)
-                .child(Node.class, key)
-                .build();
-        nodeRef = new NodeRef(path.toIdentifier());
-
+        nodeRef = new NodeRef(DataObjectIdentifier.builder(Nodes.class)
+            .child(Node.class, new NodeKey(testNodeId))
+            .build());
     }
 
     @Test
