@@ -57,10 +57,9 @@ public class MeterUtilTest {
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
 
         final MeterRef meterRef = MeterUtil.buildMeterPath(nodePath, DUMMY_METER_ID);
-        final InstanceIdentifier<?> meterRefValue = assertInstanceOf(DataObjectIdentifier.class, meterRef.getValue())
-            .toLegacy();
-        Assert.assertEquals(DUMMY_NODE_ID, meterRefValue.firstKeyOf(Node.class).getId());
-        Assert.assertEquals(DUMMY_METER_ID, meterRefValue.firstKeyOf(Meter.class).getMeterId());
+        final var meterRefValue = assertInstanceOf(DataObjectIdentifier.class, meterRef.getValue());
+        Assert.assertEquals(DUMMY_NODE_ID, meterRefValue.getFirstKeyOf(Node.class).getId());
+        Assert.assertEquals(DUMMY_METER_ID, meterRefValue.getFirstKeyOf(Meter.class).getMeterId());
     }
 
     @Test

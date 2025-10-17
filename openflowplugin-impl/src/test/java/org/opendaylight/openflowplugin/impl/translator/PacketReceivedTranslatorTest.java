@@ -47,7 +47,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.features.reply.PhyPort;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.packet.received.Match;
-import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 import org.opendaylight.yangtools.yang.common.Uint64;
@@ -89,9 +88,9 @@ public class PacketReceivedTranslatorTest {
 
     @Test
     public void testTranslate() {
-        final KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier
-                .create(Nodes.class)
-                .child(Node.class, new NodeKey(new NodeId("openflow:10")));
+        final KeyedInstanceIdentifier<Node, NodeKey> nodePath = KeyedInstanceIdentifier.builder(Nodes.class)
+                .child(Node.class, new NodeKey(new NodeId("openflow:10")))
+                .build();
         final PacketReceivedTranslator packetReceivedTranslator = new PacketReceivedTranslator(convertorManager);
         final PacketInMessage packetInMessage = createPacketInMessage(DATA.getBytes(), PORT_NO);
 
@@ -102,8 +101,7 @@ public class PacketReceivedTranslatorTest {
             org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.SendToController.VALUE,
             packetReceived.getPacketInReason());
         Assert.assertEquals("openflow:10:" + PORT_NO,
-            ((DataObjectIdentifier<?>) packetReceived.getIngress().getValue()).toLegacy()
-                .firstKeyOf(NodeConnector.class).getId().getValue());
+            packetReceived.getIngress().getValue().getFirstKeyOf(NodeConnector.class).getId().getValue());
         Assert.assertEquals(0L, packetReceived.getFlowCookie().getValue().longValue());
         Assert.assertEquals(42L, packetReceived.getTableId().getValue().longValue());
     }

@@ -56,11 +56,10 @@ public class FlowUtilTest {
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
 
         final FlowRef flowRef = FlowUtil.buildFlowPath(nodePath, DUMMY_TABLE_ID, DUMMY_FLOW_ID);
-        final InstanceIdentifier<?> flowRefValue = assertInstanceOf(DataObjectIdentifier.class, flowRef.getValue())
-            .toLegacy();
-        Assert.assertEquals(DUMMY_NODE_ID, flowRefValue.firstKeyOf(Node.class).getId());
-        Assert.assertEquals(DUMMY_TABLE_ID, flowRefValue.firstKeyOf(Table.class).getId());
-        Assert.assertEquals(DUMMY_FLOW_ID, flowRefValue.firstKeyOf(Flow.class).getId());
+        final var flowRefValue = assertInstanceOf(DataObjectIdentifier.class, flowRef.getValue());
+        Assert.assertEquals(DUMMY_NODE_ID, flowRefValue.getFirstKeyOf(Node.class).getId());
+        Assert.assertEquals(DUMMY_TABLE_ID, flowRefValue.getFirstKeyOf(Table.class).getId());
+        Assert.assertEquals(DUMMY_FLOW_ID, flowRefValue.getFirstKeyOf(Flow.class).getId());
     }
 
     @Test

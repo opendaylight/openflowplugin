@@ -59,10 +59,9 @@ public class GroupUtilTest {
                 .child(Node.class, new NodeKey(DUMMY_NODE_ID));
 
         final GroupRef groupRef = GroupUtil.buildGroupPath(nodePath, DUMMY_GROUP_ID);
-        final InstanceIdentifier<?> groupRefValue = assertInstanceOf(DataObjectIdentifier.class, groupRef.getValue())
-            .toLegacy();
-        Assert.assertEquals(DUMMY_NODE_ID, groupRefValue.firstKeyOf(Node.class).getId());
-        Assert.assertEquals(DUMMY_GROUP_ID, groupRefValue.firstKeyOf(Group.class).getGroupId());
+        final var groupRefValue = assertInstanceOf(DataObjectIdentifier.class, groupRef.getValue());
+        Assert.assertEquals(DUMMY_NODE_ID, groupRefValue.getFirstKeyOf(Node.class).getId());
+        Assert.assertEquals(DUMMY_GROUP_ID, groupRefValue.getFirstKeyOf(Group.class).getGroupId());
     }
 
     @Test

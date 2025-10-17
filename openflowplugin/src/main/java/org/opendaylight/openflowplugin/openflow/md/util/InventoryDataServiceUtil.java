@@ -152,7 +152,6 @@ public abstract class InventoryDataServiceUtil {
     }
 
     public static Uint64 extractDatapathId(final NodeRef ref) {
-        return InventoryDataServiceUtil.dataPathIdFromNodeId(
-            ((DataObjectIdentifier<?>) ref.getValue()).toLegacy().firstKeyOf(Node.class).getId());
+        return InventoryDataServiceUtil.dataPathIdFromNodeId(ref.getValue().getFirstKeyOf(Node.class).getId());
     }
 }

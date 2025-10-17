@@ -207,7 +207,7 @@ public class StatisticsGatheringUtilsTest {
                 dataStoreType.capture(), flowPath.capture(), flow.capture());
         Assert.assertEquals(LogicalDatastoreType.OPERATIONAL, dataStoreType.getValue());
         final DataObjectIdentifier<FlowCapableNode> flowCapableNodePath = flowPath.getValue();
-        Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.toLegacy().firstKeyOf(Node.class).getId());
+        Assert.assertEquals(DUMMY_NODE_ID, flowCapableNodePath.getFirstKeyOf(Node.class).getId());
         Assert.assertEquals(42, flow.getValue().getTableId().intValue());
     }
 
