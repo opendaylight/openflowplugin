@@ -21,6 +21,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.checkerframework.checker.lock.qual.Holding;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcProviderService;
@@ -98,25 +101,18 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (DataTreeModification<FlowCapableNode> change : changes) {
             final var key = change.path();
-            final var mod = change.getRootNode();
             final var nodeIdent = key.trimTo(FlowCapableNode.class);
 
-            switch (mod.modificationType()) {
-                case DELETE:
-                    if (mod.dataAfter() == null) {
-                        remove(key, mod.dataBefore(), nodeIdent);
-                    }
-                    break;
-                case SUBTREE_MODIFIED:
+            switch (change.getRootNode()) {
+                case DataObjectDeleted<FlowCapableNode> deleted -> remove(key, deleted.dataBefore(), nodeIdent);
+                case DataObjectModified<FlowCapableNode> modified -> {
                     // NO-OP since we do not need to reconcile on Node-updated
-                    break;
-                case WRITE:
-                    if (mod.dataBefore() == null) {
-                        add(key, mod.dataAfter(), nodeIdent);
+                }
+                case DataObjectWritten<FlowCapableNode> written -> {
+                    if (written.dataBefore() == null) {
+                        add(key, written.dataAfter(), nodeIdent);
                     }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
+                }
             }
         }
     }

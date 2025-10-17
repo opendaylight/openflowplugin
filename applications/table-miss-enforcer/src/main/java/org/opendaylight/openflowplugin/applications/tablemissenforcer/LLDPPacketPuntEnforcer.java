@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
@@ -92,7 +92,7 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChan
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> modifications) {
         for (var modification : modifications) {
-            if (modification.getRootNode().modificationType() == ModificationType.WRITE) {
+            if (modification.getRootNode() instanceof DataObjectWritten<?>) {
                 final var nodeId = modification.path().getFirstKeyOf(Node.class).getId().getValue();
                 if (deviceOwnershipService.isEntityOwned(nodeId)) {
                     LoggingFutures.addErrorLogging(addFlow.invoke(new AddFlowInputBuilder(createFlow())

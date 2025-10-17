@@ -10,6 +10,9 @@ package org.opendaylight.openflowplugin.applications.frm.impl;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.openflowplugin.applications.frm.FlowCapableNodeConnectorCommitter;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.FlowCapableNodeConnector;
@@ -24,29 +27,23 @@ public abstract class AbstractNodeConnectorCommitter<T extends DataObject>
     public void onDataTreeChanged(final List<DataTreeModification<T>> changes) {
         requireNonNull(changes, "Changes may not be null!");
 
-        for (DataTreeModification<T> change : changes) {
+        for (var change : changes) {
             final var key = change.path();
-            final var mod = change.getRootNode();
             final var nodeConnIdent = key.trimTo(FlowCapableNodeConnector.class);
 
             if (preConfigurationCheck(nodeConnIdent)) {
-                switch (mod.modificationType()) {
-                    case DELETE:
-                        remove(key, mod.dataBefore(), nodeConnIdent);
-                        break;
-                    case SUBTREE_MODIFIED:
-                        update(key, mod.dataBefore(), mod.dataAfter(), nodeConnIdent);
-                        break;
-                    case WRITE:
-                        final var dataBefore = mod.dataBefore();
+                switch (change.getRootNode()) {
+                    case DataObjectDeleted<T> deleted -> remove(key, deleted.dataBefore(), nodeConnIdent);
+                    case DataObjectModified<T> modified ->
+                        update(key, modified.dataBefore(), modified.dataAfter(), nodeConnIdent);
+                    case DataObjectWritten<T> written -> {
+                        final var dataBefore = written.dataBefore();
                         if (dataBefore == null) {
-                            add(key, mod.dataAfter(), nodeConnIdent);
+                            add(key, written.dataAfter(), nodeConnIdent);
                         } else {
-                            update(key, dataBefore, mod.dataAfter(), nodeConnIdent);
+                            update(key, dataBefore, written.dataAfter(), nodeConnIdent);
                         }
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
+                    }
                 }
             }
         }

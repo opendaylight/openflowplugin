@@ -15,6 +15,9 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -72,24 +75,18 @@ public final class DefaultDpnTracker implements DpnTracker, DataTreeChangeListen
     @Override
     public synchronized void onDataTreeChanged(final List<DataTreeModification<FlowCapableNode>> changes) {
         for (var change : changes) {
-            final var mod = change.getRootNode();
-            switch (mod.modificationType()) {
-                case DELETE:
-                    remove(change.path(), mod.dataBefore());
-                    break;
-                case SUBTREE_MODIFIED:
-                    update(change.path(), mod.dataBefore(), mod.dataAfter());
-                    break;
-                case WRITE:
-                    final var dataBefore = mod.dataBefore();
+            switch (change.getRootNode()) {
+                case DataObjectDeleted<FlowCapableNode> deleted -> remove(change.path(), deleted.dataBefore());
+                case DataObjectModified<FlowCapableNode> modified ->
+                    update(change.path(), modified.dataBefore(), modified.dataAfter());
+                case DataObjectWritten<FlowCapableNode> written -> {
+                    final var dataBefore = written.dataBefore();
                     if (dataBefore == null) {
-                        add(change.path(), mod.dataAfter());
+                        add(change.path(), written.dataAfter());
                     } else {
-                        update(change.path(), dataBefore, mod.dataAfter());
+                        update(change.path(), dataBefore, written.dataAfter());
                     }
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
+                }
             }
         }
     }

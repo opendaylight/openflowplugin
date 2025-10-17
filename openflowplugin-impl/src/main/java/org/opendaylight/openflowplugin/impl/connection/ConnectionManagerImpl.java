@@ -21,7 +21,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModified;
+import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -186,25 +188,22 @@ public class ConnectionManagerImpl implements ConnectionManager {
         @Override
         public void onDataTreeChanged(final List<DataTreeModification<Node>> changes) {
             requireNonNull(changes, "Changes must not be null!");
-            for (DataTreeModification<Node> change : changes) {
-                final DataObjectModification<Node> mod = change.getRootNode();
-                switch (mod.modificationType()) {
-                    case DELETE, SUBTREE_MODIFIED:
-                        break;
-                    case WRITE:
-                        processNodeModification(change);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unhandled modification type " + mod.modificationType());
+            for (var change : changes) {
+                switch (change.getRootNode()) {
+                    case DataObjectDeleted<?> deleted -> {
+                        // No-op
+                    }
+                    case DataObjectModified<?> modified -> {
+                        // No-op
+                    }
+                    case DataObjectWritten<Node> written -> {
+                        String[] nodeIdentity = change.path().getFirstKeyOf(Node.class).getId().getValue().split(":");
+                        String nodeId = nodeIdentity[1];
+                        LOG.info("Clearing the device connection timer for the device {}", nodeId);
+                        removeDeviceLastConnectionTime(new BigInteger(nodeId));
+                    }
                 }
             }
-        }
-
-        private void processNodeModification(final DataTreeModification<Node> change) {
-            String[] nodeIdentity = change.path().getFirstKeyOf(Node.class).getId().getValue().split(":");
-            String nodeId = nodeIdentity[1];
-            LOG.info("Clearing the device connection timer for the device {}", nodeId);
-            removeDeviceLastConnectionTime(new BigInteger(nodeId));
         }
 
         @Override

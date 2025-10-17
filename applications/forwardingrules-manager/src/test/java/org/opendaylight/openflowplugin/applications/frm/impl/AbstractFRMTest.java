@@ -99,7 +99,6 @@ public abstract class AbstractFRMTest extends AbstractDataBrokerTest {
         when(rpcConsumerRegistry.getRpc(AddBundleMessages.class)).thenReturn(addBundleMessages);
         when(rpcConsumerRegistry.getRpc(GetActiveBundle.class)).thenReturn(getActiveBundle);
 
-        final var dataBroker = getDataBroker();
         forwardingRulesManager = new ForwardingRulesManagerImpl(getDataBroker(), rpcConsumerRegistry,
                 rpcProviderService, getConfig(), mastershipChangeServiceManager, getConfigurationService(),
                 reconciliationManager, openflowServiceRecoveryHandler, serviceRecoveryRegistry, flowGroupCacheManager);

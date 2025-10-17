@@ -15,8 +15,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.DELETE;
-import static org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType.WRITE;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.assertDeletedIDs;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newDestTp;
 import static org.opendaylight.openflowplugin.applications.topology.manager.TestUtils.newInvNodeConnKey;
@@ -317,7 +315,6 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
     private static DataTreeModification<FlowCapableNodeConnector> setupDataDeleted(
             final DataObjectIdentifier<NodeConnector> ii) {
         final DataObjectDeleted<FlowCapableNodeConnector> root = mock();
-        doReturn(DELETE).when(root).modificationType();
 
         final DataTreeModification<FlowCapableNodeConnector> ret = mock();
         doReturn(root).when(ret).getRootNode();
@@ -328,7 +325,6 @@ public class TerminationPointChangeListenerImplTest extends DataTreeChangeListen
     private static DataTreeModification<FlowCapableNodeConnector> setupDataWritten(
             final DataObjectIdentifier<NodeConnector> ii, final boolean getDataAfter) {
         final DataObjectWritten<FlowCapableNodeConnector> root = mock();
-        doReturn(WRITE).when(root).modificationType();
         if (getDataAfter) {
             when(root.dataAfter()).thenReturn(mock(FlowCapableNodeConnector.class));
         }

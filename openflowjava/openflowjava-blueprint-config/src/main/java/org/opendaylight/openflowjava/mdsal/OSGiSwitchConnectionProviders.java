@@ -16,6 +16,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModification.WithDataAfter;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -70,12 +72,11 @@ public final class OSGiSwitchConnectionProviders implements DataTreeChangeListen
         final var apply = new HashMap<String, SwitchConnectionConfig>();
 
         for (var change : changes) {
-            final var root = change.getRootNode();
-            switch (root.modificationType()) {
-                case null -> throw new NullPointerException();
-                case DELETE -> apply.put(root.dataBefore().getInstanceName(), null);
-                case SUBTREE_MODIFIED, WRITE -> {
-                    final var after = root.dataAfter();
+            switch (change.getRootNode()) {
+                case DataObjectDeleted<SwitchConnectionConfig> deleted ->
+                    apply.put(deleted.coerceKeyStep(SwitchConnectionConfig.class).key().getInstanceName(), null);
+                case WithDataAfter<SwitchConnectionConfig> present -> {
+                    final var after = present.dataAfter();
                     apply.put(after.getInstanceName(), after);
                 }
             }

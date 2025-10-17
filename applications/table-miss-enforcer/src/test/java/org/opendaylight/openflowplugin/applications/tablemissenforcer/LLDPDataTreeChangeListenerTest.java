@@ -27,7 +27,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataObjectWritten;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
@@ -85,7 +84,6 @@ public class LLDPDataTreeChangeListenerTest {
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(dataBroker, deviceOwnershipService, rpcService);
         when(dataTreeModification.path()).thenReturn(NODE_IID.toBuilder().augmentation(FlowCapableNode.class).build());
         when(dataTreeModification.getRootNode()).thenReturn(dataObjectModification);
-        when(dataTreeModification.getRootNode().modificationType()).thenReturn(ModificationType.WRITE);
         when(deviceOwnershipService.isEntityOwned(any())).thenReturn(true);
     }
 

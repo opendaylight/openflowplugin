@@ -19,7 +19,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
-import org.opendaylight.mdsal.binding.api.DataObjectModification;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.NotificationPublishService;
@@ -101,18 +101,11 @@ public final class LLDPLinkAger implements ConfigurationListener, DataTreeChange
 
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<Link>> changes) {
-        for (DataTreeModification<Link> modification : changes) {
-            switch (modification.getRootNode().modificationType()) {
-                case WRITE:
-                    break;
-                case SUBTREE_MODIFIED:
-                    // NOOP
-                    break;
-                case DELETE:
-                    processLinkDeleted(modification.getRootNode());
-                    break;
-                default:
-                    LOG.error("Unhandled modification type: {}", modification.getRootNode().modificationType());
+        for (var change : changes) {
+            if (change.getRootNode() instanceof DataObjectDeleted<Link> deleted) {
+                Link link = deleted.dataBefore();
+                LOG.trace("Removing link {} from linkToDate cache", link);
+                linkToDate.remove(LLDPDiscoveryUtils.toLLDPLinkDiscovered(link));
             }
         }
     }
@@ -142,12 +135,6 @@ public final class LLDPLinkAger implements ConfigurationListener, DataTreeChange
 
     protected boolean isLinkPresent(final LinkDiscovered linkDiscovered) {
         return linkToDate.containsKey(linkDiscovered);
-    }
-
-    private void processLinkDeleted(final DataObjectModification<Link> rootNode) {
-        Link link = rootNode.dataBefore();
-        LOG.trace("Removing link {} from linkToDate cache", link);
-        linkToDate.remove(LLDPDiscoveryUtils.toLLDPLinkDiscovered(link));
     }
 
     private final class LLDPAgingTask extends TimerTask {

@@ -15,6 +15,8 @@ import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.opendaylight.mdsal.binding.api.DataBroker;
+import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
+import org.opendaylight.mdsal.binding.api.DataObjectModification.WithDataAfter;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -58,17 +60,15 @@ public final class ServiceRecoveryListener implements AutoCloseable, DataTreeCha
     @Override
     public void onDataTreeChanged(final List<DataTreeModification<Operations>> changes) {
         for (var change : changes) {
-            final var modification = change.getRootNode();
-            switch (modification.modificationType()) {
-                case null -> throw new NullPointerException();
-                case DELETE -> {
+            switch (change.getRootNode()) {
+                case DataObjectDeleted<?> deleted -> {
                     // No-op
                 }
-                case SUBTREE_MODIFIED, WRITE -> {
+                case WithDataAfter<Operations> present -> {
                     // Initiates recovery mechanism for a particular interface-manager entity. This method tries to
                     // check whether there is a registered handler for the incoming service recovery request within
                     // interface-manager and redirects the call to the respective handler if found.
-                    var operations = modification.dataAfter();
+                    var operations = present.dataAfter();
                     LOG.info("Service Recovery operation triggered for service: {}", operations);
                     String serviceRegistryKey = operations.getEntityName().toString();
                     serviceRecoveryRegistry.getRegisteredServiceRecoveryHandler(serviceRegistryKey)
