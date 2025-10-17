@@ -302,8 +302,7 @@ public final class DefaultReconcileService implements Reconcile, ReconcileServic
                 counterBuilder.setFailureCount(Uint32.ONE);
             }
             try {
-                tx.mergeParentStructureMerge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier,
-                        counterBuilder.build());
+                tx.merge(LogicalDatastoreType.OPERATIONAL, instanceIdentifier, counterBuilder.build());
                 tx.commit().get();
             } catch (InterruptedException | ExecutionException e) {
                 LOG.error("Exception while submitting counter for {}", nodeId, e);
