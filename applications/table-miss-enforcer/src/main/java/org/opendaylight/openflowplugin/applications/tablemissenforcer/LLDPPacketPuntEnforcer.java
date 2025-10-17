@@ -17,7 +17,6 @@ import org.opendaylight.infrautils.utils.concurrent.LoggingFutures;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectModification.ModificationType;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
-import org.opendaylight.mdsal.binding.api.DataTreeIdentifier;
 import org.opendaylight.mdsal.binding.api.DataTreeModification;
 import org.opendaylight.mdsal.binding.api.RpcService;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
@@ -78,8 +77,8 @@ public final class LLDPPacketPuntEnforcer implements AutoCloseable, DataTreeChan
         this.deviceOwnershipService = requireNonNull(deviceOwnershipService);
         addFlow = rpcService.getRpc(AddFlow.class);
         listenerRegistration = dataBroker.registerTreeChangeListener(
-            DataTreeIdentifier.of(LogicalDatastoreType.OPERATIONAL,
-                DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build()),
+            LogicalDatastoreType.OPERATIONAL,
+            DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build(),
             this);
     }
 

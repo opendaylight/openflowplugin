@@ -79,7 +79,7 @@ public class LLDPDataTreeChangeListenerTest {
 
     @Before
     public void setUp() {
-        doReturn(reg).when(dataBroker).registerTreeChangeListener(any(), any());
+        doReturn(reg).when(dataBroker).registerTreeChangeListener(any(), any(), any());
         doReturn(RpcResultBuilder.success().buildFuture()).when(addFlow).invoke(any());
         doReturn(addFlow).when(rpcService).getRpc(any());
         lldpPacketPuntEnforcer = new LLDPPacketPuntEnforcer(dataBroker, deviceOwnershipService, rpcService);
