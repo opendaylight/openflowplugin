@@ -162,7 +162,7 @@ public class RpcContextImplTest {
 
     @Test
     public void testInstantiateServiceInstance() {
-        final var set = Set.<DataObjectIdentifier<?>>of(nodeInstanceIdentifier.toIdentifier());
+        final var set = Set.<DataObjectIdentifier<?>>of(nodeInstanceIdentifier);
         when(rpcProviderRegistry.registerRpcImplementations(any(Collection.class), eq(set))).thenReturn(registration);
         when(deviceContext.getDeviceFlowRegistry()).thenReturn(flowRegistry);
 

@@ -86,11 +86,11 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         this.deviceInitializerProvider = deviceInitializerProvider;
         this.convertorExecutor = convertorExecutor;
         this.hashedWheelTimer = hashedWheelTimer;
-        this.spyPool = new ScheduledThreadPoolExecutor(1);
+        spyPool = new ScheduledThreadPoolExecutor(1);
         this.notificationPublishService = notificationPublishService;
         this.messageSpy = messageSpy;
         DeviceInitializationUtil.makeEmptyNodes(dataBroker);
-        this.queuedNotificationManager =  QueuedNotificationManager.create(executorService, (key, entries) -> {
+        queuedNotificationManager = QueuedNotificationManager.create(executorService, (key, entries) -> {
             entries.forEach(Runnable::run);
         }, 2048, "port-status-queue");
     }
@@ -212,14 +212,14 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
         if (LOG.isDebugEnabled()) {
             LOG.debug("Device context removed for node {}", deviceInfo);
         }
-        this.updatePacketInRateLimiters();
+        updatePacketInRateLimiters();
     }
 
     @Override
     public void sendNodeRemovedNotification(final WithKey<Node, NodeKey> instanceIdentifier) {
         if (notificationCreateNodeSend.remove(instanceIdentifier)) {
             NodeRemovedBuilder builder = new NodeRemovedBuilder();
-            builder.setNodeRef(new NodeRef(instanceIdentifier.toIdentifier()));
+            builder.setNodeRef(new NodeRef(instanceIdentifier));
             LOG.info("Publishing node removed notification for {}", instanceIdentifier.key().getId());
             notificationPublishService.offerNotification(builder.build());
         }
@@ -237,7 +237,7 @@ public class DeviceManagerImpl implements DeviceManager, ExtensionConverterProvi
             final NodeId id = instanceIdentifier.key().getId();
             NodeUpdatedBuilder builder = new NodeUpdatedBuilder();
             builder.setId(id);
-            builder.setNodeRef(new NodeRef(instanceIdentifier.toIdentifier()));
+            builder.setNodeRef(new NodeRef(instanceIdentifier));
             LOG.info("Publishing node added notification for {}", id);
             notificationPublishService.offerNotification(builder.build());
         }

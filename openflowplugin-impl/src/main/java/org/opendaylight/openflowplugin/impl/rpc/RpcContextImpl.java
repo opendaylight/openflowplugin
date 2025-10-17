@@ -343,7 +343,7 @@ final class RpcContextImpl implements RpcContext {
         }
 
         rpcRegistration = rpcProviderRegistry.registerRpcImplementations(builder.build(),
-            Set.of(nodeInstanceIdentifier.toIdentifier()));
+            Set.of(nodeInstanceIdentifier));
 
         final var local = contextChainMastershipWatcher;
         if (local != null) {

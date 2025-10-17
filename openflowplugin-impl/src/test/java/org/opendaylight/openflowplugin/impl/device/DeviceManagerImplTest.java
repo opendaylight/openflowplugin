@@ -180,7 +180,7 @@ public class DeviceManagerImplTest {
         deviceManager.sendNodeAddedNotification(DUMMY_IDENTIFIER);
         verify(notificationPublishService).offerNotification(new NodeUpdatedBuilder()
                 .setId(DUMMY_NODE_ID)
-                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER.toIdentifier()))
+                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER))
                 .build());
     }
 
@@ -190,7 +190,7 @@ public class DeviceManagerImplTest {
         deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
         deviceManager.sendNodeRemovedNotification(DUMMY_IDENTIFIER);
         verify(notificationPublishService).offerNotification(new NodeRemovedBuilder()
-                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER.toIdentifier()))
+                .setNodeRef(new NodeRef(DUMMY_IDENTIFIER))
                 .build());
     }
 

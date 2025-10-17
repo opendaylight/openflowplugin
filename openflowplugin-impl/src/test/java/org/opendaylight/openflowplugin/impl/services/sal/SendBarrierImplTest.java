@@ -48,8 +48,6 @@ public class SendBarrierImplTest extends ServiceMocking {
     }
 
     private @NonNull SendBarrierInput buildSendBarrierInput() {
-        return new SendBarrierInputBuilder()
-            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier().toIdentifier()))
-            .build();
+        return new SendBarrierInputBuilder().setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier())).build();
     }
 }

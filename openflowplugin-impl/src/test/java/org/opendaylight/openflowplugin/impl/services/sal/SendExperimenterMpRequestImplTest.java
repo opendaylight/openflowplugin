@@ -31,7 +31,7 @@ public class SendExperimenterMpRequestImplTest extends ServiceMocking {
     public void sendExperimenterMpRequest() {
         sendExperimenterMpRequest.invoke(new SendExperimenterMpRequestInputBuilder()
             .setExperimenterMessageOfChoice(mockExperimenter())
-            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier().toIdentifier()))
+            .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))
             .build());
         verify(mockedRequestContextStack).createRequestContext();
     }

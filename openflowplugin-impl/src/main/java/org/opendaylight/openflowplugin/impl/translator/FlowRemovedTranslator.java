@@ -44,7 +44,7 @@ public class FlowRemovedTranslator implements MessageTranslator
         FlowRemovedBuilder flowRemovedBld = new FlowRemovedBuilder()
                 .setMatch(translateMatch(input, deviceInfo).build())
                 .setCookie(new FlowCookie(input.getCookie()))
-                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier().toIdentifier()))
+                .setNode(new NodeRef(deviceInfo.getNodeInstanceIdentifier()))
                 .setPriority(input.getPriority())
                 .setTableId(translateTableId(input));
 
