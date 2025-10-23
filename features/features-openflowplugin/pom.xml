@@ -11,14 +11,14 @@
     <groupId>org.opendaylight.openflowplugin</groupId>
     <artifactId>features-openflowplugin</artifactId>
     <packaging>feature</packaging>
-    <version>0.20.2-SNAPSHOT</version>
+    <version>0.21.0-SNAPSHOT</version>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
                 <groupId>org.opendaylight.openflowplugin</groupId>
                 <artifactId>openflowplugin-artifacts</artifactId>
-                <version>0.20.2-SNAPSHOT</version>
+                <version>0.21.0-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
