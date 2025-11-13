@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.net.Inet4Address;
-import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -393,39 +392,6 @@ public abstract class NetUtils {
         if (values.length >= 2) {
             int prefix = Integer.parseInt(values[1]);
             if (prefix < 0 || prefix > 32) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Checks if the passed IP v6 address in string form is valid The address
-     * may specify a mask at the end as "/MMM".
-     *
-     * @param cidr
-     *            the v6 address as A::1/MMM
-     */
-    public static boolean isIPv6AddressValid(final String cidr) {
-        if (cidr == null) {
-            return false;
-        }
-
-        String[] values = cidr.split("/");
-        try {
-            // when given an IP address, InetAddress.getByName validates the ip
-            // address
-            InetAddress addr = InetAddress.getByName(values[0]);
-            if (!(addr instanceof Inet6Address)) {
-                return false;
-            }
-        } catch (final UnknownHostException ex) {
-            return false;
-        }
-
-        if (values.length >= 2) {
-            int prefix = Integer.parseInt(values[1]);
-            if (prefix < 0 || prefix > 128) {
                 return false;
             }
         }
