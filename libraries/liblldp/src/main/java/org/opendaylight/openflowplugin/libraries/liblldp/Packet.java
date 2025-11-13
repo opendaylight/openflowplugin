@@ -123,7 +123,7 @@ public abstract class Packet {
 
         // Deserialize the payload now
         int payloadStart = startOffset + numBits;
-        int payloadSize = data.length * NetUtils.NUM_BITS_IN_A_BYTE - payloadStart;
+        int payloadSize = data.length * Byte.SIZE - payloadStart;
 
         if (payloadFactory != null) {
             payload = payloadFactory.get();
@@ -134,8 +134,8 @@ public abstract class Packet {
              *  The payload class was not set, it means no class for parsing
              *  this payload is present. Let's store the raw payload if any.
              */
-            int start = payloadStart / NetUtils.NUM_BITS_IN_A_BYTE;
-            int stop = start + payloadSize / NetUtils.NUM_BITS_IN_A_BYTE;
+            int start = payloadStart / Byte.SIZE;
+            int stop = start + payloadSize / Byte.SIZE;
             rawPayload = Arrays.copyOfRange(data, start, stop);
         }
 
@@ -164,7 +164,7 @@ public abstract class Packet {
         int payloadSize = payloadBytes == null ? 0 : payloadBytes.length;
 
         // Allocate the buffer to contain the full (header + payload) packet
-        int headerSize = getHeaderSize() / NetUtils.NUM_BITS_IN_A_BYTE;
+        int headerSize = getHeaderSize() / Byte.SIZE;
         byte[] packetBytes = new byte[headerSize + payloadSize];
         if (payloadBytes != null) {
             System.arraycopy(payloadBytes, 0, packetBytes, headerSize, payloadSize);

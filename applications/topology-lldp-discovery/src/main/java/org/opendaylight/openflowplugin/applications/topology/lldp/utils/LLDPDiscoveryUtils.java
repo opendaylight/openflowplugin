@@ -26,7 +26,6 @@ import org.opendaylight.openflowplugin.applications.topology.lldp.LLDPActivator;
 import org.opendaylight.openflowplugin.libraries.liblldp.Ethernet;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDP;
 import org.opendaylight.openflowplugin.libraries.liblldp.LLDPTLV;
-import org.opendaylight.openflowplugin.libraries.liblldp.NetUtils;
 import org.opendaylight.openflowplugin.libraries.liblldp.PacketException;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.topology.discovery.rev130819.LinkDiscoveredBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeConnectorId;
@@ -82,7 +81,7 @@ public final class LLDPDiscoveryUtils {
         if (isLLDP(payload)) {
             Ethernet ethPkt = new Ethernet();
             try {
-                ethPkt.deserialize(payload, 0, payload.length * NetUtils.NUM_BITS_IN_A_BYTE);
+                ethPkt.deserialize(payload, 0, payload.length * Byte.SIZE);
             } catch (PacketException e) {
                 LOG.warn("Failed to decode LLDP packet", e);
                 return nodeConnectorRef;

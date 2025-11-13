@@ -23,11 +23,6 @@ public abstract class NetUtils {
     private static final Logger LOG = LoggerFactory.getLogger(NetUtils.class);
 
     /**
-     * Constant holding the number of bits in a byte.
-     */
-    public static final int NUM_BITS_IN_A_BYTE = 8;
-
-    /**
      * Constant holding the number of bytes in MAC Address.
      */
     public static final int MAC_ADDR_LENGTH_IN_BYTES = 6;
@@ -78,7 +73,7 @@ public abstract class NetUtils {
         long num = 0L;
         int index = 0;
         do {
-            num <<= NUM_BITS_IN_A_BYTE;
+            num <<= Byte.SIZE;
             num |= 0xff & ba[index];
             index++;
         } while (index < MAC_ADDR_LENGTH_IN_BYTES);
@@ -97,7 +92,7 @@ public abstract class NetUtils {
         int index = MAC_ADDR_LENGTH_IN_BYTES - 1;
         do {
             mac[index] = (byte) addr;
-            addr >>>= NUM_BITS_IN_A_BYTE;
+            addr >>>= Byte.SIZE;
             index--;
         } while (index >= 0);
         return mac;
@@ -186,11 +181,11 @@ public abstract class NetUtils {
         if (subnetMask != null && (subnetMask.length == 4 || subnetMask.length == 16)) {
             int index = 0;
             while (index < subnetMask.length && subnetMask[index] == (byte) 0xFF) {
-                maskLength += NetUtils.NUM_BITS_IN_A_BYTE;
+                maskLength += Byte.SIZE;
                 index++;
             }
             if (index != subnetMask.length) {
-                int bits = NetUtils.NUM_BITS_IN_A_BYTE - 1;
+                int bits = Byte.SIZE - 1;
                 while (bits >= 0 && (subnetMask[index] & 1 << bits)  != 0) {
                     bits--;
                     maskLength++;

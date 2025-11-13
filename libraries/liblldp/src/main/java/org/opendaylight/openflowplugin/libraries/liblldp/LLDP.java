@@ -320,7 +320,7 @@ public class LLDP extends Packet {
 
         len += LLDP.EMPTY_TLV.getTLVSize();
 
-        return len / NetUtils.NUM_BITS_IN_A_BYTE;
+        return len / Byte.SIZE;
     }
 }
 

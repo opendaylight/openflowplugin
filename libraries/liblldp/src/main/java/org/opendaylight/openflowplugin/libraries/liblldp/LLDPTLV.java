@@ -177,7 +177,7 @@ public class LLDPTLV extends Packet {
     @Override
     public int getfieldnumBits(final String fieldName) {
         if (fieldName.equals(VALUE)) {
-            return NetUtils.NUM_BITS_IN_A_BYTE * BitBufferHelper.getShort(
+            return Byte.SIZE * BitBufferHelper.getShort(
                     fieldValues.get(LENGTH), FIELD_COORDINATES.get(LENGTH).getRight());
         }
         return FIELD_COORDINATES.get(fieldName).getRight();
