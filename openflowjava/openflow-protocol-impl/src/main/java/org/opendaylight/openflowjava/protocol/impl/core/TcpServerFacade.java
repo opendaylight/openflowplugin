@@ -59,8 +59,7 @@ final class TcpServerFacade extends ServerFacade implements ConnectionInitialize
     private final TcpChannelInitializer channelInitializer;
     private final Bootstrap bootstrap;
 
-    @GuardedBy("this")
-    private EventLoopGroup childGroup;
+    private @GuardedBy("this") EventLoopGroup childGroup;
 
     private TcpServerFacade(final EventLoopGroup parentGroup, final EventLoopGroup childGroup,
             final Bootstrap bootstrap, final TcpChannelInitializer channelInitializer,

@@ -53,16 +53,13 @@ public class TransactionChainManager implements AutoCloseable {
     private final DataBroker dataBroker;
     private final String nodeId;
 
-    @GuardedBy("txLock")
-    private ReadWriteTransaction writeTx;
-    @GuardedBy("txLock")
-    private TransactionChain transactionChain;
-    @GuardedBy("txLock")
-    private boolean submitIsEnabled;
-    @GuardedBy("txLock")
-    private FluentFuture<? extends CommitInfo> lastSubmittedFuture = CommitInfo.emptyFluentFuture();
-    @GuardedBy("txLock")
-    private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
+    private @GuardedBy("txLock") ReadWriteTransaction writeTx;
+    private @GuardedBy("txLock") TransactionChain transactionChain;
+    private @GuardedBy("txLock") boolean submitIsEnabled;
+    private @GuardedBy("txLock") FluentFuture<? extends CommitInfo> lastSubmittedFuture =
+        CommitInfo.emptyFluentFuture();
+    private @GuardedBy("txLock") TransactionChainManagerStatus transactionChainManagerStatus =
+        TransactionChainManagerStatus.SLEEPING;
 
     private volatile boolean initCommit;
 
@@ -160,12 +157,12 @@ public class TransactionChainManager implements AutoCloseable {
         }
     }
 
-    @GuardedBy("txLock")
+    @Holding("txLock")
     public boolean submitTransaction() {
         return submitTransaction(false);
     }
 
-    @GuardedBy("txLock")
+    @Holding("txLock")
     @SuppressWarnings("checkstyle:IllegalCatch")
     public boolean submitTransaction(final boolean doSync) {
         synchronized (txLock) {
@@ -320,7 +317,7 @@ public class TransactionChainManager implements AutoCloseable {
         }
     }
 
-    @GuardedBy("txLock")
+    @Holding("txLock")
     private FluentFuture<? extends CommitInfo> txChainShuttingDown() {
         boolean wasSubmitEnabled = submitIsEnabled;
         submitIsEnabled = false;

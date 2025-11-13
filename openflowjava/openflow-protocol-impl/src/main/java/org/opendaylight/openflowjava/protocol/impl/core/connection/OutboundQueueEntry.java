@@ -132,8 +132,8 @@ final class OutboundQueueEntry {
         }
     }
 
+    // This method is only for testing to prove that after queue entry is completed there is not callback future
     @VisibleForTesting
-    /** This method is only for testing to prove that after queue entry is completed there is not callback future */
     boolean hasCallback() {
         return callback != null;
     }

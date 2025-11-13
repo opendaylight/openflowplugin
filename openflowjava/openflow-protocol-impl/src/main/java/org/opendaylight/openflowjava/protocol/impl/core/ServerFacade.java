@@ -24,8 +24,7 @@ public abstract class ServerFacade {
     private final @NonNull SettableFuture<Void> shutdownFuture = SettableFuture.create();
     private final @NonNull InetSocketAddress localAddress;
 
-    @GuardedBy("this")
-    private EventLoopGroup group;
+    private @GuardedBy("this") EventLoopGroup group;
 
     ServerFacade(final EventLoopGroup group, final InetSocketAddress localAddress) {
         this.localAddress = requireNonNull(localAddress);

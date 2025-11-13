@@ -11,7 +11,6 @@ import com.google.common.util.concurrent.FutureCallback;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.netty.channel.Channel;
 import java.util.function.Function;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.FlowModInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.OfHeader;
 import org.opendaylight.yangtools.yang.common.Uint32;
@@ -51,7 +50,7 @@ public class StackedOutboundQueueNoBarrier extends AbstractStackedOutboundQueue 
     }
 
     @Override
-    int writeEntries(@NonNull final Channel channel, final long now) {
+    int writeEntries(final Channel channel, final long now) {
         // Local cache
         StackedSegment segment = firstSegment;
         int entries = 0;
