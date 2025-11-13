@@ -130,7 +130,7 @@ public class LLDPTest {
                         awaitedBytes((byte) 0b11111110, CUSTOM_SUBTYPE_B_LENGTH, CUSTOM_SUBTYPE_B_VALUE,
                                 BYTES_BEFORE_CUSTOM_B));
 
-        lldpBuilder.deserialize(rawLldpTlv, 0, rawLldpTlv.length * NetUtils.NUM_BITS_IN_A_BYTE);
+        lldpBuilder.deserialize(rawLldpTlv, 0, rawLldpTlv.length * Byte.SIZE);
         Assert.assertEquals("chassis", new String(lldpBuilder.getChassisId().getValue()));
         Assert.assertArrayEquals(TTL_VALUE, lldpBuilder.getTtl().getValue());
         Assert.assertEquals("dummy port id", new String(lldpBuilder.getPortId().getValue()));
