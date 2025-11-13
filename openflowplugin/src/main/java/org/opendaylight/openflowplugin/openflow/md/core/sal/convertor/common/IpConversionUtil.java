@@ -665,8 +665,7 @@ public final class IpConversionUtil {
         return IPV4_BITMASKS[Integer.parseInt(value.substring(value.indexOf('/') + 1))];
     }
 
-    @Nullable
-    public static Ipv6ArbitraryMask extractIpv6AddressMask(final Ipv6Prefix ipv6Prefix) {
+    public static @Nullable Ipv6ArbitraryMask extractIpv6AddressMask(final Ipv6Prefix ipv6Prefix) {
         Iterator<String> addressParts = PREFIX_SPLITTER.split(ipv6Prefix.getValue()).iterator();
         addressParts.next();
         int maskLength = 0;

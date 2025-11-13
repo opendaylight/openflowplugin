@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -25,7 +24,7 @@ public class OfToSalPacketTypeCase extends ConvertorCase<PacketTypeCase, MatchBu
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull final PacketTypeCase source,
+    public Optional<MatchBuilder> process(final PacketTypeCase source,
                                           final MatchResponseConvertorData data,
                                           final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();

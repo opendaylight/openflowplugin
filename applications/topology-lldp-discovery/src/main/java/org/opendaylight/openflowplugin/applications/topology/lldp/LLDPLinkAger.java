@@ -17,7 +17,6 @@ import java.util.concurrent.ConcurrentMap;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
 import org.opendaylight.mdsal.binding.api.DataTreeChangeListener;
@@ -116,7 +115,7 @@ public final class LLDPLinkAger implements ConfigurationListener, DataTreeChange
     }
 
     @Override
-    public void onPropertyChanged(@NonNull final String propertyName, @NonNull final String propertyValue) {
+    public void onPropertyChanged(final String propertyName, final String propertyValue) {
         final TopologyLLDPDiscoveryProperty lldpDiscoveryProperty = TopologyLLDPDiscoveryProperty.forValue(
                 propertyName);
         if (lldpDiscoveryProperty != null) {

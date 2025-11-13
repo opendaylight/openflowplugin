@@ -19,7 +19,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 import org.checkerframework.checker.lock.qual.Holding;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
 import org.opendaylight.mdsal.binding.api.DataObjectModified;
@@ -185,7 +184,7 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
     }
 
     @Override
-    public void onBecomeOwner(@NonNull final DeviceInfo deviceInfo) {
+    public void onBecomeOwner(final DeviceInfo deviceInfo) {
         LOG.debug("Mastership role notification received for device : {}", deviceInfo.getDatapathId());
         final var membership = deviceMasterships.computeIfAbsent(deviceInfo.getNodeId(),
             device -> new DeviceMastership(deviceInfo.getNodeId()));
@@ -225,7 +224,7 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
     }
 
     @Override
-    public void onLoseOwnership(@NonNull final DeviceInfo deviceInfo) {
+    public void onLoseOwnership(final DeviceInfo deviceInfo) {
         final var mastership = deviceMasterships.remove(deviceInfo.getNodeId());
         if (mastership != null) {
             mastership.deregisterReconcileNode();

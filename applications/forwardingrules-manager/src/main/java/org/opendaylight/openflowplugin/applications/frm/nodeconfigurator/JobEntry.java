@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 class JobEntry<T> {
     private final SettableFuture<T> resultFuture = SettableFuture.create();
-    private @Nullable final Callable<ListenableFuture<T>> mainWorker;
+    private final @Nullable Callable<ListenableFuture<T>> mainWorker;
     private final String key;
 
     JobEntry(String key, Callable<ListenableFuture<T>> mainWorker) {

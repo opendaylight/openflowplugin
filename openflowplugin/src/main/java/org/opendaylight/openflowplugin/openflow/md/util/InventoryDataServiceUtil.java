@@ -75,13 +75,13 @@ public abstract class InventoryDataServiceUtil {
                 ? portNo : logicalName));
     }
 
-    @Nullable
-    public static Uint32 portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, final NodeConnectorId ncId) {
+    public static @Nullable Uint32 portNumberfromNodeConnectorId(final OpenflowVersion ofVersion,
+            final NodeConnectorId ncId) {
         return portNumberfromNodeConnectorId(ofVersion, ncId.getValue());
     }
 
-    @Nullable
-    public static Uint32 portNumberfromNodeConnectorId(final OpenflowVersion ofVersion, @NonNull final String ncId) {
+    public static @Nullable Uint32 portNumberfromNodeConnectorId(final OpenflowVersion ofVersion,
+            final @NonNull String ncId) {
         String portNoString = portNoStringfromNodeConnectorID(ncId);
         return OpenflowPortsUtil.getPortFromLogicalName(ofVersion, portNoString);
     }

@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.ca
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -33,7 +32,6 @@ public class SalToOfSetVlanIdActionCase extends ConvertorCase<SetVlanIdActionCas
         super(SetVlanIdActionCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
     public Optional<Action> process(final SetVlanIdActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {

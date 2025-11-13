@@ -126,8 +126,7 @@ public final class OpenflowPortsUtil {
                 : getPortLogicalName(ofVersion.getVersion(), portNumber);
     }
 
-    @Nullable
-    static Uint32 getPortFromLogicalName(final OpenflowVersion ofVersion, final String logicalNameOrPort) {
+    static @Nullable Uint32 getPortFromLogicalName(final OpenflowVersion ofVersion, final String logicalNameOrPort) {
 
         //The correct keyword defined in openflow specification in IN_PORT so we need to allow to use it
         //for legacy reasons we can't just simply drop the misspelled INPORT

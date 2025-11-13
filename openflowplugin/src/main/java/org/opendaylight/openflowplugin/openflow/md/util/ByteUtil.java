@@ -81,7 +81,7 @@ public final class ByteUtil {
      * @return byte array, or null if input was null.
      */
     @SuppressFBWarnings("PZLA_PREFER_ZERO_LENGTH_ARRAYS")
-    public static byte @Nullable[] uint64toBytes(@Nullable final Uint64 uint) {
+    public static byte @Nullable[] uint64toBytes(final @Nullable Uint64 uint) {
         return uint == null ? null : Longs.toByteArray(uint.longValue());
     }
 

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.configuration;
 
 import java.util.Map;
@@ -16,7 +15,6 @@ import org.eclipse.jdt.annotation.NonNull;
  * Manages OpenFlowPlugin configuration.
  */
 public interface ConfigurationService extends AutoCloseable {
-
     /**
      * Update map of properties.
      *
@@ -30,8 +28,7 @@ public interface ConfigurationService extends AutoCloseable {
      * @param listener the listener
      * @return the auto closeable listener registration
      */
-    @NonNull
-    AutoCloseable registerListener(@NonNull ConfigurationListener listener);
+    @NonNull AutoCloseable registerListener(@NonNull ConfigurationListener listener);
 
     /**
      * Get single property from configuration service.
@@ -41,7 +38,5 @@ public interface ConfigurationService extends AutoCloseable {
      * @param transformer property type transformer
      * @return property property
      */
-    @NonNull
-    <T> T getProperty(@NonNull String key, @NonNull Function<String, T> transformer);
-
+    <T> @NonNull T getProperty(@NonNull String key, @NonNull Function<String, T> transformer);
 }

@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.extension.api.ConverterExtensionKey;
 import org.opendaylight.openflowplugin.extension.api.ConvertorToOFJava;
@@ -29,7 +28,7 @@ public class SalToOfGeneralExtensionGroupingCase
     }
 
     @Override
-    public Optional<Action> process(@NonNull final GeneralExtensionGrouping source, final ActionConvertorData data,
+    public Optional<Action> process(final GeneralExtensionGrouping source, final ActionConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         final Uint8 version = data.getVersion();
 

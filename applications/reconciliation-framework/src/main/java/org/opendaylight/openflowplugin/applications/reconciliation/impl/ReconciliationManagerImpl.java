@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeException;
 import org.opendaylight.openflowplugin.api.openflow.mastership.MastershipChangeServiceManager;
@@ -104,13 +103,13 @@ public final class ReconciliationManagerImpl
     }
 
     @Override
-    public ListenableFuture<ResultState> onDevicePrepared(@NonNull final DeviceInfo node) {
+    public ListenableFuture<ResultState> onDevicePrepared(final DeviceInfo node) {
         LOG.debug("Triggering reconciliation for node : {}", node.getNodeId());
         return futureMap.computeIfAbsent(node, value -> reconcileNode(node));
     }
 
     @Override
-    public ListenableFuture<Void> onDeviceDisconnected(@NonNull final DeviceInfo node) {
+    public ListenableFuture<Void> onDeviceDisconnected(final DeviceInfo node) {
         LOG.info("Stopping reconciliation for node {}", node.getNodeId());
         return futureMap.containsKey(node) ? cancelNodeReconciliation(node) : Futures.immediateVoidFuture();
     }

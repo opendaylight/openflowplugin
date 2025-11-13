@@ -11,7 +11,6 @@ import com.google.common.base.Splitter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -44,9 +43,8 @@ public class SalToOfSetNwDstActionCase extends ConvertorCase<SetNwDstActionCase,
         super(SetNwDstActionCase.class, true, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
-    public Optional<Action> process(@NonNull final SetNwDstActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(final SetNwDstActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         final ActionBuilder builder = new ActionBuilder();
         final Address address = source.getSetNwDstAction().getAddress();

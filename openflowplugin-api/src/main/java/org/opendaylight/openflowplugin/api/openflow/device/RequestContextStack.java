@@ -15,7 +15,8 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface RequestContextStack {
     /**
      * Method returns new request context for current request.
+     *
      * @return A request context, or null if one cannot be created.
      */
-    @Nullable <T> RequestContext<T> createRequestContext();
+    <T> @Nullable RequestContext<T> createRequestContext();
 }

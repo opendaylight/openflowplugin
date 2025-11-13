@@ -382,7 +382,7 @@ public final class ForwardingRulesManagerImpl implements ForwardingRulesManager,
     }
 
     @Override
-    public void onPropertyChanged(@NonNull final String propertyName, @NonNull final String propertyValue) {
+    public void onPropertyChanged(final String propertyName, final String propertyValue) {
         final ForwardingRulesProperty forwardingRulesProperty = ForwardingRulesProperty.forValue(propertyName);
         if (forwardingRulesProperty != null) {
             switch (forwardingRulesProperty) {

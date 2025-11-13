@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -30,9 +29,8 @@ public class SalToOfSetTpSrcActionV10Case extends ConvertorCase<SetTpSrcActionCa
         super(SetTpSrcActionCase.class, true, OFConstants.OFP_VERSION_1_0);
     }
 
-    @NonNull
     @Override
-    public Optional<Action> process(@NonNull final SetTpSrcActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(final SetTpSrcActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         SetTpSrcAction settpsrcaction = source.getSetTpSrcAction();
         SetTpSrcCaseBuilder setTpSrcCaseBuilder = new SetTpSrcCaseBuilder();
