@@ -34,8 +34,7 @@ public final class FlowCapableNodeLookups {
         // Hidden on purpose
     }
 
-    @NonNull
-    public static Map<Uint8, Table> wrapTablesToMap(@Nullable final Collection<Table> tables) {
+    public static @NonNull Map<Uint8, Table> wrapTablesToMap(final @Nullable Collection<Table> tables) {
         final Map<Uint8, Table> tableMap;
 
         if (tables == null) {
@@ -51,8 +50,7 @@ public final class FlowCapableNodeLookups {
         return tableMap;
     }
 
-    @NonNull
-    public static Map<FlowDescriptor, Flow> wrapFlowsToMap(@Nullable final Collection<Flow> flows) {
+    public static @NonNull Map<FlowDescriptor, Flow> wrapFlowsToMap(final @Nullable Collection<Flow> flows) {
         final Map<FlowDescriptor, Flow> flowMap;
 
         if (flows == null) {
@@ -72,8 +70,7 @@ public final class FlowCapableNodeLookups {
         return flowConfigMap.get(new FlowDescriptor(flow));
     }
 
-    @NonNull
-    public static Map<MeterId, Meter> wrapMetersToMap(@Nullable final Collection<Meter> meters) {
+    public static @NonNull Map<MeterId, Meter> wrapMetersToMap(final @Nullable Collection<Meter> meters) {
         final Map<MeterId, Meter> meterMap;
 
         if (meters == null) {
@@ -89,8 +86,7 @@ public final class FlowCapableNodeLookups {
         return meterMap;
     }
 
-    @NonNull
-    public static Map<Uint32, Group> wrapGroupsToMap(@Nullable final Collection<Group> groups) {
+    public static @NonNull Map<Uint32, Group> wrapGroupsToMap(final @Nullable Collection<Group> groups) {
         final Map<Uint32, Group> groupMap;
 
         if (groups == null) {

@@ -33,18 +33,14 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
     protected static final AtomicLongFieldUpdater<AbstractStackedOutboundQueue> LAST_XID_OFFSET_UPDATER =
             AtomicLongFieldUpdater.newUpdater(AbstractStackedOutboundQueue.class, "lastXid");
 
-    @GuardedBy("unflushedSegments")
-    protected volatile StackedSegment firstSegment;
-    @GuardedBy("unflushedSegments")
-    protected final List<StackedSegment> unflushedSegments = new ArrayList<>(2);
-    @GuardedBy("unflushedSegments")
-    protected final List<StackedSegment> uncompletedSegments = new ArrayList<>(2);
+    protected final @GuardedBy("unflushedSegments") List<StackedSegment> unflushedSegments = new ArrayList<>(2);
+    protected final @GuardedBy("unflushedSegments") List<StackedSegment> uncompletedSegments = new ArrayList<>(2);
 
+    protected volatile @GuardedBy("unflushedSegments") StackedSegment firstSegment;
     private volatile long lastXid = -1;
     private volatile long allocatedXid = -1;
 
-    @GuardedBy("unflushedSegments")
-    protected Integer shutdownOffset;
+    protected @GuardedBy("unflushedSegments") Integer shutdownOffset;
 
     // Accessed from Netty only
     protected int flushOffset;
@@ -129,7 +125,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * @param now time stamp
      * @return Number of entries written out
      */
-    int writeEntries(@NonNull final Channel channel, final long now) {
+    int writeEntries(final @NonNull Channel channel, final long now) {
         // Local cache
         StackedSegment segment = firstSegment;
         int entries = 0;
@@ -339,7 +335,7 @@ abstract class AbstractStackedOutboundQueue implements OutboundQueue {
      * @param iterator list of segments to be failed
      * @return number of failed entries
      */
-    @GuardedBy("unflushedSegments")
+    @Holding("unflushedSegments")
     private long lockedFailSegments(final Iterator<StackedSegment> iterator) {
         long entries = 0;
 

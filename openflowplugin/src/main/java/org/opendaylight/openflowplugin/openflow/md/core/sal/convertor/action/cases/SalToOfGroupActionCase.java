@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -27,7 +26,7 @@ public class SalToOfGroupActionCase extends ConvertorCase<GroupActionCase, Actio
     }
 
     @Override
-    public Optional<Action> process(@NonNull final GroupActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(final GroupActionCase source, final ActionConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         GroupAction groupAction = source.getGroupAction();
         GroupActionBuilder groupActionBuilder = new GroupActionBuilder();

@@ -88,10 +88,8 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializationFactory deserializationFactory;
     private final String diagStatusIdentifier;
 
-    @GuardedBy("this")
-    private ListenableFuture<? extends ServerFacade> serverFacade;
-    @GuardedBy("this")
-    private ServiceRegistration diagReg;
+    private @GuardedBy("this") ListenableFuture<? extends ServerFacade> serverFacade;
+    private @GuardedBy("this") ServiceRegistration diagReg;
 
     public SwitchConnectionProviderImpl(final DiagStatusService diagStatus,
             final @Nullable ConnectionConfiguration connConfig) {

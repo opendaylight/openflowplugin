@@ -8,7 +8,6 @@
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.api.openflow.md.util.OpenflowVersion;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
@@ -34,7 +33,7 @@ public class OfToSalOutputActionCase extends ConvertorCase<OutputActionCase, Act
     }
 
     @Override
-    public Optional<Action> process(@NonNull final OutputActionCase source, final ActionResponseConvertorData data,
+    public Optional<Action> process(final OutputActionCase source, final ActionResponseConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         final OpenflowVersion ofVersion = OpenflowVersion.get(data.getVersion());
 

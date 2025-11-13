@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.common.ConvertorCase;
@@ -66,7 +64,7 @@ public class OfToSalIpv4DstCase extends ConvertorCase<Ipv4DstCase, MatchBuilder,
     }
 
     @Override
-    public Optional<MatchBuilder> process(@NonNull final Ipv4DstCase source, final MatchResponseConvertorData data,
+    public Optional<MatchBuilder> process(final Ipv4DstCase source, final MatchResponseConvertorData data,
             final ConvertorExecutor convertorExecutor) {
         final MatchBuilder matchBuilder = data.getMatchBuilder();
         final Ipv4MatchBuilder ipv4MatchBuilder = data.getIpv4MatchBuilder();

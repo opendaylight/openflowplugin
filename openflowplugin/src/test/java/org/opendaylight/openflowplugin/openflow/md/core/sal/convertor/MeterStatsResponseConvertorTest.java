@@ -58,10 +58,10 @@ public class MeterStatsResponseConvertorTest {
         return allMeterStats;
     }
 
-    @Test
     /**
-     * Test of basic mapping functionality of {@link MeterStatsResponseConvertor#convert(java.util.List)}
+     * Test of basic mapping functionality of {@link MeterStatsResponseConvertor#convert(java.util.List)}.
      */
+    @Test
     public void testToSALMeterStatsList() {
         final ConvertorManager convertorManager = ConvertorManagerFactory.createDefaultManager();
         Optional<List<MeterStats>> meterStatsListOptional = convertorManager.convert(createMeterStatsLit(),

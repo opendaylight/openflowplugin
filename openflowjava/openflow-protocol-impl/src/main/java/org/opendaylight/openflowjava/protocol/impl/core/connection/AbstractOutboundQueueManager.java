@@ -264,7 +264,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * which is send to OFEncoder for serialization. Correct wrapper is
      * selected by communication pipeline.
      */
-    protected Object makeMessageListenerWrapper(@NonNull final OfHeader msg) {
+    protected Object makeMessageListenerWrapper(final @NonNull OfHeader msg) {
         checkArgument(msg != null);
         if (address == null) {
             return new MessageListenerWrapper(msg, LOG_ENCODER_LISTENER);

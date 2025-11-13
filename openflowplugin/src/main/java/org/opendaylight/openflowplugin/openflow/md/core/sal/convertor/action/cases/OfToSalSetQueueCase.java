@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionResponseConvertorData;
@@ -26,7 +24,7 @@ public class OfToSalSetQueueCase extends ConvertorCase<SetQueueCase, Action, Act
     }
 
     @Override
-    public Optional<Action> process(@NonNull final SetQueueCase source, final ActionResponseConvertorData data,
+    public Optional<Action> process(final SetQueueCase source, final ActionResponseConvertorData data,
             ConvertorExecutor convertorExecutor) {
         SetQueueAction queueActionFromOF = source.getSetQueueAction();
         SetQueueActionBuilder setQueueAction = new SetQueueActionBuilder();

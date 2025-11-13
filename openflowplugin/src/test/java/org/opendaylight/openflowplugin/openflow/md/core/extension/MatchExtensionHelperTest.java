@@ -61,11 +61,11 @@ public class MatchExtensionHelperTest {
     }
 
 
-    @Test
     /**
      * Basic functionality test method for {@link MatchExtensionHelper#processAllExtensions(Collection,
      * OpenflowVersion, MatchPath)}.
      */
+    @Test
     public void testProcessAllExtensions() {
 
         List<MatchEntry> matchEntries = createMatchEntrieses();
@@ -81,7 +81,6 @@ public class MatchExtensionHelperTest {
                 MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertNotNull(augmentTuple);
     }
-
 
     private static List<MatchEntry> createMatchEntrieses() {
         MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();

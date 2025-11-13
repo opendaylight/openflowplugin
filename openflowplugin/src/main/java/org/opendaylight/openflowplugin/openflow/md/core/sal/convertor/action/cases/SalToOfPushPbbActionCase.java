@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.cases;
 
 import java.util.Optional;
-import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowplugin.api.OFConstants;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.ConvertorExecutor;
 import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.action.data.ActionConvertorData;
@@ -26,9 +24,8 @@ public class SalToOfPushPbbActionCase extends ConvertorCase<PushPbbActionCase, A
         super(PushPbbActionCase.class, true, OFConstants.OFP_VERSION_1_0, OFConstants.OFP_VERSION_1_3);
     }
 
-    @NonNull
     @Override
-    public Optional<Action> process(@NonNull final PushPbbActionCase source, final ActionConvertorData data,
+    public Optional<Action> process(final PushPbbActionCase source, final ActionConvertorData data,
             ConvertorExecutor convertorExecutor) {
         PushPbbCaseBuilder pushPbbCaseBuilder = new PushPbbCaseBuilder();
         PushPbbActionBuilder pushPbbBuilder = new PushPbbActionBuilder();

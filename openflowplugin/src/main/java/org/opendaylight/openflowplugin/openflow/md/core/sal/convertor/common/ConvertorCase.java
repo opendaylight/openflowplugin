@@ -71,7 +71,7 @@ public abstract class ConvertorCase<F, T, D extends ConvertorData> {
      * @param convertorExecutor convertor executor
      * @return the optional
      */
-    Optional<T> processRaw(@NonNull final Object source, final D data, final ConvertorExecutor convertorExecutor) {
+    Optional<T> processRaw(final @NonNull Object source, final D data, final ConvertorExecutor convertorExecutor) {
         return process(getType().cast(source), data, convertorExecutor);
     }
 
