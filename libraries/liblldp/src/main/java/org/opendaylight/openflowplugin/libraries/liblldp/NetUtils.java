@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import java.net.Inet4Address;
@@ -13,7 +12,6 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +41,12 @@ public abstract class NetUtils {
      * Constant holding the broadcast MAC address.
      */
     private static final byte[] BROADCAST_MAC_ADDR = {-1, -1, -1, -1, -1, -1};
+
+    /**
+     * Pre-compiled pattern of how an IPv4 address looks like.
+     */
+    private static final Pattern IPV4_PATTERN =
+        Pattern.compile("(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])");
 
     /**
      * Converts a 4 bytes array into an integer number.
@@ -383,10 +387,7 @@ public abstract class NetUtils {
         }
 
         String[] values = cidr.split("/");
-        Pattern ipv4Pattern = Pattern
-                .compile("(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])");
-        Matcher mm = ipv4Pattern.matcher(values[0]);
-        if (!mm.matches()) {
+        if (!IPV4_PATTERN.matcher(values[0]).matches()) {
             return false;
         }
         if (values.length >= 2) {
