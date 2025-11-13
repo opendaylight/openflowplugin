@@ -432,17 +432,6 @@ public abstract class NetUtils {
         return true;
     }
 
-    /**
-     * Checks if the passed IP address in string form is a valid v4 or v6
-     * address. The address may specify a mask at the end as "/MMM"
-     *
-     * @param cidr
-     *            the v4 or v6 address as IP/MMM
-     */
-    public static boolean isIPAddressValid(final String cidr) {
-        return NetUtils.isIPv4AddressValid(cidr) || NetUtils.isIPv6AddressValid(cidr);
-    }
-
     /*
      * Following utilities are useful when you need to compare or bit shift java
      * primitive type variable which are inherently signed
