@@ -144,7 +144,7 @@ public abstract class NetUtils {
      *            boolean representing the IP version of the returned address
      */
     public static InetAddress getInetNetworkMask(final int prefixMaskLength, final boolean isV6) {
-        if (prefixMaskLength < 0 || !isV6 && prefixMaskLength > 32 || isV6 && prefixMaskLength > 128) {
+        if (prefixMaskLength < 0 || (isV6 ? prefixMaskLength > 128 : prefixMaskLength > 32)) {
             return null;
         }
         byte[] v4Address = { 0, 0, 0, 0 };
