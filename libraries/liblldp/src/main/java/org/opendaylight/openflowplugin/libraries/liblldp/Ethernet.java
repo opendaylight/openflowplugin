@@ -22,6 +22,16 @@ public class Ethernet extends Packet {
     private static final String SMAC = "SourceMACAddress";
     private static final String ETHT = "EtherType";
 
+    /**
+     * Constant holding the number of bytes in MAC Address.
+     */
+    private static final int MAC_ADDR_LENGTH_IN_BYTES = 6;
+
+    /**
+     * Constant holding the broadcast MAC address.
+     */
+    private static final byte[] BROADCAST_MAC_ADDR = {-1, -1, -1, -1, -1, -1};
+
     // TODO: This has to be outside and it should be possible for osgi
     // to add new coming packet classes
     private static final Map<Short, Supplier<Packet>> ETHER_TYPE_CLASS_MAP = ImmutableMap.of(
@@ -87,11 +97,38 @@ public class Ethernet extends Packet {
     }
 
     public boolean isBroadcast() {
-        return NetUtils.isBroadcastMACAddr(getDestinationMACAddress());
+        return isBroadcastMACAddr(getDestinationMACAddress());
+    }
+
+    /**
+     * Returns true if the MAC address is the broadcast MAC address and false otherwise.
+     */
+    private static boolean isBroadcastMACAddr(final byte[] macAddress) {
+        if (macAddress.length == MAC_ADDR_LENGTH_IN_BYTES) {
+            for (int i = 0; i < MAC_ADDR_LENGTH_IN_BYTES; i++) {
+                if (macAddress[i] != BROADCAST_MAC_ADDR[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        return false;
     }
 
     public boolean isMulticast() {
-        return NetUtils.isMulticastMACAddr(getDestinationMACAddress());
+        return isMulticastMACAddr(getDestinationMACAddress());
+    }
+
+    /**
+     * Returns true if the MAC address is a multicast MAC address and false otherwise.
+     * Note that this explicitly returns false for the broadcast MAC address.
+     */
+    private static boolean isMulticastMACAddr(final byte[] macAddress) {
+        if (macAddress.length == MAC_ADDR_LENGTH_IN_BYTES && !isBroadcastMACAddr(macAddress)) {
+            return (macAddress[0] & 1) != 0;
+        }
+        return false;
     }
 
     /**
