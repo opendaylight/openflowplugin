@@ -8,6 +8,8 @@
 
 package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.match;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Optional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -200,7 +202,7 @@ public class MatchV10ResponseConvertorTest {
     /**
      * Test {@link MatchV10ResponseConvertor#convert(MatchV10, VersionDatapathIdConvertorData)}.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testEmptyMatch() {
         MatchV10Builder builder = new MatchV10Builder();
         MatchV10 match = builder.build();
@@ -209,7 +211,7 @@ public class MatchV10ResponseConvertorTest {
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_0);
         datapathIdConvertorData.setDatapathId(Uint64.valueOf(42));
 
-        final Match salMatch = convert(match, datapathIdConvertorData).build();
+        assertThrows(NullPointerException.class, () -> convert(match, datapathIdConvertorData).build());
     }
 
     /**

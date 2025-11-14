@@ -11,6 +11,7 @@ package org.opendaylight.openflowplugin.openflow.md.util;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigInteger;
 import org.junit.Test;
@@ -113,15 +114,17 @@ public class ByteUtilTest {
         assertEquals(MEDIUM_INTEGERFF, unsigned);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void exceptionTestBytesToUnsignedShort() {
-        ByteUtil.bytesToUnsignedShort(TEST_BYTES);
+        final var ex = assertThrows(IllegalArgumentException.class, () -> ByteUtil.bytesToUnsignedShort(TEST_BYTES));
+        assertEquals("Input byte array must be exactly two bytes long.", ex.getMessage());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void exceptionTestBytesToUnsignedInt() {
-        byte[] fiveBytes = {0, 0, 0, 0, 0};
-        ByteUtil.bytesToUnsignedInt(fiveBytes);
+        final var ex = assertThrows(IllegalArgumentException.class,
+            () -> ByteUtil.bytesToUnsignedInt(new byte[] { 0, 0, 0, 0, 0 }));
+        assertEquals("Input byte array must be exactly four bytes long.", ex.getMessage());
     }
 
     @Test
