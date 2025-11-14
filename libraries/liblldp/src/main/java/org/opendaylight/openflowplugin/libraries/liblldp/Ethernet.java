@@ -93,29 +93,13 @@ public class Ethernet extends Packet {
     }
 
     public boolean isBroadcast() {
-        return isBroadcastMACAddr(getDestinationMACAddress());
-    }
-
-    /**
-     * Returns true if the MAC address is the broadcast MAC address and false otherwise.
-     */
-    private static boolean isBroadcastMACAddr(final byte[] macAddress) {
-        return Arrays.equals(macAddress, BROADCAST_MAC_ADDR);
+        return Arrays.equals(getDestinationMACAddress(), BROADCAST_MAC_ADDR);
     }
 
     public boolean isMulticast() {
-        return isMulticastMACAddr(getDestinationMACAddress());
-    }
-
-    /**
-     * Returns true if the MAC address is a multicast MAC address and false otherwise.
-     * Note that this explicitly returns false for the broadcast MAC address.
-     */
-    private static boolean isMulticastMACAddr(final byte[] macAddress) {
-        if (macAddress.length == BROADCAST_MAC_ADDR.length && !isBroadcastMACAddr(macAddress)) {
-            return (macAddress[0] & 1) != 0;
-        }
-        return false;
+        final var macAddress = getDestinationMACAddress();
+        return macAddress.length == BROADCAST_MAC_ADDR.length && (macAddress[0] & 1) != 0
+            && !Arrays.equals(macAddress, BROADCAST_MAC_ADDR);
     }
 
     /**
