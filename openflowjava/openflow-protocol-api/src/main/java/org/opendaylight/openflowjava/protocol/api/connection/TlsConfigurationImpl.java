@@ -32,21 +32,21 @@ public class TlsConfigurationImpl implements TlsConfiguration {
      *
      * @param trustStoreType JKS or PKCS12
      * @param trustStore path to trustStore file
-     * @param trustStorePathType truststore path type (classpath or path)
+     * @param truststorePathType truststore path type (classpath or path)
      * @param keyStoreType JKS or PKCS12
      * @param keyStore path to keyStore file
-     * @param keyStorePathType keystore path type (classpath or path)
+     * @param keystorePathType keystore path type (classpath or path)
      */
     public TlsConfigurationImpl(KeystoreType trustStoreType, String trustStore,
-            PathType trustStorePathType, KeystoreType keyStoreType,
-            String keyStore, PathType keyStorePathType,
+            PathType truststorePathType, KeystoreType keyStoreType,
+            String keyStore, PathType keystorePathType,
             List<String> cipherSuites) {
         this.trustStoreType = trustStoreType;
         this.trustStore = trustStore;
-        this.truststorePathType = trustStorePathType;
+        this.truststorePathType = truststorePathType;
         this.keyStoreType = keyStoreType;
         this.keyStore = keyStore;
-        this.keystorePathType = keyStorePathType;
+        this.keystorePathType = keystorePathType;
         this.cipherSuites = cipherSuites;
     }
 

@@ -29,8 +29,8 @@ public class ReconciliationState {
         return status;
     }
 
-    public void setState(ReconciliationStatus staTus, LocalDateTime timing) {
-        this.status = staTus;
+    public void setState(ReconciliationStatus status, LocalDateTime timing) {
+        this.status = status;
         this.time = timing;
     }
 
