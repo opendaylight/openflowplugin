@@ -178,8 +178,7 @@ public class TransactionChainManager implements AutoCloseable {
                 return true;
             }
             Preconditions.checkState(TransactionChainManagerStatus.WORKING == transactionChainManagerStatus,
-                    "we have here Uncompleted Transaction for node {} and we are not MASTER",
-                    nodeId);
+                    "we have here Uncompleted Transaction for node %s and we are not MASTER", nodeId);
             final FluentFuture<? extends CommitInfo> submitFuture = writeTx.commit();
             lastSubmittedFuture = submitFuture;
             writeTx = null;
