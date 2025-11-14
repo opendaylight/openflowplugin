@@ -182,6 +182,7 @@ public class MatchResponseConvertor2Test {
     /**
      * Test {@link MatchResponseConvertor#convert(MatchEntriesGrouping, VersionDatapathIdConvertorData)}.
      */
+    @Test
     public void testEmptyMatch() {
         final VersionDatapathIdConvertorData datapathIdConvertorData =
                 new VersionDatapathIdConvertorData(OFConstants.OFP_VERSION_1_3);
