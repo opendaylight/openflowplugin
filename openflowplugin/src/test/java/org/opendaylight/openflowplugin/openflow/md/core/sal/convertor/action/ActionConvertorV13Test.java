@@ -148,7 +148,7 @@ public class ActionConvertorV13Test {
     /**
      * Test {@link ActionConvertor#convert(java.util.Collection, ActionConvertorData)}}.
      */
-    //@Test
+    @Test
     public void testToMDSalActions2() {
         OutputActionCaseBuilder caseBuilder = new OutputActionCaseBuilder();
         OutputActionBuilder outputBuilder = new OutputActionBuilder();
