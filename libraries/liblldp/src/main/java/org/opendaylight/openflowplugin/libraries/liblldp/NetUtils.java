@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Utility class containing the common utility functions needed for operating on networking data structures.
  */
-public abstract class NetUtils {
+final class NetUtils {
     private static final Logger LOG = LoggerFactory.getLogger(NetUtils.class);
 
     /**
@@ -42,6 +42,10 @@ public abstract class NetUtils {
      */
     private static final Pattern IPV4_PATTERN =
         Pattern.compile("(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])");
+
+    private NetUtils() {
+        // Hidden on purpose
+    }
 
     /**
      * Converts a 4 bytes array into an integer number.
