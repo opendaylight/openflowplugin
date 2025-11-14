@@ -7,7 +7,9 @@
  */
 package org.opendaylight.openflowjava.nx.codec.action;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
@@ -69,10 +71,11 @@ public class ActionDeserializerTest {
     /**
      * If experimentId is different from NiciraConstants.NX_VENDOR_ID then exception should be thrown.
      */
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void deserializeTest1() {
         createBufferWithWrongExperimentId(buffer);
-        actionDeserializer.deserialize(buffer);
+        final var ex = assertThrows(IllegalStateException.class, () -> actionDeserializer.deserialize(buffer));
+        assertEquals("Experimenter ID is not Nicira vendor id but is 1", ex.getMessage());
     }
 
     @Test
