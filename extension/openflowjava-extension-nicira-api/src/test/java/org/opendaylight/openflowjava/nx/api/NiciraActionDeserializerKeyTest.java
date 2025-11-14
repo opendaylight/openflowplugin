@@ -10,6 +10,7 @@ package org.opendaylight.openflowjava.nx.api;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.Test;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -22,9 +23,12 @@ public class NiciraActionDeserializerKeyTest {
     /**
      * If SUBTYPE is not Uint16 exception should be thrown.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void niciraActionDeserializerKeyTest1() {
-        niciraActionDeserializerKey = new NiciraActionDeserializerKey(VERSION, -10);
+        final var ex = assertThrows(IllegalArgumentException.class,
+            () -> new NiciraActionDeserializerKey(VERSION, -10));
+        assertEquals("Nicira subtype is uint16. A value of subtype has to be between 0 and 65535 include.",
+            ex.getMessage());
     }
 
     /**
@@ -112,7 +116,7 @@ public class NiciraActionDeserializerKeyTest {
     @Test
     public void toStringTest() {
         niciraActionDeserializerKey = new NiciraActionDeserializerKey(VERSION, 10);
-        String shouldBe = new String("NiciraActionDeserializerKey [version=4, subtype=10]");
+        String shouldBe = "NiciraActionDeserializerKey [version=4, subtype=10]";
 
         assertEquals(shouldBe, niciraActionDeserializerKey.toString());
     }
