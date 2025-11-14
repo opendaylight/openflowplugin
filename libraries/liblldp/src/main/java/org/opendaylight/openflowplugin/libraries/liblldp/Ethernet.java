@@ -8,6 +8,7 @@
 package org.opendaylight.openflowplugin.libraries.liblldp;
 
 import com.google.common.collect.ImmutableMap;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -30,7 +31,7 @@ public class Ethernet extends Packet {
     /**
      * Constant holding the broadcast MAC address.
      */
-    private static final byte[] BROADCAST_MAC_ADDR = {-1, -1, -1, -1, -1, -1};
+    private static final byte[] BROADCAST_MAC_ADDR = { -1, -1, -1, -1, -1, -1 };
 
     // TODO: This has to be outside and it should be possible for osgi
     // to add new coming packet classes
@@ -104,16 +105,7 @@ public class Ethernet extends Packet {
      * Returns true if the MAC address is the broadcast MAC address and false otherwise.
      */
     private static boolean isBroadcastMACAddr(final byte[] macAddress) {
-        if (macAddress.length == MAC_ADDR_LENGTH_IN_BYTES) {
-            for (int i = 0; i < MAC_ADDR_LENGTH_IN_BYTES; i++) {
-                if (macAddress[i] != BROADCAST_MAC_ADDR[i]) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        return false;
+        return Arrays.equals(macAddress, BROADCAST_MAC_ADDR);
     }
 
     public boolean isMulticast() {
