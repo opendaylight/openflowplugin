@@ -24,11 +24,6 @@ public class Ethernet extends Packet {
     private static final String ETHT = "EtherType";
 
     /**
-     * Constant holding the number of bytes in MAC Address.
-     */
-    private static final int MAC_ADDR_LENGTH_IN_BYTES = 6;
-
-    /**
      * Constant holding the broadcast MAC address.
      */
     private static final byte[] BROADCAST_MAC_ADDR = { -1, -1, -1, -1, -1, -1 };
@@ -117,7 +112,7 @@ public class Ethernet extends Packet {
      * Note that this explicitly returns false for the broadcast MAC address.
      */
     private static boolean isMulticastMACAddr(final byte[] macAddress) {
-        if (macAddress.length == MAC_ADDR_LENGTH_IN_BYTES && !isBroadcastMACAddr(macAddress)) {
+        if (macAddress.length == BROADCAST_MAC_ADDR.length && !isBroadcastMACAddr(macAddress)) {
             return (macAddress[0] & 1) != 0;
         }
         return false;
