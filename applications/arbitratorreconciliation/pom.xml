@@ -11,7 +11,7 @@
 
     <groupId>org.opendaylight.openflowplugin.applications</groupId>
     <artifactId>arbitratorreconciliation-aggregator</artifactId>
-    <version>0.21.2</version>
+    <version>0.21.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ODL :: openflowplugin :: ${project.artifactId}</name>
 
