@@ -2184,4 +2184,3 @@ To restore log settings:
 
 .. _openflow-specs: https://www.opennetworking.org/software-defined-standards/specifications
 .. _opendaylight_models: https://wiki.opendaylight.org/view/OpenDaylight_Controller:Config:Model_Reference
-

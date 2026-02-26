@@ -42,7 +42,7 @@ High Level Architecture
 
 - **Statistics Manager**: is responsible for collecting statistics and
   status from attached OpenFlow switches and storing them into the
-  operational data store for applications’ use. 
+  operational data store for applications’ use.
 
 - **Topology Manager**: is responsible for discovering the OpenFlow
   topology using LLDP and putting them into the operational data store
@@ -82,4 +82,3 @@ OF 1.0 Considerations
 OF 1.0 is being considered as a switch with: \* 1 Table \* 0 Groups \* 0
 Meters \* 1 Instruction (Apply Actions) \* and a limited vocabulary of
 matches and actions.
-

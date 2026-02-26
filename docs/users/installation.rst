@@ -24,4 +24,3 @@ Typical Test features
 - **odl-openflowplugin-app-bulk-o-matic**: Test application for pushing bulk flows.
 
 .. _install-odl: https://docs.opendaylight.org/en/latest/getting-started-guide/installing_opendaylight.html
-
