@@ -31,3 +31,13 @@ nbactions.xml
 nb-configuration.xml
 .fbExcludeFilterFile
 .factorypath
+
+# pre-commit / linting
+.pre-commit-log*
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+.tox/
+*.egg-info/
