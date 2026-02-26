@@ -1,53 +1,53 @@
 ---
-project: 'openflowplugin'
-project_creation_date: '2013-07-18'
-project_category: ''
-lifecycle_state: 'Incubation'
+project: "openflowplugin"
+project_creation_date: "2013-07-18"
+project_category: ""
+lifecycle_state: "Incubation"
 project_lead: &odl_openflowplugin_ptl
-    name: 'Sangwook Ha'
-    email: 'sangwook.ha@verizon.com'
-    company: 'Verizon'
-    id: 'sangwookha'
-    timezone: 'Americas/Los_Angeles'
+  name: "Sangwook Ha"
+  email: "sangwook.ha@verizon.com"
+  company: "Verizon"
+  id: "sangwookha"
+  timezone: "Americas/Los_Angeles"
 primary_contact: *odl_openflowplugin_ptl
 issue_tracking:
-    type: 'jira'
-    url: 'https://jira.opendaylight.org/projects/'
-    key: 'openflowplugin'
+  type: "jira"
+  url: "https://jira.opendaylight.org/projects/"
+  key: "openflowplugin"
 mailing_list:
-    type: 'groups.io'
-    url: 'app-dev@lists.opendaylight.org'
-    tag: '[]'
+  type: "groups.io"
+  url: "app-dev@lists.opendaylight.org"
+  tag: "[]"
 realtime_discussion:
-    type: 'irc'
-    server: 'freenode.net'
-    channel: '#opendaylight'
+  type: "irc"
+  server: "freenode.net"
+  channel: "#opendaylight"
 meetings:
-    - type: 'gotomeeting+irc'
-      agenda: 'https://wiki.opendaylight.org'
-      url: ''
-      server: 'freenode.net'
-      channel: '#opendaylight'
-      repeats: ''
-      time: ''
+  - type: "gotomeeting+irc"
+    agenda: "https://wiki.opendaylight.org"
+    url: ""
+    server: "freenode.net"
+    channel: "#opendaylight"
+    repeats: ""
+    time: ""
 repositories:
-    - openflowplugin
+  - openflowplugin
 committers:
-    - <<: *odl_openflowplugin_ptl
-    - name: 'Gobinath Suganthan'
-      email: 'gobinath@ericsson.com'
-      company: 'Ericsson'
-      id: 'gobinath'
-      timezone: 'Unknown/Unknown'
-    - name: 'Robert Varga'
-      email: 'nite@hq.sk'
-      company: 'PANTHEON.tech'
-      id: 'rovarga'
-      timezone: 'Europe/Bratislava'
+  - <<: *odl_openflowplugin_ptl
+  - name: "Gobinath Suganthan"
+    email: "gobinath@ericsson.com"
+    company: "Ericsson"
+    id: "gobinath"
+    timezone: "Unknown/Unknown"
+  - name: "Robert Varga"
+    email: "nite@hq.sk"
+    company: "PANTHEON.tech"
+    id: "rovarga"
+    timezone: "Europe/Bratislava"
 tsc:
-    # yamllint disable rule:line-length
-    approval: 'NA'
-    changes:
-        - type: ''
-          name: ''
-          link: ''
+  # yamllint disable rule:line-length
+  approval: "NA"
+  changes:
+    - type: ""
+      name: ""
+      link: ""
