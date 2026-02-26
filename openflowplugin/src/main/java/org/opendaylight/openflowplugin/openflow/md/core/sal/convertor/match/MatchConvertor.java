@@ -654,4 +654,3 @@ public class MatchConvertor extends Convertor<Match, List<MatchEntry>, VersionCo
         return result;
     }
 }
-

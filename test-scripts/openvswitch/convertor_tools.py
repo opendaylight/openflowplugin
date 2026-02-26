@@ -11,10 +11,10 @@ class ConvertorTools():
         for the value conversions
     """
     CONVERTORS = {
-        'cookie': hex, 
+        'cookie': hex,
         'metadata': hex
-    }  
-    
+    }
+
     @staticmethod
     def base_tag_values_conversion(key, value):
         """

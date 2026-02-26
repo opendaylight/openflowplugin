@@ -39,4 +39,3 @@ public class ReconciliationState {
         return String.format("%-25s %-25s", this.status, this.time);
     }
 }
-

@@ -119,4 +119,3 @@ public interface DeviceContext extends
     @Beta
     @Nullable FlowGroupInfoHistory getFlowGroupInfoHistory();
 }
-

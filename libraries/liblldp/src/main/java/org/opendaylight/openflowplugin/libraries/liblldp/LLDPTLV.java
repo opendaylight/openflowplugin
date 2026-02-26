@@ -372,4 +372,3 @@ public class LLDPTLV extends Packet {
         return new CustomTLVKey(BitBufferHelper.getInt(LLDPTLV.OFOUI), LLDPTLV.CUSTOM_TLV_SUB_TYPE_CUSTOM_SEC[0]);
     }
 }
-

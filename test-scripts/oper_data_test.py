@@ -10,10 +10,10 @@ from openvswitch.flow_tools import FlowAdderThread, FlowRemoverThread, MapNames,
 from openvswitch.mininet_tools import MininetTools
 
 
-# Delay time value is important for slow machines 
-# value mean nr. of seconds for waiting for controller 
+# Delay time value is important for slow machines
+# value mean nr. of seconds for waiting for controller
 CONTROLLER_DELAY = 50
-# value mean nr. of seconds for waiting for mininet 
+# value mean nr. of seconds for waiting for mininet
 MININET_START_DELAY = 15
 
 

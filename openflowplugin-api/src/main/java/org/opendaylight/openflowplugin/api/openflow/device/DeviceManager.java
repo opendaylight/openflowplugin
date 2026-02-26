@@ -39,4 +39,3 @@ public interface DeviceManager extends OFPManager, TranslatorLibrarian, FlowGrou
 
     void setContextChainHolder(@NonNull ContextChainHolder contextChainHolder);
 }
-

@@ -15,9 +15,9 @@ import unittest
 class OF_TestXmlInputs_Base( unittest.TestCase ):
     """
     Base TEST class extends unittest.TestCase and
-    it provides possibility to add parameters for 
+    it provides possibility to add parameters for
     all subclasses by call a static constructor:
-    
+
     OF_TestXmlInputs_Base.load_file_name(sub_class_name, param)
     """
 

@@ -323,4 +323,3 @@ public class LLDP extends Packet {
         return len / Byte.SIZE;
     }
 }
-

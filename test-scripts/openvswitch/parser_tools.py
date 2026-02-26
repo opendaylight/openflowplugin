@@ -10,7 +10,7 @@ from xml.etree import ElementTree as ET
 from convertor_tools import ConvertorTools
 
 
-class ParseTools(): 
+class ParseTools():
 
     @staticmethod
     def get_element_alias_by_key(element,key_dict):
@@ -20,7 +20,7 @@ class ParseTools():
     def sort_ordered_dict_to_array(x_dict=None):
         if (x_dict > None):
             out_put = []
-            for val in map(lambda val: x_dict.get(val), sorted(x_dict.keys())) : 
+            for val in map(lambda val: x_dict.get(val), sorted(x_dict.keys())) :
                 out_put.append(val)
 #                 if (out_put > None) :
 #                     out_put += ', %s' %val
@@ -45,14 +45,14 @@ class ParseTools():
                         ord_value = ParseTools.get_element_value(child)
                     else :
                         sub_dict.update(ParseTools.__parse_ordered_tags_from_xml(child, kwd, p_elm_n, ikwd))
-                        
+
                 a_value = ParseTools.sort_ordered_dict_to_array(sub_dict)
                 if (ord_value > None) :
                     order = ord_value if (len(ord_value) > 0) else '0'
                 else :
                     order = '0'
                 a_dict[order]=a_value
-                
+
             else :
                 if (ord_value > None) :
                     order = ord_value if ((len(ord_value) > 0)) else '0'
@@ -60,7 +60,7 @@ class ParseTools():
                     order = '0'
                 a_val = elm_n if elm_n > None else element.tag
                 a_dict[order] = a_val
-                
+
         return a_dict
 
     @staticmethod
@@ -89,22 +89,22 @@ class ParseTools():
             # remove namespace
             xml_string = re.sub(' xmlns="[^"]+"', '', xml_string, count=1)
             tree = ET.fromstring(xml_string)
-            
+
         flow_dict = {}
-        
+
         if (tree > None) :
             if (tree.getchildren() > None) :
                 for child in tree.getchildren() :
                     if (child.tag == 'match') :
                         ParseTools.__parse_tags_from_xml(child, flow_dict, match_key_dict, ikwd=ignore_key_dict)
-                    elif (child.tag == 'instructions') : 
+                    elif (child.tag == 'instructions') :
                         x_dict = ParseTools.__parse_ordered_tags_from_xml(child, action_key_dict, ikwd=ignore_key_dict)
                         flow_dict['actions'] = ParseTools.sort_ordered_dict_to_array(x_dict)
                     else :
-                        ParseTools.__parse_tags_from_xml(child, flow_dict, key_dict, ikwd=ignore_key_dict) 
+                        ParseTools.__parse_tags_from_xml(child, flow_dict, key_dict, ikwd=ignore_key_dict)
 
         return flow_dict
-        
+
         # TODO VD remove this method
 #     @staticmethod
 #     def get_switchflow_dict(switch_dict, ignore_key_dict=None):
@@ -112,9 +112,9 @@ class ParseTools():
 #         for sw_key in switch_dict.keys() :
 #             if (ignore_key_dict.get(sw_key,None) is None):
 #                 x_dict[sw_key] = switch_dict.get(sw_key)
-#             
+#
 #         return x_dict
-    
+
     @staticmethod
     def all_nodes(xml_root):
         """

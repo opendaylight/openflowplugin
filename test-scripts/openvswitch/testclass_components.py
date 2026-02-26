@@ -26,7 +26,7 @@ class CheckSwitchDump():
 
     def get_id_by_entry(self, dump_flow, id_map):
         flow_id = None
-        
+
         try:
            cookie_regexp = re.compile("cookie=0x[0-9,a-f,A-F]+")
            cookie_match = re.search(cookie_regexp, dump_flow)
@@ -43,8 +43,8 @@ class CheckSwitchDump():
 
         return flow_id
 
-            
-class CheckConfigFlowsComponent(): 
+
+class CheckConfigFlowsComponent():
 
     log = logging.getLogger('CheckConfigFlowsComponent')
 
@@ -60,8 +60,8 @@ class CheckConfigFlowsComponent():
             CheckConfigFlowsComponent.log.error('problem getting flows from config: {0}'.format(str(e)))
             return -1
 
-  
-class CheckOperFlowsComponent():            
+
+class CheckOperFlowsComponent():
 
     log = logging.getLogger('CheckOperFlowsComponent')
 
@@ -97,7 +97,7 @@ class CheckOperFlowsComponent():
             CheckOperFlowsComponent.log.info('got {0} flows on {1}. try'.format(current_oper_flows, current_try + 1))
             current_try += 1
         return current_oper_flows
-        
+
 class GetXMLFlowsComponent():
 
     @staticmethod
@@ -110,4 +110,4 @@ class GetXMLFlowsComponent():
             if xml_id in id_map.values():
                 element_count += 1
 
-        return element_count    
+        return element_count

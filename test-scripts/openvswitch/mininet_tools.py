@@ -15,7 +15,7 @@ import re
 class MininetTools():
     """
     Tool class provides static method for Open_vswitch
-    mininet out of box controls 
+    mininet out of box controls
     """
     @staticmethod
     def create_network(controller_ip, controller_port):
@@ -39,7 +39,7 @@ class MininetTools():
         net = mininet.net.Mininet(topo=topo, switch=switch, controller=controller)
 
         return net
-    
+
     @staticmethod
     def __mininet_parse_response(resp_str='', x_dict={}, ikwd={}):
         for elm in re.split('\s', resp_str.strip()) :
@@ -57,7 +57,7 @@ class MininetTools():
                         a_value = a_value.strip() if isinstance(a_value,str) else (str(a_value)).strip()
                 x_dict[a_key] = a_value
 
-    
+
     @staticmethod
     def get_dict_of_flows(net, ikwd={}):
         """Get list of flows from network's first switch.
@@ -112,7 +112,7 @@ class MininetTools():
     @staticmethod
     def get_flows_string(net=None):
         """
-        Return flows from switch in string format 
+        Return flows from switch in string format
         same as by a call 'ovs-ofctl -O OpenFlow13 dump-flows sx'
         """
         if net is None:

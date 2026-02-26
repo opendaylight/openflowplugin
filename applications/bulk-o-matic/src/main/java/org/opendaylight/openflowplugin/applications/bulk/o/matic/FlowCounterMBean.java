@@ -33,4 +33,3 @@ public interface FlowCounterMBean {
         return BulkOMaticUtils.DEFAULT_TABLE_COUNT;
     }
 }
-

@@ -45,7 +45,7 @@ class MultiTest(unittest.TestCase):
             self.active_map[cookie_id] = flow_id
 
     def delete_flow_from_map(self, flow_id, cookie_id):
-	del self.active_map[cookie_id]
+    del self.active_map[cookie_id]
 
     def __start_MN(self):
         self.net = MininetTools.create_network(self.host, self.mn_port)

@@ -48,7 +48,7 @@ Description:
 
 - *flows-per-dpn*: Number of flows to push per switch.
 
-- *batch-size*:	Number of flows to push in one transaction.
+- *batch-size*: Number of flows to push in one transaction.
 
 - *seq*: if true, push the flows sequentially and stop at the first instance of failure. If false, fire the transaction but don't wait for success or failure.
 
@@ -114,11 +114,11 @@ Use operation `POST {perf-write-switch}` with the following JSON:
 [source, json]
 ----
 {
-	"input":
-	{
-		"sal-bulk-flow:flow-count":"100",
-		"sal-bulk-flow:rpc-batch-size":"100"
-	}
+    "input":
+    {
+        "sal-bulk-flow:flow-count":"100",
+        "sal-bulk-flow:rpc-batch-size":"100"
+    }
 }
 ----
 

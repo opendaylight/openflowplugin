@@ -47,7 +47,7 @@ loglevels = {
 class FlowAdderThread(threading.Thread):
     """
     Thread to remove flows from TestClassAdd
-    
+
     TestClassAdd should implement methods inc_flow(value, key) and inc_error()
     """
 
@@ -157,7 +157,7 @@ class FlowAdderThread(threading.Thread):
 class FlowRemoverThread(threading.Thread):
     """
     Thread to remove flows from TestClassDelete
-    
+
     TestClassDelete should implement method delete_flows_from_map(value, key)
     """
 
@@ -221,4 +221,3 @@ class FlowRemoverThread(threading.Thread):
             self.__remove_flows(flow_ids[1], flow_ids[0])
 
         self.log.info('finished removing {0} flows, {1} errors'.format(self.removed, self.errors))
-

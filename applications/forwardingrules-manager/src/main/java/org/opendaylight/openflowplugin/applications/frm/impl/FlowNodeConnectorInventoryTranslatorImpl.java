@@ -120,4 +120,3 @@ public final class FlowNodeConnectorInventoryTranslatorImpl
         return new BigInteger(dpId);
     }
 }
-

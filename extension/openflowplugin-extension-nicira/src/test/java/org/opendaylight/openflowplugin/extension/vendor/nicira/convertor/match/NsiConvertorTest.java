@@ -99,4 +99,3 @@ public class NsiConvertorTest {
         Assert.assertEquals(NxmNxNsiKey.VALUE, extensionAugment.getKey());
     }
 }
-

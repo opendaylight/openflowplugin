@@ -23,7 +23,7 @@ class XMLtoDictParserTools():
         Return Dictionary representation of the xml DOM Element.
         Repeated tags are put to the array sorted by key (id or order)
         otherwise is the value represented by tag key name.
-        @param node: DOM Element 
+        @param node: DOM Element
         @param returnedDict : dictionary (default value None)
         @param ignereList : list of ignored tags for the xml DOM Element
                             (default value is empty list)
@@ -53,8 +53,8 @@ class XMLtoDictParserTools():
     @staticmethod
     def addDictValue( m_dict, key, value ):
         '''
-        Method add key and value to input dict. If the dict 
-        contain the key, we are creating array for the values 
+        Method add key and value to input dict. If the dict
+        contain the key, we are creating array for the values
         and sort array by sort_key ('order' tag or '*-id' tag )
         @param m_dict: dictionary for key and value
         @param key: dict key
@@ -93,7 +93,7 @@ class XMLtoDictParserTools():
         allows only two possible kind of the order keys
         'order' or '*-id'
         @param dictionary: dictionary with data
-        @return: the array order key 
+        @return: the array order key
         """
         subKeyStr = ['-id', 'order']
         for substr in subKeyStr :
@@ -107,7 +107,7 @@ class XMLtoDictParserTools():
 
     @staticmethod
     def getDifferenceDict( original_dict, responded_dict ):
-        """ 
+        """
         Return a dict of keys that differ with another config object.  If a value is
         not found in one fo the configs, it will be represented by KEY_NOT_FOUND.
         @param original_dict:   Fist dictionary to diff.

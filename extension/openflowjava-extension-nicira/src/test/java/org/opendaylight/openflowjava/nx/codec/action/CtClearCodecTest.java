@@ -84,5 +84,3 @@ public class CtClearCodecTest {
         message.writeZero(6);
     }
 }
-
-

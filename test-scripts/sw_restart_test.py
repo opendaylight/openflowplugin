@@ -84,7 +84,7 @@ class TestRestartMininet(unittest.TestCase):
         TestRestartMininet.log.debug('received content: {0}'.format(rsp.text))
         assert rsp.status_code == 204 or rsp.status_code == 200, 'Status' \
                         ' code returned %d' % rsp.status_code
-        
+
         # check request content against restconf's datastore
         response = requests.get(url, auth=('admin', 'admin'),
                                 headers={'Accept': 'application/xml'})
@@ -103,7 +103,7 @@ class TestRestartMininet(unittest.TestCase):
         xmls = self.__load_xmls()
         for xml in xmls:
             self.__add_flows(xml)
-        
+
         switch_flows = 0
 
         TestRestartMininet.log.info('---------- preparation finished, running test ----------\n\n')

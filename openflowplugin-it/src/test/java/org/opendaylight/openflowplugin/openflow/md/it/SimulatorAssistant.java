@@ -34,9 +34,9 @@ public abstract class SimulatorAssistant {
     }
 
     /**
-     * @param switchSim 
-     * @param scenarioPool 
-     * @param failsafeTimeout 
+     * @param switchSim
+     * @param scenarioPool
+     * @param failsafeTimeout
      */
     public static void tearDownSwitchSimulatorAfterScenario(SimpleClient switchSim, ThreadPoolExecutor scenarioPool, long failsafeTimeout) {
         try {
@@ -51,7 +51,7 @@ public abstract class SimulatorAssistant {
             scenarioPool.shutdownNow();
             scenarioPool.purge();
         }
-    
+
         try {
             LOG.debug("checking if simulator succeeded to connect to controller");
             boolean simulatorWasOnline = switchSim.getIsOnlineFuture().get(100, TimeUnit.MILLISECONDS);

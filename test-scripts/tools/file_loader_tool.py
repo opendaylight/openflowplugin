@@ -15,7 +15,7 @@ import logging
 
 class FileLoaderTools():
     """
-    Tool class provides the static methods for load files 
+    Tool class provides the static methods for load files
     with expected format for testing in ODL_TESTs
     """
     log = logging.getLogger( 'FileLoaderTools' )
