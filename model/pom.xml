@@ -12,7 +12,7 @@
 
   <groupId>org.opendaylight.openflowplugin.model</groupId>
   <artifactId>model-aggregator</artifactId>
-  <version>0.21.3</version>
+  <version>0.21.4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
