@@ -21,7 +21,7 @@
         		<ip-dscp>8</ip-dscp>
 		    </ip-match>
                     </set-field>
-                </actin>
+                </action>
             </apply-actions>
         </instruction>
     </instructions>
