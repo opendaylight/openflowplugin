@@ -11,10 +11,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.inventory.rev130819.Fl
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 
 /**
- * Basic {@link InstanceIdentifier} related tools.
+ * Basic {@link DataObjectIdentifier} related tools.
  */
 public final class PathUtil {
     private PathUtil() {
