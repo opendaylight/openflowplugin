@@ -7,16 +7,12 @@
  */
 package org.opendaylight.openflowplugin.extension.api.path;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 /**
  * Enumerates the match paths.
  *
  * @author msunal
  */
 public enum MatchPath implements AugmentationPath {
-
     /**
      * openflowplugin-extension-general.yang.
      * <pre>
@@ -26,7 +22,7 @@ public enum MatchPath implements AugmentationPath {
      *    |  +--ro match
      * </pre>
      */
-    SWITCH_FLOW_REMOVED_MATCH(null),
+    SWITCH_FLOW_REMOVED_MATCH,
 
     /**
      * openflowplugin-extension-general.yang.
@@ -37,7 +33,7 @@ public enum MatchPath implements AugmentationPath {
      *       +--ro match
      * </pre>
      */
-    PACKET_RECEIVED_MATCH(null),
+    PACKET_RECEIVED_MATCH,
 
     /**
      * openflowplugin-extension-general.yang.
@@ -48,7 +44,7 @@ public enum MatchPath implements AugmentationPath {
      *       +--ro match
      * </pre>
      */
-    PACKET_IN_MESSAGE_MATCH(null),
+    PACKET_IN_MESSAGE_MATCH,
 
     /**
      * openflowplugin-extension-general.yang.
@@ -60,7 +56,7 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWS_STATISTICS_UPDATE_MATCH(null),
+    FLOWS_STATISTICS_UPDATE_MATCH,
 
     /**
      * openflowplugin-extension-general.yang.
@@ -72,17 +68,5 @@ public enum MatchPath implements AugmentationPath {
      *    |  |  +--ro match
      * </pre>
      */
-    FLOWS_STATISTICS_RPC_MATCH(null);
-
-    private final InstanceIdentifier<Extension> iid;
-
-    MatchPath(InstanceIdentifier<Extension> iid) {
-        this.iid = iid;
-    }
-
-    @Override
-    public final InstanceIdentifier<Extension> getInstanceIdentifier() {
-        return iid;
-    }
-
+    FLOWS_STATISTICS_RPC_MATCH;
 }

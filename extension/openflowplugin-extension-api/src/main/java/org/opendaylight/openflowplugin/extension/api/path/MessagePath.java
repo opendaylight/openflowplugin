@@ -7,14 +7,10 @@
  */
 package org.opendaylight.openflowplugin.extension.api.path;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 /**
  * List of augmentation points available for experimenter symmetric message and multipart message.
  */
 public enum MessagePath implements AugmentationPath {
-
     /**
      * <pre>
      * module: sal-experimenter-message.
@@ -23,7 +19,7 @@ public enum MessagePath implements AugmentationPath {
      *    +--ro (experimenter-message-of-choice)?module: sal-flow
      * </pre>
      */
-    MESSAGE_NOTIFICATION(null),
+    MESSAGE_NOTIFICATION,
 
     /**
      * <pre>
@@ -34,16 +30,5 @@ public enum MessagePath implements AugmentationPath {
      *       +--ro (experimenter-message-of-choice)?notifications:
      * </pre>
      */
-    MPMESSAGE_RPC_OUTPUT(null);
-
-    private final InstanceIdentifier<Extension> iid;
-
-    MessagePath(InstanceIdentifier<Extension> iid) {
-        this.iid = iid;
-    }
-
-    @Override
-    public final InstanceIdentifier<Extension> getInstanceIdentifier() {
-        return iid;
-    }
+    MPMESSAGE_RPC_OUTPUT;
 }

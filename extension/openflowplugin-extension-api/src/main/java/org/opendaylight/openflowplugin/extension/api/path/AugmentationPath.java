@@ -7,15 +7,11 @@
  */
 package org.opendaylight.openflowplugin.extension.api.path;
 
-import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
-
 /**
  * Interface for an extension augmentation path.
  *
  * @author msunal
  */
-public interface AugmentationPath {
-
-    InstanceIdentifier<Extension> getInstanceIdentifier();
+public sealed interface AugmentationPath permits ActionPath, MatchPath, MessagePath {
+    // nothing else
 }
