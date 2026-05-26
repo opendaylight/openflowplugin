@@ -79,7 +79,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.EthernetMatchBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4Match;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.model.match.types.rev131026.match.layer._3.match.Ipv4MatchBuilder;
-import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
+import org.opendaylight.yangtools.inding.DataObjectIdentifier;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
@@ -168,7 +168,7 @@ public class OFPluginFlowTest {
 
             for (DataTreeModification modification : modifications) {
                 if (modification.getRootNode().getModificationType() == ModificationType.WRITE) {
-                    InstanceIdentifier<FlowCapableNode> ii = modification.getRootPath().getRootIdentifier();
+                    DataObjectIdentifier<FlowCapableNode> ii = modification.getRootPath().getRootIdentifier();
                     if (ii != null) {
                         LOG.info("Node was added (brm) {}", ii);
                         writeFlow(createTestFlow(), ii);
@@ -212,8 +212,8 @@ public class OFPluginFlowTest {
         LOG.info("finishing testFlowMod");
     }
 
-    private static InstanceIdentifier<?> getWildcardPath() {
-        return InstanceIdentifier.create(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class);
+    private static DataObjectReference<FlowCapableNode> getWildcardPath() {
+        return DataObjectReference.builder(Nodes.class).child(Node.class).augmentation(FlowCapableNode.class).build();
     }
 
     /**
@@ -321,10 +321,12 @@ public class OFPluginFlowTest {
         return isb;
     }
 
-    static void writeFlow(FlowBuilder flow, InstanceIdentifier<FlowCapableNode> flowNodeIdent) {
+    static void writeFlow(FlowBuilder flow, DataObjectIdentifier<FlowCapableNode> flowNodeIdent) {
         ReadWriteTransaction modification = dataBroker.newReadWriteTransaction();
-        final InstanceIdentifier<Flow> path1 = flowNodeIdent.child(Table.class, new TableKey(flow.getTableId()))
-                .child(Flow.class, flow.getKey());
+        final var path1 = flowNodeIdent.toBuilder()
+                .child(Table.class, new TableKey(flow.getTableId()))
+                .child(Flow.class, flow.getKey())
+                .build();
         modification.merge(LogicalDatastoreType.CONFIGURATION, path1, flow.build(), true);
         CheckedFuture<Void, TransactionCommitFailedException> commitFuture = modification.submit();
         Futures.addCallback(commitFuture, new FutureCallback<Void>() {
@@ -341,7 +343,7 @@ public class OFPluginFlowTest {
     }
 
     //TODO move to separate test util class
-    private final static Flow readFlow(InstanceIdentifier<Flow> flow) {
+    private final static Flow readFlow(DataObjectIdentifier<Flow> flow) {
         Flow searchedFlow = null;
         ReadTransaction rt = dataBroker.newReadOnlyTransaction();
         CheckedFuture<Optional<Flow>, ReadFailedException> flowFuture =
