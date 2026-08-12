@@ -7,7 +7,7 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import com.google.common.collect.Lists;
+import java.util.List;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +53,7 @@ public class NodeConnectorRefToPortTranslatorTest extends TestCase {
                 .setMatchEntryValue(caseBuilder.build());
 
         MatchBuilder matchBuilder = new MatchBuilder()
-                .setMatchEntry(Lists.newArrayList(matchEntryBuilder.build()));
+                .setMatchEntry(List.of(matchEntryBuilder.build()));
 
         return new PacketInMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)

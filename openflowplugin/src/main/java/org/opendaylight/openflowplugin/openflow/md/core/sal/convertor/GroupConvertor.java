@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.openflow.md.core.sal.convertor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +111,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
             Optional<List<Action>> bucketActionList = getConvertorExecutor().convert(
                     groupBucket.getAction(), data);
 
-            bucketBuilder.setAction(bucketActionList.orElse(Collections.emptyList()));
+            bucketBuilder.setAction(bucketActionList.orElse(List.of()));
             BucketsList bucket = bucketBuilder.build();
             bucketLists.add(bucket);
         }
@@ -201,7 +200,7 @@ public class GroupConvertor extends Convertor<Group, GroupModInputBuilder, Versi
                     // TODO: we should be able to just sort the resulting the resulting list and not go through
                     //       two copies
                     List<Bucket> bucketList = new ArrayList<>(bucket.values());
-                    Collections.sort(bucketList, COMPARATOR);
+                    bucketList.sort(COMPARATOR);
                     List<BucketsList> bucketLists = salToOFBucketList(bucketList, data.getVersion(),
                         source.getGroupType().getIntValue(), data.getDatapathId());
                     groupModInputBuilder.setBucketsList(bucketLists);

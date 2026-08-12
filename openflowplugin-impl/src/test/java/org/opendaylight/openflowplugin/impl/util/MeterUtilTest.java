@@ -10,8 +10,6 @@ package org.opendaylight.openflowplugin.impl.util;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
@@ -66,11 +64,11 @@ public class MeterUtilTest {
     @Test
     public void testCreateCumulatingFunction() {
         final Function<List<RpcResult<String>>, RpcResult<List<BatchFailedMetersOutput>>> function =
-                MeterUtil.createCumulativeFunction(Lists.newArrayList(
+                MeterUtil.createCumulativeFunction(List.of(
                         createBatchMeter(DUMMY_METER_ID),
                         createBatchMeter(DUMMY_METER_ID_2)));
 
-        final RpcResult<List<BatchFailedMetersOutput>> output = function.apply(Lists.newArrayList(
+        final RpcResult<List<BatchFailedMetersOutput>> output = function.apply(List.of(
                 RpcResultBuilder.success("a").build(),
                 RpcResultBuilder.<String>failed()
                         .withError(ErrorType.APPLICATION, "ut-meter-error")
@@ -133,9 +131,7 @@ public class MeterUtilTest {
     }
 
     private static RpcResult<List<BatchFailedMetersOutput>> createEmptyBatchOutcome() {
-        return RpcResultBuilder
-                .success(Collections.<BatchFailedMetersOutput>emptyList())
-                .build();
+        return RpcResultBuilder.success(List.<BatchFailedMetersOutput>of()).build();
     }
 
     private static RpcResult<List<BatchFailedMetersOutput>> createBatchOutcomeWithError() {

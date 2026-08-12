@@ -9,8 +9,6 @@ package org.opendaylight.openflowplugin.impl.util;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
-import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -66,10 +64,10 @@ public class FlowUtilTest {
     @Test
     public void testCreateCumulatingFunction() {
         final Function<List<RpcResult<String>>, RpcResult<List<BatchFailedFlowsOutput>>> function =
-                FlowUtil.createCumulatingFunction(Lists.newArrayList(createBatchFlowIdGrouping(DUMMY_FLOW_ID),
-                        createBatchFlowIdGrouping(DUMMY_FLOW_ID_2)));
+            FlowUtil.createCumulatingFunction(
+                    List.of(createBatchFlowIdGrouping(DUMMY_FLOW_ID), createBatchFlowIdGrouping(DUMMY_FLOW_ID_2)));
 
-        final RpcResult<List<BatchFailedFlowsOutput>> summary = function.apply(Lists.newArrayList(
+        final RpcResult<List<BatchFailedFlowsOutput>> summary = function.apply(List.of(
                 RpcResultBuilder.success("a").build(),
                 RpcResultBuilder.<String>failed()
                         .withError(ErrorType.APPLICATION, "action-failed reason")
@@ -134,15 +132,13 @@ public class FlowUtilTest {
     }
 
     private static RpcResult<List<BatchFailedFlowsOutput>> createEmptyBatchOutcome() {
-        return RpcResultBuilder
-                .success(Collections.<BatchFailedFlowsOutput>emptyList())
-                .build();
+        return RpcResultBuilder.success(List.<BatchFailedFlowsOutput>of()).build();
     }
 
     private static RpcResult<List<BatchFailedFlowsOutput>> createBatchOutcomeWithError() {
         return RpcResultBuilder.<List<BatchFailedFlowsOutput>>failed()
                 .withError(ErrorType.APPLICATION, "ut-flowAddFail")
-                .withResult(Collections.singletonList(new BatchFailedFlowsOutputBuilder()
+                .withResult(List.of(new BatchFailedFlowsOutputBuilder()
                         .setFlowId(DUMMY_FLOW_ID)
                         .setBatchOrder(Uint16.ZERO)
                         .build()))
@@ -236,7 +232,7 @@ public class FlowUtilTest {
     private static RpcResult<AddFlowsBatchOutput> createAddFlowsBatchSuccessOutput() {
         return RpcResultBuilder
                 .success(new AddFlowsBatchOutputBuilder()
-                        .setBatchFailedFlowsOutput(Collections.emptyMap())
+                        .setBatchFailedFlowsOutput(Map.of())
                         .build())
                 .build();
     }

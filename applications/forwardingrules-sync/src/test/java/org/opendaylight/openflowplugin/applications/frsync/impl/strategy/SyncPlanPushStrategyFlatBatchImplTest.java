@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.ArrayList;
@@ -93,10 +92,12 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
     private SyncPlanPushStrategyFlatBatchImpl syncPlanPushStrategy;
 
     public SyncPlanPushStrategyFlatBatchImplTest() {
-        groupsToAddOrUpdate = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),
-                DiffInputFactory.createGroupSyncBoxWithUpdates(4, 5, 6));
-        groupsToRemove = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),
-                DiffInputFactory.createGroupSyncBox(4, 5, 6));
+        groupsToAddOrUpdate = List.of(
+            DiffInputFactory.createGroupSyncBox(1, 2, 3),
+            DiffInputFactory.createGroupSyncBoxWithUpdates(4, 5, 6));
+        groupsToRemove = List.of(
+            DiffInputFactory.createGroupSyncBox(1, 2, 3),
+            DiffInputFactory.createGroupSyncBox(4, 5, 6));
 
         metersToAddOrUpdate = DiffInputFactory.createMeterSyncBoxWithUpdates(1, 2, 3);
         metersToRemove = DiffInputFactory.createMeterSyncBox(1, 2, 3);
@@ -284,7 +285,7 @@ public class SyncPlanPushStrategyFlatBatchImplTest {
 
     @Test
     public void testMapBatchesToRanges() {
-        final List<Batch> inputBatchBag = Lists.newArrayList(
+        final List<Batch> inputBatchBag = List.of(
                 new BatchBuilder().setBatchOrder(Uint16.ZERO).build(),
                 new BatchBuilder().setBatchOrder(Uint16.valueOf(5)).build(),
                 new BatchBuilder().setBatchOrder(Uint16.valueOf(9)).build(),
