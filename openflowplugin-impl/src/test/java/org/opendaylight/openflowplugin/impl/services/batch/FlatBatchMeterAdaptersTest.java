@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.batch;
 
-import com.google.common.collect.Lists;
 import java.util.Iterator;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -61,9 +61,7 @@ public class FlatBatchMeterAdaptersTest {
     public void testAdaptFlatBatchAddMeter() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
-        planStep.getTaskBag().addAll(Lists.newArrayList(
-                createAddMeterBatch(Uint32.ONE),
-                createAddMeterBatch(Uint32.TWO)));
+        planStep.getTaskBag().addAll(List.of(createAddMeterBatch(Uint32.ONE), createAddMeterBatch(Uint32.TWO)));
 
         final AddMetersBatchInput addMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchAddMeter(planStep, NODE_REF);
@@ -106,9 +104,7 @@ public class FlatBatchMeterAdaptersTest {
     public void testAdaptFlatBatchRemoveMeter() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
-        planStep.getTaskBag().addAll(Lists.newArrayList(
-                createRemoveMeterBatch(Uint32.ONE),
-                createRemoveMeterBatch(Uint32.TWO)));
+        planStep.getTaskBag().addAll(List.of(createRemoveMeterBatch(Uint32.ONE),createRemoveMeterBatch(Uint32.TWO)));
 
         final RemoveMetersBatchInput removeMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchRemoveMeter(planStep, NODE_REF);
@@ -124,9 +120,7 @@ public class FlatBatchMeterAdaptersTest {
     public void testAdaptFlatBatchUpdateMeter() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
-        planStep.getTaskBag().addAll(Lists.newArrayList(
-                createUpdateMeterBatch(Uint32.ONE),
-                createUpdateMeterBatch(Uint32.TWO)));
+        planStep.getTaskBag().addAll(List.of(createUpdateMeterBatch(Uint32.ONE), createUpdateMeterBatch(Uint32.TWO)));
 
         final UpdateMetersBatchInput updateMetersBatchInput =
                 FlatBatchMeterAdapters.adaptFlatBatchUpdateMeter(planStep, NODE_REF);

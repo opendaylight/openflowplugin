@@ -7,8 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.translator;
 
-import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,7 +52,6 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PacketReceivedTranslatorTest {
-
     @Mock
     ConnectionContext connectionContext;
     @Mock
@@ -81,7 +78,6 @@ public class PacketReceivedTranslatorTest {
 
     @Before
     public void setUp() {
-        final List<PhyPort> phyPorts = Collections.singletonList(phyPort);
         convertorManager = ConvertorManagerFactory.createDefaultManager();
 
         Mockito.when(deviceInfo.getDatapathId()).thenReturn(Uint64.valueOf(10));
@@ -114,7 +110,7 @@ public class PacketReceivedTranslatorTest {
 
         MatchEntryBuilder matchEntryBuilder = assembleMatchEntryBld(port);
         MatchBuilder packetInMatchBld = new MatchBuilder()
-                .setMatchEntry(Lists.newArrayList(matchEntryBuilder.build()));
+                .setMatchEntry(List.of(matchEntryBuilder.build()));
 
         return new PacketInMessageBuilder()
                 .setVersion(EncodeConstants.OF_VERSION_1_0)
@@ -131,7 +127,7 @@ public class PacketReceivedTranslatorTest {
     public void testGetPacketInMatch() {
         MatchEntryBuilder matchEntryBuilder = assembleMatchEntryBld(PORT_NUM_VALUE);
         MatchBuilder packetInMatchBld = new MatchBuilder()
-                .setMatchEntry(Lists.newArrayList(matchEntryBuilder.build()));
+                .setMatchEntry(List.of(matchEntryBuilder.build()));
         PacketInMessageBuilder inputBld = new PacketInMessageBuilder()
                 .setMatch(packetInMatchBld.build())
                 .setVersion(EncodeConstants.OF_VERSION_1_3);

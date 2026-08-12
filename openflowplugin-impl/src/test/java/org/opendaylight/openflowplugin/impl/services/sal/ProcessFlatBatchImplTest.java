@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AsyncFunction;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.Iterator;
@@ -497,8 +496,7 @@ public class ProcessFlatBatchImplTest {
         when(batchStepJob1.getStepFunction().apply(any())).thenReturn(succeededChainOutput);
         when(batchStepJob2.getStepFunction().apply(any())).thenReturn(failedChainOutput);
 
-        final List<BatchStepJob> batchChainElements = Lists.newArrayList(batchStepJob1, batchStepJob2);
-        final var rpcResultFuture = ProcessFlatBatchImpl.executeBatchPlan(batchChainElements);
+        final var rpcResultFuture = ProcessFlatBatchImpl.executeBatchPlan(List.of(batchStepJob1, batchStepJob2));
 
         assertTrue(rpcResultFuture.isDone());
         final var rpcResult = rpcResultFuture.get();
@@ -539,10 +537,9 @@ public class ProcessFlatBatchImplTest {
                 .setBatchOrder(Uint16.TWO)
                 .build();
         final BatchPlanStep batchPlanStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
-        batchPlanStep.getTaskBag().addAll(Lists.newArrayList(flatBatchAddFlow_1, flatBatchAddFlow_2));
-        final List<BatchPlanStep> batchPlan = Lists.newArrayList(batchPlanStep);
+        batchPlanStep.getTaskBag().addAll(List.of(flatBatchAddFlow_1, flatBatchAddFlow_2));
 
-        final List<BatchStepJob> batchChain = processFlatBatch.prepareBatchChain(batchPlan, NODE_REF, true);
+        final var batchChain = processFlatBatch.prepareBatchChain(List.of(batchPlanStep), NODE_REF, true);
 
         assertEquals(1, batchChain.size());
 
@@ -572,11 +569,10 @@ public class ProcessFlatBatchImplTest {
                 .setBatchOrder(Uint16.TWO)
                 .build();
         final BatchPlanStep batchPlanStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
-        batchPlanStep.getTaskBag().addAll(Lists.newArrayList(flatBatchAddFlow_1, flatBatchAddFlow_2));
+        batchPlanStep.getTaskBag().addAll(List.of(flatBatchAddFlow_1, flatBatchAddFlow_2));
 
-        final List<BatchPlanStep> batchPlan = Lists.newArrayList(batchPlanStep, batchPlanStep);
-
-        final List<BatchStepJob> batchChain = processFlatBatch.prepareBatchChain(batchPlan, NODE_REF, true);
+        final var batchChain = processFlatBatch.prepareBatchChain(List.of(batchPlanStep, batchPlanStep), NODE_REF,
+            true);
 
         assertEquals(2, batchChain.size());
 
