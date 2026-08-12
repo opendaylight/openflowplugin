@@ -11,9 +11,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Assert;
 import org.junit.Test;
@@ -66,10 +65,10 @@ public class GroupUtilTest {
     @Test
     public void testCreateCumulatingFunction() {
         final Function<List<RpcResult<String>>, RpcResult<List<BatchFailedGroupsOutput>>> function =
-                GroupUtil.createCumulatingFunction(Lists.newArrayList(createBatchGroup(DUMMY_GROUP_ID),
-                        createBatchGroup(DUMMY_GROUP_ID_2)));
+                GroupUtil.createCumulatingFunction(
+                    List.of(createBatchGroup(DUMMY_GROUP_ID), createBatchGroup(DUMMY_GROUP_ID_2)));
 
-        final RpcResult<List<BatchFailedGroupsOutput>> summary = function.apply(Lists.newArrayList(
+        final RpcResult<List<BatchFailedGroupsOutput>> summary = function.apply(List.of(
                 RpcResultBuilder.success("a").build(),
                 RpcResultBuilder.<String>failed()
                         .withError(ErrorType.APPLICATION, "action-failed reason")
@@ -130,9 +129,7 @@ public class GroupUtilTest {
     }
 
     private static RpcResult<List<BatchFailedGroupsOutput>> createEmptyBatchOutcome() {
-        return RpcResultBuilder
-                .success(Collections.<BatchFailedGroupsOutput>emptyList())
-                .build();
+        return RpcResultBuilder.success(List.<BatchFailedGroupsOutput>of()).build();
     }
 
     private static RpcResult<List<BatchFailedGroupsOutput>> createBatchOutcomeWithError() {
@@ -224,7 +221,7 @@ public class GroupUtilTest {
         ActionType actionSupported = new ActionType(true,true, true, true, true, true, true, true, true, true, true,
                 true, true, true, true, true, true);
         final List<Uint32> groupActionsSupportBitmap =
-                GroupUtil.extractGroupActionsSupportBitmap(Lists.newArrayList(actionSupported));
+                GroupUtil.extractGroupActionsSupportBitmap(List.of(actionSupported));
         assertEquals(1, groupActionsSupportBitmap.size());
         assertEquals(GROUP_ACTION_BITMAP,  groupActionsSupportBitmap.get(0).toJava());
     }
@@ -237,9 +234,7 @@ public class GroupUtilTest {
 
     private static RpcResult<AddGroupsBatchOutput> createAddGroupsBatchSuccessOutput() {
         return RpcResultBuilder
-                .success(new AddGroupsBatchOutputBuilder()
-                        .setBatchFailedGroupsOutput(Collections.emptyMap())
-                        .build())
+                .success(new AddGroupsBatchOutputBuilder().setBatchFailedGroupsOutput(Map.of()).build())
                 .build();
     }
 

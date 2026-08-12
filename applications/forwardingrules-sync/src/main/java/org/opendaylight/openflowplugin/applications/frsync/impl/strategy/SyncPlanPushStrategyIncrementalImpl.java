@@ -14,7 +14,6 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.opendaylight.openflowplugin.applications.frsync.SyncPlanPushStrategy;
@@ -246,8 +245,7 @@ public class SyncPlanPushStrategyIncrementalImpl implements SyncPlanPushStrategy
                 LOG.debug("removing groups: planSteps={}, toRemoveTotal={}",
                         groupsRemovalPlan.size(), groupCrudCounts.getRemoved());
             }
-            Collections.reverse(groupsRemovalPlan);
-            for (final ItemSyncBox<Group> groupsPortion : groupsRemovalPlan) {
+            for (final ItemSyncBox<Group> groupsPortion : groupsRemovalPlan.reversed()) {
                 chainedResult = Futures.transformAsync(chainedResult, input -> {
                     final ListenableFuture<RpcResult<Void>> result;
                     if (input.isSuccessful()) {

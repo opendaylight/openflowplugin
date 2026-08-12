@@ -17,12 +17,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 import io.netty.util.HashedWheelTimer;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import org.junit.Before;
@@ -353,12 +353,12 @@ public class DeviceContextImplTest {
         final Xid dummyXid = new Xid(DUMMY_XID);
 
         final Error mockedError = mock(Error.class);
-        deviceContext.processReply(dummyXid, Lists.newArrayList(mockedError));
+        deviceContext.processReply(dummyXid, List.of(mockedError));
         verify(messageSpy).spyMessage(Mockito.<Class>any(),
                 eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_FAILURE));
 
         final MultipartReply mockedMultipartReply = mock(MultipartReply.class);
-        deviceContext.processReply(dummyXid, Lists.newArrayList(mockedMultipartReply));
+        deviceContext.processReply(dummyXid, List.of(mockedMultipartReply));
         verify(messageSpy).spyMessage(Mockito.<Class>any(),
                 eq(MessageSpy.StatisticsGroup.FROM_SWITCH_PUBLISHED_SUCCESS));
     }

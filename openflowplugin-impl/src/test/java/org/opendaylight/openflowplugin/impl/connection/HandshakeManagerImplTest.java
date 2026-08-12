@@ -10,7 +10,6 @@ package org.opendaylight.openflowplugin.impl.connection;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -124,9 +123,9 @@ public class HandshakeManagerImplTest {
                 = new Boolean[][]{{true, true, true, false, false, false}, {true, true, true, false, false}};
 
         for (Boolean[] verasionList : versions) {
-            ElementsBuilder elementsBuilder = new ElementsBuilder();
-            elementsBuilder.setVersionBitmap(Lists.newArrayList(verasionList));
-            Elements element = elementsBuilder.build();
+            Elements element = new ElementsBuilder()
+                .setVersionBitmap(List.of(verasionList))
+                .build();
             Assert.assertEquals(Uint8.ONE, handshakeManager.proposeCommonBitmapVersion(List.of(element)));
         }
     }
