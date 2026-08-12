@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.applications.frsync.impl.strategy;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -114,10 +113,12 @@ public class SyncPlanPushStrategyIncrementalImplTest {
     private final Map<TableKey, ItemSyncBox<Flow>> flowsToRemove;
 
     public SyncPlanPushStrategyIncrementalImplTest() {
-        groupsToAddOrUpdate = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),
-                DiffInputFactory.createGroupSyncBoxWithUpdates(4, 5, 6));
-        groupsToRemove = Lists.newArrayList(DiffInputFactory.createGroupSyncBox(1, 2, 3),
-                DiffInputFactory.createGroupSyncBox(4, 5, 6));
+        groupsToAddOrUpdate = List.of(
+            DiffInputFactory.createGroupSyncBox(1, 2, 3),
+            DiffInputFactory.createGroupSyncBoxWithUpdates(4, 5, 6));
+        groupsToRemove = List.of(
+            DiffInputFactory.createGroupSyncBox(1, 2, 3),
+            DiffInputFactory.createGroupSyncBox(4, 5, 6));
 
         metersToAddOrUpdate = DiffInputFactory.createMeterSyncBoxWithUpdates(1, 2, 3);
         metersToRemove = DiffInputFactory.createMeterSyncBox(1, 2, 3);
@@ -463,10 +464,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         ItemSyncBox<Group> groupBox3 = new ItemSyncBox<>();
         groupBox3.getItemsToPush().add(DSInputFactory.createGroupWithPreconditions(5L, 3L, 4L));
 
-        final List<ItemSyncBox<Group>> groupBoxLot = Lists.newArrayList(groupBox1, groupBox2, groupBox3);
-
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.addMissingGroups(
-                NODE_ID, NODE_IDENT, groupBoxLot, counters);
+                NODE_ID, NODE_IDENT, List.of(groupBox1, groupBox2, groupBox3), counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -518,9 +517,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         ItemSyncBox<Group> groupBox3 = new ItemSyncBox<>();
         groupBox3.getItemsToPush().add(DSInputFactory.createGroupWithPreconditions(5L, 3L, 4L));
 
-        final List<ItemSyncBox<Group>> groupBoxLot = Lists.newArrayList(groupBox1, groupBox2, groupBox3);
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.addMissingGroups(
-                NODE_ID, NODE_IDENT, groupBoxLot, counters);
+                NODE_ID, NODE_IDENT, List.of(groupBox1, groupBox2, groupBox3), counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());
@@ -576,9 +574,8 @@ public class SyncPlanPushStrategyIncrementalImplTest {
         ItemSyncBox<Group> groupBox3 = new ItemSyncBox<>();
         groupBox3.getItemsToPush().add(DSInputFactory.createGroupWithPreconditions(5L, 3L, 4L));
 
-        final List<ItemSyncBox<Group>> groupBoxLot = Lists.newArrayList(groupBox1, groupBox2, groupBox3);
         final ListenableFuture<RpcResult<Void>> result = syncPlanPushStrategy.removeRedundantGroups(
-                NODE_ID, NODE_IDENT, groupBoxLot, counters);
+                NODE_ID, NODE_IDENT, List.of(groupBox1, groupBox2, groupBox3), counters);
 
         Assert.assertTrue(result.isDone());
         Assert.assertTrue(result.get().isSuccessful());

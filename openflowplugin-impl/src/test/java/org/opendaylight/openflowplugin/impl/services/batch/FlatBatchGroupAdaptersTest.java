@@ -7,8 +7,8 @@
  */
 package org.opendaylight.openflowplugin.impl.services.batch;
 
-import com.google.common.collect.Lists;
 import java.util.Iterator;
+import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flat.batch.service.rev160321.ProcessFlatBatchOutput;
@@ -61,16 +61,14 @@ public class FlatBatchGroupAdaptersTest {
     public void testAdaptFlatBatchAddGroup() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_ADD);
         planStep.setBarrierAfter(true);
-        planStep.getTaskBag().addAll(Lists.newArrayList(
-                createAddGroupBatch(Uint32.ONE),
-                createAddGroupBatch(Uint32.TWO)));
+        planStep.getTaskBag().addAll(List.of(createAddGroupBatch(Uint32.ONE), createAddGroupBatch(Uint32.TWO)));
 
         final AddGroupsBatchInput addGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchAddGroup(planStep, NODE_REF);
         Iterator<BatchAddGroups> iterator = addGroupsBatchInput.nonnullBatchAddGroups().values().iterator();
 
         Assert.assertTrue(addGroupsBatchInput.getBarrierAfter());
-        Assert.assertEquals(2, addGroupsBatchInput.getBatchAddGroups().size());
+        Assert.assertEquals(2, addGroupsBatchInput.nonnullBatchAddGroups().size());
         Assert.assertEquals(1L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
     }
@@ -105,16 +103,14 @@ public class FlatBatchGroupAdaptersTest {
     public void testAdaptFlatBatchRemoveGroup() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_REMOVE);
         planStep.setBarrierAfter(true);
-        planStep.getTaskBag().addAll(Lists.newArrayList(
-                createRemoveGroupBatch(Uint32.ONE),
-                createRemoveGroupBatch(Uint32.TWO)));
+        planStep.getTaskBag().addAll(List.of(createRemoveGroupBatch(Uint32.ONE), createRemoveGroupBatch(Uint32.TWO)));
 
         final RemoveGroupsBatchInput removeGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchRemoveGroup(planStep, NODE_REF);
         Iterator<BatchRemoveGroups> iterator = removeGroupsBatchInput.nonnullBatchRemoveGroups().values().iterator();
 
         Assert.assertTrue(removeGroupsBatchInput.getBarrierAfter());
-        Assert.assertEquals(2, removeGroupsBatchInput.getBatchRemoveGroups().size());
+        Assert.assertEquals(2, removeGroupsBatchInput.nonnullBatchRemoveGroups().size());
         Assert.assertEquals(1L, iterator.next().getGroupId().getValue().longValue());
         Assert.assertEquals(2L, iterator.next().getGroupId().getValue().longValue());
     }
@@ -123,9 +119,7 @@ public class FlatBatchGroupAdaptersTest {
     public void testAdaptFlatBatchUpdateGroup() {
         final BatchPlanStep planStep = new BatchPlanStep(BatchStepType.FLOW_UPDATE);
         planStep.setBarrierAfter(true);
-        planStep.getTaskBag().addAll(Lists.newArrayList(
-                createUpdateGroupBatch(Uint32.ONE),
-                createUpdateGroupBatch(Uint32.TWO)));
+        planStep.getTaskBag().addAll(List.of(createUpdateGroupBatch(Uint32.ONE), createUpdateGroupBatch(Uint32.TWO)));
 
         final UpdateGroupsBatchInput updateGroupsBatchInput =
                 FlatBatchGroupAdapters.adaptFlatBatchUpdateGroup(planStep, NODE_REF);

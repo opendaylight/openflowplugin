@@ -7,7 +7,6 @@
  */
 package org.opendaylight.openflowplugin.impl.util;
 
-import com.google.common.collect.Lists;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +77,7 @@ public class FlatBatchUtilTest {
 
     @Test
     public void testMarkBarriersWhereNeeded_noBarrier() {
-        final List<Batch> batches = Lists.newArrayList(
+        final List<Batch> batches = List.of(
                 //general part - no flush required
                 createBatch(BatchStepType.GROUP_REMOVE),
                 createBatch(BatchStepType.METER_REMOVE),
@@ -137,8 +136,8 @@ public class FlatBatchUtilTest {
     }
 
     private static void checkBarriersBetween(final BatchStepType typeOfFirst, final BatchStepType typeOfSecond) {
-        final List<Batch> batches = Lists.newArrayList(createBatch(typeOfFirst), createBatch(typeOfSecond));
-        final List<BatchPlanStep> batchPlan = FlatBatchUtil.assembleBatchPlan(batches);
+        final var batchPlan = FlatBatchUtil.assembleBatchPlan(
+            List.of(createBatch(typeOfFirst), createBatch(typeOfSecond)));
         FlatBatchUtil.markBarriersWhereNeeded(batchPlan);
         LOG.debug("checking barrier between {} / {}", typeOfFirst, typeOfSecond);
         Assert.assertEquals(2, batchPlan.size());
@@ -183,7 +182,7 @@ public class FlatBatchUtilTest {
 
     @Test
     public void testAssembleBatchPlan() {
-        final List<Batch> batches = Lists.newArrayList(
+        final List<Batch> batches = List.of(
                 createBatch(BatchStepType.GROUP_ADD),
                 createBatch(BatchStepType.GROUP_REMOVE, 2),
                 createBatch(BatchStepType.GROUP_REMOVE),
@@ -222,58 +221,39 @@ public class FlatBatchUtilTest {
     }
 
     private static Batch createBatch(final BatchStepType type, final int size) {
-        final BatchChoice batchCase;
-        switch (type) {
-            case FLOW_ADD:
-                batchCase = new FlatBatchAddFlowCaseBuilder()
-                        .setFlatBatchAddFlow(repeatFlatBatchAddFlowIntoList(size))
-                        .build();
-                break;
-            case FLOW_REMOVE:
-                batchCase = new FlatBatchRemoveFlowCaseBuilder()
-                        .setFlatBatchRemoveFlow(repeatFlatBatchRemoveFlowIntoList(size))
-                        .build();
-                break;
-            case FLOW_UPDATE:
-                batchCase = new FlatBatchUpdateFlowCaseBuilder()
-                        .setFlatBatchUpdateFlow(repeatFlatBatchUpdateFlowIntoList(size))
-                        .build();
-                break;
-            case GROUP_ADD:
-                batchCase = new FlatBatchAddGroupCaseBuilder()
-                        .setFlatBatchAddGroup(repeatFlatBatchAddGroupIntoList(size))
-                        .build();
-                break;
-            case GROUP_REMOVE:
-                batchCase = new FlatBatchRemoveGroupCaseBuilder()
-                        .setFlatBatchRemoveGroup(repeatFlatBatchRemoveGroupIntoList(size))
-                        .build();
-                break;
-            case GROUP_UPDATE:
-                batchCase = new FlatBatchUpdateGroupCaseBuilder()
-                        .setFlatBatchUpdateGroup(repeatFlatBatchUpdateGroupIntoList(size))
-                        .build();
-                break;
-            case METER_ADD:
-                batchCase = new FlatBatchAddMeterCaseBuilder()
-                        .setFlatBatchAddMeter(repeatFlatBatchAddMeterIntoList(size))
-                        .build();
-                break;
-            case METER_REMOVE:
-                batchCase = new FlatBatchRemoveMeterCaseBuilder()
-                        .setFlatBatchRemoveMeter(repeatFlatBatchRemoveMeterIntoList(size))
-                        .build();
-                break;
-            case METER_UPDATE:
-                batchCase = new FlatBatchUpdateMeterCaseBuilder()
-                        .setFlatBatchUpdateMeter(repeatFlatBatchUpdateMeterIntoList(size))
-                        .build();
-                break;
-            default:
+        final BatchChoice batchCase = switch (type) {
+            case FLOW_ADD -> new FlatBatchAddFlowCaseBuilder()
+                                    .setFlatBatchAddFlow(repeatFlatBatchAddFlowIntoList(size))
+                                    .build();
+            case FLOW_REMOVE -> new FlatBatchRemoveFlowCaseBuilder()
+                                    .setFlatBatchRemoveFlow(repeatFlatBatchRemoveFlowIntoList(size))
+                                    .build();
+            case FLOW_UPDATE -> new FlatBatchUpdateFlowCaseBuilder()
+                                    .setFlatBatchUpdateFlow(repeatFlatBatchUpdateFlowIntoList(size))
+                                    .build();
+            case GROUP_ADD -> new FlatBatchAddGroupCaseBuilder()
+                                    .setFlatBatchAddGroup(repeatFlatBatchAddGroupIntoList(size))
+                                    .build();
+            case GROUP_REMOVE -> new FlatBatchRemoveGroupCaseBuilder()
+                                    .setFlatBatchRemoveGroup(repeatFlatBatchRemoveGroupIntoList(size))
+                                    .build();
+            case GROUP_UPDATE -> new FlatBatchUpdateGroupCaseBuilder()
+                                    .setFlatBatchUpdateGroup(repeatFlatBatchUpdateGroupIntoList(size))
+                                    .build();
+            case METER_ADD -> new FlatBatchAddMeterCaseBuilder()
+                                    .setFlatBatchAddMeter(repeatFlatBatchAddMeterIntoList(size))
+                                    .build();
+            case METER_REMOVE -> new FlatBatchRemoveMeterCaseBuilder()
+                                    .setFlatBatchRemoveMeter(repeatFlatBatchRemoveMeterIntoList(size))
+                                    .build();
+            case METER_UPDATE -> new FlatBatchUpdateMeterCaseBuilder()
+                                    .setFlatBatchUpdateMeter(repeatFlatBatchUpdateMeterIntoList(size))
+                                    .build();
+            default -> {
                 LOG.warn("unsupported batch type: {}", type);
                 throw new IllegalArgumentException("unsupported batch type: " + type);
-        }
-
+            }
+        };
         return new BatchBuilder()
                 .setBatchOrder(Uint16.ZERO)
                 .setBatchChoice(batchCase)
@@ -390,17 +370,17 @@ public class FlatBatchUtilTest {
                 .withResult(new ProcessFlatBatchOutputBuilder().setBatchFailure(Map.of()).build()).build();
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult1
-                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultSuccess));
+                = FlatBatchUtil.mergeRpcResults().apply(List.of(rpcResultFailed, rpcResultSuccess));
         Assert.assertEquals(1, rpcResult1.getErrors().size());
         Assert.assertFalse(rpcResult1.isSuccessful());
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult2
-                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultFailed, rpcResultFailed_1));
+                = FlatBatchUtil.mergeRpcResults().apply(List.of(rpcResultFailed, rpcResultFailed_1));
         Assert.assertEquals(2, rpcResult2.getErrors().size());
         Assert.assertFalse(rpcResult2.isSuccessful());
 
         final RpcResult<ProcessFlatBatchOutput> rpcResult3
-                = FlatBatchUtil.mergeRpcResults().apply(Lists.newArrayList(rpcResultSuccess, rpcResultSuccess));
+                = FlatBatchUtil.mergeRpcResults().apply(List.of(rpcResultSuccess, rpcResultSuccess));
         Assert.assertEquals(0, rpcResult3.getErrors().size());
         Assert.assertTrue(rpcResult3.isSuccessful());
     }
