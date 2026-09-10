@@ -13,12 +13,12 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
-import org.checkerframework.checker.lock.qual.Holding;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.DataObjectDeleted;
 import org.opendaylight.mdsal.binding.api.DataObjectModified;
@@ -170,12 +170,9 @@ public class DeviceMastershipManager implements DataTreeChangeListener<FlowCapab
         return identifier1.lastStep().equals(identifier2.lastStep());
     }
 
-    @Holding("lockObj")
+    @GuardedBy("lock")
     private void setNodeOperationalStatus(final DataObjectIdentifier<FlowCapableNode> nodeIid, final boolean status) {
         final var nodeId = nodeIid.getFirstKeyOf(Node.class).getId();
-        if (nodeId == null) {
-            return;
-        }
         final var mastership = deviceMasterships.get(nodeId);
         if (mastership != null) {
             mastership.setDeviceOperationalStatus(status);

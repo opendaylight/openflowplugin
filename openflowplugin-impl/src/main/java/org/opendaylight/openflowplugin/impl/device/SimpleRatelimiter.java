@@ -7,10 +7,10 @@
  */
 package org.opendaylight.openflowplugin.impl.device;
 
-import com.google.common.base.Preconditions;
+import static com.google.common.base.Preconditions.checkArgument;
+
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.checkerframework.checker.lock.qual.GuardedBy;
-import org.checkerframework.checker.lock.qual.Holding;
 
 abstract class SimpleRatelimiter {
     private final AtomicInteger counter = new AtomicInteger();
@@ -23,9 +23,9 @@ abstract class SimpleRatelimiter {
     private volatile boolean limited;
 
     SimpleRatelimiter(final int lowWatermark, final int highWatermark) {
-        Preconditions.checkArgument(lowWatermark >= 0);
-        Preconditions.checkArgument(highWatermark >= 0);
-        Preconditions.checkArgument(lowWatermark <= highWatermark);
+        checkArgument(lowWatermark >= 0);
+        checkArgument(highWatermark >= 0);
+        checkArgument(lowWatermark <= highWatermark);
 
         this.lowWatermark = lowWatermark;
         this.highWatermark = highWatermark;
@@ -70,12 +70,12 @@ abstract class SimpleRatelimiter {
         }
     }
 
-    @Holding("counterLock")
+    @GuardedBy("counterLock")
     private void resetLowWaterMark() {
         lowWatermarkEffective = lowWatermark;
     }
 
-    void adaptLowWaterMarkAndDisableFlow(int temporaryLowWaterMark) {
+    void adaptLowWaterMarkAndDisableFlow(final int temporaryLowWaterMark) {
         if (temporaryLowWaterMark < highWatermark) {
             synchronized (counterLock) {
                 lowWatermarkEffective = temporaryLowWaterMark;

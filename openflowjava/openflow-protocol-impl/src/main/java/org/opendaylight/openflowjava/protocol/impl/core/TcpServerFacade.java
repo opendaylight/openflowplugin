@@ -12,6 +12,7 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -31,7 +32,6 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import java.net.InetSocketAddress;
-import org.checkerframework.checker.lock.qual.GuardedBy;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.openflowjava.protocol.api.connection.ConnectionConfiguration;
 import org.slf4j.Logger;
@@ -59,7 +59,8 @@ final class TcpServerFacade extends ServerFacade implements ConnectionInitialize
     private final TcpChannelInitializer channelInitializer;
     private final Bootstrap bootstrap;
 
-    private @GuardedBy("this") EventLoopGroup childGroup;
+    @GuardedBy("this")
+    private EventLoopGroup childGroup;
 
     private TcpServerFacade(final EventLoopGroup parentGroup, final EventLoopGroup childGroup,
             final Bootstrap bootstrap, final TcpChannelInitializer channelInitializer,
