@@ -35,6 +35,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListKey;
 import org.opendaylight.yangtools.binding.Augmentable;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.binding.util.BindingMap.Builder;
 import org.opendaylight.yangtools.yang.common.Uint8;
@@ -92,7 +93,7 @@ public final class MatchExtensionHelper {
      * @return augmentation wrapper containing augmentation depending on matchPath
      */
     @SuppressWarnings("unchecked")
-    public static <E extends Augmentable<E>> AugmentTuple<E> processAllExtensions(
+    public static <E extends Augmentable<E> & DataContainer> AugmentTuple<E> processAllExtensions(
             final Collection<MatchEntry> matchEntries, final OpenflowVersion ofVersion, final MatchPath matchPath) {
         if (matchEntries == null) {
             return null;
@@ -111,27 +112,27 @@ public final class MatchExtensionHelper {
             return null;
         }
 
-        // TODO: use a switch expression when we have JDK14+
-        switch (matchPath) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return (AugmentTuple<E>) new AugmentTuple<>(GeneralAugMatchNotifUpdateFlowStats.class,
+        return (AugmentTuple<E>) switch (matchPath) {
+            case FLOWS_STATISTICS_UPDATE_MATCH ->
+                new AugmentTuple<>(GeneralAugMatchNotifUpdateFlowStats.class,
                     new GeneralAugMatchNotifUpdateFlowStatsBuilder().setExtensionList(extensionsList).build());
-            case PACKET_RECEIVED_MATCH:
-                return (AugmentTuple<E>) new AugmentTuple<>(GeneralAugMatchNotifPacketIn.class,
+            case PACKET_RECEIVED_MATCH ->
+                new AugmentTuple<>(GeneralAugMatchNotifPacketIn.class,
                     new GeneralAugMatchNotifPacketInBuilder().setExtensionList(extensionsList).build());
-            case PACKET_IN_MESSAGE_MATCH:
-                return (AugmentTuple<E>) new AugmentTuple<>(GeneralAugMatchPacketInMessage.class,
+            case PACKET_IN_MESSAGE_MATCH ->
+                new AugmentTuple<>(GeneralAugMatchPacketInMessage.class,
                     new GeneralAugMatchPacketInMessageBuilder().setExtensionList(extensionsList).build());
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return (AugmentTuple<E>)new AugmentTuple<>(GeneralAugMatchNotifSwitchFlowRemoved.class,
+            case SWITCH_FLOW_REMOVED_MATCH ->
+                new AugmentTuple<>(GeneralAugMatchNotifSwitchFlowRemoved.class,
                     new GeneralAugMatchNotifSwitchFlowRemovedBuilder().setExtensionList(extensionsList).build());
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return (AugmentTuple<E>) new AugmentTuple<>(GeneralAugMatchRpcOutputFlowStats.class,
+            case FLOWS_STATISTICS_RPC_MATCH ->
+                new AugmentTuple<>(GeneralAugMatchRpcOutputFlowStats.class,
                     new GeneralAugMatchRpcOutputFlowStatsBuilder().setExtensionList(extensionsList).build());
-            default:
+            default -> {
                 LOG.warn("matchPath not supported: {}", matchPath);
-                return null;
-        }
+                yield null;
+            }
+        };
     }
 
     /**
