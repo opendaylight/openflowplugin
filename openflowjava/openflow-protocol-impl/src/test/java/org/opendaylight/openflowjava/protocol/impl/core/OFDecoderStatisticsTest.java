@@ -25,7 +25,7 @@ import org.opendaylight.openflowjava.protocol.impl.deserialization.Deserializati
 import org.opendaylight.openflowjava.statistics.CounterEventTypes;
 import org.opendaylight.openflowjava.statistics.StatisticsCounters;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.ContainerObject;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -36,10 +36,12 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OFDecoderStatisticsTest {
-
-    @Mock ChannelHandlerContext mockChHndlrCtx;
-    @Mock DeserializationFactory mockDeserializationFactory;
-    @Mock DataObject mockDataObject;
+    @Mock
+    ChannelHandlerContext mockChHndlrCtx;
+    @Mock
+    DeserializationFactory mockDeserializationFactory;
+    @Mock
+    ContainerObject<?, ?> mockDataObject;
 
     private OFDecoder ofDecoder;
     private ByteBuf writeObj;

@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entry.value.grouping.match.entry.value.ArpOpCase;
@@ -31,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpOpKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.op.grouping.NxmOfArpOpBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
@@ -58,7 +56,7 @@ public class ArpOpConvertorTest {
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder();
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpOp(nxmOfArpOpBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
+        final var extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
         when(extension.augmentation(ArgumentMatchers.any()))
                 .thenReturn(extensionAugmentation);
 
@@ -77,27 +75,23 @@ public class ArpOpConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(arpOpCase);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpOpConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = arpOpConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(NxmOfArpOpKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpOpConvertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment1 = arpOpConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment1.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(NxmOfArpOpKey.VALUE, extensionAugment1.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpOpConvertor.convert(matchEntry,
-                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment2 = arpOpConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment2.getAugmentationObject()).getNxmOfArpOp()
                         .getValue());
         Assert.assertEquals(NxmOfArpOpKey.VALUE, extensionAugment2.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpOpConvertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = arpOpConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(arpOpCase.getArpOp().getOpCode(),
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfArpOp().getValue());
         Assert.assertEquals(NxmOfArpOpKey.VALUE, extensionAugment3.getKey());

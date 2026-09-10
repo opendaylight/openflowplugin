@@ -12,6 +12,7 @@ package org.opendaylight.openflowplugin.extension.api.path;
  *
  * @author msunal
  */
+@SuppressWarnings("checkstyle:javadocMissingLeadingAsterisk")
 public enum ActionPath implements AugmentationPath {
     /**
      * openflowplugin-extension-general.yang.

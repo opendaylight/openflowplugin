@@ -33,11 +33,11 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * Match utilities.
  */
 public final class MatchUtil {
-    private static final Set<Class<? extends Augmentation<Extension>>> AUGMENTATIONS_OF_EXTENSION = new HashSet<>();
-    public static final GroupingResolver<EricOfIcmpv6NdReservedGrouping, Extension> ICMPV6_ND_RESERVED_RESOLVER
-            = new GroupingResolver<>(EricOfIcmpv6NdReservedGrouping.class);
-    public static final GroupingResolver<EricOfIcmpv6NdOptionsTypeGrouping, Extension> ICMPV6_ND_OPTIONS_TYPE_RESOLVER
-            = new GroupingResolver<>(EricOfIcmpv6NdOptionsTypeGrouping.class);
+    private static final Set<Class<? extends Augmentation<Extension, ?>>> AUGMENTATIONS_OF_EXTENSION = new HashSet<>();
+    public static final GroupingResolver<EricOfIcmpv6NdReservedGrouping, Extension> ICMPV6_ND_RESERVED_RESOLVER =
+        new GroupingResolver<>(EricOfIcmpv6NdReservedGrouping.class);
+    public static final GroupingResolver<EricOfIcmpv6NdOptionsTypeGrouping, Extension> ICMPV6_ND_OPTIONS_TYPE_RESOLVER =
+        new GroupingResolver<>(EricOfIcmpv6NdOptionsTypeGrouping.class);
 
     static {
         AUGMENTATIONS_OF_EXTENSION.add(EricAugMatchRpcAddFlow.class);
@@ -60,11 +60,10 @@ public final class MatchUtil {
     public static MatchEntryBuilder createDefaultMatchEntryBuilder(final MatchField matchField,
                                                                    final OxmClassBase oxmClass,
                                                                    final MatchEntryValue matchEntryValue) {
-        MatchEntryBuilder matchEntryBuilder = new MatchEntryBuilder();
-        matchEntryBuilder.setHasMask(false);
-        matchEntryBuilder.setOxmMatchField(matchField);
-        matchEntryBuilder.setOxmClass(oxmClass);
-        matchEntryBuilder.setMatchEntryValue(matchEntryValue);
-        return matchEntryBuilder;
+        return new MatchEntryBuilder()
+            .setHasMask(false)
+            .setOxmMatchField(matchField)
+            .setOxmClass(oxmClass)
+            .setMatchEntryValue(matchEntryValue);
     }
 }

@@ -41,7 +41,8 @@ import org.opendaylight.yangtools.binding.Augmentation;
  */
 public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         TunIdCaseValue tunnelIdCase = (TunIdCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new NxmNxTunIdBuilder().setValue(tunnelIdCase.getTunIdValues().getValue()).build(),
                 path, NxmNxTunIdKey.VALUE);
@@ -64,7 +65,7 @@ public class TunIdConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorF
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxTunId value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxTunId value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
