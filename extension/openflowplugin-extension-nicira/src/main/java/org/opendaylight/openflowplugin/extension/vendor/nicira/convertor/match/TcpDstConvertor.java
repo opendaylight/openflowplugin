@@ -40,9 +40,9 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * @author Aswin Suryanarayanan.
  */
 public class TcpDstConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         TcpDstCaseValue tcpDstCaseValue = (TcpDstCaseValue) input.getMatchEntryValue();
         NxmOfTcpDstBuilder tcpDstBuilder = new NxmOfTcpDstBuilder();
         tcpDstBuilder.setPort(tcpDstCaseValue.getTcpDstValues().getPort());
@@ -70,7 +70,7 @@ public class TcpDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfTcpDst value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmOfTcpDst value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
