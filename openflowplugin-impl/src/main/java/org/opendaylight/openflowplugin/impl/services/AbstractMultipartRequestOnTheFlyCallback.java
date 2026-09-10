@@ -120,6 +120,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
     /**
      * Get tx facade.
+     *
      * @return tx facade
      */
     protected TxFacade getTxFacade() {
@@ -166,6 +167,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
     /**
      * Ends collecting of multipart data.
+     *
      * @param setResult set empty success result
      */
     private void endCollecting(final boolean setResult) {
@@ -197,6 +199,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
 
     /**
      * Get multipart type.
+     *
      * @return multipart type
      */
     protected abstract MultipartType getMultipartType();

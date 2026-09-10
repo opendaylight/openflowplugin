@@ -43,12 +43,13 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  * Transform between FlatBatch API and flow batch API.
  */
 public final class FlatBatchFlowAdapters {
-
     private FlatBatchFlowAdapters() {
+        // hidden on purpose
     }
 
     /**
      * Adapt flat batch add flow.
+     *
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
      * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
@@ -70,6 +71,7 @@ public final class FlatBatchFlowAdapters {
 
     /**
      * Adapt flat batch remove flow.
+     *
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
      * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
@@ -91,6 +93,7 @@ public final class FlatBatchFlowAdapters {
 
     /**
      * Adapt flat batch update flow.
+     *
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
      * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
@@ -110,6 +113,7 @@ public final class FlatBatchFlowAdapters {
 
     /**
      * Convert batch result.
+     *
      * @param stepOffset offset of current batch plan step
      * @return converted {@link ProcessFlatBatchOutput} RPC result
      */

@@ -31,6 +31,7 @@ public interface OutboundQueueHandler {
     /**
      * Invoked whenever the underlying queue is refreshed. Implementations should
      * ensure they are talking to the latest queue
+     *
      * @param queue New queue instance, null indicates a shutdown, e.g. the queue
      *              is no longer available.
      */

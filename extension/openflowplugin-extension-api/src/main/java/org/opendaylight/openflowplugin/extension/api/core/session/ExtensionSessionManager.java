@@ -5,13 +5,11 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.api.core.session;
 
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
 
 public interface ExtensionSessionManager {
-
     /**
      * Sets the ExtensionConverterProvider.
      *
@@ -21,6 +19,7 @@ public interface ExtensionSessionManager {
 
     /**
      * Returns the ExtensionConverterProvider.
+     *
      * @return extension Converter Provider
      */
     ExtensionConverterProvider getExtensionConverterProvider();

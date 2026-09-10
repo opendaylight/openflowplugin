@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public abstract class AbstractMultipartRequestCallback<T extends OfHeader> extends AbstractRequestCallback<List<T>> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMultipartRequestCallback.class);
+
     private final MultiMsgCollector<T> collector;
 
     public AbstractMultipartRequestCallback(
@@ -56,6 +57,7 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
 
     /**
      * Check if result is multipart.
+     *
      * @param result result
      * @return true if result is multipart
      */
@@ -63,9 +65,9 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
 
     /**
      * Check if result requests more multiparts.
+     *
      * @param result result
      * @return true if result requests more multiparts
      */
     protected abstract boolean isReqMore(T result);
-
 }

@@ -16,7 +16,6 @@ import org.opendaylight.yangtools.binding.DataObjectIdentifier;
  * Handles operations with transactions.
  */
 public interface TxFacade {
-
     /**
      * Method creates put operation using provided data in underlying transaction chain.
      */
@@ -39,12 +38,14 @@ public interface TxFacade {
 
     /**
      * Method submits Transaction to DataStore.
+     *
      * @return transaction is submitted successfully
      */
     boolean submitTransaction();
 
     /**
      * Method submits Transaction to DataStore and wait till completes by doing get on tx future.
+     *
      * @return transaction is submitted successfully
      */
     boolean syncSubmitTransaction();
@@ -54,12 +55,14 @@ public interface TxFacade {
      * represented by this context. This read only transaction has a fresh dataStore snapshot.
      * There is a possibility to get different data set from  DataStore
      * as write transaction in this context.
+     *
      * @return readOnlyTransaction - Don't forget to close it after finish reading
      */
     ReadTransaction getReadTransaction();
 
     /**
      * Method returns true if transaction chain manager is enabled.
+     *
      * @return is transaction chain manager enabled
      */
     boolean isTransactionsEnabled();

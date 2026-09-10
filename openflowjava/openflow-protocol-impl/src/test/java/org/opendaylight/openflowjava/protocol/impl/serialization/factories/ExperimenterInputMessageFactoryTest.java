@@ -47,6 +47,7 @@ public class ExperimenterInputMessageFactoryTest {
 
     /**
      * Sets up ExperimenterInputMessageFactory.
+     *
      * @param real true if setup should use real registry, false when mock is desired
      */
     public void startUp(boolean real) {

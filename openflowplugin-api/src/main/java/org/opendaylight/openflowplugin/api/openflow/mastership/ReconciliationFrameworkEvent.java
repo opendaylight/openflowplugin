@@ -25,12 +25,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
  * </ul>
  * <b>This event <i>onDevicePrepared</i> should be used only for reconciliation framework
  * and application can't do anything with node before the device is not stored in to data store.</b>
+ *
  * @since 0.5.0 Nitrogen
  */
 public interface ReconciliationFrameworkEvent {
     /**
      * Event when device is ready as a master but not yet submitted in data store. This event is evoked by
      * {@link OwnershipChangeListener#becomeMasterBeforeSubmittedDS(DeviceInfo)}
+     *
      * @param deviceInfo connected switch identification
      * @return result state if the device can continue with connecting or should be disconnected
      */
@@ -40,6 +42,7 @@ public interface ReconciliationFrameworkEvent {
      * This event occurs after device is disconnected or being slaved.
      * Event is similar to the {@link MastershipChangeService#onLoseOwnership(DeviceInfo)}. This event is used by
      * reconciliation framework that the framework don't need to register {@link MastershipChangeService}
+     *
      * @param deviceInfo connected switch identification
      * @return future
      * @see MastershipChangeService
