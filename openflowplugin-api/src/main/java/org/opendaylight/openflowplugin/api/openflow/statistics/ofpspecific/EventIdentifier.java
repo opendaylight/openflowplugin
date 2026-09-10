@@ -5,14 +5,12 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 29.5.2015.
+ * Created by Martin Bobak on 29.5.2015.
  */
 public final class EventIdentifier {
-
     private final String eventName;
     private final String deviceId;
 
