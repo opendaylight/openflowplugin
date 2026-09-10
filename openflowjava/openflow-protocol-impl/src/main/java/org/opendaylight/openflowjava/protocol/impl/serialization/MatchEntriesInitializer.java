@@ -98,6 +98,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.Vlan
 
 /**
  * Initializes serializer registry with match entry serializers.
+ *
  * @author michal.polkorab
  */
 public final class MatchEntriesInitializer {
@@ -107,6 +108,7 @@ public final class MatchEntriesInitializer {
 
     /**
      * Registers match entry serializers into provided registry.
+     *
      * @param serializerRegistry registry to be initialized with match entry serializers
      */
     public static void registerMatchEntrySerializers(final SerializerRegistry serializerRegistry) {

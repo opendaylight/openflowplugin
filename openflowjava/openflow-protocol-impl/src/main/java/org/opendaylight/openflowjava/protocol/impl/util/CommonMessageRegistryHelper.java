@@ -36,6 +36,7 @@ public class CommonMessageRegistryHelper {
 
     /**
      * Registers serializer in registry.
+     *
      * @param msgType class of object that will be serialized by given serializer
      * @param serializer serializer instance
      */

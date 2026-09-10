@@ -13,6 +13,7 @@ import org.opendaylight.openflowjava.protocol.api.keys.MessageTypeKey;
  * Stores and handles serializers. <br>
  * K - {@link MessageTypeKey} parameter type,<br>
  * S - returned serializer type
+ *
  * @author michal.polkorab
  */
 public interface SerializerRegistry {
@@ -57,6 +58,7 @@ public interface SerializerRegistry {
 
     /**
      * Checks if group add mod messages are enabled.
+     *
      * @return true if group add mod messages are enabled
      */
     boolean isGroupAddModEnabled();

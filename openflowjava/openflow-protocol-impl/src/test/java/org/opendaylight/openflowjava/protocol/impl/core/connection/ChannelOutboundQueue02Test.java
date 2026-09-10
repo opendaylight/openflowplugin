@@ -131,6 +131,7 @@ public class ChannelOutboundQueue02Test {
 
     /**
      * Channel Handler for testing.
+     *
      * @author madamjak
      */
     private static final class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {
@@ -145,6 +146,7 @@ public class ChannelOutboundQueue02Test {
 
     /**
      * Class for testing - channel can change state to read only or writable.
+     *
      * @author madamjak
      */
     private static final class ChangeWritableEmbededChannel extends EmbeddedChannel {

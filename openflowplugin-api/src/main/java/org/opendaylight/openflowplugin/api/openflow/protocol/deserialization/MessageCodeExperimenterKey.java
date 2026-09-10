@@ -17,6 +17,7 @@ public class MessageCodeExperimenterKey extends MessageCodeKey implements Experi
 
     /**
      * Constructor.
+     *
      * @param version wire protocol version
      * @param value used as distinguisher (read from binary data / buffer)
      * @param clazz class of object that is going to be deserialized

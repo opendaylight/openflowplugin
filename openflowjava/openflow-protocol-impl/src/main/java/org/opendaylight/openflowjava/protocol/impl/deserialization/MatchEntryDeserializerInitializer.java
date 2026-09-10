@@ -56,6 +56,7 @@ import org.opendaylight.openflowjava.protocol.impl.util.MatchEntryDeserializerRe
 
 /**
  * Util class for init registration of match entry deserializers.
+ *
  * @author michal.polkorab
  */
 public final class MatchEntryDeserializerInitializer {
@@ -65,6 +66,7 @@ public final class MatchEntryDeserializerInitializer {
 
     /**
      * Registers match entry deserializers.
+     *
      * @param registry registry to be filled with deserializers
      */
     public static void registerMatchEntryDeserializers(final DeserializerRegistry registry) {

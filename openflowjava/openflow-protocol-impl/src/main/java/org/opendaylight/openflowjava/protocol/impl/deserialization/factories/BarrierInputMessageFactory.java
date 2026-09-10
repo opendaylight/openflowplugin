@@ -17,6 +17,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 /**
  * Translates BarrierRequest messages.
  * OF protocol versions: 1.0, 1.3, 1.4, 1.5.
+ *
  * @author giuseppex.petralia@intel.com
  */
 public class BarrierInputMessageFactory extends VersionAssignableFactory<BarrierInput> {

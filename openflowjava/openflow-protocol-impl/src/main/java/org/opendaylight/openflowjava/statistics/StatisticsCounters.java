@@ -146,6 +146,7 @@ public final class StatisticsCounters implements StatisticsHandler {
 
     /**
      * Give an information if log reporter is running (statistics are write into logs).
+     *
      * @return true if log reporter writes statistics into log, otherwise false
      */
     public boolean isRunLogReport() {
