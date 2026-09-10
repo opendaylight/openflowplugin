@@ -73,7 +73,7 @@ public class ByteBufUtilsTest {
         Assert.assertArrayEquals(EXPECTED, byteBufToByteArray(buffer));
     }
 
-    private static byte[] byteBufToByteArray(ByteBuf bb) {
+    private static byte[] byteBufToByteArray(final ByteBuf bb) {
         byte[] result = new byte[bb.readableBytes()];
         bb.readBytes(result);
         return result;
@@ -91,9 +91,9 @@ public class ByteBufUtilsTest {
         Assert.assertEquals("Not null string", expectedBinaryString, bitmaskInBinaryString);
     }
 
-    private static String toBinaryString(Map<Integer, Boolean> emptyMap, int length) {
+    private static String toBinaryString(final Map<Integer, Boolean> emptyMap, final int length) {
         String binaryString = Integer.toBinaryString(ByteBufUtils.fillBitMaskFromMap(emptyMap));
-        return String.format("%" + length + "s", binaryString).replaceAll(" ", "0");
+        return ("%" + length + "s").formatted(binaryString).replace(' ', '0');
     }
 
     /**
@@ -159,11 +159,11 @@ public class ByteBufUtilsTest {
         Assert.assertEquals("Not null string", expectedBinaryString, bitmaskInBinaryString);
     }
 
-    private static String listToBinaryString(List<Boolean> emptyList, int length) {
+    private static String listToBinaryString(final List<Boolean> emptyList, final int length) {
         int[] bitMaskArray;
         bitMaskArray = ByteBufUtils.fillBitMaskFromList(emptyList);
         String binaryString = Integer.toBinaryString(bitMaskArray[0]);
-        return String.format("%" + length + "s", binaryString).replaceAll(" ", "0");
+        return ("%" + length + "s").formatted(binaryString).replace(' ', '0');
     }
 
     /**
