@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Holds reference to {@link ConnectionAdapterImpl} and passes messages for further processing.
  * Also informs on switch disconnection.
+ *
  * @author michal.polkorab
  */
 public class DelegatingInboundHandler extends ChannelInboundHandlerAdapter {
@@ -31,6 +32,7 @@ public class DelegatingInboundHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * Constructs class + creates and sets MessageConsumer.
+     *
      * @param connectionAdapter reference for adapter communicating with upper layers outside library
      */
     public DelegatingInboundHandler(final MessageConsumer connectionAdapter) {

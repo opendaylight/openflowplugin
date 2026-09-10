@@ -12,13 +12,14 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
 
 /**
  * Watcher if able to start mastership for device.
+ *
  * @since 0.4.0 Carbon
  */
 public interface ContextChainMastershipWatcher {
-
     /**
      * Event occurs if there was a try to acquire MASTER role.
      * But it was not possible to start this MASTER role on device.
+     *
      * @param deviceInfo connected switch identification
      * @param reason reason
      * @param mandatory if it is mandatory connection will be dropped
@@ -28,6 +29,7 @@ public interface ContextChainMastershipWatcher {
     /**
      * Event occurs if there was a try to acquire MASTER role.
      * But it was not possible to start this MASTER role on device.
+     *
      * @param deviceInfo connected switch identification
      * @param reason reason
      */
@@ -37,6 +39,7 @@ public interface ContextChainMastershipWatcher {
 
     /**
      * Changed to MASTER role on device.
+     *
      * @param deviceInfo connected switch identification
      * @param mastershipState state
      */
@@ -44,12 +47,14 @@ public interface ContextChainMastershipWatcher {
 
     /**
      * Change to SLAVE role on device was successful.
+     *
      * @param deviceInfo connected switch identification
      */
     void onSlaveRoleAcquired(DeviceInfo deviceInfo);
 
     /**
      * Change to SLAVE role on device was not able.
+     *
      * @param deviceInfo connected switch identification
      * @param reason reason
      */
