@@ -17,7 +17,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -32,17 +31,17 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshFlagsKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.flags.grouping.NxmNxNshFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.flags.grouping.NxmNxNshFlagsBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NshFlagsConvertorTest {
+    private static final Uint8 FLAGS_VALUE = Uint8.valueOf(0x7B);
+    private static final Uint8 MASK_VALUE = Uint8.valueOf(0xFF);
+
     @Mock
     private Extension extension;
 
     private NshFlagsConvertor convertor;
-    private static final Uint8 FLAGS_VALUE = Uint8.valueOf(0x7B);
-    private static final Uint8 MASK_VALUE = Uint8.valueOf(0xFF);
 
     @Before
     public void setUp() {
@@ -77,32 +76,28 @@ public class NshFlagsConvertorTest {
     public void testConvertToOFSal() {
         MatchEntry matchEntry = NshFlagsConvertor.buildMatchEntry(FLAGS_VALUE, MASK_VALUE);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = convertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = convertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         assertEquals(FLAGS_VALUE, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
         assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = convertor.convert(matchEntry,
-                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = convertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertEquals(FLAGS_VALUE, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
         assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = convertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = convertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertEquals(FLAGS_VALUE, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxNshFlags().getMask());
         assertEquals(NxmNxNshFlagsKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = convertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = convertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         assertEquals(FLAGS_VALUE, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxNshFlags().getNshFlags());
         assertEquals(MASK_VALUE, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())

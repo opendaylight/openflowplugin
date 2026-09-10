@@ -51,12 +51,11 @@ import org.slf4j.LoggerFactory;
  * @author msunal
  */
 public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     private static final Logger LOG = LoggerFactory.getLogger(RegConvertor.class);
 
-    @SuppressWarnings("unchecked")
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         NxmNxRegBuilder nxRegBuilder = new NxmNxRegBuilder();
         if (!(input.getOxmMatchField()
             instanceof org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.NxmNxReg)) {
@@ -123,7 +122,7 @@ public class RegConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
         throw new CodecPreconditionException("There is no key for " + oxmMatchField);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxReg nxmNxReg,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxReg nxmNxReg,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.binding.Augmentation;
 
 public class PktMarkConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
     public MatchEntry convert(final Extension extension) {
         final var matchGrouping = MatchUtil.PKT_MARK_RESOLVER.findExtension(extension);
@@ -57,7 +56,8 @@ public class PktMarkConvertor implements ConvertorToOFJava<MatchEntry>, Converto
     }
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         final var pktMark = ((PktMarkCaseValue) input.getMatchEntryValue()).getPktMarkValues();
         return resolveAugmentation(new NxmNxPktMarkBuilder()
             .setPktMark(pktMark.getPktMark())
@@ -65,7 +65,7 @@ public class PktMarkConvertor implements ConvertorToOFJava<MatchEntry>, Converto
             .build(), path, NxmNxPktMarkKey.VALUE);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxPktMark value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxPktMark value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

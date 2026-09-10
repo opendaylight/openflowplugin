@@ -9,17 +9,18 @@ package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.yangtools.binding.Augmentable;
 import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.DataContainer;
 
 /**
  * Wrapper over augmentation and it's type in order to ease handing over and hooking of an augmentation.
  *
  * @param <E> augmentable type where wrapped augmentation belongs
  */
-public class AugmentTuple<E extends Augmentable<E>> {
-    private final Augmentation<E> augmentationObject;
-    private final Class<? extends Augmentation<E>> augmentationClass;
+public class AugmentTuple<E extends Augmentable<E> & DataContainer> {
+    private final Augmentation<E, ?> augmentationObject;
+    private final Class<? extends Augmentation<E, ?>> augmentationClass;
 
-    public AugmentTuple(Class<? extends Augmentation<E>> augmentationClass, Augmentation<E> augmentationObject) {
+    public AugmentTuple(Class<? extends Augmentation<E, ?>> augmentationClass, Augmentation<E, ?> augmentationObject) {
         this.augmentationClass = augmentationClass;
         this.augmentationObject = augmentationObject;
     }
@@ -29,7 +30,7 @@ public class AugmentTuple<E extends Augmentable<E>> {
      *
      * @return augmentation object
      */
-    public Augmentation<E> getAugmentationObject() {
+    public Augmentation<E, ?> getAugmentationObject() {
         return augmentationObject;
     }
 
@@ -38,7 +39,7 @@ public class AugmentTuple<E extends Augmentable<E>> {
      *
      * @return augmentation class
      */
-    public Class<? extends Augmentation<E>> getAugmentationClass() {
+    public Class<? extends Augmentation<E, ?>> getAugmentationClass() {
         return augmentationClass;
     }
 }

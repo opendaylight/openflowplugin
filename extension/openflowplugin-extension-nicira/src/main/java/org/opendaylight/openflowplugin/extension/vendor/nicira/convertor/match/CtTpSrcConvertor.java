@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.binding.Augmentation;
 
 public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
     public MatchEntry convert(final Extension extension) {
         final var matchGrouping = MatchUtil.CT_TP_SRC_RESOLVER.findExtension(extension);
@@ -54,14 +53,15 @@ public class CtTpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Converto
     }
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         CtTpSrcCaseValue ctTpSrcCaseValue = (CtTpSrcCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new NxmNxCtTpSrcBuilder()
             .setCtTpSrc(ctTpSrcCaseValue.getCtTpSrcValues().getCtTpSrc())
             .build(), path, NxmNxCtTpSrcKey.VALUE);
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtTpSrc value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxCtTpSrc value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

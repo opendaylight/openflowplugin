@@ -38,9 +38,9 @@ import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         ExperimenterIdCase experimenterIdCase = (ExperimenterIdCase) input.getMatchEntryValue();
         OfjAugNxExpMatch ofjAugNxExpMatch = experimenterIdCase.augmentation(OfjAugNxExpMatch.class);
         NspCaseValue nshNspCaseValue = (NspCaseValue) ofjAugNxExpMatch.getNxExpMatchEntryValue();
@@ -67,7 +67,7 @@ public class NspConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFro
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxNsp value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxNsp value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
