@@ -19,6 +19,7 @@ import org.opendaylight.yangtools.yang.common.Uint32;
 public interface OutboundQueue {
     /**
      * Reserve an entry in the outbound queue.
+     *
      * @return XID for the new message, or null if the queue is full
      */
     Uint32 reserveEntry();

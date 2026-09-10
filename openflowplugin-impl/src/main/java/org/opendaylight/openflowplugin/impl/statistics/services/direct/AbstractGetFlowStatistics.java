@@ -45,6 +45,7 @@ public abstract class AbstractGetFlowStatistics<T extends OfHeader>
     /**
      * Get flow ID from #{@link org.opendaylight.openflowplugin.api.openflow.registry.flow.DeviceFlowRegistry} or
      * create alien ID.
+     *
      * @param flowStatistics flow statistics
      * @return generated flow ID
      */

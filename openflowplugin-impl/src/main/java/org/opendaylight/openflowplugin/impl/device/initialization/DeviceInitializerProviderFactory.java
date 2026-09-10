@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.device.initialization;
 
 import org.opendaylight.openflowplugin.api.OFConstants;
@@ -14,12 +13,13 @@ import org.opendaylight.openflowplugin.api.OFConstants;
  * Multipart writer provider factory.
  */
 public final class DeviceInitializerProviderFactory {
-
     private DeviceInitializerProviderFactory() {
+        // hidden on purpose
     }
 
     /**
      * Create default #{@link org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider}.
+     *
      * @return the device initialization provider
      */
     public static DeviceInitializerProvider createDefaultProvider() {

@@ -21,6 +21,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.BarrierInputMessageFactory}.
+ *
  * @author giuseppex.petralia@intel.com
  */
 public class BarrierInputMessageFactoryTest extends DefaultDeserializerFactoryTest<BarrierInput> {

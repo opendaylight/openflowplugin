@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.util;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -204,6 +203,7 @@ public final class FlatBatchUtil {
 
     /**
      * Merge list of Futures with partial results into one ListenableFuture with single result.
+     *
      * @param firedJobs list of ListenableFutures with RPC results {@link ProcessFlatBatchOutput}
      * @return ListenableFuture of RPC result with combined status and all errors + batch failures
      */
@@ -216,6 +216,7 @@ public final class FlatBatchUtil {
 
     /**
      * Creates empty result future for flat batch service.
+     *
      * @param status RPC result status
      * @return ListenableFuture of RPC result with empty list of errors and batch failures
      */

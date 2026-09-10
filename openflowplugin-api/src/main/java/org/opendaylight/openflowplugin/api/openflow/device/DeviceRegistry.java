@@ -15,23 +15,24 @@ import org.opendaylight.openflowplugin.api.openflow.registry.meter.DeviceMeterRe
  * Flows, Groups and Meter registry.
  */
 public interface DeviceRegistry {
-
     /**
      * Method exposes flow registry used for storing flow ids identified by calculated flow hash.
+     *
      * @return DeviceFlowRegistry
      */
     DeviceFlowRegistry getDeviceFlowRegistry();
 
     /**
      * Method exposes device group registry used for storing group ids.
+     *
      * @return DeviceGroupRegistry
      */
     DeviceGroupRegistry getDeviceGroupRegistry();
 
     /**
      * Method exposes device meter registry used for storing meter ids.
+     *
      * @return DeviceMaterRegistry
      */
     DeviceMeterRegistry getDeviceMeterRegistry();
-
 }

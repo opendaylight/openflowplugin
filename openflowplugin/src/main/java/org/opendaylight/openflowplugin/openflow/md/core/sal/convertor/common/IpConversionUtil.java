@@ -263,8 +263,7 @@ public final class IpConversionUtil {
      *
      */
 
-
-     /**
+    /**
      * Convert Ipv6Address object to a valid Canonical v6 address in byte format.
      *
      * @param ipv6Address - v6 Address object

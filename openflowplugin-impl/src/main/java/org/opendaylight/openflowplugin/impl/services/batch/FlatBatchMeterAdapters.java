@@ -46,12 +46,13 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  * Transform between FlatBatch API and meter batch API.
  */
 public final class FlatBatchMeterAdapters {
-
     private FlatBatchMeterAdapters() {
+        // hidden on purpose
     }
 
     /**
      * Adapt flat batch add meter.
+     *
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
      * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
@@ -73,6 +74,7 @@ public final class FlatBatchMeterAdapters {
 
     /**
      * Adapt flat batch remove meter.
+     *
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
      * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
@@ -94,6 +96,7 @@ public final class FlatBatchMeterAdapters {
 
     /**
      * Adapt flat batch update meter.
+     *
      * @param planStep batch step containing changes of the same type
      * @param node     pointer for RPC routing
      * @return input suitable for {@link org.opendaylight.yang.gen.v1.urn
@@ -116,6 +119,7 @@ public final class FlatBatchMeterAdapters {
 
     /**
      * Convert meter batch result.
+     *
      * @param stepOffset offset of current batch plan step
      * @return converted {@link ProcessFlatBatchOutput} RPC result
      */

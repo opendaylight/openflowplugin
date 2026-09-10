@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics;
 
 import org.junit.Assert;
@@ -18,8 +17,8 @@ import org.slf4j.LoggerFactory;
  * Test for {@link TimeCounter}.
  */
 public class TimeCounterTest {
-
     private static final Logger LOG = LoggerFactory.getLogger(TimeCounterTest.class);
+
     private TimeCounter timeCounter;
 
     @Before
@@ -38,6 +37,7 @@ public class TimeCounterTest {
      * - tm3 = 9/3 = 3 ms
      * But this times are only theoretical if whole test is executed without latency and atomically. Therefore awaited
      * average times can't be compared to exact values of awaited average time (therefore == was replaced with >=)
+     *
      * @throws Exception if interrupted
      */
     @Test

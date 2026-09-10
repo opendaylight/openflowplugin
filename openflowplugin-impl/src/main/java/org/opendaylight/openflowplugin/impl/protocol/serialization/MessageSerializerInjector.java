@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.serialization;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -34,13 +33,14 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Util class for injecting new message serializers into OpenflowJava.
  */
 final class MessageSerializerInjector {
-
     private MessageSerializerInjector() {
+        // hidden on purpose
     }
 
     /**
      * Injects message serializers into provided
      * {@link org.opendaylight.openflowjava.protocol.api.extensibility.SerializerExtensionProvider}.
+     *
      * @param provider OpenflowJava serializer extension provider
      * @param isGroupAddModEnabled config to enale/disable GroupAddMod Message
      */
@@ -71,5 +71,4 @@ final class MessageSerializerInjector {
         return type -> serializer ->
                 provider.registerSerializer(new MessageTypeKey<>(version, type), serializer);
     }
-
 }

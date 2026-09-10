@@ -14,6 +14,7 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
  *     <li><i>onDevicePrepared</i>
  *     <li><i>onDeviceDisconnected</i>
  * </ul>
+ *
  * @see ReconciliationFrameworkEvent
  * @since 0.5.0 Nitrogen
  */
