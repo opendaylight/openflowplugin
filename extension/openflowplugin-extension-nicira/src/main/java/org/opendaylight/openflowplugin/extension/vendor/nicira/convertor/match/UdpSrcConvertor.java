@@ -40,9 +40,9 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * @author Aswin Suryanarayanan.
  */
 public class UdpSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         UdpSrcCaseValue udpSrcCaseValue = (UdpSrcCaseValue) input.getMatchEntryValue();
         NxmOfUdpSrcBuilder udpSrcBuilder = new NxmOfUdpSrcBuilder();
         udpSrcBuilder.setPort(udpSrcCaseValue.getUdpSrcValues().getPort());
@@ -67,7 +67,7 @@ public class UdpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfUdpSrc value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmOfUdpSrc value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

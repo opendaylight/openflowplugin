@@ -27,7 +27,8 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.action.experimenter.id._case.ExperimenterBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev150203.actions.grouping.ActionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
-import org.opendaylight.yangtools.binding.DataContainer;
+import org.opendaylight.yangtools.binding.CaseObject;
+import org.opendaylight.yangtools.binding.lib.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -56,17 +57,33 @@ public class ActionExtensionHelperTest {
         experimenterBuilder.setExperimenter(new ExperimenterId(Uint32.valueOf(42)));
         experimenterIdCaseBuilder.setExperimenter(experimenterBuilder.build());
         actionBuilder.setActionChoice(experimenterIdCaseBuilder.build());
-        Action action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13,
+        var action = ActionExtensionHelper.processAlienAction(actionBuilder.build(), OpenflowVersion.OF13,
                 ActionPath.FLOWS_STATISTICS_UPDATE_APPLY_ACTIONS);
         assertNotNull(action);
         assertEquals(MockAction.class, action.implementedInterface());
     }
 
-    private static final class MockAction implements Action {
+    private static final class MockAction extends AbstractAugmentable<MockAction>
+            implements CaseObject<org.opendaylight.yang.gen.v1.urn.opendaylight.action.types.rev131112.Action,
+                                  Action, MockAction>, Action {
+        @Override
+        public Class<MockAction> implementedInterface() {
+            return MockAction.class;
+        }
 
         @Override
-        public Class<? extends DataContainer> implementedInterface() {
-            return MockAction.class;
+        public int javaHC() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean javaEQ(final MockAction obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String javaTS() {
+            throw new UnsupportedOperationException();
         }
     }
 }

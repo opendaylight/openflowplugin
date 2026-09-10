@@ -17,6 +17,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNull;
 import org.opendaylight.yangtools.binding.Augmentable;
 import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.DataContainer;
 import org.opendaylight.yangtools.binding.Grouping;
 import org.opendaylight.yangtools.concepts.Immutable;
 
@@ -81,11 +82,13 @@ import org.opendaylight.yangtools.concepts.Immutable;
  * @param <T> Augmentable type
  */
 @Beta
-public final class AugmentationGroupingResolver<G extends Grouping, T extends Augmentable<T>> implements Immutable {
-    private final Class<? extends Augmentation<T>>[] augmentations;
+public final class AugmentationGroupingResolver<
+        G extends Grouping,
+        T extends Augmentable<T> & DataContainer> implements Immutable {
+    private final Class<? extends Augmentation<T, ?>>[] augmentations;
     private final Class<G> grouping;
 
-    AugmentationGroupingResolver(final Class<G> grouping, final Class<? extends Augmentation<T>>[] augmentations) {
+    AugmentationGroupingResolver(final Class<G> grouping, final Class<? extends Augmentation<T, ?>>[] augmentations) {
         this.grouping = requireNonNull(grouping);
         this.augmentations = requireNonNull(augmentations);
     }
@@ -93,8 +96,9 @@ public final class AugmentationGroupingResolver<G extends Grouping, T extends Au
     public @NonNull Optional<G> findExtension(final T data) {
         requireNonNull(data);
 
-        for (Class<? extends Augmentation<T>> cls : augmentations) {
-            final Augmentation<T> potential = data.augmentation(cls);
+        for (var cls : augmentations) {
+            @SuppressWarnings({ "rawtypes", "unchecked" })
+            final var potential = data.augmentation((Class) cls);
             if (potential != null) {
                 return Optional.of(grouping.cast(potential));
             }
@@ -102,34 +106,34 @@ public final class AugmentationGroupingResolver<G extends Grouping, T extends Au
         return Optional.empty();
     }
 
-    public static <G extends Grouping, T extends Augmentable<T>> @NonNull Builder<G, T> builder(
+    public static <G extends Grouping, T extends Augmentable<T> & DataContainer> @NonNull Builder<G, T> builder(
             final Class<G> groupingClass) {
         return new Builder<>(groupingClass);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Augmentable<T>> @NonNull Factory<T> factory(final Class<T> augmentableClass,
-            final Set<Class<? extends Augmentation<T>>> augmentationClasses) {
+    public static <T extends Augmentable<T> & DataContainer> @NonNull Factory<T> factory(
+            final Class<T> augmentableClass, final Set<Class<? extends Augmentation<T, ?>>> augmentationClasses) {
         // Defensive copy via .clone() to guard against evil Set implementations
-        final Class<?>[] array = augmentationClasses.toArray(new Class<?>[0]).clone();
+        final var array = augmentationClasses.toArray(new Class<?>[0]).clone();
 
         // Defensive check of all array elements
-        for (Class<?> clazz : array) {
+        for (var clazz : array) {
             checkArgument(Augmentation.class.isAssignableFrom(clazz), "Class %s is not an Augmentation", clazz);
         }
 
-        return new Factory<>((Class<? extends Augmentation<T>>[]) array);
+        return new Factory<>((Class<? extends Augmentation<T, ?>>[]) array);
     }
 
-    public static final class Builder<G extends Grouping, T extends Augmentable<T>> {
-        private final Set<Class<? extends Augmentation<T>>> augmentations = new HashSet<>();
+    public static final class Builder<G extends Grouping, T extends Augmentable<T> & DataContainer> {
+        private final HashSet<Class<? extends Augmentation<T, ?>>> augmentations = new HashSet<>();
         private final Class<G> grouping;
 
         Builder(final Class<G> groupingClass) {
             grouping = requireNonNull(groupingClass);
         }
 
-        public <X extends Augmentation<T>> @NonNull Builder<G, T> addAugmentationClass(
+        public <X extends Augmentation<T, X>> @NonNull Builder<G, T> addAugmentationClass(
                 final Class<X> augmentationClass) {
             checkAssignable(grouping, augmentationClass);
             augmentations.add(augmentationClass);
@@ -139,20 +143,20 @@ public final class AugmentationGroupingResolver<G extends Grouping, T extends Au
         @SuppressWarnings("unchecked")
         public @NonNull AugmentationGroupingResolver<G, T> build() {
             return new AugmentationGroupingResolver<>(grouping,
-                    (Class<? extends Augmentation<T>>[]) augmentations.toArray(new Class<?>[0]));
+                    (Class<? extends Augmentation<T, ?>>[]) augmentations.toArray(new Class<?>[0]));
         }
     }
 
-    public static final class Factory<T extends Augmentable<T>> implements Immutable {
-        private final Class<? extends Augmentation<T>>[] augmentations;
+    public static final class Factory<T extends Augmentable<T> & DataContainer> implements Immutable {
+        private final Class<? extends Augmentation<T, ?>>[] augmentations;
 
-        Factory(final Class<? extends Augmentation<T>>[] augmentations) {
+        Factory(final Class<? extends Augmentation<T, ?>>[] augmentations) {
             this.augmentations = requireNonNull(augmentations);
         }
 
         public <G extends Grouping> @NonNull AugmentationGroupingResolver<G, T> createResolver(
                 final Class<G> groupingClass) {
-            for (Class<? extends Augmentation<T>> cls : augmentations) {
+            for (var cls : augmentations) {
                 checkAssignable(groupingClass, cls);
             }
 
