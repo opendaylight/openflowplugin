@@ -76,6 +76,7 @@ public interface ConnectionConfiguration {
 
     /**
      * Checks if group add mod messages are enabled.
+     *
      * @return true if group add mod messages are enabled
      */
     boolean isGroupAddModEnabled();

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.protocol.deserialization.match;
 
 import io.netty.buffer.ByteBuf;
@@ -19,9 +18,9 @@ import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.
 import org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.rev131026.flow.MatchBuilder;
 
 public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeserializer {
-
     /**
      * Processes match entry header and returns if it have mask, or not.
+     *
      * @param in input buffer
      * @return true if match entry has mask, false otherwise
      */
@@ -34,6 +33,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
 
     /**
      * Read Ipv4Prefix from message.
+     *
      * @param message buffered message
      * @param hasMask determines if prefix has mask or not
      * @return IPv4 prefix
@@ -52,6 +52,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
 
     /**
      * Throw error on malformed match builder input.
+     *
      * @param builder match builder
      * @param propertyName name of property that already containsData
      */
@@ -62,6 +63,7 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
 
     /**
      * Throw error on malformed match builder input.
+     *
      * @param builder match builder
      * @param propertyName name of property that already containsData
      */
@@ -69,5 +71,4 @@ public abstract class AbstractMatchEntryDeserializer implements MatchEntryDeseri
         throw new IllegalArgumentException("Match: " + builder.toString() + " is malformed, "
             + builder + "#" + propertyName + "#" + fieldName + " contains invalid data.");
     }
-
 }

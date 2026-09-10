@@ -14,6 +14,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Enumerates IP protocols.
+ *
  * @author tkubas
  */
 // TODO make a model in YANG for protocols

@@ -95,12 +95,14 @@ public interface DeviceContext extends
 
     /**
      * change packetIn rate limiter borders.
+     *
      * @param upperBound max amount of outstanding packetIns
      */
     void updatePacketInRateLimit(long upperBound);
 
     /**
      * Checks if device and controller supports single layer serialization.
+     *
      * @return true if single layer serialization is supported
      */
     boolean canUseSingleLayerSerialization();
@@ -112,6 +114,7 @@ public interface DeviceContext extends
 
     /**
      * Checks if the statistics polling property is enabled.
+     *
      * @return true if statistics polling is enabled.
      */
     boolean isStatisticsPollingOn();

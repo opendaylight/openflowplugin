@@ -158,6 +158,7 @@ public class ConvertorManager implements ConvertorExecutor, ConvertorRegistrator
      * Last resort. If we do not already have convertor registered,
      * we will perform some costly operations and try to find if we
      * can convert input using any of already registered convertors
+     *
      * @param type input type
      * @return found convertor
      */

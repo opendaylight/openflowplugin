@@ -141,6 +141,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     /**
      * If node is present in config DS diff between wanted configuration (in config DS) and actual device
      * configuration (coming from operational) should be calculated and sent to device.
+     *
      * @param modification from DS
      * @return optional syncup future
      */
@@ -167,6 +168,7 @@ public class SimplifiedOperationalListener extends AbstractFrmSyncListener<Node>
     /**
      * Check if modification is consistent for reconciliation. We need fresh data, which means that current statistics
      * were collected after registration for reconcile and whole bunch of statistics was collected successfully.
+     *
      * @param modification from DS
      * @return status of modification
      */

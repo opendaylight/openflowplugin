@@ -44,6 +44,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 /**
  * Util class for init OF message type to class mapping.
+ *
  * @author michal.polkorab
  * @author giuseppex.petralia@intel.com
  */
@@ -54,6 +55,7 @@ public final class TypeToClassMapInitializer {
 
     /**
      * Initializes standard types mapping.
+     *
      * @param messageClassMap type to class map
      */
     public static void initializeTypeToClassMap(final Map<TypeToClassKey, Class<?>> messageClassMap) {
@@ -112,6 +114,7 @@ public final class TypeToClassMapInitializer {
 
     /**
      * Initializes additional types mapping.
+     *
      * @param messageClassMap type to class map
      */
     public static void initializeAdditionalTypeToClassMap(final Map<TypeToClassKey, Class<?>> messageClassMap) {

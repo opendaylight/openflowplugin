@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.deserialization.factories;
 
 import io.netty.buffer.ByteBuf;
@@ -23,11 +22,11 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.EchoRequestMessageFactory}.
+ *
  * @author michal.polkorab
  * @author timotej.kubas
  */
 public class EchoRequestMessageFactoryTest extends DefaultDeserializerFactoryTest<EchoRequestMessage> {
-
     /**
      * Initializes deserializer registry and lookups OF13 deserializer.
      */

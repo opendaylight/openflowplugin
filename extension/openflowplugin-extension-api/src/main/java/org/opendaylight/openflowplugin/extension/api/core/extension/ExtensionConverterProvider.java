@@ -57,8 +57,9 @@ public interface ExtensionConverterProvider {
      * Lookup converter.
      * TODO: this method should be compatible with {@link #getConverter(MessageTypeKey)} after matches are migrated
      * to similar structure
-     *  @param <F> DataContainer
-     *  @param <P> AugmentationPath
+     *
+     * @param <F> DataContainer
+     * @param <P> AugmentationPath
      * @param key the message type key
      * @return found converter
      */

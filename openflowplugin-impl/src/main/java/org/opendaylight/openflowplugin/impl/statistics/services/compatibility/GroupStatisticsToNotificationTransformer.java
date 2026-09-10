@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.impl.statistics.services.compatibility;
 
 import java.util.List;
@@ -27,13 +26,13 @@ import org.opendaylight.yangtools.binding.util.BindingMap;
  * Pulled out group stats to notification transformation.
  */
 public final class GroupStatisticsToNotificationTransformer {
-
     private GroupStatisticsToNotificationTransformer() {
         // Hide implicit constructor
     }
 
     /**
      * Transform statistics to notification.
+     *
      * @param mpReplyList   raw multipart response from device
      * @param deviceInfo   device state
      * @param emulatedTxId emulated transaction id

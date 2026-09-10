@@ -16,7 +16,6 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * @param <E> augmentable type where wrapped augmentation belongs
  */
 public class AugmentTuple<E extends Augmentable<E>> {
-
     private final Augmentation<E> augmentationObject;
     private final Class<? extends Augmentation<E>> augmentationClass;
 
@@ -27,6 +26,7 @@ public class AugmentTuple<E extends Augmentable<E>> {
 
     /**
      * Returns the instance of wrapped augmentation.
+     *
      * @return augmentation object
      */
     public Augmentation<E> getAugmentationObject() {
@@ -35,6 +35,7 @@ public class AugmentTuple<E extends Augmentable<E>> {
 
     /**
      * Returns the type of wrapped augmentation.
+     *
      * @return augmentation class
      */
     public Class<? extends Augmentation<E>> getAugmentationClass() {

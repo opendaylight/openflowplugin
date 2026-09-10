@@ -23,7 +23,6 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 public abstract class AbstractTableMultipartService<T extends OfHeader>
         extends AbstractMultipartService<UpdateTableInput, T> {
-
     private final MultipartWriterProvider multipartWriterProvider;
 
     protected AbstractTableMultipartService(final RequestContextStack requestContextStack,
@@ -47,6 +46,7 @@ public abstract class AbstractTableMultipartService<T extends OfHeader>
 
     /**
      * Process experimenter input and result experimenter output.
+     *
      * @param input experimenter input
      * @return experimenter output
      */
