@@ -40,9 +40,9 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * @author msunal
  */
 public class ArpThaConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         ArpThaCaseValue arpThaCaseValue = (ArpThaCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(
                 new NxmNxArpThaBuilder().setMacAddress(arpThaCaseValue.getArpThaValues().getMacAddress()).build(), path,
@@ -66,7 +66,7 @@ public class ArpThaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxArpTha value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxArpTha value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.matc
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.ExtensionKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.lib.AbstractDataContainer;
 
 /**
  * Created by Martin Bobak mbobak@cisco.com on 9/19/14.
@@ -119,10 +121,26 @@ public class MatchExtensionHelperTest {
         MockExtensionKey2 VALUE = () -> MockExtensionKey2.class;
     }
 
-    private static final class MockAugmentation implements Augmentation<Extension> {
+    private static final class MockAugmentation extends AbstractDataContainer<MockAugmentation>
+            implements Augmentation<Extension, MockAugmentation> {
         @Override
         public Class<MockAugmentation> implementedInterface() {
             return MockAugmentation.class;
+        }
+
+        @Override
+        public int javaHC() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean javaEQ(final MockAugmentation obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String javaTS() {
+            throw new UnsupportedOperationException();
         }
     }
 }
