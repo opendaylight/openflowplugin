@@ -15,6 +15,7 @@ package org.opendaylight.openflowplugin.api.openflow.mastership;
  *     <li><i>onBecomeOwner</i>
  *     <li><i>onLoseOwnership</i>
  * </ul>
+ *
  * @see MastershipChangeService
  * @since 0.5.0 Nitrogen
  */

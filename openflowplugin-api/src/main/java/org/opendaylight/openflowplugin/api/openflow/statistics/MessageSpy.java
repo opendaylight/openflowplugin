@@ -14,15 +14,16 @@ package org.opendaylight.openflowplugin.api.openflow.statistics;
  */
 @Deprecated
 public interface MessageSpy<M> extends Runnable {
-
     /**
      * Spy In.
+     *
      * @param message content of ticket
      */
     void spyIn(M message);
 
     /**
      * Spy Out.
+     *
      * @param message content of ticket
      */
     void spyOut(M message);
@@ -78,6 +79,7 @@ public interface MessageSpy<M> extends Runnable {
 
     /**
      * Spy message.
+     *
      * @param message from switch or to switch - depends on statGroup
      * @param statGroup statistics group
      */

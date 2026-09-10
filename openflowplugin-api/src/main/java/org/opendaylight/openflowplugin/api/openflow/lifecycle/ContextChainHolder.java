@@ -29,6 +29,7 @@ import org.opendaylight.openflowplugin.api.openflow.statistics.StatisticsManager
  *     <li>{@link StatisticsContext}</li>
  * </ul>
  * Each context is created right after device connect and hold information about particular part of device.
+ *
  * @since 0.4.0 Carbon
  * @see StatisticsContext
  * @see RpcContext
@@ -41,12 +42,12 @@ public interface ContextChainHolder extends
         DeviceRemovedHandler,
         EntityOwnershipListener,
         AutoCloseable {
-
     /**
      * Managers need to be added before.
      * {@link DeviceManager}
      * {@link RpcManager}
      * {@link StatisticsManager}
+     *
      * @param manager a child class of {@link OFPManager}
      * @param <T> {@link OFPManager}
      */
@@ -54,11 +55,11 @@ public interface ContextChainHolder extends
 
     /**
      * Return the {@link ContextChain} for a given {@link DeviceInfo}.
+     *
      * @return {@link ContextChain}
      */
     ContextChain getContextChain(DeviceInfo deviceInfo);
 
     @Override
     void close();
-
 }

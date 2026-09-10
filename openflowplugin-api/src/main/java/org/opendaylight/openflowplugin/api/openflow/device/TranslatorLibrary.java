@@ -5,15 +5,14 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 
 public interface TranslatorLibrary {
-
     /**
      * Lookup translator.
+     *
      * @param key a key
      * @return translator
      */

@@ -21,12 +21,14 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.OwnershipChangeLis
  * </ul>
  * There is no need to have two different method for slave or disconnect because application just have to stop working
  * with the device in both cases.
+ *
  * @since 0.5.0 Nitrogen
  */
 public interface MastershipChangeService {
     /**
      * Event when device is ready as a master. This event is evoked by
      * {@link OwnershipChangeListener#becomeMaster(DeviceInfo)}
+     *
      * @param deviceInfo connected switch identification
      */
     void onBecomeOwner(@NonNull DeviceInfo deviceInfo);
@@ -34,6 +36,7 @@ public interface MastershipChangeService {
     /**
      * Event when device disconnected or become slave. This event is evoked by
      * {@link OwnershipChangeListener#becomeSlaveOrDisconnect(DeviceInfo)}
+     *
      * @param deviceInfo connected switch identification
      */
     void onLoseOwnership(@NonNull DeviceInfo deviceInfo);

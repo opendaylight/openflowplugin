@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * @author madamjak
  */
 public class Counter {
-
     private final AtomicLong counterValue;
     private final AtomicLong counterLastReadValue;
 
@@ -36,8 +35,9 @@ public class Counter {
     }
 
     /**
-     * return the last read value of counter. This value can be set during the reading of current counter value,
+     * Return the last read value of counter. This value can be set during the reading of current counter value,
      *      for detail see method getCounterValue(boolean modifyLastReadValue).
+     *
      * @return the counterLastReadValue
      */
     public long getCounterLastReadValue() {
