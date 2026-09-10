@@ -220,6 +220,7 @@ public interface ConnectionAdapter {
 
     /**
      * Set filtering of PacketIn messages. By default these messages are not filtered.
+     *
      * @param enabled True if PacketIn messages should be filtered, false if they should be reported.
      */
     @Beta
@@ -227,12 +228,14 @@ public interface ConnectionAdapter {
 
     /**
      * Set datapathId for the dpn.
+     *
      * @param datapathId of the dpn
      */
     void setDatapathId(BigInteger datapathId);
 
     /**
      * Sets executorService.
+     *
      * @param executorService for all dpns
      */
     void setExecutorService(ExecutorService executorService);

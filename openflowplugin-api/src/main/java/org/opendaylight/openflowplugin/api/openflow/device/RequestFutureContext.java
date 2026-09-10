@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.device;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -13,11 +12,13 @@ import org.opendaylight.yangtools.yang.common.RpcResult;
 
 /**
  * Request context.
+ *
  * @param <T> rpc result type
  */
 public interface RequestFutureContext<T> {
     /**
      * Method returns future to be used for handling device requests.
+     *
      * @return rpc result
      */
     ListenableFuture<RpcResult<T>> getFuture();

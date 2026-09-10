@@ -5,11 +5,9 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.api.openflow.statistics.ofpspecific;
 
 public interface MessageSpy extends Runnable {
-
     /**
      * statistic groups overall in OFPlugin.
      */
@@ -92,15 +90,13 @@ public interface MessageSpy extends Runnable {
          * stop receiving data from device - turned off.
          */
         OFJ_BACKPRESSURE_OFF
-
-
     }
 
     /**
-     *Spy message.
+     * Spy a message.
+     *
      * @param message   from switch or to switch - depends on statGroup
      * @param statGroup statistics group
      */
     void spyMessage(Class<?> message, StatisticsGroup statGroup);
-
 }

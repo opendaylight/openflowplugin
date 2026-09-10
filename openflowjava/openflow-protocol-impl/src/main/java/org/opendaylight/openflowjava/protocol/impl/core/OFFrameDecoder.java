@@ -5,8 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
-
 package org.opendaylight.openflowjava.protocol.impl.core;
 
 import io.netty.buffer.ByteBuf;
@@ -36,6 +34,7 @@ public class OFFrameDecoder extends ByteToMessageDecoder {
 
     /**
      * Constructor of class.
+     *
      * @param connectionFacade  ConnectionFacade that will be notified
      *                          with ConnectionReadyNotification after TLS has been successfully set up.
      * @param tlsPresent true is TLS is required, false otherwise
