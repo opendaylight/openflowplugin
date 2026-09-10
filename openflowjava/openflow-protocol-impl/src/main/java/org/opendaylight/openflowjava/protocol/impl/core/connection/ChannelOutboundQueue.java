@@ -101,9 +101,9 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
          * synchronize both producers and consumers, potentially leading
          * to less throughput.
          */
-        this.queue = new LinkedBlockingQueue<>(queueDepth);
+        queue = new LinkedBlockingQueue<>(queueDepth);
         this.channel = requireNonNull(channel);
-        this.maxWorkTime = TimeUnit.MICROSECONDS.toNanos(DEFAULT_WORKTIME_MICROS);
+        maxWorkTime = TimeUnit.MICROSECONDS.toNanos(DEFAULT_WORKTIME_MICROS);
         this.address = address;
     }
 
@@ -177,13 +177,13 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
                 break;
             }
 
-            final MessageHolder<?> h = queue.poll();
+            final var h = queue.poll();
             if (h == null) {
                 LOG.trace("The queue is completely drained");
                 break;
             }
 
-            final GenericFutureListener<Future<Void>> l = h.takeListener();
+            final var l = h.takeListener();
 
             final ChannelFuture p;
             if (address == null) {
@@ -254,9 +254,9 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
 
         long entries = 0;
         LOG.debug("Channel shutdown, flushing queue...");
-        final Future<Void> result = ctx.newFailedFuture(new RejectedExecutionException("Channel disconnected"));
+        final var result = ctx.newFailedFuture(new RejectedExecutionException("Channel disconnected"));
         while (true) {
-            final MessageHolder<?> e = queue.poll();
+            final var e = queue.poll();
             if (e == null) {
                 break;
             }
@@ -270,6 +270,6 @@ final class ChannelOutboundQueue extends ChannelInboundHandlerAdapter {
 
     @Override
     public String toString() {
-        return String.format("Channel %s queue [%s messages flushing=%s]", channel, queue.size(), flushScheduled);
+        return "Channel %s queue [%s messages flushing=%s]".formatted(channel, queue.size(), flushScheduled);
     }
 }
