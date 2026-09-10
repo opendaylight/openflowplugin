@@ -34,10 +34,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.binding.Augmentation;
 
 public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(
-            final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         OfInPortCaseValue inPortCaseValue = (OfInPortCaseValue) input.getMatchEntryValue();
         return NxmInPortConvertor.resolveAugmentation(new OfInPortBuilder()
                 .setValue(inPortCaseValue.getNxmOfInPortValues().getValue())
@@ -61,7 +60,7 @@ public class NxmInPortConvertor implements ConvertorToOFJava<MatchEntry>, Conver
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(
             final org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of
                 .in.port.grouping.OfInPort value, final MatchPath path, final ExtensionKey key) {
         return switch (path) {

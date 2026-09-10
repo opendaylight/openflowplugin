@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.TunIdCaseValue;
@@ -30,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxTunIdKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.tun.id.grouping.NxmNxTunIdBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
@@ -38,8 +36,6 @@ import org.opendaylight.yangtools.yang.common.Uint64;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TunIdConvertorTest {
-    private static final Uint64 U64_TEN = Uint64.valueOf(10).intern();
-
     @Mock
     private Extension extension;
     @Mock
@@ -55,7 +51,7 @@ public class TunIdConvertorTest {
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxTunId(nxmNxTunIdBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
+        final var extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
         when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
@@ -72,7 +68,7 @@ public class TunIdConvertorTest {
     @Test
     public void testConvert1() {
         final TunIdValuesBuilder tunIdValuesBuilder = new TunIdValuesBuilder()
-                .setValue(U64_TEN);
+                .setValue(Uint64.TEN);
         final TunIdCaseValueBuilder tunIdCaseValueBuilder = new TunIdCaseValueBuilder()
                 .setTunIdValues(tunIdValuesBuilder.build());
 
@@ -80,28 +76,24 @@ public class TunIdConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(tunIdCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tunIdConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
-        Assert.assertEquals(U64_TEN,
+        final var extensionAugment = tunIdConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
+        Assert.assertEquals(Uint64.TEN,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxTunId().getValue());
         Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tunIdConvertor.convert(matchEntry,
-                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
-        Assert.assertEquals(U64_TEN,
+        final var extensionAugment1 = tunIdConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        Assert.assertEquals(Uint64.TEN,
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxTunId()
                         .getValue());
         Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tunIdConvertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
-        Assert.assertEquals(U64_TEN,
+        final var extensionAugment2 = tunIdConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        Assert.assertEquals(Uint64.TEN,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxTunId().getValue());
         Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tunIdConvertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
-        Assert.assertEquals(U64_TEN,
+        final var extensionAugment3 = tunIdConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        Assert.assertEquals(Uint64.TEN,
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxTunId().getValue());
         Assert.assertEquals(NxmNxTunIdKey.VALUE, extensionAugment.getKey());
     }

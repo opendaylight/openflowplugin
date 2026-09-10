@@ -28,7 +28,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.experimenter.message.servic
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeRef;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.ExperimenterId;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.ExperimenterInput;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.ExperimenterCoreMessage;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.experimenter.types.rev151020.experimenter.core.message.ExperimenterMessageOfChoice;
+import org.opendaylight.yangtools.binding.CaseObject;
+import org.opendaylight.yangtools.binding.lib.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -81,10 +84,27 @@ public class SendExperimenterImplTest extends ServiceMocking {
             .build();
     }
 
-    private static final class DummyExperimenter implements ExperimenterMessageOfChoice {
+    private static final class DummyExperimenter extends AbstractAugmentable<DummyExperimenter>
+            implements CaseObject<ExperimenterCoreMessage, ExperimenterMessageOfChoice, DummyExperimenter>,
+                       ExperimenterMessageOfChoice {
         @Override
         public Class<DummyExperimenter> implementedInterface() {
             return DummyExperimenter.class;
+        }
+
+        @Override
+        public int javaHC() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean javaEQ(final DummyExperimenter obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String javaTS() {
+            throw new UnsupportedOperationException();
         }
     }
 }

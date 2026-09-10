@@ -36,31 +36,25 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.binding.Augmentation;
 
 public class TunIPv4DstConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxTunIpv4Dst value,
-            final MatchPath path, final ExtensionKey key) {
-        switch (path) {
-            case FLOWS_STATISTICS_UPDATE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
-                        new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxTunIpv4Dst(value).build(), key);
-            case FLOWS_STATISTICS_RPC_MATCH:
-                return new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
-                        new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxTunIpv4Dst(value).build(), key);
-            case PACKET_RECEIVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
-                        new NxAugMatchNotifPacketInBuilder().setNxmNxTunIpv4Dst(value).build(), key);
-            case SWITCH_FLOW_REMOVED_MATCH:
-                return new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
-                        new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxTunIpv4Dst(value).build(), key);
-            case PACKET_IN_MESSAGE_MATCH:
-                return new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
-                        new NxAugMatchPacketInMessageBuilder().setNxmNxTunIpv4Dst(value).build(), key);
-            default:
-                throw new CodecPreconditionException(path);
-        }
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(
+            final NxmNxTunIpv4Dst value, final MatchPath path, final ExtensionKey key) {
+        return switch (path) {
+            case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
+                new NxAugMatchNodesNodeTableFlowBuilder().setNxmNxTunIpv4Dst(value).build(), key);
+            case FLOWS_STATISTICS_RPC_MATCH -> new ExtensionAugment<>(NxAugMatchRpcGetFlowStats.class,
+                new NxAugMatchRpcGetFlowStatsBuilder().setNxmNxTunIpv4Dst(value).build(), key);
+            case PACKET_RECEIVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifPacketIn.class,
+                new NxAugMatchNotifPacketInBuilder().setNxmNxTunIpv4Dst(value).build(), key);
+            case SWITCH_FLOW_REMOVED_MATCH -> new ExtensionAugment<>(NxAugMatchNotifSwitchFlowRemoved.class,
+                new NxAugMatchNotifSwitchFlowRemovedBuilder().setNxmNxTunIpv4Dst(value).build(), key);
+            case PACKET_IN_MESSAGE_MATCH -> new ExtensionAugment<>(NxAugMatchPacketInMessage.class,
+                new NxAugMatchPacketInMessageBuilder().setNxmNxTunIpv4Dst(value).build(), key);
+            default -> throw new CodecPreconditionException(path);
+        };
     }
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(
             final MatchEntry input, final MatchPath path) {
         TunIpv4DstCaseValue tunIpv4DstCaseValue = (TunIpv4DstCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new NxmNxTunIpv4DstBuilder()

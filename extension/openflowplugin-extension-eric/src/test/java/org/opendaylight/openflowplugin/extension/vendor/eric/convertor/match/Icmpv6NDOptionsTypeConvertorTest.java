@@ -38,7 +38,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ge
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.Extension;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.grouping.ExtensionBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.general.rev140714.general.extension.list.grouping.ExtensionListBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.binding.util.BindingMap;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
@@ -63,9 +62,8 @@ public class Icmpv6NDOptionsTypeConvertorTest {
                 new EricAugMatchNodesNodeTableFlowBuilder();
         ericAugMatchNotifUpdateFlowStatsBuilder.setEricOfIcmpv6NdOptionsType(ericOfIcmpv6NdOptionsTypeBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = ericAugMatchNotifUpdateFlowStatsBuilder.build();
-        when(extension.augmentation(any()))
-                .thenReturn(extensionAugmentation);
+        final var extensionAugmentation = ericAugMatchNotifUpdateFlowStatsBuilder.build();
+        when(extension.augmentation(any())).thenReturn(extensionAugmentation);
 
         icmpv6NDOptionsTypeConvertor = new Icmpv6NDOptionsTypeConvertor();
     }
@@ -88,26 +86,25 @@ public class Icmpv6NDOptionsTypeConvertorTest {
         final Icmpv6NdOptionsTypeCaseValue icmpv6NdOptionsTypeCaseValue = icmpv6NdOptionsTypeCaseValueBuilder.build();
         when(matchEntry.getMatchEntryValue()).thenReturn(icmpv6NdOptionsTypeCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment
-                = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         assertEquals(10, ((EricAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType().intValue());
         assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1
-                = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 =
+            icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertEquals(10, ((EricAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType() .getIcmpv6NdOptionsType().intValue());
         assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2
-                = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 =
+            icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertEquals(10, ((EricAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType().intValue());
         assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3
-                = icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 =
+            icmpv6NDOptionsTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         assertEquals(10, ((EricAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getEricOfIcmpv6NdOptionsType().getIcmpv6NdOptionsType().intValue());
         assertEquals(extensionAugment.getKey(), Icmpv6NdOptionsTypeKey.VALUE);
@@ -118,11 +115,12 @@ public class Icmpv6NDOptionsTypeConvertorTest {
         final var eqGroup = new GroupingLooseResolver<>(GeneralExtensionListGrouping.class,
             GeneralAugMatchNodesNodeTableFlowWriteActionsSetField.class);
 
-        ExtensionAugment<? extends Augmentation<Extension>> extensionMatch =
-            new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
-                new EricAugMatchNodesNodeTableFlowBuilder().setEricOfIcmpv6NdOptionsType(
-                    new EricOfIcmpv6NdOptionsTypeBuilder().setIcmpv6NdOptionsType(Uint8.ONE).build()).build(),
-                Icmpv6NdOptionsTypeKey.VALUE);
+        var extensionMatch = new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
+            new EricAugMatchNodesNodeTableFlowBuilder()
+                .setEricOfIcmpv6NdOptionsType(new EricOfIcmpv6NdOptionsTypeBuilder()
+                    .setIcmpv6NdOptionsType(Uint8.ONE)
+                    .build())
+                .build(), Icmpv6NdOptionsTypeKey.VALUE);
 
         ExtensionListBuilder extListBld = null;
         ExtensionBuilder extBld = new ExtensionBuilder();

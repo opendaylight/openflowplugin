@@ -22,7 +22,8 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <name>ODL :: serviceutils :: ${project.artifactId}</name>
 
     <properties>
-        <odlparent.dependency.enforce>true</odlparent.dependency.enforce>
+        <!-- FIXME: not binding-parent -->
+        <odlparent.dependency.enforce>false</odlparent.dependency.enforce>
     </properties>
 
     <dependencies>
