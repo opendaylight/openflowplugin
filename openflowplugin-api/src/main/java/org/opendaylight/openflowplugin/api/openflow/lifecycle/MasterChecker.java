@@ -14,17 +14,17 @@ import org.opendaylight.openflowplugin.api.openflow.device.DeviceInfo;
  * Internal OFP interface.
  */
 public interface MasterChecker {
-
     /**
      * Mastered devices.
+     *
      * @return list of mastered devices
      */
     List<DeviceInfo> listOfMasteredDevices();
 
     /**
      * Check if any device is mastered by controller.
+     *
      * @return true if there is at least one device mastered by controller
      */
     boolean isAnyDeviceMastered();
-
 }

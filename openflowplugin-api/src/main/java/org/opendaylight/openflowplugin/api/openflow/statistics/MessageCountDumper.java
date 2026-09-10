@@ -13,10 +13,8 @@ import java.util.List;
  * simple message counters dumper.
  */
 public interface MessageCountDumper {
-
     /**
-     * List of counter items.
-     * @return list of counter items
+     * {@return list of counter items}
      */
     List<String> dumpMessageCounts();
 }

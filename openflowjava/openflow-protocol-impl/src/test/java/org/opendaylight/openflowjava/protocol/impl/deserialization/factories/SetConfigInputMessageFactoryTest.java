@@ -23,10 +23,10 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.SetConfigInputMessageFactory}.
+ *
  * @author giuseppex.petralia@intel.com
  */
 public class SetConfigInputMessageFactoryTest extends DefaultDeserializerFactoryTest<SetConfigInput> {
-
     /**
      * Initializes deserializer registry and lookups OF13 deserializer.
      */
@@ -58,5 +58,4 @@ public class SetConfigInputMessageFactoryTest extends DefaultDeserializerFactory
         Assert.assertEquals("Wrong flags ", SwitchConfigFlag.forValue(2), deserializedMessage.getFlags());
         Assert.assertEquals("Wrong Miss Send len ", 10, deserializedMessage.getMissSendLen().intValue());
     }
-
 }

@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.util.concurrent.Future;
@@ -17,7 +16,7 @@ import java.net.InetSocketAddress;
  * is sent to OFEncoder. When OFEncoder fails to serialize the message,
  * listener is filled with exception. The exception is then delegated to upper ODL layers.
  * This object is used for UDP communication - it also carries recipient address
-
+ *
  * @author michal.polkorab
  */
 public class UdpMessageListenerWrapper extends MessageListenerWrapper {

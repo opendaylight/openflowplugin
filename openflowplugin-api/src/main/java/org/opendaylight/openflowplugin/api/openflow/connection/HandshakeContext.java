@@ -14,15 +14,16 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.HandshakeManager;
  * OF handshake context holder.
  */
 public interface HandshakeContext extends AutoCloseable {
-
     /**
      * Getter.
+     *
      * @return handshakeManager
      */
     HandshakeManager getHandshakeManager();
 
     /**
      * Getter.
+     *
      * @return handshake pool
      */
     ExecutorService getHandshakePool();
