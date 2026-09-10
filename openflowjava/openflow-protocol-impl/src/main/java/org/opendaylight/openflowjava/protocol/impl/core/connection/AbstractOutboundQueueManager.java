@@ -111,7 +111,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
 
     @Override
     public String toString() {
-        return String.format("Channel %s queue [flushing=%s]", parent.getChannel(), flushScheduled.get());
+        return "Channel %s queue [flushing=%s]".formatted(parent.getChannel(), flushScheduled.get());
     }
 
     @Override
@@ -242,7 +242,7 @@ abstract class AbstractOutboundQueueManager<T extends OutboundQueueHandler, O ex
      * @param message incoming Echo message from device
      * @param datapathId the dpnId of the node
      */
-    void onEchoRequest(final EchoRequestMessage message, BigInteger datapathId) {
+    void onEchoRequest(final EchoRequestMessage message, final BigInteger datapathId) {
         LOG.debug("echo request received: {} for the DPN {}", message.getXid(), datapathId);
         final EchoReplyInput reply = new EchoReplyInputBuilder().setData(message.getData())
                 .setVersion(message.getVersion()).setXid(message.getXid()).build();
