@@ -118,28 +118,28 @@ public interface ForwardingRulesManager extends ConfigurationListener {
     /**
      * Content definition method and prevent code duplicity in Reconcil.
      *
-     * @return ForwardingRulesCommiter&lt;Flow&gt;.
+     * @return {@code ForwardingRulesCommiter<Flow>}
      */
     ForwardingRulesCommiter<Flow> getFlowCommiter();
 
     /**
      * Content definition method and prevent code duplicity in Reconcil.
      *
-     * @return ForwardingRulesCommiter&lt;Group&gt;
+     * @return {@code ForwardingRulesCommiter<Group>}
      */
     ForwardingRulesCommiter<Group> getGroupCommiter();
 
     /**
      * Content definition method and prevent code duplicity.
      *
-     * @return ForwardingRulesCommiter&lt;Meter&gt;
+     * @return {@code ForwardingRulesCommiter<Meter>}
      */
     ForwardingRulesCommiter<Meter> getMeterCommiter();
 
     /**
      * Content definition method and prevent code duplicity.
      *
-     * @return ForwardingRulesCommiter&lt;Table&gt;
+     * @return {@code ForwardingRulesCommiter<TableFeatures>}
      */
     ForwardingRulesCommiter<TableFeatures> getTableFeaturesCommiter();
 
