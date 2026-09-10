@@ -14,12 +14,14 @@ import org.opendaylight.yangtools.concepts.Registration;
 /**
  * Provider to register mastership change listener.
  * Provider to set mastership reconciliation framework.
+ *
  * @since 0.5.0 Nitrogen
  */
 public interface MastershipChangeServiceManager extends OwnershipChangeListener {
     /**
      * Register of mastership change listener. Returned registration need to be closed by client.
      * It doesn't contain event for reconciliation framework event.
+     *
      * @param service implementation of {@link MastershipChangeService}
      * @return registration
      * @see ReconciliationFrameworkEvent
@@ -30,6 +32,7 @@ public interface MastershipChangeServiceManager extends OwnershipChangeListener 
     /**
      * Setter for reconciliation framework event listener. It can be registered only once.
      * Another registrations will throw an exception
+     *
      * @param mastershipRFRegistration reconciliation framework
      * @return registration object, which can be closed to unregister
      * @throws MastershipChangeException if already reconciliation framework registered

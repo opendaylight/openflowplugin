@@ -15,7 +15,7 @@ import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsum
 /**
  * As UDP communication is handled only by one channel, it is needed
  * to store MessageConsumers, so that we know which consumer handles which channel.
-
+ *
  * @author michal.polkorab
  */
 public final class UdpConnectionMap {

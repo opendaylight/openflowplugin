@@ -14,11 +14,13 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Key based semaphore provider.
  * For the same key there is always only one semaphore available. Unused semaphores are garbage-collect.
+ *
  * @param <K> key type
  */
 public interface SemaphoreKeeper<K> {
     /**
      * Create or load semaphore for key from cache.
+     *
      * @param key semaphore identifier
      * @return new or existing semaphore for given key, for one key there is always only one semaphore available
      */
@@ -26,6 +28,7 @@ public interface SemaphoreKeeper<K> {
 
     /**
      * Get guard and lock for key.
+     *
      * @param key for which guard should be created and acquired
      * @return semaphore guard
      */
@@ -33,6 +36,7 @@ public interface SemaphoreKeeper<K> {
 
     /**
      * Unlock and release guard.
+     *
      * @param guard semaphore guard which should be released
      */
     void releaseGuard(@Nullable Semaphore guard);

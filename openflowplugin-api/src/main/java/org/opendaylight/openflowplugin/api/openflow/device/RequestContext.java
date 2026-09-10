@@ -16,6 +16,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseable {
     /**
      * Returns XID generated for this request.
+     *
      * @return Allocated XID, or null if the device has disconnected.
      */
     @Nullable Xid getXid();
@@ -25,6 +26,7 @@ public interface RequestContext<T> extends RequestFutureContext<T>, AutoCloseabl
 
     /**
      * Returns request timeout value.
+     *
      * @return timeout
      */
     long getWaitTimeout();

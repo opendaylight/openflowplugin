@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowplugin.extension.api;
 
 import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionConverterProvider;
@@ -14,7 +13,6 @@ import org.opendaylight.openflowplugin.extension.api.core.extension.ExtensionCon
  * Simple {@link ExtensionConverterProvider} place holder.
  */
 public interface ExtensionConverterProviderKeeper {
-
     /**
      * Sets the ExtensionConverterProvider. Extension converters will be kept in order to be accessible by inner
      * infrastructure.
@@ -25,6 +23,7 @@ public interface ExtensionConverterProviderKeeper {
 
     /**
      * Returns the extension converters registry access point for by inner infrastructure.
+     *
      * @return extensionConverterProvider
      */
     ExtensionConverterProvider getExtensionConverterProvider();

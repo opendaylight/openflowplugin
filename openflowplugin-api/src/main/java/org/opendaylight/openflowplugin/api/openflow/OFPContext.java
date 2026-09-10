@@ -18,12 +18,14 @@ import org.opendaylight.openflowplugin.api.openflow.lifecycle.ContextChainMaster
 public interface OFPContext extends AutoCloseable, ClusterSingletonService {
     /**
      * Get device info.
+     *
      * @return device info
      */
     DeviceInfo getDeviceInfo();
 
     /**
      * Registers mastership change listener to context.
+     *
      * @param contextChainMastershipWatcher mastership change listener
      */
     void registerMastershipWatcher(@NonNull ContextChainMastershipWatcher contextChainMastershipWatcher);
