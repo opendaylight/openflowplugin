@@ -123,8 +123,7 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
         LOG.debug("Received packet via match: {}", notification.getMatch());
 
         // detect and compare node - we support one switch
-        if (!nodePath.toLegacy().contains(
-            ((DataObjectIdentifier<?>) notification.getIngress().getValue()).toLegacy())) {
+        if (!contains(nodePath, (DataObjectIdentifier<?>) notification.getIngress().getValue())) {
             return;
         }
 
@@ -220,5 +219,15 @@ public class LearningSwitchHandlerSimpleImpl implements LearningSwitchHandler, L
             .setEgress(egress)
             .setIngress(ingress)
             .build()), LOG, "transmitPacket");
+    }
+
+    private static boolean contains(final DataObjectIdentifier<?> containing, final DataObjectIdentifier<?> contained) {
+        final var oit = contained.steps().iterator();
+        for (var step : containing.steps()) {
+            if (!oit.hasNext() || !step.equals(oit.next())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
