@@ -19,7 +19,6 @@ import org.opendaylight.yangtools.binding.DataContainer;
  * @param <P> represents possible paths in yang schema for augmentations
  */
 public interface ConvertorFromOFJava<F extends DataContainer, P extends AugmentationPath> {
-
     /**
      * Convert OF model to MD-SAL model.
      *
@@ -27,5 +26,5 @@ public interface ConvertorFromOFJava<F extends DataContainer, P extends Augmenta
      * @param path in yang schema where a converted value has to be augmented
      * @return message converted to MD-SAL and its type
      */
-    ExtensionAugment<? extends Augmentation<Extension>> convert(F input, P path);
+    ExtensionAugment<? extends Augmentation<Extension, ?>> convert(F input, P path);
 }
