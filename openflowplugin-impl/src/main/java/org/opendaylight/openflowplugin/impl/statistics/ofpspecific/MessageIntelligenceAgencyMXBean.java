@@ -11,7 +11,7 @@ import java.util.List;
 import javax.management.MXBean;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 11.5.2015.
+ * Created by Martin Bobak on 11.5.2015.
  */
 @MXBean
 public interface MessageIntelligenceAgencyMXBean {

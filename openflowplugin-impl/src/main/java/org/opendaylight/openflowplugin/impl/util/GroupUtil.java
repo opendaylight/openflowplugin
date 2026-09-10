@@ -153,7 +153,7 @@ public final class GroupUtil {
     }
 
     /**
-     * Factory method: create {@link Function} which attaches barrier response to given {@link RpcResult}&lt;T&gt;
+     * Factory method: create {@link Function} which attaches barrier response to given {@code RpcResult<T>}
      * and changes success flag if needed.
      * <br>
      * Original rpcResult is the {@link Pair#getLeft()} and barrier result is the {@link Pair#getRight()}.
