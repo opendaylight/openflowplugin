@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <features name="odl-openflowjava-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.2.0">
     <feature name='odl-openflowjava-protocol' version='${project.version}'>
-        <feature version="[2,3)">odl-ietf-model-rfc6991</feature>
-        <feature version="[7,8)">odl-infrautils-diagstatus</feature>
-        <feature version="[15,16)">odl-yangtools-netty</feature>
+        <feature version="[3,4)">odl-ietf-model-rfc6991</feature>
+        <feature version="[8,9)">odl-infrautils-diagstatus</feature>
+        <feature version="[16,17)">odl-yangtools-netty</feature>
     </feature>
 </features>
