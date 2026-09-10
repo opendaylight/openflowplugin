@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 public class GroupingLooseResolver<G extends Grouping> {
     private static final Logger LOG = LoggerFactory.getLogger(GroupingLooseResolver.class);
 
-    private final Set<Class<? extends Augmentation<?>>> classes;
+    private final Set<Class<? extends Augmentation<?, ?>>> classes;
 
     /**
      * Constructor.
@@ -39,7 +39,7 @@ public class GroupingLooseResolver<G extends Grouping> {
      * @param commonInterface common interface
      */
     @SafeVarargs
-    public GroupingLooseResolver(final Class<G> commonInterface, final Class<? extends Augmentation<?>>... classes) {
+    public GroupingLooseResolver(final Class<G> commonInterface, final Class<? extends Augmentation<?, ?>>... classes) {
         this.classes = ImmutableSet.copyOf(classes);
         this.classes.forEach(
             cls -> Preconditions.checkArgument(commonInterface.isAssignableFrom(cls), "oh man! I got " + cls));
@@ -50,7 +50,7 @@ public class GroupingLooseResolver<G extends Grouping> {
      *
      * @return list of augmentation classes
      */
-    public Set<Class<? extends Augmentation<?>>> getClasses() {
+    public Set<Class<? extends Augmentation<?, ?>>> getClasses() {
         return classes;
     }
 

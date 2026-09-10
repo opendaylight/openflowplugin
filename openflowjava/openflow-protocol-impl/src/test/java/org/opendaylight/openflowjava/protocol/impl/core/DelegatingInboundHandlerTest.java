@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.core.connection.MessageConsumer;
+import org.opendaylight.yangtools.binding.ContainerObject;
 import org.opendaylight.yangtools.binding.DataObject;
 
 /**
@@ -28,10 +29,13 @@ import org.opendaylight.yangtools.binding.DataObject;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DelegatingInboundHandlerTest {
-
-    @Mock ChannelHandlerContext mockChHndlrCtx;
-    @Mock MessageConsumer mockMsgConsumer;
-    @Mock DataObject mockDataObject ;
+    @Mock
+    ChannelHandlerContext mockChHndlrCtx;
+    @Mock
+    MessageConsumer mockMsgConsumer;
+    // FIXME: this should be
+    @Mock
+    ContainerObject<?, ?> mockDataObject;
 
     DelegatingInboundHandler dih;
 

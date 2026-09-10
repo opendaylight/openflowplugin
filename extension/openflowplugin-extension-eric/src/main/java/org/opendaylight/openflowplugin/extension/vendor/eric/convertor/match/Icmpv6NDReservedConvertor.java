@@ -45,7 +45,8 @@ public class Icmpv6NDReservedConvertor implements ConvertorToOFJava<MatchEntry>,
         ConvertorFromOFJava<MatchEntry, MatchPath> {
 
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         Icmpv6NdReservedCaseValue icmpv6NdReservedCaseValue = (Icmpv6NdReservedCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(new EricOfIcmpv6NdReservedBuilder().setIcmpv6NdReserved(
                 icmpv6NdReservedCaseValue.getIcmpv6NdReservedValues().getIcmpv6NdReserved()).build(), path,
@@ -67,7 +68,7 @@ public class Icmpv6NDReservedConvertor implements ConvertorToOFJava<MatchEntry>,
                 icmpv6NdReservedCaseValueBuilder.build()).build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(
             final EricOfIcmpv6NdReserved value, final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(EricAugMatchNodesNodeTableFlow.class,
