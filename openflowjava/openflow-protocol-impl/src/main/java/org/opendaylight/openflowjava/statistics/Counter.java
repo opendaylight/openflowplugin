@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.statistics;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -61,7 +60,7 @@ public class Counter {
      *      false - no change CounterLastReadValue
      * @return the current value of counter
      */
-    public long getCounterValue(boolean modifyLastReadValue) {
+    public long getCounterValue(final boolean modifyLastReadValue) {
         if (modifyLastReadValue) {
             counterLastReadValue.set(counterValue.get());
         }
@@ -82,6 +81,6 @@ public class Counter {
     public String getStat() {
         long cntPrevVal = getCounterLastReadValue();
         long cntCurValue = getCounterValue();
-        return String.format("+%d | %d",cntCurValue - cntPrevVal,cntCurValue);
+        return "+%d | %d".formatted(cntCurValue - cntPrevVal, cntCurValue);
     }
 }
