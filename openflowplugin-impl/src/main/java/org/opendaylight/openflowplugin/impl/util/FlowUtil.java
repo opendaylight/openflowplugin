@@ -51,7 +51,7 @@ public final class FlowUtil {
             RpcResultBuilder.success(List.of());
 
     /**
-     * Attach barrier response to given {@link RpcResult}&lt;RemoveFlowsBatchOutput&gt;.
+     * Attach barrier response to given {@code RpcResult<RemoveFlowsBatchOutput>}.
      */
     public static final Function<Pair<RpcResult<RemoveFlowsBatchOutput>,
                                  RpcResult<SendBarrierOutput>>,
@@ -59,14 +59,14 @@ public final class FlowUtil {
             FLOW_REMOVE_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
-     * Attach barrier response to given {@link RpcResult}&lt;AddFlowsBatchOutput&gt;.
+     * Attach barrier response to given {@code RpcResult<AddFlowsBatchOutput>}.
      */
     public static final Function<Pair<RpcResult<AddFlowsBatchOutput>, RpcResult<SendBarrierOutput>>,
             RpcResult<AddFlowsBatchOutput>>
             FLOW_ADD_COMPOSING_TRANSFORM = createComposingFunction();
 
     /**
-     * Attach barrier response to given {@link RpcResult}&lt;UpdateFlowsBatchOutput&gt;.
+     * Attach barrier response to given {@code RpcResult<UpdateFlowsBatchOutput>}.
      */
     public static final Function<Pair<RpcResult<UpdateFlowsBatchOutput>,
                                  RpcResult<SendBarrierOutput>>,
@@ -145,8 +145,8 @@ public final class FlowUtil {
     }
 
     /**
-     * Factory method: create {@link Function} which attaches barrier response to given {@link RpcResult}&lt;T&gt;
-     * and changes success flag if needed.
+     * Factory method: create {@link Function} which attaches barrier response to given {@code RpcResult<T>} and changes
+     * success flag if needed.
      * <br>
      * Original rpcResult is the {@link Pair#getLeft()} and barrier result is the {@link Pair#getRight()}.
      *
@@ -196,7 +196,7 @@ public final class FlowUtil {
      * list of all flow-rpc results.
      *
      * @param <O>             result container type
-     * @param inputBatchFlows collection of problematic flow-ids wrapped in container of given type &lt;O&gt;
+     * @param inputBatchFlows collection of problematic flow-ids wrapped in container of given type {@code <O>}
      * @return static reusable function
      */
     public static <O> Function<List<RpcResult<O>>, RpcResult<List<BatchFailedFlowsOutput>>> createCumulatingFunction(

@@ -13,7 +13,7 @@ import org.opendaylight.openflowplugin.api.openflow.md.core.TranslatorKey;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 3.4.2015.
+ * Created by Martin Bobak on 3.4.2015.
  */
 public class TranslatorKeyFactory {
     private final Uint8 version;

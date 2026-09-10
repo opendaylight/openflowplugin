@@ -15,9 +15,8 @@ import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.SessionStatistics;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 21.5.2015.
+ * Created by Martin Bobak on 21.5.2015.
  */
-
 @Command(scope = "ofp", name = "show-session-stats", description = "Show session statistics.")
 @Service
 public class ShowSessionStatsCommand implements Action {
