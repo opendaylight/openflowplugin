@@ -18,6 +18,7 @@ public class TranslatorKey {
 
     /**
      * Constructor.
+     *
      * @param version version
      * @param messageClass message class
      */

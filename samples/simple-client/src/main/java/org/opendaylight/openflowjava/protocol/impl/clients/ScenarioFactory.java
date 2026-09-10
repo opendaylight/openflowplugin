@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.clients;
 
 import java.util.ArrayDeque;
@@ -30,6 +29,7 @@ public final class ScenarioFactory {
      *   <li> features request waiting - 00000003
      *   <li> features reply sent - 00000003
      * </ol>
+     *
      * @return stack filled with Handshake messages
      */
     public static Deque<ClientEvent> createHandshakeScenario() {
@@ -50,6 +50,7 @@ public final class ScenarioFactory {
      *   <li> features request waiting - 00000002
      *   <li> features reply sent - 00000002
      * </ol>
+     *
      * @return stack filled with Handshake messages
      */
     public static Deque<ClientEvent> createHandshakeScenarioWithBarrier() {
@@ -74,6 +75,7 @@ public final class ScenarioFactory {
      *   <li> features request waiting - 00000003
      *   <li> features reply sent - 00000003
      * </ol>
+     *
      * @param auxiliaryId auxiliaryId wanted in featuresReply message
      * @return stack filled with Handshake messages (featuresReply with auxiliaryId set)
      */

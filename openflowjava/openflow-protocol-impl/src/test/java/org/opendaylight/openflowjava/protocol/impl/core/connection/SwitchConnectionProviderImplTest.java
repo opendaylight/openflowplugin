@@ -62,6 +62,7 @@ public class SwitchConnectionProviderImplTest {
 
     /**
      * Creates new {@link SwitchConnectionProvider} instance for each test.
+     *
      * @param protocol communication protocol
      */
     public void startUp(final TransportProtocol protocol) throws UnknownHostException {

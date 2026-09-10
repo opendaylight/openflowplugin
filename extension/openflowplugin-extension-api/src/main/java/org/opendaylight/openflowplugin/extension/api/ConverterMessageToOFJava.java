@@ -21,7 +21,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice, T extends DataContainer,
         D extends ConvertorData> {
-
     /**
      * Converts a message to MD-SAL model.
      *
@@ -34,12 +33,14 @@ public interface ConverterMessageToOFJava<F extends ExperimenterMessageOfChoice,
 
     /**
      * Returns the corresponding experimenter id (vendor id).
+     *
      * @return experimenter id
      */
     ExperimenterId getExperimenterId();
 
     /**
      * Returns the corresponding experimenter message type.
+     *
      * @return experimenter message type.
      */
     Uint32 getType();

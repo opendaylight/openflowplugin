@@ -68,6 +68,7 @@ import org.slf4j.LoggerFactory;
  * Exposed class for server handling. <br>
  * C - {@link MatchEntrySerializerKey} parameter representing oxm_class (see specification)<br>
  * F - {@link MatchEntrySerializerKey} parameter representing oxm_field (see specification)
+ *
  * @author mirehak
  * @author michal.polkorab
  */
