@@ -22,30 +22,35 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public interface DeviceInfo extends XidSequencer {
     /**
      * Getter.
+     *
      * @return id of encapsulated node
      */
     NodeId getNodeId();
 
     /**
      * Getter.
+     *
      * @return {@link Node} instance identifier
      */
     DataObjectIdentifier.WithKey<Node, NodeKey> getNodeInstanceIdentifier();
 
     /**
      * Getter.
+     *
      * @return version
      */
     @NonNull Uint8 getVersion();
 
     /**
      * Getter.
+     *
      * @return datapathId
      */
     Uint64 getDatapathId();
 
     /**
      * Getter.
+     *
      * @return clustering service identifier
      */
     ServiceGroupIdentifier getServiceIdentifier();

@@ -15,7 +15,6 @@ import java.util.Set;
  * Contains two sets of groups -set of items to be pushed and set of tuples for update.
  */
 public class ItemSyncBox<I> {
-
     private final Set<I> itemsToPush = new LinkedHashSet<>();
     private final Set<ItemUpdateTuple<I>> itemsToUpdate = new LinkedHashSet<>();
 
@@ -33,6 +32,7 @@ public class ItemSyncBox<I> {
 
     /**
      * Tuple holder for original and updated item.
+     *
      * @param <I> basic type
      */
     public static final class ItemUpdateTuple<I> {

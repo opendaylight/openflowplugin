@@ -14,11 +14,11 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.openflow
 
 /**
  * Internal OFP interface used by mastership service.
+ *
  * @see ContextChainHolder
  * @since 0.5.0 Nitrogen
  */
 public interface OwnershipChangeListener extends ReconciliationFrameworkRegistrar {
-
     /**
      * This event is called when device is fully mastered. All condition have to been done successful.
      * <ul>
@@ -28,12 +28,14 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
      *     <li> Initial DS submit. </li>
      *     <li> Flow registry filled. - <b>this step is not mandatory</b></li>
      * </ul>
+     *
      * @param deviceInfo connected switch identification
      */
     void becomeMaster(@NonNull DeviceInfo deviceInfo);
 
     /**
      * Should be called when device is disconnected or going to be slaved.
+     *
      * @param deviceInfo connected switch identification
      */
     void becomeSlaveOrDisconnect(@NonNull DeviceInfo deviceInfo);
@@ -53,8 +55,8 @@ public interface OwnershipChangeListener extends ReconciliationFrameworkRegistra
 
     /**
      * Set the device mastership checker.
+     *
      * @param masterChecker {@link MasterChecker}
      */
     void setMasterChecker(@NonNull MasterChecker masterChecker);
-
 }

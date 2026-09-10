@@ -59,6 +59,7 @@ public final class AdditionalMessageDeserializerInitializer {
 
     /**
      * Registers additional message deserializers.
+     *
      * @param registry registry to be filled with deserializers
      */
     public static void registerMessageDeserializers(final DeserializerRegistry registry) {

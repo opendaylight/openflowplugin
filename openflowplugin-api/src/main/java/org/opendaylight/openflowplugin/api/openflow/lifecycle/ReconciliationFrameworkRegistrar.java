@@ -14,6 +14,7 @@ public interface ReconciliationFrameworkRegistrar {
      * Check if reconciliation framework is registered.
      * If not the event {@link OwnershipChangeListener#becomeMasterBeforeSubmittedDS(DeviceInfo)}
      * will not be triggered.
+     *
      * @return true if there exists any reconciliation framework registration
      */
     boolean isReconciliationFrameworkRegistered();

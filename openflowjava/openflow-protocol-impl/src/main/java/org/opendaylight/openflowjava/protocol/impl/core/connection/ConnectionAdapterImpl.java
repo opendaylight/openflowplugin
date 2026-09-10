@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handles messages (notifications + rpcs) and connections.
+ *
  * @author mirehak
  * @author michal.polkorab
  */
