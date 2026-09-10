@@ -15,14 +15,12 @@ import com.google.common.util.concurrent.FluentFuture;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import java.util.Optional;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import org.checkerframework.checker.lock.qual.GuardedBy;
-import org.checkerframework.checker.lock.qual.Holding;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadWriteTransaction;
 import org.opendaylight.mdsal.binding.api.TransactionChain;
@@ -48,18 +46,21 @@ public class TransactionChainManager implements AutoCloseable {
     private static final Logger LOG = LoggerFactory.getLogger(TransactionChainManager.class);
     private static final String CANNOT_WRITE_INTO_TRANSACTION = "Cannot write into transaction.";
 
-    private final ReadWriteLock readWriteTransactionLock = new ReentrantReadWriteLock();
+    private final ReentrantReadWriteLock readWriteTransactionLock = new ReentrantReadWriteLock();
     private final Object txLock = new Object();
     private final DataBroker dataBroker;
     private final String nodeId;
 
-    private @GuardedBy("txLock") ReadWriteTransaction writeTx;
-    private @GuardedBy("txLock") TransactionChain transactionChain;
-    private @GuardedBy("txLock") boolean submitIsEnabled;
-    private @GuardedBy("txLock") FluentFuture<? extends CommitInfo> lastSubmittedFuture =
-        CommitInfo.emptyFluentFuture();
-    private @GuardedBy("txLock") TransactionChainManagerStatus transactionChainManagerStatus =
-        TransactionChainManagerStatus.SLEEPING;
+    @GuardedBy("txLock")
+    private ReadWriteTransaction writeTx;
+    @GuardedBy("txLock")
+    private TransactionChain transactionChain;
+    @GuardedBy("txLock")
+    private boolean submitIsEnabled;
+    @GuardedBy("txLock")
+    private FluentFuture<? extends CommitInfo> lastSubmittedFuture = CommitInfo.emptyFluentFuture();
+    @GuardedBy("txLock")
+    private TransactionChainManagerStatus transactionChainManagerStatus = TransactionChainManagerStatus.SLEEPING;
 
     private volatile boolean initCommit;
 
@@ -68,7 +69,7 @@ public class TransactionChainManager implements AutoCloseable {
         this.nodeId = requireNonNull(nodeId);
     }
 
-    @Holding("txLock")
+    @GuardedBy("txLock")
     private void createTxChain() {
         final var prev = transactionChain;
         final var next = dataBroker.createTransactionChain();
@@ -157,12 +158,12 @@ public class TransactionChainManager implements AutoCloseable {
         }
     }
 
-    @Holding("txLock")
+    @GuardedBy("txLock")
     public boolean submitTransaction() {
         return submitTransaction(false);
     }
 
-    @Holding("txLock")
+    @GuardedBy("txLock")
     @SuppressWarnings("checkstyle:IllegalCatch")
     public boolean submitTransaction(final boolean doSync) {
         synchronized (txLock) {
@@ -292,7 +293,7 @@ public class TransactionChainManager implements AutoCloseable {
         }
     }
 
-    @Holding("txLock")
+    @GuardedBy("txLock")
     private void ensureTransaction() {
         if (writeTx == null && TransactionChainManagerStatus.WORKING == transactionChainManagerStatus
                 && transactionChain != null) {
@@ -317,7 +318,7 @@ public class TransactionChainManager implements AutoCloseable {
         }
     }
 
-    @Holding("txLock")
+    @GuardedBy("txLock")
     private FluentFuture<? extends CommitInfo> txChainShuttingDown() {
         boolean wasSubmitEnabled = submitIsEnabled;
         submitIsEnabled = false;

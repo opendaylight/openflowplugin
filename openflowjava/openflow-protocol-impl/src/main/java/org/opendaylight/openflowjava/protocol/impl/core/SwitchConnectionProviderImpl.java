@@ -12,10 +12,10 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import io.netty.channel.epoll.Epoll;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import org.checkerframework.checker.lock.qual.GuardedBy;
 import org.eclipse.jdt.annotation.Nullable;
 import org.opendaylight.infrautils.diagstatus.DiagStatusService;
 import org.opendaylight.infrautils.diagstatus.ServiceDescriptor;
@@ -88,8 +88,10 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private final DeserializationFactory deserializationFactory;
     private final String diagStatusIdentifier;
 
-    private @GuardedBy("this") ListenableFuture<? extends ServerFacade> serverFacade;
-    private @GuardedBy("this") ServiceRegistration diagReg;
+    @GuardedBy("this")
+    private ListenableFuture<? extends ServerFacade> serverFacade;
+    @GuardedBy("this")
+    private ServiceRegistration diagReg;
 
     public SwitchConnectionProviderImpl(final DiagStatusService diagStatus,
             final @Nullable ConnectionConfiguration connConfig) {
@@ -367,11 +369,10 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     @Override
     public void initiateConnection(final String host, final int port) {
         final var facade = getServerFacade();
-        if (facade instanceof ConnectionInitializer initializer) {
-            initializer.initiateConnection(host, port);
-        } else {
+        if (!(facade instanceof ConnectionInitializer initializer)) {
             throw new UnsupportedOperationException(facade + " does not support connections");
         }
+        initializer.initiateConnection(host, port);
     }
 
     @Override
