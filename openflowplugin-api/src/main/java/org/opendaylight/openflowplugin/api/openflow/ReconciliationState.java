@@ -20,7 +20,7 @@ public class ReconciliationState {
     private ReconciliationStatus status;
     private LocalDateTime time;
 
-    public ReconciliationState(@Nullable ReconciliationStatus status, LocalDateTime time) {
+    public ReconciliationState(final @Nullable ReconciliationStatus status, final LocalDateTime time) {
         this.status = status;
         this.time = time;
     }
@@ -29,13 +29,13 @@ public class ReconciliationState {
         return status;
     }
 
-    public void setState(ReconciliationStatus newStatus, LocalDateTime newTime) {
-        this.status = newStatus;
-        this.time = newTime;
+    public void setState(final ReconciliationStatus newStatus, final LocalDateTime newTime) {
+        status = newStatus;
+        time = newTime;
     }
 
     @Override
     public String toString() {
-        return String.format("%-25s %-25s", this.status, this.time);
+        return "%-25s %-25s".formatted(status, time);
     }
 }
