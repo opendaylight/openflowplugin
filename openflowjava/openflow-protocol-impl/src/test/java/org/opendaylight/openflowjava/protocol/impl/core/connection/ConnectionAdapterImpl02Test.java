@@ -208,6 +208,7 @@ public class ConnectionAdapterImpl02Test {
 
     /**
      * Channel Handler for testing.
+     *
      * @author madamjak
      */
     private final class EmbededChannelHandler extends ChannelOutboundHandlerAdapter {

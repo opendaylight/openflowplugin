@@ -116,6 +116,7 @@ public final class MessageIntelligenceAgencyImpl implements MessageIntelligenceA
 
     /**
      * Get counters.
+     *
      * @param message counted element
      * @param statGroup statistic counter group
      * @return corresponding counter

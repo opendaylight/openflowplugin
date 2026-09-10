@@ -52,6 +52,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 /**
  * Util class for init registration of deserializers.
+ *
  * @author michal.polkorab
  */
 public final class MessageDeserializerInitializer {
@@ -61,6 +62,7 @@ public final class MessageDeserializerInitializer {
 
     /**
      * Registers message deserializers.
+     *
      * @param registry registry to be filled with deserializers
      */
     public static void registerMessageDeserializers(final DeserializerRegistry registry) {

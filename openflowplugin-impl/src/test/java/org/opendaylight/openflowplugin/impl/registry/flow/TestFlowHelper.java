@@ -23,12 +23,13 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Flow building helper.
  */
 public final class TestFlowHelper {
-
     private TestFlowHelper() {
+        // hidden on purpose
     }
 
     /**
      * Creates flow and statistics builder.
+     *
      * @param index data seed
      * @return flow stats builder with dummy content
      */

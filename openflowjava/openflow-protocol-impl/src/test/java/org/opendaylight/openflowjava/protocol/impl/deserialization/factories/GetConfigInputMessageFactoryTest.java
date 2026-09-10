@@ -21,10 +21,10 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.factories.GetConfigInputMessageFactory}.
+ *
  * @author giuseppex.petralia@intel.com
  */
 public class GetConfigInputMessageFactoryTest extends DefaultDeserializerFactoryTest<GetConfigInput> {
-
     /**
      * Initializes deserializer registry and lookups OF13 deserializer.
      */

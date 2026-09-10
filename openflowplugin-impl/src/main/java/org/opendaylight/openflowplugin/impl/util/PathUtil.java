@@ -21,6 +21,7 @@ public final class PathUtil {
 
     /**
      * Extracts node id from node reference.
+     *
      * @param input reference to {@link Node}
      * @return node-id from given reference
      */

@@ -14,9 +14,9 @@ package org.opendaylight.openflowplugin.api.openflow.device;
  * @param <O> output message
  */
 public interface MessageTranslator<I, O> {
-
     /**
      * Translates from input to output.
+     *
      * @param input input
      * @param deviceInfo node information
      * @param connectionDistinguisher connection distinguisher

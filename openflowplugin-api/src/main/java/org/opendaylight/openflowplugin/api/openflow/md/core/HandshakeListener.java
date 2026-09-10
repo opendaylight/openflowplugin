@@ -14,6 +14,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 public interface HandshakeListener {
     /**
      * Handshake successfull.
+     *
      * @param featureOutput obtained
      * @param version negotiated
      */
@@ -27,6 +28,7 @@ public interface HandshakeListener {
 
     /**
      * Setter.
+     *
      * @param handshakeContext context
      */
     void setHandshakeContext(HandshakeContext handshakeContext);

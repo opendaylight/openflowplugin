@@ -59,6 +59,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 
 /**
  * Util class for init registration of serializers.
+ *
  * @author michal.polkorab
  */
 public final class MessageFactoryInitializer {
@@ -68,6 +69,7 @@ public final class MessageFactoryInitializer {
 
     /**
      * Registers message serializers into provided registry.
+     *
      * @param serializerRegistry registry to be initialized with message serializers
      */
     public static void registerMessageSerializers(final SerializerRegistry serializerRegistry) {

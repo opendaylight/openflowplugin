@@ -56,6 +56,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Handles messages (notifications + rpcs) and connections.
+ *
  * @author mirehak
  * @author michal.polkorab
  */
@@ -75,6 +76,7 @@ public class ConnectionAdapterImpl extends AbstractConnectionAdapterStatistics i
 
     /**
      * Default constructor.
+     *
      * @param channel the channel to be set - used for communication
      * @param address client address (used only in case of UDP communication,
      *                as there is no need to store address over tcp (stable channel))

@@ -518,6 +518,7 @@ public class HandshakeManagerImplTest {
 
     /**
      * Adds version bitmap.
+     *
      * @param versionOrder version order
      * @param helloBuilder hello builder
      * @return builder

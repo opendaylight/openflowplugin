@@ -31,12 +31,13 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  * Created by Tomas Slusny on 23.3.2016.
  */
 public final class NodeConnectorRefToPortTranslator {
-
     private NodeConnectorRefToPortTranslator() {
+        // hidden on purpose
     }
 
     /**
      * Converts {@link PacketIn} to {@link NodeConnectorRef}.
+     *
      * @param packetIn Packet input
      * @param dataPathId Data path id
      * @return packet input converted to node connector reference
@@ -59,6 +60,7 @@ public final class NodeConnectorRefToPortTranslator {
 
     /**
      * Gets port number from {@link NodeConnectorRef}.
+     *
      * @param nodeConnectorRef Node connector reference
      * @param version Openflow version
      * @return port number

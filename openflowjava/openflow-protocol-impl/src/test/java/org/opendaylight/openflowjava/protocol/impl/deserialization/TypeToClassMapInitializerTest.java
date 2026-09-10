@@ -48,6 +48,7 @@ import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
  * Test for {@link org.opendaylight.openflowjava.protocol.impl.deserialization.TypeToClassMapInitializer}.
+ *
  * @author michal.polkorab
  * @author giuseppex.petralia@intel.com
  */

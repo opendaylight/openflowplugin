@@ -43,7 +43,6 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  * Provides meter util methods.
  */
 public final class MeterUtil {
-
     private static final RpcResultBuilder<List<BatchFailedMetersOutput>> SUCCESSFUL_METER_OUTPUT_RPC_RESULT =
             RpcResultBuilder.success(Collections.emptyList());
 
@@ -97,6 +96,7 @@ public final class MeterUtil {
 
     /**
      * Create meter path.
+     *
      * @param nodePath node path
      * @param meterId meter Id
      * @return instance identifier assembled for given node and meter

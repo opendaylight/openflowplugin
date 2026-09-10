@@ -5,7 +5,6 @@
  * terms of the Eclipse Public License v1.0 which accompanies this distribution,
  * and is available at http://www.eclipse.org/legal/epl-v10.html
  */
-
 package org.opendaylight.openflowjava.protocol.impl.core.connection;
 
 import io.netty.util.concurrent.Future;
@@ -16,10 +15,10 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * Wraps outgoing message and includes listener attached to this message. This object
  * is sent to OFEncoder. When OFEncoder fails to serialize the message,
  * listener is filled with exception. The exception is then delegated to upper ODL layers.
+ *
  * @author michal.polkorab
  */
 public class MessageListenerWrapper {
-
     private final OfHeader msg;
     private final GenericFutureListener<Future<Void>> listener;
 
@@ -42,7 +41,6 @@ public class MessageListenerWrapper {
     public OfHeader getMsg() {
         return msg;
     }
-
 
     /**
      * Returns the listener listening on message sending success / failure.

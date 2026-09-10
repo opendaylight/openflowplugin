@@ -98,6 +98,7 @@ public final class GroupUtil {
 
     /**
      * Method build the group path.
+     *
      * @param nodePath - node path
      * @param groupId - group Id
      * @return instance identifier assembled for given node and group

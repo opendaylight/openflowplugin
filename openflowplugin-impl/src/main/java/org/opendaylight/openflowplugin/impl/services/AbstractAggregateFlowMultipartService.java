@@ -25,6 +25,7 @@ public abstract class AbstractAggregateFlowMultipartService<T extends OfHeader>
 
     /**
      * Process input and return reply.
+     *
      * @param input input
      * @return reply
      */

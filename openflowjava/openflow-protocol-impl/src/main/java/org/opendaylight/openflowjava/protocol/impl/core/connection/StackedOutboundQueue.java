@@ -65,6 +65,7 @@ final class StackedOutboundQueue extends AbstractStackedOutboundQueue {
     /**
      * Checks if Barrier Request is the last message enqueued. If not, one needs
      * to be scheduled in order to collect data about previous messages.
+     *
      * @return true if last enqueued message is Barrier Request, false otherwise
      */
     boolean isBarrierNeeded() {

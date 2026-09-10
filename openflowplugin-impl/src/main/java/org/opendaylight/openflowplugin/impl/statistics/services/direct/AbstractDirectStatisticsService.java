@@ -37,7 +37,6 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
                                                O extends DataContainer,
                                                T extends OfHeader>
         extends AbstractMultipartService<I, T> {
-
     private final MultipartType multipartType;
     private final OpenflowVersion ofVersion = OpenflowVersion.ofVersion(getVersion());
     private final ConvertorExecutor convertorExecutor;
@@ -45,6 +44,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
 
     /**
      * Instantiates a new Abstract direct statistics service.
+     *
      * @param multipartType           the multipart type
      * @param requestContextStack      the request context stack
      * @param deviceContext            the device context
@@ -97,6 +97,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
 
     /**
      * Get multipart type.
+     *
      * @return multipart type
      */
     protected MultipartType getMultipartType() {
@@ -105,6 +106,7 @@ abstract class AbstractDirectStatisticsService<I extends StoreStatsGrouping,
 
     /**
      * Get convertor executor.
+     *
      * @return convertor executor
      */
     protected ConvertorExecutor getConvertorExecutor() {
