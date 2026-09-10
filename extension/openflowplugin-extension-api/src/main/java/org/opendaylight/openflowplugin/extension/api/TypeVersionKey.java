@@ -29,8 +29,7 @@ public class TypeVersionKey<T> {
     }
 
     /**
-     * Returns the key type.
-     * @return key type
+     * {@return key type}
      */
     public Class<? extends T> getType() {
         return type;

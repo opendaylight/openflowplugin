@@ -35,6 +35,7 @@ public class SimpleDeserializerRegistryHelper {
 
     /**
      * Register deserializer in registry. If deserializer supports more protocol versions assign actual one.
+     *
      * @param code code / value to distinguish between deserializers
      * @param deserializedObjectClass class of object that will be deserialized by given deserializer
      * @param deserializer deserializer instance

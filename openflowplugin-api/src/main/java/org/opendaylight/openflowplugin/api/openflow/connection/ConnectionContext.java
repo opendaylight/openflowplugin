@@ -23,9 +23,9 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
  * that there is at most one primary session associated with a Device Context.
  */
 public interface ConnectionContext {
-
     /**
      * Setter.
+     *
      * @param handshakeContext corresponding handshake context used upon this connection
      */
     void setHandshakeContext(HandshakeContext handshakeContext);
@@ -55,54 +55,63 @@ public interface ConnectionContext {
 
     /**
      * Setter for nodeId.
+     *
      * @param nodeId node id
      */
     void setNodeId(NodeId nodeId);
 
     /**
      * Method returns identifier of device whic connection represents this context.
+     *
      * @return {@link org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.NodeId}
      */
     NodeId getNodeId();
 
     /**
      * Returns connection adapter.
+     *
      * @return the connectionAdapter
      */
     ConnectionAdapter getConnectionAdapter();
 
     /**
      * Returns reference to OFJava outbound queue provider. Outbound queue is used for outbound messages processing.
+     *
      * @return {@link OutboundQueueProvider}
      */
     OutboundQueue getOutboundQueueProvider();
 
     /**
      * Method sets reference to OFJava outbound queue provider.
+     *
      * @param outboundQueueProvider {@link OutboundQueueProvider}
      */
     void setOutboundQueueProvider(OutboundQueueProvider outboundQueueProvider);
 
     /**
      * Method returns current connection state.
+     *
      * @return {@link ConnectionContext.CONNECTION_STATE}
      */
     CONNECTION_STATE getConnectionState();
 
     /**
      * Setter.
+     *
      * @param featuresReply as received from device during handshake
      */
     void setFeatures(FeaturesReply featuresReply);
 
     /**
      * Getter.
+     *
      * @return featureReply as received from device during handshake
      */
     FeaturesReply getFeatures();
 
     /**
      * Method sets handler for handling closing connections.
+     *
      * @param deviceDisconnectedHandler handler for disconnect
      */
     void setDeviceDisconnectedHandler(
@@ -116,6 +125,7 @@ public interface ConnectionContext {
 
     /**
      * actively drop associated connection.
+     *
      * @param propagate true if event need to be propagated to higher contexts (device, stats, rpc..)
      *                  or false if invoked from higher context
      * @see ConnectionAdapter#disconnect()
@@ -144,6 +154,7 @@ public interface ConnectionContext {
 
     /**
      * Create and return basic device info.
+     *
      * @return created device info
      */
     DeviceInfo getDeviceInfo();
@@ -156,6 +167,7 @@ public interface ConnectionContext {
 
     /**
      * Handle received port status message.
+     *
      * @param portStatusMessage port status message
      */
     void handlePortStatusMessage(PortStatusMessage portStatusMessage);

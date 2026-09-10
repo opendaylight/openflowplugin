@@ -18,7 +18,8 @@ public abstract class ConvertorData {
     private final Uint8 version;
 
     /**
-     *Instantiates a new Convertor data.
+     * Instantiates a new Convertor data.
+     *
      * @param version the version
      */
     public ConvertorData(final Uint8 version) {
