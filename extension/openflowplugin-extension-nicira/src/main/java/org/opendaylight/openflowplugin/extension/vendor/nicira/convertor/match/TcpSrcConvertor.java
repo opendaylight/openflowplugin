@@ -41,7 +41,8 @@ import org.opendaylight.yangtools.binding.Augmentation;
  */
 public class TcpSrcConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         TcpSrcCaseValue tcpSrcCaseValue = (TcpSrcCaseValue) input.getMatchEntryValue();
         NxmOfTcpSrcBuilder tcpSrcBuilder = new NxmOfTcpSrcBuilder();
         tcpSrcBuilder.setPort(tcpSrcCaseValue.getTcpSrcValues().getPort());
@@ -66,7 +67,7 @@ public class TcpSrcConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfTcpSrc value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmOfTcpSrc value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,
