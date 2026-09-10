@@ -12,7 +12,7 @@ import org.opendaylight.yangtools.yang.common.Uint64;
 
 /**
  * Marker interface identifying flow stored in OFP local flow registry.
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 8.4.2015.
+ * Created by Martin Bobak on 8.4.2015.
  */
 public interface FlowRegistryKey {
 
