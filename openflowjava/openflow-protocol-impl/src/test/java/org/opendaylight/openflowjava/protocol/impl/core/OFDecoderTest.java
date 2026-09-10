@@ -23,7 +23,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.protocol.impl.deserialization.DeserializationFactory;
 import org.opendaylight.openflowjava.util.ByteBufUtils;
-import org.opendaylight.yangtools.binding.DataObject;
+import org.opendaylight.yangtools.binding.ContainerObject;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 /**
@@ -33,12 +33,14 @@ import org.opendaylight.yangtools.yang.common.Uint8;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class OFDecoderTest {
+    @Mock
+    ChannelHandlerContext mockChHndlrCtx;
+    @Mock
+    DeserializationFactory mockDeserializationFactory;
+    @Mock
+    ContainerObject<?, ?> mockDataObject;
 
-    @Mock ChannelHandlerContext mockChHndlrCtx ;
-    @Mock DeserializationFactory mockDeserializationFactory ;
-    @Mock DataObject mockDataObject ;
-
-    OFDecoder ofDecoder ;
+    OFDecoder ofDecoder;
     private ByteBuf writeObj;
     private VersionMessageWrapper inMsg;
     private List<Object> outList;

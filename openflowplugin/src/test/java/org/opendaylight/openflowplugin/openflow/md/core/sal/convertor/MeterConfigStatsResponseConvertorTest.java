@@ -21,6 +21,7 @@ import org.opendaylight.openflowplugin.openflow.md.core.sal.convertor.data.Versi
 import org.opendaylight.yang.gen.v1.urn.opendaylight.meter.types.rev130918.meter.config.stats.reply.MeterConfigStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterFlags;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.types.rev130731.MeterId;
+import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.MeterBandHeader;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDropCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandDscpRemarkCaseBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.meter.band.MeterBandExperimenterCaseBuilder;
@@ -31,13 +32,14 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.MeterConfigBuilder;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.Bands;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.multipart.reply.multipart.reply.body.multipart.reply.meter.config._case.multipart.reply.meter.config.meter.config.BandsBuilder;
-import org.opendaylight.yangtools.binding.DataContainer;
+import org.opendaylight.yangtools.binding.CaseObject;
+import org.opendaylight.yangtools.binding.lib.AbstractAugmentable;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 public class MeterConfigStatsResponseConvertorTest {
     private static final int PRESET_COUNT = 7;
 
-    private List<MeterConfig> createMeterConfigList() {
+    private static List<MeterConfig> createMeterConfigList() {
         List<MeterConfig> meterConfigs = new ArrayList<>();
         MeterConfigBuilder meterConfigBuilder = new MeterConfigBuilder();
         for (int i = 0; i < PRESET_COUNT; i++) {
@@ -55,7 +57,7 @@ public class MeterConfigStatsResponseConvertorTest {
             bandses.add(bandsBuilder.build());
 
             bandsBuilder = new BandsBuilder();
-            bandsBuilder.setMeterBand(new MockMeterBandBuilder());
+            bandsBuilder.setMeterBand(new MockMeterBand());
             bandses.add(bandsBuilder.build());
 
             bandsBuilder = new BandsBuilder();
@@ -94,11 +96,29 @@ public class MeterConfigStatsResponseConvertorTest {
         }
     }
 
-    private final class MockMeterBandBuilder implements org.opendaylight.yang.gen.v1.urn.opendaylight.openflow
-            .protocol.rev130731.meter.band.header.MeterBand {
+    private static final class MockMeterBand extends AbstractAugmentable<MockMeterBand> implements CaseObject<
+                MeterBandHeader,
+                org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand,
+                MockMeterBand>,
+            org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.meter.band.header.MeterBand {
         @Override
-        public Class<? extends DataContainer> implementedInterface() {
-            return MockMeterBandBuilder.class;
+        public Class<MockMeterBand> implementedInterface() {
+            return MockMeterBand.class;
+        }
+
+        @Override
+        public int javaHC() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean javaEQ(final MockMeterBand obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String javaTS() {
+            throw new UnsupportedOperationException();
         }
     }
 }

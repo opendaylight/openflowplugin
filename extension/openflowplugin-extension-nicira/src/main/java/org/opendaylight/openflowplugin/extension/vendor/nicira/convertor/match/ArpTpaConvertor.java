@@ -43,9 +43,9 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  * @author msunal
  */
 public class ArpTpaConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         ArpTpaCaseValue arpTpaCaseValue = (ArpTpaCaseValue) input.getMatchEntryValue();
         Ipv4Address ipv4Address = IpConverter.longToIpv4Address(arpTpaCaseValue.getArpTpaValues().getValue());
         return resolveAugmentation(new NxmOfArpTpaBuilder().setIpv4Address(ipv4Address).build(), path,
@@ -69,7 +69,7 @@ public class ArpTpaConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfArpTpa value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmOfArpTpa value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

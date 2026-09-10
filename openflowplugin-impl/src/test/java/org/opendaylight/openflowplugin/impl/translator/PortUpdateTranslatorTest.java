@@ -53,7 +53,7 @@ public class PortUpdateTranslatorTest {
 
         portState = new StateBuilder().setLive(true).setBlocked(false).setLinkDown(false).build();
         portConfig = org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortConfig
-                .getDefaultInstance("nOFWD");
+                .ofStringValue("NO-FWD");
         portBld = assemblePortStatusMessage(21L, 84L);
 
     }
@@ -63,7 +63,7 @@ public class PortUpdateTranslatorTest {
         Mockito.when(deviceInfo.getVersion()).thenReturn(OFConstants.OFP_VERSION_1_3);
         final org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures portFeatures =
                 org.opendaylight.yang.gen.v1.urn.opendaylight.flow.types.port.rev130925.PortFeatures
-                        .getDefaultInstance("hundredGbFd");
+                        .ofStringValue("hundred-gb-fd");
 
 
         final FlowCapableNodeConnector nodeConnector =
@@ -112,12 +112,12 @@ public class PortUpdateTranslatorTest {
     }
 
     private static PortStatusMessageBuilder assemblePortStatusMessage(final long portNoValue, final long speed) {
-        final PortFeatures portFeatures13 = PortFeatures.getDefaultInstance("_100gbFd");
-        final PortFeaturesV10 portFeatures10 = PortFeaturesV10.getDefaultInstance("_100mbFd");
-        final PortConfig portConfig13 = PortConfig.getDefaultInstance("noFwd");
-        final PortConfigV10 portConfig10 = PortConfigV10.getDefaultInstance("noFwd");
-        final PortState portState13 = PortState.getDefaultInstance("live");
-        final PortStateV10 portState10 = PortStateV10.getDefaultInstance("live");
+        final PortFeatures portFeatures13 = PortFeatures.ofStringValue("_100gb-fd");
+        final PortFeaturesV10 portFeatures10 = PortFeaturesV10.ofStringValue("_100mb-fd");
+        final PortConfig portConfig13 = PortConfig.ofStringValue("no-fwd");
+        final PortConfigV10 portConfig10 = PortConfigV10.ofStringValue("no-fwd");
+        final PortState portState13 = PortState.ofStringValue("live");
+        final PortStateV10 portState10 = PortStateV10.ofStringValue("live");
 
         return new PortStatusMessageBuilder()
                 .setPortNo(Uint32.valueOf(portNoValue))

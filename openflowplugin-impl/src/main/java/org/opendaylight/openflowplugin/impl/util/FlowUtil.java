@@ -119,7 +119,7 @@ public final class FlowUtil {
         // Hidden on purpose
     }
 
-    static <K extends Key<V>, V extends EntryObject<V, K>> Map<K, V> index(final List<V> list) {
+    static <K extends Key<V>, V extends EntryObject<?, V, K>> Map<K, V> index(final List<V> list) {
         return list == null ? null : BindingMap.ordered(list);
     }
 

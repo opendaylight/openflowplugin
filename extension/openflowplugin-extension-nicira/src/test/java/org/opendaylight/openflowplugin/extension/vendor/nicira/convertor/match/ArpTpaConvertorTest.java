@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.openflowplugin.extension.vendor.nicira.convertor.IpConverter;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.Ipv4Address;
@@ -32,7 +31,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfArpTpaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.arp.tpa.grouping.NxmOfArpTpaBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -40,7 +38,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ArpTpaConvertorTest {
-
     @Mock
     private Extension extension;
     @Mock
@@ -58,7 +55,7 @@ public class ArpTpaConvertorTest {
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder();
         nxAugMatchRpcAddFlowBuilder.setNxmOfArpTpa(nxmOfArpTpaBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
+        final var extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
         when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
@@ -83,26 +80,22 @@ public class ArpTpaConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(arpTpaCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpTpaConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = arpTpaConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfArpTpa().getIpv4Address());
         Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpTpaConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = arpTpaConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfArpTpa().getIpv4Address());
         Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpTpaConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = arpTpaConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfArpTpa().getIpv4Address());
         Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpTpaConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = arpTpaConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(IPV4_ADDRESS, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmOfArpTpa().getIpv4Address());
         Assert.assertEquals(NxmOfArpTpaKey.VALUE, extensionAugment.getKey());
