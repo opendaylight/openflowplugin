@@ -12,9 +12,9 @@ import static java.util.Objects.requireNonNull;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
+import com.google.errorprone.annotations.concurrent.GuardedBy;
 import io.netty.channel.EventLoopGroup;
 import java.net.InetSocketAddress;
-import org.checkerframework.checker.lock.qual.GuardedBy;
 import org.eclipse.jdt.annotation.NonNull;
 
 /**
@@ -24,7 +24,8 @@ public abstract class ServerFacade {
     private final @NonNull SettableFuture<Void> shutdownFuture = SettableFuture.create();
     private final @NonNull InetSocketAddress localAddress;
 
-    private @GuardedBy("this") EventLoopGroup group;
+    @GuardedBy("this")
+    private EventLoopGroup group;
 
     ServerFacade(final EventLoopGroup group, final InetSocketAddress localAddress) {
         this.localAddress = requireNonNull(localAddress);
