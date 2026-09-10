@@ -35,7 +35,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yangtools.binding.Augmentation;
 
 public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     /*
      * (non-Javadoc)
      *
@@ -45,7 +44,8 @@ public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
      * org.opendaylight.openflowplugin.extension.api.path.AugmentationPath)
      */
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         CtMarkCaseValue ctMarkCaseValue = (CtMarkCaseValue) input.getMatchEntryValue();
         NxmNxCtMarkBuilder ctMarkBuilder = new NxmNxCtMarkBuilder();
         ctMarkBuilder.setCtMark(ctMarkCaseValue.getCtMarkValues().getCtMark());
@@ -82,7 +82,7 @@ public class CtMarkConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmNxCtMark value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmNxCtMark value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

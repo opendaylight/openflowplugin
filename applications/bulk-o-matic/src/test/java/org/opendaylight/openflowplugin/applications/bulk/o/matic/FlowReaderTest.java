@@ -20,17 +20,16 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.mdsal.binding.api.DataBroker;
 import org.opendaylight.mdsal.binding.api.ReadTransaction;
+import org.opendaylight.mdsal.common.api.FluentFutures;
 import org.opendaylight.mdsal.common.api.LogicalDatastoreType;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.inventory.rev130819.nodes.Node;
 import org.opendaylight.yangtools.binding.DataObjectIdentifier;
-import org.opendaylight.yangtools.util.concurrent.FluentFutures;
 
 /**
  * Test for {@link FlowReader}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class FlowReaderTest {
-
     @Mock
     private DataBroker mockDataBroker;
     @Mock

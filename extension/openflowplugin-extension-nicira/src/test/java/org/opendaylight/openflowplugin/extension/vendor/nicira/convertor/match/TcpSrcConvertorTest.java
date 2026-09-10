@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev130715.PortNumber;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -31,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfTcpSrcKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.tcp.src.grouping.NxmOfTcpSrcBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
@@ -57,7 +55,7 @@ public class TcpSrcConvertorTest {
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfTcpSrc(nxmOfTcpSrcBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
+        final var extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
         when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
@@ -85,32 +83,28 @@ public class TcpSrcConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(tcpSrcCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = tcpSrcConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = tcpSrcConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(2, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfTcpSrc()
                 .getMask().intValue());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfTcpSrc().getPort());
         Assert.assertEquals(NxmOfTcpSrcKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = tcpSrcConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = tcpSrcConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(2, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfTcpSrc().getMask().intValue());
         Assert.assertEquals(DEFAULT_PORT, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfTcpSrc().getPort());
         Assert.assertEquals(NxmOfTcpSrcKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = tcpSrcConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = tcpSrcConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(2, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfTcpSrc().getMask().intValue());
         Assert.assertEquals(DEFAULT_PORT,
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmOfTcpSrc().getPort());
         Assert.assertEquals(NxmOfTcpSrcKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = tcpSrcConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = tcpSrcConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(2, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfTcpSrc()
                 .getMask().intValue());
         Assert.assertEquals(DEFAULT_PORT,

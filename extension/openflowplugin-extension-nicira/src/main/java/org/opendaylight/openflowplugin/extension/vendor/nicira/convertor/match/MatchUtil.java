@@ -170,10 +170,8 @@ public final class MatchUtil {
             .setMatchEntryValue(matchEntryValue);
     }
 
-    public static <V extends Augmentation<ExperimenterIdCase>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
-            final MatchField matchField,
-            final Uint32 experimenterId,
-            final NxExpMatchEntryValue value) {
+    public static <V extends Augmentation<ExperimenterIdCase, ?>> MatchEntryBuilder createExperimenterMatchEntryBuilder(
+            final MatchField matchField, final Uint32 experimenterId, final NxExpMatchEntryValue value) {
         return createDefaultMatchEntryBuilder(matchField, ExperimenterClass.VALUE, new ExperimenterIdCaseBuilder()
             .setExperimenter(new ExperimenterBuilder().setExperimenter(new ExperimenterId(experimenterId)).build())
             .addAugmentation(new OfjAugNxExpMatchBuilder().setNxExpMatchEntryValue(value).build())

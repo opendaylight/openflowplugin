@@ -155,7 +155,7 @@ public class FlowRegistryKeyFactoryTest {
 
         var ex = assertThrows(NoSuchElementException.class,
             () -> FlowRegistryKeyFactory.VERSION_1_3.create(fb1.build()));
-        assertEquals("Value of tableid is not present", ex.getMessage());
+        assertEquals("Value of tableId is not present", ex.getMessage());
 
         FlowBuilder fb2 = new FlowBuilder(flow1Builder.build());
         fb2.setPriority((Uint16) null);

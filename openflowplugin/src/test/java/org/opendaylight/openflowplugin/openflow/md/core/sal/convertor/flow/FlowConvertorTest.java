@@ -411,17 +411,17 @@ public class FlowConvertorTest {
         }
 
         @Override
-        public int hashCode() {
+        public int javaHC() {
             return Objects.hash(instructions, match);
         }
 
         @Override
-        public boolean equals(final Object obj) {
+        public boolean javaEQ(final AddFlowInput obj) {
             return this == obj;
         }
 
         @Override
-        public String toString() {
+        public String javaTS() {
             return MoreObjects.toStringHelper(this).add("instructions", instructions).add("match", match).toString();
         }
     }

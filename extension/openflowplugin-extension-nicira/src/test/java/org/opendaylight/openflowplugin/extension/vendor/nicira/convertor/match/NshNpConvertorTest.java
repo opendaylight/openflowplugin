@@ -17,7 +17,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.opendaylight.openflowjava.nx.api.NiciraConstants;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.augments.rev150225.experimenter.id.match.entry.ExperimenterIdCase;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -32,17 +31,16 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxNshNpKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.np.grouping.NxmNxNshNp;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.nsh.np.grouping.NxmNxNshNpBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint8;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NshNpConvertorTest {
+    private static final Uint8 NP_VALUE = Uint8.valueOf(0x7B);
+
     @Mock
     private Extension extension;
 
     private NshNpConvertor convertor;
-
-    private static final Uint8 NP_VALUE = Uint8.valueOf(0x7B);
 
     @Before
     public void setUp() {
@@ -75,26 +73,22 @@ public class NshNpConvertorTest {
     public void testConvertToOFSal() {
         MatchEntry matchEntry = NshNpConvertor.buildMatchEntry(NP_VALUE, null);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = convertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = convertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
         assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = convertor.convert(matchEntry,
-                MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = convertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
         assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = convertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = convertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
         assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = convertor.convert(matchEntry,
-                MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = convertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         assertEquals(NP_VALUE, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxNshNp().getValue());
         assertEquals(NxmNxNshNpKey.VALUE, extensionAugment.getKey());
