@@ -33,20 +33,12 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.infrautils</groupId>
+            <artifactId>infrautils-util</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
             <artifactId>mdsal-binding-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin</groupId>
-            <artifactId>srm-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.openflowplugin.model</groupId>
-            <artifactId>model-flow-service</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.yangtools</groupId>
-            <artifactId>yang-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opendaylight.mdsal</groupId>
@@ -57,20 +49,32 @@
             <artifactId>openflowplugin-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.opendaylight.openflowplugin.applications</groupId>
-            <artifactId>reconciliation-framework</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opendaylight.infrautils</groupId>
-            <artifactId>infrautils-util</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowplugin-extension-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opendaylight.openflowplugin</groupId>
+            <artifactId>srm-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.opendaylight.openflowplugin.applications</groupId>
             <artifactId>arbitratorreconciliation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.applications</groupId>
+            <artifactId>reconciliation-framework</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.openflowplugin.model</groupId>
+            <artifactId>model-flow-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>util</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opendaylight.yangtools</groupId>
+            <artifactId>yang-common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>

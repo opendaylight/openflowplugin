@@ -40,9 +40,9 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * @author msunal
  */
 public class EthDstConvertor implements ConvertorToOFJava<MatchEntry>, ConvertorFromOFJava<MatchEntry, MatchPath> {
-
     @Override
-    public ExtensionAugment<? extends Augmentation<Extension>> convert(final MatchEntry input, final MatchPath path) {
+    public ExtensionAugment<? extends Augmentation<Extension, ?>> convert(final MatchEntry input,
+            final MatchPath path) {
         EthDstCaseValue ethDstCaseValue = (EthDstCaseValue) input.getMatchEntryValue();
         return resolveAugmentation(
                 new NxmOfEthDstBuilder().setMacAddress(ethDstCaseValue.getEthDstValues().getMacAddress()).build(), path,
@@ -66,7 +66,7 @@ public class EthDstConvertor implements ConvertorToOFJava<MatchEntry>, Convertor
             .build();
     }
 
-    private static ExtensionAugment<? extends Augmentation<Extension>> resolveAugmentation(final NxmOfEthDst value,
+    private static ExtensionAugment<? extends Augmentation<Extension, ?>> resolveAugmentation(final NxmOfEthDst value,
             final MatchPath path, final ExtensionKey key) {
         return switch (path) {
             case FLOWS_STATISTICS_UPDATE_MATCH -> new ExtensionAugment<>(NxAugMatchNodesNodeTableFlow.class,

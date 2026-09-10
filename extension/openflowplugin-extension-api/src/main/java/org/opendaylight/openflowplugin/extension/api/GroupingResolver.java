@@ -13,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import org.opendaylight.yangtools.binding.Augmentable;
 import org.opendaylight.yangtools.binding.Augmentation;
+import org.opendaylight.yangtools.binding.DataContainer;
 
 /**
  * Provides augmentation resolving upon given {@link Augmentable}.
@@ -27,10 +28,10 @@ import org.opendaylight.yangtools.binding.Augmentation;
  * @deprecated Use {@link AugmentationGroupingResolver} instead.
  */
 @Deprecated
-public class GroupingResolver<G, T extends Augmentable<T>> {
+public class GroupingResolver<G, T extends Augmentable<T> & DataContainer> {
 
     Class<G> commonInterface;
-    Set<Class<? extends Augmentation<T>>> classes;
+    Set<Class<? extends Augmentation<T, ?>>> classes;
 
     public GroupingResolver(final Class<G> commonInterface) {
         this.commonInterface = commonInterface;
@@ -44,7 +45,7 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      * @param <X> type of parameter
      * @return this for chaining
      */
-    public <X extends Augmentation<T>> GroupingResolver<G, T> add(final Class<X> cls) {
+    public <X extends Augmentation<T, X>> GroupingResolver<G, T> add(final Class<X> cls) {
         Preconditions.checkArgument(commonInterface.isAssignableFrom(cls));
         classes.add(cls);
         return this;
@@ -55,8 +56,8 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      *
      * @param clses set of equivalent augmentation classes
      */
-    public void setAugmentations(final Set<Class<? extends Augmentation<T>>> clses) {
-        for (Class<? extends Augmentation<T>> cls : clses) {
+    public void setAugmentations(final Set<Class<? extends Augmentation<T, ?>>> clses) {
+        for (var cls : clses) {
             Preconditions.checkArgument(commonInterface.isAssignableFrom(cls));
         }
         classes = clses;
@@ -70,8 +71,9 @@ public class GroupingResolver<G, T extends Augmentable<T>> {
      */
     @SuppressWarnings("unchecked")
     public Optional<G> getExtension(final T data) {
-        for (Class<? extends Augmentation<T>> cls : classes) {
-            Augmentation<T> potential = data.augmentation(cls);
+        for (var cls : classes) {
+            @SuppressWarnings("rawtypes")
+            var potential = data.augmentation((Class) cls);
             if (potential != null) {
                 return Optional.of((G) potential);
             }
