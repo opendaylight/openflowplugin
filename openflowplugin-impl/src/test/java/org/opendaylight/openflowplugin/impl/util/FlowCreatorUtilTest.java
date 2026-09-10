@@ -90,7 +90,7 @@ public class FlowCreatorUtilTest {
         final Uint16 defPri = Uint16.valueOf(0x8000);
         final Uint16 defIdle = Uint16.ZERO;
         final Uint16 defHard = Uint16.ZERO;
-        final FlowModFlags defFlags = FlowModFlags.getDefaultInstance("sENDFLOWREM");
+        final FlowModFlags defFlags = FlowModFlags.ofStringValue("SEND_FLOW_REM");
         final FlowModFlags flags = new FlowModFlags(false, true, false, true, false);
         final FlowCookie defCookie = new FlowCookie(Uint64.ZERO);
         final FlowCookie cookie = new FlowCookie(Uint64.valueOf(0x12345));
@@ -205,17 +205,17 @@ public class FlowCreatorUtilTest {
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(none, null));
         }
 
-        final String[] bitNames = {"cHECKOVERLAP", "nOBYTCOUNTS", "nOPKTCOUNTS", "rESETCOUNTS", "sENDFLOWREM"};
+        final String[] bitNames = {"CHECK_OVERLAP", "NO_BYT_COUNTS", "NO_PKT_COUNTS", "RESET_COUNTS", "SEND_FLOW_REM"};
         int bit = 0;
         for (final String name : bitNames) {
-            final FlowModFlags flags = FlowModFlags.getDefaultInstance(name);
+            final FlowModFlags flags = FlowModFlags.ofStringValue(name);
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(flags, all));
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(all, flags));
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(flags, none));
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(none, flags));
 
             for (final String nm : bitNames) {
-                final FlowModFlags f = FlowModFlags.getDefaultInstance(nm);
+                final FlowModFlags f = FlowModFlags.ofStringValue(nm);
                 final boolean expected = nm.equals(name);
                 assertEquals(expected, FlowCreatorUtil.equalsFlowModFlags(flags, f));
                 assertEquals(expected, FlowCreatorUtil.equalsFlowModFlags(f, flags));
@@ -229,7 +229,8 @@ public class FlowCreatorUtilTest {
             FlowModFlags flowModFlags = new FlowModFlags(overlap, noByte, noPacket, reset, flowRem);
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flags, flowModFlags));
             assertTrue(FlowCreatorUtil.equalsFlowModFlags(flowModFlags, flags));
-            assertTrue(FlowCreatorUtil.equalsFlowModFlags(flowModFlags, new FlowModFlags(flowModFlags)));
+            assertTrue(FlowCreatorUtil.equalsFlowModFlags(flowModFlags,
+                new FlowModFlags(overlap, noByte, noPacket, reset, flowRem)));
 
             flowModFlags = new FlowModFlags(!overlap, noByte, noPacket, reset, flowRem);
             assertFalse(FlowCreatorUtil.equalsFlowModFlags(flags, flowModFlags));
@@ -266,12 +267,12 @@ public class FlowCreatorUtilTest {
         // Integer
         final Integer[] integers = {-1000, 0, 1000,};
         for (final Integer def : integers) {
-            final Integer same = Integer.valueOf(def);
+            final Integer same = def;
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(same, null, def));
             assertTrue(FlowCreatorUtil.equalsWithDefault(null, same, def));
 
-            final Integer diff = Integer.valueOf(def.intValue() + 1);
+            final Integer diff = def.intValue() + 1;
             assertFalse(FlowCreatorUtil.equalsWithDefault(null, diff, def));
             assertFalse(FlowCreatorUtil.equalsWithDefault(diff, null, def));
         }

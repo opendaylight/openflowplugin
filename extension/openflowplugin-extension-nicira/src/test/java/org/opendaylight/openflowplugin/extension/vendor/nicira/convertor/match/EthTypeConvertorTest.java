@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.EthTypeCaseValue;
@@ -30,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmOfEthTypeKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.of.eth.type.grouping.NxmOfEthTypeBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint16;
 
 /**
@@ -38,7 +36,6 @@ import org.opendaylight.yangtools.yang.common.Uint16;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class EthTypeConvertorTest {
-
     @Mock
     private Extension extension;
     @Mock
@@ -55,7 +52,7 @@ public class EthTypeConvertorTest {
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmOfEthType(nxmOfEthTypeBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
+        final var extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
         when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
@@ -81,26 +78,23 @@ public class EthTypeConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(ethTypeCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = ethTypeConvertor
+        final var extensionAugment = ethTypeConvertor
                 .convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(1, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmOfEthType()
                 .getValue().intValue());
         Assert.assertEquals(NxmOfEthTypeKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ethTypeConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = ethTypeConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(1, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmOfEthType().getValue().intValue());
         Assert.assertEquals(NxmOfEthTypeKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ethTypeConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = ethTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(1, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmOfEthType().getValue().intValue());
         Assert.assertEquals(NxmOfEthTypeKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ethTypeConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = ethTypeConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(1, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmOfEthType()
                 .getValue().intValue());
         Assert.assertEquals(NxmOfEthTypeKey.VALUE, extensionAugment.getKey());

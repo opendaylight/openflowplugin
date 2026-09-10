@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.yang.types.rev130715.MacAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
@@ -31,7 +30,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxArpShaKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.arp.sha.grouping.NxmNxArpShaBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 
 /**
  * Test for {@link ArpShaConvertor}.
@@ -54,7 +52,7 @@ public class ArpShaConvertorTest {
                 .setMacAddress(MAC_ADDRESS);
         final NxAugMatchRpcAddFlowBuilder nxAugMatchRpcAddFlowBuilder = new NxAugMatchRpcAddFlowBuilder()
                 .setNxmNxArpSha(nxmNxArpShaBuilder.build());
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
+        final var extensionAugmentation = nxAugMatchRpcAddFlowBuilder.build();
 
         when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
@@ -79,28 +77,24 @@ public class ArpShaConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(arpShaCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = arpShaConvertor.convert(matchEntry,
-                MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = arpShaConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(arpShaCaseValue.getArpShaValues().getMacAddress(),
                 ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxArpSha().getMacAddress());
         Assert.assertEquals(NxmNxArpShaKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = arpShaConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = arpShaConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(arpShaCaseValue.getArpShaValues().getMacAddress(),
                 ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject()).getNxmNxArpSha()
                         .getMacAddress());
         Assert.assertEquals(NxmNxArpShaKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = arpShaConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = arpShaConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(arpShaCaseValue.getArpShaValues().getMacAddress(),
                 ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject()).getNxmNxArpSha()
                         .getMacAddress());
         Assert.assertEquals(NxmNxArpShaKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = arpShaConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = arpShaConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(arpShaCaseValue.getArpShaValues().getMacAddress(),
                 ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject()).getNxmNxArpSha()
                         .getMacAddress());

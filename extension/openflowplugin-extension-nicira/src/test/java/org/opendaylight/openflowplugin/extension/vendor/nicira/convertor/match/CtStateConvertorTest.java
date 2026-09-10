@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.opendaylight.openflowplugin.extension.api.ExtensionAugment;
 import org.opendaylight.openflowplugin.extension.api.path.MatchPath;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.oxm.rev150225.match.entries.grouping.MatchEntry;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowjava.nx.match.rev140421.ofj.aug.nx.match.CtStateCaseValue;
@@ -30,7 +29,6 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.ni
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxAugMatchRpcGetFlowStats;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.NxmNxCtStateKey;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflowplugin.extension.nicira.match.rev140714.nxm.nx.ct.state.grouping.NxmNxCtStateBuilder;
-import org.opendaylight.yangtools.binding.Augmentation;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -38,7 +36,6 @@ import org.opendaylight.yangtools.yang.common.Uint32;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class CtStateConvertorTest {
-
     @Mock
     private Extension extension;
     @Mock
@@ -48,7 +45,6 @@ public class CtStateConvertorTest {
 
     @Before
     public void setUp() {
-
         final NxmNxCtStateBuilder nxmNxCtStateBuilder = new NxmNxCtStateBuilder()
                 .setCtState(Uint32.ONE)
                 .setMask(Uint32.TWO);
@@ -56,7 +52,7 @@ public class CtStateConvertorTest {
                 new NxAugMatchNodesNodeTableFlowBuilder();
         nxAugMatchNotifUpdateFlowStatsBuilder.setNxmNxCtState(nxmNxCtStateBuilder.build());
 
-        final Augmentation<Extension> extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
+        final var extensionAugmentation = nxAugMatchNotifUpdateFlowStatsBuilder.build();
         when(extension.augmentation(ArgumentMatchers.any()))
             .thenReturn(extensionAugmentation);
 
@@ -85,32 +81,28 @@ public class CtStateConvertorTest {
 
         when(matchEntry.getMatchEntryValue()).thenReturn(ctStateCaseValue);
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment = ctStateConvertor
-                .convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
+        final var extensionAugment = ctStateConvertor.convert(matchEntry, MatchPath.PACKET_RECEIVED_MATCH);
         Assert.assertEquals(3L, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxCtState()
                 .getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNotifPacketIn) extensionAugment.getAugmentationObject()).getNxmNxCtState()
                 .getMask().longValue());
         Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment1 = ctStateConvertor
-                .convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
+        final var extensionAugment1 = ctStateConvertor.convert(matchEntry, MatchPath.SWITCH_FLOW_REMOVED_MATCH);
         Assert.assertEquals(3L, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNotifSwitchFlowRemoved) extensionAugment1.getAugmentationObject())
                 .getNxmNxCtState().getMask().longValue());
         Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment2 = ctStateConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
+        final var extensionAugment2 = ctStateConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_UPDATE_MATCH);
         Assert.assertEquals(3L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchNodesNodeTableFlow) extensionAugment2.getAugmentationObject())
                 .getNxmNxCtState().getMask().longValue());
         Assert.assertEquals(NxmNxCtStateKey.VALUE, extensionAugment.getKey());
 
-        final ExtensionAugment<? extends Augmentation<Extension>> extensionAugment3 = ctStateConvertor
-                .convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
+        final var extensionAugment3 = ctStateConvertor.convert(matchEntry, MatchPath.FLOWS_STATISTICS_RPC_MATCH);
         Assert.assertEquals(3L, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
                 .getNxmNxCtState().getCtState().longValue());
         Assert.assertEquals(4L, ((NxAugMatchRpcGetFlowStats) extensionAugment3.getAugmentationObject())
