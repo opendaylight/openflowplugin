@@ -15,7 +15,7 @@ import org.apache.karaf.shell.api.console.Session;
 import org.opendaylight.openflowplugin.impl.statistics.ofpspecific.EventsTimeCounter;
 
 /**
- * Created by Martin Bobak &lt;mbobak@cisco.com&gt; on 28.5.2015.
+ * Created by Martin Bobak on 28.5.2015.
  */
 @Command(scope = "ofp", name = "show-time-counters", description = "Shows time counts for events.")
 @Service

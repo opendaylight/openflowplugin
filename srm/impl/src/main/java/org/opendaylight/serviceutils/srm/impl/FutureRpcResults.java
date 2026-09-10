@@ -45,7 +45,7 @@ public final class FutureRpcResults {
     }
 
     /**
-     * Create a Builder for a ListenableFuture to Future&lt;RpcResult&lt;O&gt;&gt; transformer. By default, the future
+     * Create a Builder for a ListenableFuture to {@code Future<RpcResult<O>>} transformer. By default, the future
      * will log success or failure, with configurable log levels; the caller can also add handlers for success and/or
      * failure.
      *
