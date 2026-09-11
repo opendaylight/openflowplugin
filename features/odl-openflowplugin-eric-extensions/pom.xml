@@ -17,11 +17,10 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- This project -->
             <dependency>
                 <groupId>org.opendaylight.openflowplugin</groupId>
-                <artifactId>openflowplugin-artifacts</artifactId>
-                <version>${project.version}</version>
+                <artifactId>bundle-parent</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -36,6 +35,7 @@
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
+
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>openflowjava-extension-eric</artifactId>
@@ -45,5 +45,4 @@
             <artifactId>openflowplugin-extension-eric</artifactId>
         </dependency>
     </dependencies>
-
 </project>
