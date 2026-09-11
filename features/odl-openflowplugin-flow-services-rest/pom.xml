@@ -17,11 +17,10 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- restconf -->
             <dependency>
-                <groupId>org.opendaylight.netconf</groupId>
-                <artifactId>netconf-artifacts</artifactId>
-                <version>11.0.2</version>
+                <groupId>org.opendaylight.openflowplugin</groupId>
+                <artifactId>bundle-parent</artifactId>
+                <version>2.0.0-SNAPSHOT</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -29,11 +28,9 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- feature dependencies -->
         <dependency>
             <groupId>org.opendaylight.openflowplugin</groupId>
             <artifactId>odl-openflowplugin-flow-services</artifactId>
-            <version>${project.version}</version>
             <classifier>features</classifier>
             <type>xml</type>
         </dependency>
@@ -44,5 +41,4 @@
             <type>xml</type>
         </dependency>
     </dependencies>
-
 </project>

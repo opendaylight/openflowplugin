@@ -22,6 +22,7 @@
 
     <modules>
         <module>artifacts</module>
+        <module>bundle-parent</module>
         <module>parent</module>
         <module>features</module>
         <module>model</module>
