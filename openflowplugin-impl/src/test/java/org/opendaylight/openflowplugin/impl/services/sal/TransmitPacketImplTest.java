@@ -30,7 +30,7 @@ import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.common.action.rev1
 import org.opendaylight.yang.gen.v1.urn.opendaylight.openflow.protocol.rev130731.PacketOutInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInput;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.TransmitPacketInputBuilder;
-import org.opendaylight.yangtools.yang.binding.KeyedInstanceIdentifier;
+import org.opendaylight.yangtools.binding.DataObjectIdentifier;
 import org.opendaylight.yangtools.yang.common.Uint32;
 
 /**
@@ -41,15 +41,16 @@ public class TransmitPacketImplTest extends ServiceMocking {
     private static final String ULTIMATE_PAYLOAD = "What do you get when you multiply six by nine?";
 
     private TransmitPacketImpl transmitPacket;
-    private KeyedInstanceIdentifier<NodeConnector, NodeConnectorKey> pathToNodeconnector;
+    private DataObjectIdentifier.WithKey<NodeConnector, NodeConnectorKey> pathToNodeconnector;
 
     @Override
     protected void setup() {
         final var convertorManager = ConvertorManagerFactory.createDefaultManager();
         transmitPacket = new TransmitPacketImpl(mockedRequestContextStack, mockedDeviceContext, convertorManager);
-        pathToNodeconnector = KeyedInstanceIdentifier.create(Nodes.class)
+        pathToNodeconnector = DataObjectIdentifier.builder(Nodes.class)
             .child(Node.class, new NodeKey(new NodeId("ofp-ut:123")))
-            .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("ofp-ut:123:1")));
+            .child(NodeConnector.class, new NodeConnectorKey(new NodeConnectorId("ofp-ut:123:1")))
+            .build();
     }
 
     @Test
@@ -78,7 +79,7 @@ public class TransmitPacketImplTest extends ServiceMocking {
             .setBufferId(OFConstants.OFP_NO_BUFFER)
             .setNode(new NodeRef(mockedDeviceInfo.getNodeInstanceIdentifier()))
             .setPayload(ULTIMATE_PAYLOAD.getBytes())
-            .setEgress(new NodeConnectorRef(pathToNodeconnector.toIdentifier()))
+            .setEgress(new NodeConnectorRef(pathToNodeconnector))
             .build();
     }
 }
