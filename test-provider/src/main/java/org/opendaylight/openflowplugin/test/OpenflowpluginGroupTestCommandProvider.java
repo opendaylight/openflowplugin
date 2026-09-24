@@ -530,7 +530,7 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
 
             @Override
             public void onFailure(final Throwable throwable) {
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+                ci.println("Status of Group Data Loaded Transaction : failure. Reason : " + throwable);
             }
         }, MoreExecutors.directExecutor());
     }
@@ -567,7 +567,7 @@ public final class OpenflowpluginGroupTestCommandProvider implements CommandProv
 
             @Override
             public void onFailure(final Throwable throwable) {
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+                ci.println("Status of Group Data Loaded Transaction : failure. Reason : " + throwable);
             }
         }, MoreExecutors.directExecutor());
     }

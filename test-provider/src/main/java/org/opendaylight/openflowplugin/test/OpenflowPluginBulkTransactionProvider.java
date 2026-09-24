@@ -638,7 +638,7 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("Status of Group Data Loaded Transaction : failure.", throwable);
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+                ci.println("Status of Group Data Loaded Transaction : failure. Reason : " + throwable);
             }
         }, MoreExecutors.directExecutor());
 
@@ -698,7 +698,7 @@ public final class OpenflowPluginBulkTransactionProvider implements CommandProvi
             @Override
             public void onFailure(final Throwable throwable) {
                 LOG.error("Status of Group Data Loaded Transaction : failure.", throwable);
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+                ci.println("Status of Group Data Loaded Transaction : failure. Reason : " + throwable);
             }
         }, MoreExecutors.directExecutor());
     }

@@ -60,11 +60,10 @@ public abstract class AbstractRequestCallback<T> implements FutureCallback<OfHea
         if (null != eventIdentifier) {
             EventsTimeCounter.markEnd(eventIdentifier);
         }
-        if (throwable instanceof DeviceRequestFailedException) {
-            final Error err = ((DeviceRequestFailedException) throwable).getError();
-            final String errorString = String.format("Device reported error type %s code %s",
-                                                     err.getTypeString(),
-                                                     err.getCodeString());
+        if (throwable instanceof DeviceRequestFailedException ex) {
+            final Error err = ex.getError();
+            final String errorString =
+                "Device reported error type %s code %s".formatted(err.getTypeString(), err.getCodeString());
 
             builder = RpcResultBuilder.<T>failed().withError(ErrorType.APPLICATION, errorString, throwable);
             spyMessage(StatisticsGroup.TO_SWITCH_SUBMIT_FAILURE);

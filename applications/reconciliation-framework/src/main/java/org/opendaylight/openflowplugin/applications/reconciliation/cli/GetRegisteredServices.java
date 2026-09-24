@@ -37,7 +37,7 @@ public class GetRegisteredServices implements Action {
         } else {
             for (var services : reconciliationManager.getRegisteredServices().values()) {
                 for (var service : services) {
-                    System.out.println(String.format("%d %-20s ", service.getPriority(), service.getName()));
+                    System.out.println("%d %-20s ".formatted(service.getPriority(), service.getName()));
                 }
             }
         }

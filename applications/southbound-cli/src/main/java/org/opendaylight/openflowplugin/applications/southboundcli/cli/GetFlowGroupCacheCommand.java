@@ -61,8 +61,8 @@ public final class GetFlowGroupCacheCommand implements Action {
             return null;
         }
 
-        session.getConsole().println(String.format("Number of flows and groups in cache for node %s : %d", nodeId,
-            entries.size()));
+        session.getConsole().println(
+            "Number of flows and groups in cache for node %s : %d".formatted(nodeId, entries.size()));
         session.getConsole().println(getLocalNodeHeaderOutput());
         session.getConsole().println(LINE_SEPARATOR);
 

@@ -123,12 +123,12 @@ public final class SrmCliUtils {
         if (EntityTypeService.VALUE.equals(entityType)) {
             str.append(" SERVICE are:\n");
             for (String entityName : SrmCliUtils.SERVICE_NAME_MAP.keySet()) {
-                str.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
+                str.append("\t%s/%s%n".formatted(entityName.toLowerCase(Locale.ROOT), entityName));
             }
         } else if (EntityTypeInstance.VALUE.equals(entityType)) {
             str.append(" INSTANCE are:\n");
             for (String entityName : SrmCliUtils.INSTANCE_NAME_MAP.keySet()) {
-                str.append(String.format("\t%s/%s%n", entityName.toLowerCase(Locale.ROOT), entityName));
+                str.append("\t%s/%s%n".formatted(entityName.toLowerCase(Locale.ROOT), entityName));
             }
         }
         return str.toString();

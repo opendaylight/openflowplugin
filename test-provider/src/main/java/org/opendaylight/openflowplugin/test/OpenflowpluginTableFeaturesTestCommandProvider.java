@@ -402,7 +402,7 @@ public final class OpenflowpluginTableFeaturesTestCommandProvider implements Com
 
             @Override
             public void onFailure(final Throwable throwable) {
-                ci.println(String.format("Status of Group Data Loaded Transaction : failure. Reason : %s", throwable));
+                ci.println("Status of Group Data Loaded Transaction : failure. Reason : " + throwable);
             }
         }, MoreExecutors.directExecutor());
     }

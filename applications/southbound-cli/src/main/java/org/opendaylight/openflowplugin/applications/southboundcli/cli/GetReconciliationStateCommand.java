@@ -37,7 +37,7 @@ public final class GetReconciliationStateCommand implements Action {
         if (!reconciliationStates.isEmpty()) {
             final var result = new ArrayList<String>();
             reconciliationStates.forEach((datapathId, reconciliationState) -> {
-                String status = String.format("%-17s %-50s", datapathId, reconciliationState);
+                String status = "%-17s %-50s".formatted(datapathId, reconciliationState);
                 result.add(status);
             });
             session.getConsole().println(getHeaderOutput());
@@ -50,6 +50,6 @@ public final class GetReconciliationStateCommand implements Action {
     }
 
     private static String getHeaderOutput() {
-        return String.format("%-17s %-25s %-25s", "DatapathId", "Reconciliation Status", "Reconciliation Time");
+        return "%-17s %-25s %-25s".formatted("DatapathId", "Reconciliation Status", "Reconciliation Time");
     }
 }

@@ -141,7 +141,7 @@ public class HandshakeManagerImplTest {
 
         for (int i = 0; i < remoteVer.length; i++) {
             Uint8 actualProposal = handshakeManager.proposeNextVersion(Uint8.valueOf(remoteVer[i]));
-            Assert.assertEquals(String.format("proposing for version: %04x", remoteVer[i]), expectedProposal[i],
+            Assert.assertEquals("proposing for version: %04x".formatted(remoteVer[i]), expectedProposal[i],
                                 actualProposal.toJava());
         }
 

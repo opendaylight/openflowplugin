@@ -85,7 +85,7 @@ public final class ScenarioFactory {
         queue.addFirst(new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 00 00 08 00 00 00 02")));
         queue.addFirst(new WaitForMessageEvent(ByteBufUtils.hexStringToBytes("04 05 00 08 00 00 00 03")));
         queue.addFirst(new SendEvent(ByteBufUtils.hexStringToBytes("04 06 00 20 00 00 00 03 "
-                + "00 01 02 03 04 05 06 07 00 01 02 03 01 " + String.format("%02x ", auxiliaryId)
+                + "00 01 02 03 04 05 06 07 00 01 02 03 01 " + "%02x ".formatted(auxiliaryId)
                 + " 00 00 00 01 02 03 00 01 02 03")));
         return queue;
     }

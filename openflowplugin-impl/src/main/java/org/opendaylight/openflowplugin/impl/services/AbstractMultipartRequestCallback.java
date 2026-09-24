@@ -33,7 +33,6 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void onSuccess(final OfHeader result) {
         if (result == null) {
             LOG.info("Response received was null.");
@@ -44,13 +43,12 @@ public abstract class AbstractMultipartRequestCallback<T extends OfHeader> exten
         if (!isMultipart(result)) {
             LOG.info("Unexpected response type received: {}.", result.getClass());
 
-            setResult(RpcResultBuilder
-                    .<List<T>>failed()
-                    .withError(ErrorType.APPLICATION,
-                            String.format("Unexpected response type received: %s.", result.getClass()))
-                    .build());
+            setResult(RpcResultBuilder.<List<T>>failed()
+                .withError(ErrorType.APPLICATION, "Unexpected response type received: %s.".formatted(result.getClass()))
+                .build());
         } else {
-            final T resultCast = (T) result;
+            @SuppressWarnings("unchecked")
+            final var resultCast = (T) result;
             collector.addMultipartMsg(resultCast, isReqMore(resultCast), getEventIdentifier());
         }
     }

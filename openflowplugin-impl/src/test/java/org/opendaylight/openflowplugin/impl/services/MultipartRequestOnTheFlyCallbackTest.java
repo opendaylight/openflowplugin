@@ -163,15 +163,14 @@ public class MultipartRequestOnTheFlyCallbackTest {
 
         final RpcResult<List<MultipartReply>> expectedRpcResult =
                 RpcResultBuilder.<List<MultipartReply>>failed().withError(ErrorType.APPLICATION,
-                        String.format("Unexpected response type received: %s.", mockedHelloMessage.getClass())).build();
+                        "Unexpected response type received: %s.".formatted(mockedHelloMessage.getClass())).build();
         final RpcResult<List<MultipartReply>> actualResult = dummyRequestContext.getFuture().get();
         assertNotNull(actualResult.getErrors());
         assertEquals(1, actualResult.getErrors().size());
 
         final RpcError actualError = actualResult.getErrors().iterator().next();
         assertEquals(actualError.getMessage(),
-                     String.format("Unexpected response type received: %s.",
-                     mockedHelloMessage.getClass()));
+            "Unexpected response type received: %s.".formatted(mockedHelloMessage.getClass()));
         assertEquals(actualError.getErrorType(), ErrorType.APPLICATION);
         assertEquals(expectedRpcResult.getResult(), actualResult.getResult());
         assertEquals(expectedRpcResult.isSuccessful(), actualResult.isSuccessful());

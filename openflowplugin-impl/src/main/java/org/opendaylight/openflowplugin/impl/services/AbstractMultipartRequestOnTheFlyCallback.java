@@ -62,7 +62,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "checkstyle:IllegalCatch"})
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void onSuccess(final OfHeader result) {
         if (result == null) {
             LOG.warn("Response received was null.");
@@ -72,7 +72,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             }
 
             return;
-        } else if (Service.State.TERMINATED.equals(gatheringState)) {
+        }
+        if (Service.State.TERMINATED.equals(gatheringState)) {
             LOG.warn("Unexpected response received: xid={}, {}", result.getXid(), result.implementedInterface());
             return;
         }
@@ -80,9 +81,10 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
         if (!isMultipart(result)) {
             LOG.warn("Unexpected response type received: {}.", result.getClass());
             setResult(RpcResultBuilder.<List<T>>failed().withError(ErrorType.APPLICATION,
-                    String.format("Unexpected response type received: %s.", result.getClass())).build());
+                    "Unexpected response type received: %s.".formatted(result.getClass())).build());
             endCollecting(false);
         } else {
+            @SuppressWarnings("unchecked")
             final T resultCast = (T) result;
 
             if (Service.State.NEW.equals(gatheringState)) {
@@ -90,8 +92,7 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             }
 
             try {
-                MultipartReplyTranslatorUtil
-                        .translate(resultCast, deviceInfo, convertorExecutor, null)
+                MultipartReplyTranslatorUtil.translate(resultCast, deviceInfo, convertorExecutor, null)
                         .ifPresent(reply -> {
                             try {
                                 statisticsWriterProvider
@@ -105,9 +106,8 @@ public abstract class AbstractMultipartRequestOnTheFlyCallback<T extends OfHeade
             } catch (final Exception ex) {
                 LOG.warn("Unexpected exception occurred while translating response: {}.", result.getClass(), ex);
                 setResult(RpcResultBuilder.<List<T>>failed().withError(ErrorType.APPLICATION,
-                        String.format("Unexpected exception occurred while translating response: %s. %s",
-                                      result.getClass(),
-                                      ex)).build());
+                    "Unexpected exception occurred while translating response: %s. %s".formatted(result.getClass(), ex))
+                    .build());
                 endCollecting(false);
                 return;
             }

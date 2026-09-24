@@ -39,13 +39,12 @@ public final class SessionStatistics {
 
 
     public static List<String> provideStatistics() {
-        List<String> dump = new ArrayList<>();
-        for (Map.Entry<String, Map<ConnectionStatus, EventCounter>> sessionEntries : SESSION_EVENTS.entrySet()) {
-            Map<ConnectionStatus, EventCounter> sessionEvents = sessionEntries.getValue();
-            dump.add(String.format("SESSION : %s", sessionEntries.getKey()));
-            for (Map.Entry<ConnectionStatus, EventCounter> sessionEvent : sessionEvents.entrySet()) {
-                dump.add(String.format(" %s : %d", sessionEvent.getKey().toString(),
-                                                   sessionEvent.getValue().getCount()));
+        var dump = new ArrayList<String>();
+        for (var sessionEntries : SESSION_EVENTS.entrySet()) {
+            var sessionEvents = sessionEntries.getValue();
+            dump.add("SESSION : %s".formatted(sessionEntries.getKey()));
+            for (var sessionEvent : sessionEvents.entrySet()) {
+                dump.add(" %s : %d".formatted(sessionEvent.getKey(), sessionEvent.getValue().getCount()));
             }
         }
         return dump;
