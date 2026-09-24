@@ -9,7 +9,6 @@ package org.opendaylight.openflowplugin.impl.lifecycle;
 
 import static java.util.Objects.requireNonNull;
 
-import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import java.util.List;
@@ -87,7 +86,7 @@ public class ContextChainImpl implements ContextChain {
 
         contextChainMastershipWatcher.onSlaveRoleAcquired(deviceInfo);
 
-        final ListenableFuture<?> servicesToBeClosed = Futures.allAsList(Lists.reverse(contexts).stream()
+        final ListenableFuture<?> servicesToBeClosed = Futures.allAsList(contexts.reversed().stream()
             .map(OFPContext::closeServiceInstance)
             .collect(Collectors.toList()));
 
