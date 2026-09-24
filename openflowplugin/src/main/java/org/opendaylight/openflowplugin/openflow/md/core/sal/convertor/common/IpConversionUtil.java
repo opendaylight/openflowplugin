@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.net.InetAddresses;
-import com.google.common.primitives.UnsignedBytes;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.math.BigInteger;
 import java.net.Inet4Address;
@@ -126,9 +125,8 @@ public final class IpConversionUtil {
          */
         if (null != mask && !mask.isEmpty()) {
             return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + mask);
-        } else {
-            return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + IPV4_ADDRESS_LENGTH);
         }
+        return new Ipv4Prefix(ipv4Address.getValue() + PREFIX_SEPARATOR + IPV4_ADDRESS_LENGTH);
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final int intmask) {
@@ -136,11 +134,8 @@ public final class IpConversionUtil {
     }
 
     public static Ipv4Prefix createPrefix(final Ipv4Address ipv4Address, final byte [] bytemask) {
-        if (bytemask == null) {
-            return createPrefix(ipv4Address);
-        }
-
-        return IetfInetUtil.ipv4PrefixFor(ipv4Address, countBits(bytemask));
+        return bytemask == null ? createPrefix(ipv4Address)
+            : IetfInetUtil.ipv4PrefixFor(ipv4Address, countBits(bytemask));
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address) {
@@ -156,9 +151,8 @@ public final class IpConversionUtil {
          */
         if (Strings.isNullOrEmpty(mask)) {
             return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + String.valueOf(IPV6_ADDRESS_LENGTH));
-        } else {
-            return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
         }
+        return new Ipv6Prefix(ipv6Address.getValue() + PREFIX_SEPARATOR + mask);
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final int intmask) {
@@ -166,11 +160,8 @@ public final class IpConversionUtil {
     }
 
     public static Ipv6Prefix createPrefix(final Ipv6Address ipv6Address, final byte [] bytemask) {
-        if (bytemask == null) {
-            return createPrefix(ipv6Address);
-        }
-
-        return IetfInetUtil.ipv6PrefixFor(ipv6Address, countBits(bytemask));
+        return bytemask == null ? createPrefix(ipv6Address)
+            : IetfInetUtil.ipv6PrefixFor(ipv6Address, countBits(bytemask));
     }
 
     public static DottedQuad createArbitraryBitMask(final byte[] bitmask)  {
@@ -626,9 +617,8 @@ public final class IpConversionUtil {
         final int ret = mask * INADDR6SZ;
         if (ret < PREFIX_BYTEARRAYS.length) {
             return ret;
-        } else {
-            return PREFIX_BYTEARRAYS.length - INADDR6SZ;
         }
+        return PREFIX_BYTEARRAYS.length - INADDR6SZ;
     }
 
     /**
@@ -693,7 +683,7 @@ public final class IpConversionUtil {
     public static int countBits(final byte[] mask) {
         int netmask = 0;
         for (byte b : mask) {
-            netmask += Integer.bitCount(UnsignedBytes.toInt(b));
+            netmask += Integer.bitCount(Byte.toUnsignedInt(b));
         }
         return netmask;
     }
