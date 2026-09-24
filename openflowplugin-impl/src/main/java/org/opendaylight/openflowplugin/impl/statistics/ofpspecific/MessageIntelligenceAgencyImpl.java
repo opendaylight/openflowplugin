@@ -147,13 +147,13 @@ public final class MessageIntelligenceAgencyImpl implements MessageIntelligenceA
                 for (var statEntry : groupData.entrySet()) {
                     long amountPerInterval = statEntry.getValue().accumulate();
                     long cumulativeAmount = statEntry.getValue().getCumulative();
-                    dump.add(String.format("%s: MSG[%s] -> +%d | %d",
+                    dump.add("%s: MSG[%s] -> +%d | %d".formatted(
                             statGroup,
                             statEntry.getKey().getSimpleName(),
                             amountPerInterval, cumulativeAmount));
                 }
             } else {
-                dump.add(String.format("%s: no activity detected", statGroup));
+                dump.add("%s: no activity detected".formatted(statGroup));
             }
         }
         return dump;

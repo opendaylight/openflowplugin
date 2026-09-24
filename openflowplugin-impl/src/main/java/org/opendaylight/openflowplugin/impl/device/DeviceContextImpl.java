@@ -62,7 +62,6 @@ import org.opendaylight.openflowplugin.extension.api.path.MessagePath;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProvider;
 import org.opendaylight.openflowplugin.impl.datastore.MultipartWriterProviderFactory;
 import org.opendaylight.openflowplugin.impl.device.history.FlowGroupInfoHistoryImpl;
-import org.opendaylight.openflowplugin.impl.device.initialization.AbstractDeviceInitializer;
 import org.opendaylight.openflowplugin.impl.device.initialization.DeviceInitializerProvider;
 import org.opendaylight.openflowplugin.impl.device.listener.MultiMsgCollectorImpl;
 import org.opendaylight.openflowplugin.impl.registry.flow.DeviceFlowRegistryImpl;
@@ -626,7 +625,7 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
             deviceFlowRegistry.close();
             deviceMeterRegistry.close();
 
-            Futures.addCallback(transactionChainManager.shuttingDown(), new FutureCallback<Object>() {
+            transactionChainManager.shuttingDown().addCallback(new FutureCallback<Object>() {
                 @Override
                 public void onSuccess(final Object result) {
                     transactionChainManager.close();
@@ -662,40 +661,34 @@ public class DeviceContextImpl implements DeviceContext, ExtensionConverterProvi
     public void initializeDevice() {
         LOG.debug("Device initialization started for device {}", deviceInfo);
         try {
-            final List<PortStatusMessage> portStatusMessages = primaryConnectionContext
-                    .retrieveAndClearPortStatusMessages();
+            final var portStatusMessages = primaryConnectionContext.retrieveAndClearPortStatusMessages();
             portStatusMessages.forEach(this::writePortStatusMessage);
             submitTransaction();
         } catch (final Exception ex) {
-            throw new IllegalStateException(String.format("Error processing port status messages from device %s: %s",
-                    deviceInfo.toString(), ex.toString()), ex);
+            throw new IllegalStateException(
+                "Error processing port status messages from device %s: %s".formatted(deviceInfo, ex), ex);
         }
 
-        final Optional<AbstractDeviceInitializer> initializer = deviceInitializerProvider
-                .lookup(deviceInfo.getVersion());
-
-        if (initializer.isPresent()) {
-            final Future<Void> initialize = initializer.orElseThrow()
-                    .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
-
-            try {
-                initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
-            } catch (TimeoutException ex) {
-                initialize.cancel(true);
-                throw new IllegalStateException(String.format("Failed to initialize device %s in %ss: %s",
-                        deviceInfo.toString(), String.valueOf(DEVICE_INIT_TIMEOUT / 1000), ex.toString()), ex);
-            } catch (ExecutionException | InterruptedException ex) {
-                throw new IllegalStateException(
-                        String.format("Device %s cannot be initialized: %s", deviceInfo.toString(), ex.toString()), ex);
-            }
-        } else {
-            throw new IllegalStateException(String.format("Unsupported version %s for device %s",
-                    deviceInfo.getVersion(),
-                    deviceInfo.toString()));
+        final var initializer = deviceInitializerProvider.lookup(deviceInfo.getVersion());
+        if (initializer.isEmpty()) {
+            throw new IllegalStateException(
+                "Unsupported version %s for device %s".formatted(deviceInfo.getVersion(), deviceInfo));
         }
 
-        final ListenableFuture<List<Optional<FlowCapableNode>>> deviceFlowRegistryFill =
-                getDeviceFlowRegistry().fill();
+        final Future<Void> initialize = initializer.orElseThrow()
+            .initialize(this, switchFeaturesMandatory, skipTableFeatures, writerProvider, convertorExecutor);
+
+        try {
+            initialize.get(DEVICE_INIT_TIMEOUT, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException ex) {
+            initialize.cancel(true);
+            throw new IllegalStateException(
+                "Failed to initialize device %s in %ss: %s".formatted(deviceInfo, DEVICE_INIT_TIMEOUT / 1000, ex), ex);
+        } catch (ExecutionException | InterruptedException ex) {
+            throw new IllegalStateException("Device %s cannot be initialized: %s".formatted(deviceInfo, ex), ex);
+        }
+
+        final var deviceFlowRegistryFill = getDeviceFlowRegistry().fill();
         Futures.addCallback(deviceFlowRegistryFill,
                 new DeviceFlowRegistryCallback(deviceFlowRegistryFill, contextChainMastershipWatcher),
                 MoreExecutors.directExecutor());

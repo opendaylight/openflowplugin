@@ -254,10 +254,9 @@ class StatisticsContextImpl<T extends OfHeader> implements StatisticsContext, De
                                                       final MultipartType multipartType) {
         if (ConnectionContext.CONNECTION_STATE.RIP
                 .equals(deviceContext.getPrimaryConnectionContext().getConnectionState())) {
-            final String errMsg = String
-                    .format("Device connection for node %s doesn't exist anymore. Primary connection status : %s",
-                            getDeviceInfo().getNodeId(),
-                            deviceContext.getPrimaryConnectionContext().getConnectionState());
+            final String errMsg =
+                "Device connection for node %s doesn't exist anymore. Primary connection status : %s".formatted(
+                    getDeviceInfo().getNodeId(), deviceContext.getPrimaryConnectionContext().getConnectionState());
 
             return Futures.immediateFailedFuture(new ConnectionException(errMsg));
         }

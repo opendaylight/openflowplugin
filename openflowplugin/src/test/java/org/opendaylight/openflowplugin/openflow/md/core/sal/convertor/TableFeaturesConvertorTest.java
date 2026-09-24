@@ -297,7 +297,7 @@ public class TableFeaturesConvertorTest {
                 .features.TableFeaturesBuilder();
         for (int i = 0; i < 10; i++) {
             tableFeaturesBuilder.setTableId(Uint8.valueOf(i));
-            tableFeaturesBuilder.setName(String.format("table:%d", i));
+            tableFeaturesBuilder.setName("table:" + i);
             tableFeaturesBuilder.setMetadataMatch(Uint64.ONE);
             tableFeaturesBuilder.setMetadataWrite(Uint64.ONE);
             tableFeaturesBuilder.setMaxEntries(Uint32.valueOf(1 + 10 * i));

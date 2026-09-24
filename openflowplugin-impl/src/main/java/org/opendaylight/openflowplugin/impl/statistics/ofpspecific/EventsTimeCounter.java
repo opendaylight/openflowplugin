@@ -47,21 +47,20 @@ public final class EventsTimeCounter {
 
     public static List<String> provideTimes() {
         List<String> dump = new ArrayList<>();
-        for (Map.Entry<String, Map<String, EventTimeCounter>> deviceEntry : DEVICES_EVENTS.entrySet()) {
-            Map<String, EventTimeCounter> eventsMap = deviceEntry.getValue();
+        for (var deviceEntry : DEVICES_EVENTS.entrySet()) {
+            var eventsMap = deviceEntry.getValue();
             dump.add("================================================");
-            dump.add(String.format("DEVICE : %s", deviceEntry.getKey()));
-            for (Map.Entry<String, EventTimeCounter> eventEntry : eventsMap.entrySet()) {
+            dump.add("DEVICE : %s".formatted(deviceEntry.getKey()));
+            for (var eventEntry : eventsMap.entrySet()) {
                 final String eventName = eventEntry.getKey();
                 final EventTimeCounter eventTimeCounter = eventEntry.getValue();
-                dump.add(String.format("%s", eventName));
-                dump.add(String.format("    MIN TIME (ms):  %d",
-                        TimeUnit.MILLISECONDS.convert(eventTimeCounter.getMinimum(), TimeUnit.NANOSECONDS)));
-                dump.add(String.format("    MAX TIME (ms):  %d",
-                        TimeUnit.MILLISECONDS.convert(eventTimeCounter.getMaximum(), TimeUnit.NANOSECONDS)));
-                dump.add(String.format("    AVG TIME (ms):  %d",
-                        TimeUnit.MILLISECONDS.convert(eventTimeCounter.getAverage(), TimeUnit.NANOSECONDS)));
-
+                dump.add("%s".formatted(eventName));
+                dump.add("    MIN TIME (ms):  %d".formatted(
+                        TimeUnit.NANOSECONDS.toMillis(eventTimeCounter.getMinimum())));
+                dump.add("    MAX TIME (ms):  %d".formatted(
+                        TimeUnit.NANOSECONDS.toMillis(eventTimeCounter.getMaximum())));
+                dump.add("    AVG TIME (ms):  %d".formatted(
+                        TimeUnit.NANOSECONDS.toMillis(eventTimeCounter.getAverage())));
             }
         }
         return dump;

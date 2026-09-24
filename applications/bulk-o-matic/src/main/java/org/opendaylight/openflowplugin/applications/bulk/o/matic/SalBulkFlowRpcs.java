@@ -259,7 +259,7 @@ public final class SalBulkFlowRpcs implements AutoCloseable {
         RpcResultBuilder<RegisterOutput> rpcResultBuilder = RpcResultBuilder.success();
         try {
             MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-            String pathToMBean = String.format("%s:type=%s", FlowCounter.class.getPackage().getName(),
+            String pathToMBean = "%s:type=%s".formatted(FlowCounter.class.getPackage().getName(),
                     FlowCounter.class.getSimpleName());
             ObjectName name = new ObjectName(pathToMBean);
             mbs.registerMBean(flowCounterBeanImpl, name);

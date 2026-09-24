@@ -12,7 +12,6 @@ import static java.util.Objects.requireNonNull;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
-import org.opendaylight.openflowplugin.api.openflow.connection.ConnectionContext.CONNECTION_STATE;
 import org.opendaylight.openflowplugin.api.openflow.device.DeviceContext;
 import org.opendaylight.openflowplugin.api.openflow.device.RequestContextStack;
 import org.opendaylight.openflowplugin.api.openflow.device.Xid;
@@ -53,21 +52,20 @@ public final class SalRoleRpc extends AbstractSimpleService<SetRoleInput, SetRol
         LOG.info("SetRole called with input:{}", input);
 
         // Check current connection state
-        final CONNECTION_STATE state = deviceContext.getPrimaryConnectionContext().getConnectionState();
+        final var state = deviceContext.getPrimaryConnectionContext().getConnectionState();
         switch (state) {
-            case RIP:
+            case RIP -> {
                 LOG.info("Device {} has been disconnected", input.getNode());
-                return Futures.immediateFailedFuture(new Exception(String
-                        .format("Device connection doesn't exist anymore. Primary connection status : %s",
-                                state)));
-            case WORKING:
+                return Futures.immediateFailedFuture(new Exception(
+                        "Device connection doesn't exist anymore. Primary connection status : %s" + state));
+            }
+            case WORKING ->
                 // We can proceed
                 LOG.trace("Device {} has been working", input.getNode());
-                break;
-            default:
+            default -> {
                 LOG.warn("Device {} is in state {}, role change is not allowed", input.getNode(), state);
-                return Futures.immediateFailedFuture(new Exception(String
-                        .format("Unexpected device connection status : %s", state)));
+                return Futures.immediateFailedFuture(new Exception("Unexpected device connection status : " + state));
+            }
         }
 
         LOG.info("Requesting state change to {}", input.getControllerRole());
@@ -90,8 +88,7 @@ public final class SalRoleRpc extends AbstractSimpleService<SetRoleInput, SetRol
     private static Uint64 getNextGenerationId(final Uint64 generationId) {
         if (generationId.compareTo(MAX_GENERATION_ID) < 0) {
             return Uint64.valueOf(generationId.longValue() + 1);
-        } else {
-            return Uint64.ZERO;
         }
+        return Uint64.ZERO;
     }
 }
