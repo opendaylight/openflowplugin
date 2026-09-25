@@ -91,7 +91,7 @@ public abstract class PacketUtils {
         if (rawMac != null && rawMac.length == MAC_ADDRESS_SIZE) {
             StringBuilder sb = new StringBuilder();
             for (byte octet : rawMac) {
-                sb.append(String.format(":%02X", octet));
+                sb.append(":%02X".formatted(octet));
             }
             mac = new MacAddress(sb.substring(1));
         }
