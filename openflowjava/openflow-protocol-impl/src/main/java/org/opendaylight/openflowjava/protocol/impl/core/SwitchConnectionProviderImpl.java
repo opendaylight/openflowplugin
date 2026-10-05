@@ -165,7 +165,10 @@ public class SwitchConnectionProviderImpl implements SwitchConnectionProvider, C
     private synchronized void removeFacade(final ListenableFuture<? extends ServerFacade> expected) {
         if (expected == serverFacade) {
             serverFacade = null;
-            diagReg.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR, "Terminated"));
+            var local = diagReg;
+            if (local != null) {
+                local.report(new ServiceDescriptor(diagStatusIdentifier, ServiceState.ERROR, "Terminated"));
+            }
         }
     }
 
