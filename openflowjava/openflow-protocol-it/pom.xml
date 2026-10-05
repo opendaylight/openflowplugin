@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opendaylight.openflowplugin.openflowjava</groupId>
         <artifactId>openflowjava-parent</artifactId>
-        <version>2.0.1</version>
+        <version>2.0.2-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>openflow-protocol-it</artifactId>
