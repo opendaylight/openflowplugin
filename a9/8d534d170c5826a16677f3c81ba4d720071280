@@ -1,0 +1,8 @@
+Verified+1: ODL Required.GHA <releng+odl.required.gha@linuxfoundation.org>
+Verified+1: Robert Varga <nite@hq.sk>
+Code-Review+2: Robert Varga <nite@hq.sk>
+Submitted-by: Robert Varga <nite@hq.sk>
+Submitted-at: Fri, 23 Oct 2026 11:17:44 +0000
+Reviewed-on: https://git.opendaylight.org/gerrit/c/openflowplugin/+/127137
+Project: openflowplugin
+Branch: refs/heads/0.20.x
