@@ -95,10 +95,46 @@ jobs:
       # yamllint enable rule:line-length
       ENV_VARS: ${{ toJSON(vars) }}
 
+  javadoc-verify:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      # yamllint disable-line rule:line-length
+      - uses: lfreleng-actions/checkout-gerrit-change-action@8721c15dacdd703064df5ade1416f7e5590b65f3 # v1.4.1
+        with:
+          gerrit-refspec: ${{ inputs.GERRIT_REFSPEC }}
+          gerrit-project: ${{ inputs.GERRIT_PROJECT }}
+          gerrit-url: ${{ vars.GERRIT_URL }}
+          delay: "0s"
+      - name: Build javadoc
+        # yamllint disable-line rule:line-length
+        uses: lfreleng-actions/maven-build-action@1de87fd734620335eeae65933795f226c0d8a24e # v0.5.6
+        with:
+          java-version: "21"
+          mvn-version: "3.9.6"
+          mvn-phases: "clean install javadoc:aggregate"
+          mvn-profiles: "q"
+          mvn-params: >-
+            -e -Dmaven.javadoc.skip=false -DskipTests=true
+            -Dcheckstyle.skip=true -Dfindbugs.skip=true
+          run-jacoco: "false"
+          env-vars: ${{ toJSON(vars) }}
+      - name: Upload javadoc
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: javadoc
+          path: |
+            target/reports/apidocs
+            target/site/apidocs
+          if-no-files-found: error
+          retention-days: 7
+
   vote:
     if: ${{ always() }}
     # yamllint enable rule:line-length
-    needs: [prepare, maven-verify]
+    needs: [prepare, maven-verify, javadoc-verify]
     runs-on: ubuntu-latest
     steps:
       - name: Get conclusion
