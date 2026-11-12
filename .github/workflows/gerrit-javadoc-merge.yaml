@@ -1,0 +1,160 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2026 The Linux Foundation
+
+name: Gerrit Javadoc Merge
+
+# Replaces the Jenkins maven-javadoc-publish job. gerrit_to_platform
+# dispatches every workflow whose file name contains "gerrit" and
+# "merge" on the branch a change merged to, so this file has to exist
+# on each branch whose javadoc is published, not only on master.
+# yamllint disable-line rule:truthy
+on:
+  workflow_dispatch:
+    inputs:
+      GERRIT_BRANCH:
+        description: "Branch that change is against"
+        required: true
+        type: string
+      GERRIT_CHANGE_ID:
+        description: "The ID for the change"
+        required: true
+        type: string
+      GERRIT_CHANGE_NUMBER:
+        description: "The Gerrit number"
+        required: true
+        type: string
+      GERRIT_CHANGE_URL:
+        description: "URL to the change"
+        required: true
+        type: string
+      GERRIT_EVENT_TYPE:
+        description: "Type of Gerrit event"
+        required: true
+        type: string
+      GERRIT_PATCHSET_NUMBER:
+        description: "The patch number for the change"
+        required: true
+        type: string
+      GERRIT_PATCHSET_REVISION:
+        description: "The revision sha"
+        required: true
+        type: string
+      GERRIT_PROJECT:
+        description: "Project in Gerrit"
+        required: true
+        type: string
+      GERRIT_REFSPEC:
+        description: "Gerrit refspec of change"
+        required: true
+        type: string
+
+concurrency:
+  # Every run publishes the branch head, so the newest pending run
+  # supersedes the others; a running upload is left to finish.
+  group: gerrit-javadoc-merge-${{ inputs.GERRIT_BRANCH }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # Nexus javadoc path is org.opendaylight.<project>/<stream>.
+  JAVADOC_PROJECT: openflowplugin
+  # Stream published from master; stable/<name> publishes as <name>.
+  # Update when master moves to the next release.
+  MASTER_STREAM: manganese
+
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Clear votes
+        # yamllint disable-line rule:line-length
+        uses: lfreleng-actions/gerrit-review-action@264fe205361cbb2ee8f26280998a75680ee33b53 # v1.3.0
+        with:
+          host: ${{ vars.GERRIT_SERVER }}
+          username: ${{ vars.GERRIT_SSH_USER }}
+          key: ${{ secrets.GERRIT_SSH_PRIVKEY }}
+          known_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          gerrit-change-number: ${{ inputs.GERRIT_CHANGE_NUMBER }}
+          gerrit-patchset-number: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
+          vote-type: clear
+          comment-only: true
+      - name: Allow replication
+        run: sleep 10s
+
+  javadoc-publish:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Resolve stream
+        id: stream
+        env:
+          GERRIT_BRANCH: ${{ inputs.GERRIT_BRANCH }}
+        run: |
+          set -euo pipefail
+          stream="${GERRIT_BRANCH#stable/}"
+          if [ "$stream" = master ]; then
+            stream="$MASTER_STREAM"
+          fi
+          if ! [[ "$stream" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+            echo "::error::Unsupported branch: $GERRIT_BRANCH"
+            exit 1
+          fi
+          echo "Publishing ${JAVADOC_PROJECT} javadoc as stream: $stream"
+          echo "name=$stream" >> "$GITHUB_OUTPUT"
+      # yamllint disable-line rule:line-length
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.GERRIT_BRANCH }}
+          persist-credentials: false
+      - name: Build javadoc
+        # yamllint disable-line rule:line-length
+        uses: lfreleng-actions/maven-build-action@1de87fd734620335eeae65933795f226c0d8a24e # v0.5.6
+        with:
+          java-version: "21"
+          mvn-version: "3.9.6"
+          mvn-phases: "clean install javadoc:aggregate"
+          mvn-profiles: "q"
+          mvn-params: >-
+            -e -Dmaven.javadoc.skip=false -DskipTests=true
+            -Dcheckstyle.skip=true -Dfindbugs.skip=true
+          run-jacoco: "false"
+          env-vars: ${{ toJSON(vars) }}
+      - name: Publish javadoc
+        # yamllint disable-line rule:line-length
+        uses: lfreleng-actions/nexus-publish-action@c178e9293ae0f62244f33e70c689d2a8df739c16 # v1.4.1
+        with:
+          nexus_server: ${{ vars.NEXUS_SERVER }}
+          nexus_username: ${{ secrets.NEXUS_USERNAME }}
+          nexus_password: ${{ secrets.NEXUS_PASSWORD }}
+          repository_format: unpack
+          repository_name: javadoc
+          files_path: ${{ github.workspace }}/target/site/apidocs
+          # yamllint disable-line rule:line-length
+          upload_path: org.opendaylight.${{ env.JAVADOC_PROJECT }}/${{ steps.stream.outputs.name }}
+
+  vote:
+    if: ${{ always() }}
+    needs: [prepare, javadoc-publish]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Get conclusion
+        # yamllint disable-line rule:line-length
+        uses: im-open/workflow-conclusion@8eac7f17381a6917bc04fec3e2c92e70ebc37526 # v3.0.0
+      - name: Set vote
+        # yamllint disable-line rule:line-length
+        uses: lfreleng-actions/gerrit-review-action@264fe205361cbb2ee8f26280998a75680ee33b53 # v1.3.0
+        with:
+          host: ${{ vars.GERRIT_SERVER }}
+          username: ${{ vars.GERRIT_SSH_USER }}
+          key: ${{ secrets.GERRIT_SSH_PRIVKEY }}
+          known_hosts: ${{ vars.GERRIT_KNOWN_HOSTS }}
+          gerrit-change-number: ${{ inputs.GERRIT_CHANGE_NUMBER }}
+          gerrit-patchset-number: ${{ inputs.GERRIT_PATCHSET_NUMBER }}
+          vote-type: ${{ env.WORKFLOW_CONCLUSION }}
+          message: Javadoc publish (gerrit-javadoc-merge)
